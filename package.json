@@ -1,0 +1,15 @@
+{
+  "name": "axelar-local-dev-sample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/send-token.js",
+    "prepare": "cd node_modules/@axelar-network/axelar-local-dev && npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@axelar-network/axelar-local-dev": "github:axelarnetwork/axelar-local-dev"
+  }
+}
