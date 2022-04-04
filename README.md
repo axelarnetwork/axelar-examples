@@ -1,6 +1,6 @@
 # Axelar Local Dev Sample
 
-This repo provides very simple usage of https://github.com/axelarnetwork/axelar-local-dev
+This repo provides a basic usage of https://github.com/axelarnetwork/axelar-local-dev which transfers a token from chain A to chain B.
 
 ## Preruiquisite
 
