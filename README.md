@@ -12,4 +12,4 @@ Run `npm i`
 
 ## Run
 
-`yarn start`
+`npm run start`
