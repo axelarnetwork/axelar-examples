@@ -10,6 +10,13 @@ Node version >= 16
 
 Run `npm i`
 
-## Run
+## Run Examples
 
-`npm run start`
+### Send token
+
+Run `npm run send-token`
+
+## Call contract with token
+
+1. Run `npm run compile` to compile the contract that we used for the example.
+2. Run `npm run call-contract-with-token`
