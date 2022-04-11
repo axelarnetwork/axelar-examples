@@ -3,13 +3,23 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
-    "start": "node src/send-token.js",
-    "prepare": "cd node_modules/@axelar-network/axelar-local-dev && npm run build"
+    "send-token": "node src/send-token.js",
+    "call-contract-with-token": "node src/call-contract-with-token.js",
+    "build": "cd node_modules/@axelar-network/axelar-local-dev && npm run build",
+    "compile": "waffle waffle-config.json"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@axelar-network/axelar-local-dev": "github:axelarnetwork/axelar-local-dev"
+    "@axelar-network/axelar-local-dev": "github:axelarnetwork/axelar-local-dev#bf0cb7cbbb94f1803c8a8b25c4304b46bc770def",
+    "@axelar-network/axelarjs-sdk": "^0.5.0-alpha.10",
+    "ethers": "^5.6.2"
+  },
+  "devDependencies": {
+    "waffle": "^0.0.4"
   }
 }

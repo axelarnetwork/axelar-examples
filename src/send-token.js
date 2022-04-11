@@ -24,6 +24,7 @@ const axelar = require("@axelar-network/axelar-local-dev");
       .connect(user1)
       .sendToken(chain2.name, user2.address, "UST", 100)
   ).wait();
+
   // Have axelar relay the tranfer to chain2.
   await axelar.relay();
 
