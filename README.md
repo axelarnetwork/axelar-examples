@@ -17,7 +17,7 @@ This example will show you a way to send token from chain A to chain B.
 
 1. Run `npm run send-token`
 
-## Call a smart contract from different chain
+## Call a smart contract from the different chain
 
 This example will show you how to call a smart contract that deployed at `chain B` from the `chain A`.
 

@@ -1,31 +1,15 @@
 const axelar = require("@axelar-network/axelar-local-dev");
+const { ethers } = require("ethers");
+const { generateWalletAddresses } = require("./utils/wallet");
+const { printMultipleBalances, printBalance } = require("./utils/logger");
+const distributionExecutorAbi = require("../build/DistributionExecutor.json");
 const {
   deployContract,
 } = require("@axelar-network/axelar-local-dev/dist/utils");
-const { AxelarGateway } = require("@axelar-network/axelarjs-sdk");
-const { ethers } = require("ethers");
-const distributionExecutorAbi = require("../build/DistributionExecutor.json");
 
 // Create 5 recipients
-const recipientAddresses = new Array(5)
-  .fill(0)
-  .map(() => ethers.Wallet.createRandom().address);
-
-async function logUstBalances(addresses, tokenContract) {
-  for (let i = 0; i < addresses.length; i++) {
-    console.log(
-      `Recipient${i + 1} has ${await getFormattedUst(
-        addresses[i],
-        tokenContract
-      )} UST`
-    );
-  }
-}
-
-async function getFormattedUst(address, tokenContract) {
-  const amount = await tokenContract.balanceOf(address);
-  return ethers.utils.formatUnits(amount, 6);
-}
+const recipientAddresses = generateWalletAddresses(5);
+const alias = recipientAddresses.map((_, i) => `Recipient${i + 1}`);
 
 (async () => {
   console.log("==== Preparing chain1... ====");
@@ -47,10 +31,8 @@ async function getFormattedUst(address, tokenContract) {
   await chain1.giveToken(sender.address, "UST", 1000 * 1e6);
 
   console.log("\n==== Initial balances ====");
-  console.log(
-    `Sender has ${await getFormattedUst(sender.address, chain1.ust)} UST`
-  );
-  await logUstBalances(recipientAddresses, chain1.ust);
+  await printBalance("Sender", sender.address, chain1.ust);
+  await printMultipleBalances(alias, recipientAddresses, chain2.ust);
 
   // Approve the AxelarGateway to use our UST on chain1.
   const amount = ethers.utils.parseUnits("100", 6);
@@ -58,13 +40,13 @@ async function getFormattedUst(address, tokenContract) {
     await chain1.ust.connect(sender).approve(chain1.gateway.address, amount)
   ).wait();
 
-  // And have it send it to chain2.
-  // const gateway = new AxelarGateway(chain1.gateway.address, chain1.provider);
+  console.log("\n==== Calling the gateway contract ====");
+
+  // Send a transaction to the gateway contract to call `callContractWithToken` function.
   const payload = ethers.utils.defaultAbiCoder.encode(
     ["address[]"],
     [recipientAddresses]
   );
-
   const tx = await chain1.gateway
     .connect(sender)
     .callContractWithToken(
@@ -75,13 +57,13 @@ async function getFormattedUst(address, tokenContract) {
       amount
     )
     .then((tx) => tx.wait());
-  console.log("Send tx to gateway:", tx.transactionHash);
 
+  console.log("Tx:", tx.transactionHash);
+
+  // Relay a transaction to the destination chain
   await axelar.relay();
 
   console.log("\n==== After cross-chain balances ====");
-  console.log(
-    `Sender has ${await getFormattedUst(sender.address, chain1.ust)} UST`
-  );
-  await logUstBalances(recipientAddresses, chain2.ust);
+  await printBalance("Sender", sender.address, chain1.ust);
+  await printMultipleBalances(alias, recipientAddresses, chain2.ust);
 })();
