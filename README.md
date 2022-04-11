@@ -8,7 +8,8 @@ Node version >= 16
 
 ## Install
 
-Run `npm i`
+1. Run `npm i`
+2. Run `npm run build` to compile contracts in `axelar-local-dev`.
 
 ## Run Examples
 
