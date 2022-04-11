@@ -11,15 +11,13 @@ Node version >= 16
 1. Run `npm i`
 2. Run `npm run build` to compile contracts in `axelar-local-dev`.
 
-## Run Examples
-
-### Send a token to another chain
+## Send a token to another chain
 
 This example will show you a way to send token from chain A to chain B.
 
 1. Run `npm run send-token`
 
-### Call a smart contract from different chain
+## Call a smart contract from different chain
 
 This example will show you how to call a smart contract that deployed at `chain B` from the `chain A`.
 
