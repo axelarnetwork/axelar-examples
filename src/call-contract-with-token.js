@@ -10,6 +10,8 @@ const {
 // Create multiple recipients
 const recipientAddresses = generateWalletAddresses(5);
 const alias = recipientAddresses.map((_, i) => `Recipient${i + 1}`);
+const fundAmount = ethers.utils.parseUnits("1000", 6);
+const sendAmount = ethers.utils.parseUnits("100", 6);
 
 (async () => {
   console.log("==== Preparing chain1... ====");
@@ -28,16 +30,16 @@ const alias = recipientAddresses.map((_, i) => `Recipient${i + 1}`);
   );
   console.log("Deployed:", distributionContract.address);
 
-  await chain1.giveToken(sender.address, "UST", 1000 * 1e6);
+  // Fund sender account with 1000 UST
+  await chain1.giveToken(sender.address, "UST", fundAmount);
 
   console.log("\n==== Initial balances ====");
   await printBalance("Sender", sender.address, chain1.ust);
   await printMultipleBalances(alias, recipientAddresses, chain2.ust);
 
   // Approve the AxelarGateway to use our UST on chain1.
-  const amount = ethers.utils.parseUnits("100", 6);
   await (
-    await chain1.ust.connect(sender).approve(chain1.gateway.address, amount)
+    await chain1.ust.connect(sender).approve(chain1.gateway.address, sendAmount)
   ).wait();
 
   console.log("\n==== Calling the gateway contract ====");
@@ -54,7 +56,7 @@ const alias = recipientAddresses.map((_, i) => `Recipient${i + 1}`);
       distributionContract.address,
       payload,
       "UST",
-      amount
+      sendAmount
     )
     .then((tx) => tx.wait());
 
