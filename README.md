@@ -20,7 +20,7 @@ This example will show you a way to send token from chain A to chain B.
 
 ### Call contract with token
 
-This example will show you how to call your smart contract that deployed at chain B from the chain A.
+This example will show you how to call a smart contract that deployed at `chain B` from the `chain A`.
 
 1. Run `npm run compile` to compile the contract that we used for the example.
 2. Run `npm run call-contract-with-token`
