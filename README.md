@@ -1,6 +1,6 @@
 # Axelar Local Dev Sample
 
-This repo provides a basic usage of https://github.com/axelarnetwork/axelar-local-dev which transfers a token from chain A to chain B.
+This repo provides a basic usage of https://github.com/axelarnetwork/axelar-local-dev
 
 ## Preruiquisite
 
@@ -8,8 +8,18 @@ Node version >= 16
 
 ## Install
 
-Run `npm i`
+1. Run `npm i`
+2. Run `npm run build` to compile contracts in `axelar-local-dev`.
 
-## Run
+## Send a token to another chain
 
-`npm run start`
+This example will show you a way to send token from chain A to chain B.
+
+1. Run `npm run send-token`
+
+## Call a smart contract from the different chain
+
+This example will show you how to call a smart contract that deployed at `chain B` from the `chain A`.
+
+1. Run `npm run compile` to compile the contract that we used for the example.
+2. Run `npm run call-contract-with-token`
