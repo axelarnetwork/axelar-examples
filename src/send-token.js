@@ -1,7 +1,6 @@
 const axelar = require("@axelar-network/axelar-local-dev");
 const { ethers } = require("ethers");
 const { printBalance } = require("./utils/logger");
-const { AxelarGateway } = require("@axelar-network/axelarjs-sdk");
 
 const fundAmount = ethers.utils.parseUnits("1000", 6);
 const sendAmount = ethers.utils.parseUnits("100", 6);
