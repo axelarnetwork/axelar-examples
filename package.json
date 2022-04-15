@@ -1,5 +1,5 @@
 {
-  "name": "axelar-local-dev-sample",
+  "name": "axelar-local-dev-examples",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,13 +9,14 @@
   "scripts": {
     "send-token": "node src/send-token.js",
     "call-contract-with-token": "node src/call-contract-with-token.js",
-    "build": "cd node_modules/@axelar-network/axelar-local-dev && npm run build",
+    "build": "waffle && cd node_modules/@axelar-network/axelar-local-dev && npm run build && cp ./build/IERC20.json ../../../examples/metamask/abi && cp ./build/IAxelarGateway.json ../../../examples/metamask/abi",
     "compile": "waffle waffle-config.json"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@axelar-network/axelar-local-dev": "github:axelarnetwork/axelar-local-dev#bf0cb7cbbb94f1803c8a8b25c4304b46bc770def",
+    "@axelar-network/axelar-local-dev": "github:axelarnetwork/axelar-local-dev",
+    "@openzeppelin/contracts": "^4.5.0",
     "ethers": "^5.6.2"
   },
   "devDependencies": {

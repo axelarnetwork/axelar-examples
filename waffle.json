@@ -1,7 +1,7 @@
 {
   "compilerType": "solcjs",
   "compilerVersion": "0.8.9",
-  "sourceDirectory": "./src/contracts",
+  "sourceDirectory": "./examples",
   "outputDirectory": "./build",
   "compilerOptions": {
     "evmVersion": "london",
