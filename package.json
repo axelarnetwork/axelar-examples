@@ -7,8 +7,8 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "send-token": "node src/send-token.js",
-    "call-contract-with-token": "node src/call-contract-with-token.js",
+    "send-token": "node examples/send-token.js",
+    "call-contract-with-token": "node exaples/call-contract-with-token/call-contract-with-token.js",
     "build": "waffle && cd node_modules/@axelar-network/axelar-local-dev && npm run build && cp ./build/IERC20.json ../../../examples/metamask/abi && cp ./build/IAxelarGateway.json ../../../examples/metamask/abi",
     "compile": "waffle waffle-config.json"
   },
