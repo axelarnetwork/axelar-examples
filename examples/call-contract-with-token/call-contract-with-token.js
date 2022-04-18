@@ -1,8 +1,8 @@
 const axelar = require("@axelar-network/axelar-local-dev");
 const { ethers } = require("ethers");
-const { generateWalletAddresses } = require("./utils/generator");
-const { printMultipleBalances, printBalance } = require("./utils/logger");
-const distributionExecutorAbi = require("../build/DistributionExecutor.json");
+const { generateWalletAddresses } = require("../utils/generator");
+const { printMultipleBalances, printBalance } = require("../utils/logger");
+const distributionExecutorAbi = require("../../build/DistributionExecutor.json");
 const {
   deployContract,
 } = require("@axelar-network/axelar-local-dev/dist/utils");
