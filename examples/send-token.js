@@ -1,6 +1,10 @@
 const axelar = require("@axelar-network/axelar-local-dev");
 const { ethers } = require("ethers");
-const { printBalance } = require("./utils/logger");
+
+async function printBalance(alias, address, tokenContract) {
+  const balance = await tokenContract.balanceOf(address);
+  console.log(`${alias} has ${ethers.utils.formatUnits(balance, 6)} UST.`);
+}
 
 const fundAmount = ethers.utils.parseUnits("1000", 6);
 const sendAmount = ethers.utils.parseUnits("100", 6);
