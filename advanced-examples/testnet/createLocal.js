@@ -31,10 +31,10 @@ const chains = require('./testnet.json');
     setInterval(async () => {
         await relay();
     }, 2000);
-    setJSON(chains_local, './examples/testnet/local.json');
+    setJSON(chains_local, './advanced-examples/testnet/local.json');
 
     process.on('SIGINT', function() {
-        fs.unlinkSync(`./examples/testnet/local.json`);
+        fs.unlinkSync(`./advanced-examples/testnet/local.json`);
         process.exit();
     });
 })();

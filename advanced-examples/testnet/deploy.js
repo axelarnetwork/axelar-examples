@@ -25,7 +25,7 @@ const chains = require(`./${env}.json`);
         console.log(`Deployed at ${contracts[name].address}.`);
         chains[name].executableSample = contracts[name].address;
     }
-    setJSON(chains, `./examples/testnet/${env}.json`);
+    setJSON(chains, `./advanced-examples/testnet/${env}.json`);
     for(const name in chains) {
         const rpc = chains[name].rpc;
         const provider = ethers.getDefaultProvider(rpc);
