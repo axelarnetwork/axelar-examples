@@ -7,7 +7,7 @@ const { keccak256, defaultAbiCoder, getIcapAddress } = require('ethers/lib/utils
 const ExecutableSample = require('../../build/ExecutableSample.json');
 
 const env = process.argv[2];
-if(evn == null) throw new Error('Need to specify tesntet or local as an argument to this script.');
+if(env == null) throw new Error('Need to specify tesntet or local as an argument to this script.');
 const chains = require(`./${env}.json`);
 
 
