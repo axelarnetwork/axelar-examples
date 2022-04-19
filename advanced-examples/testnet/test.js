@@ -5,7 +5,15 @@ const { ethers, constants: {AddressZero}, Wallet, Contract, getDefaultProvider }
 const { keccak256, defaultAbiCoder, getIcapAddress } = require('ethers/lib/utils');
 
 const ExecutableSample = require('../../build/ExecutableSample.json');
-const chains = require('./chains.json');
+
+const env = process.argv[2];
+if(env == null) throw new Error('Need to specify tesntet or local as an argument to this script.');
+const chains = require(`./${env}.json`);
+
+
+const from =  process.argv[3];
+const to =  process.argv[4];
+const value =  process.argv[5];
 
 (async () => {
     const private_key = keccak256(defaultAbiCoder.encode(['string'], ['A random string to make an account']));
@@ -19,9 +27,6 @@ const chains = require('./chains.json');
         chains[name].executableSample = new Contract(chains[name].executableSample, ExecutableSample.abi, chains[name].wallet);
     }
 
-    const from = 'avalanche';
-    const to = 'polygon';
-    const value = 'Hello World!';
 
     // This is used for logging.
     const print = async () => {
