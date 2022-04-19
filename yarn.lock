@@ -17,9 +17,9 @@
     ethereum-waffle "^3.4.0"
     lodash "^4.17.21"
 
-"@axelar-network/axelar-local-dev@git+https://github.com/axelarnetwork/axelar-local-dev.git#feat/remove-unused-import":
+"@axelar-network/axelar-local-dev@git+https://github.com/axelarnetwork/axelar-local-dev.git":
   version "1.0.0"
-  resolved "git+https://github.com/axelarnetwork/axelar-local-dev.git#3e864419d25015a7f631352c2de3a458f21c1ea4"
+  resolved "git+https://github.com/axelarnetwork/axelar-local-dev.git#27cf4eb10d039e3e6680be6e4a673e1cd3b8dabe"
   dependencies:
     "@axelar-network/axelar-cgp-solidity" "https://github.com/axelarnetwork/axelar-cgp-solidity.git#feat/gas-receiver"
     chai "^4.3.6"

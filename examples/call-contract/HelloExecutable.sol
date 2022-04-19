@@ -9,7 +9,6 @@ contract HelloExecutable is IAxelarExecutable {
     string public message;
     string public sourceChain;
     string public sourceAddress;
-    uint256 public value;
     AxelarGasReceiver gasReceiver;
 
     constructor(address _gateway, address _gasReceiver)
