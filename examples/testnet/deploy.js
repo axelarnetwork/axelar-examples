@@ -14,7 +14,7 @@ const chains = require('./chains.json');
     const address = new Wallet(private_key).address;
     console.log(address, '<-- Fund this');
     const contracts = {};
-    for(const name of ['polygon', 'moonbeam']) {
+    for(const name in chains) {
         const rpc = chains[name].rpc;
         const provider = ethers.getDefaultProvider(rpc);
         const wallet = new Wallet(private_key, provider);

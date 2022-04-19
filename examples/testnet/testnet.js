@@ -20,8 +20,8 @@ const chains = require('./chains.json');
     }
 
     const from = 'avalanche';
-    const to = 'polygon';
-    const value = 'Hello World!';
+    const to = 'ethereum';
+    const value = 'Axelar is awesome!';
 
     // This is used for logging.
     const print = async () => {
