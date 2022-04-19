@@ -5,8 +5,9 @@ const { ethers, constants: {AddressZero}, Wallet, Contract } = require('ethers')
 const { keccak256, defaultAbiCoder, getIcapAddress } = require('ethers/lib/utils');
 
 const ExecutableSample = require('../../build/ExecutableSample.json');
-const AxelarGasReceiver = require('../../build/AxelarGasReceiver.json');
-const chains = require('./chains.json');
+const env = process.argv[2];
+if(evn == null) throw new Error('Need to specify tesntet or local as an argument to this script.');
+const chains = require(`./${env}.json`);
 
 
 (async () => {
@@ -19,16 +20,12 @@ const chains = require('./chains.json');
         const provider = ethers.getDefaultProvider(rpc);
         const wallet = new Wallet(private_key, provider);
         console.log(`Deployer has ${await provider.getBalance(address)/1e18} ETH.`);
-        console.log(`Deploying AxelarGasReceiver for ${name} with a gateway of ${chains[name].gateway}.`);
-        const gasReceiver = await deployContract(wallet, AxelarGasReceiver, []);
-        console.log(`Deployed at ${gasReceiver.address}.`);
         console.log(`Deploying ExecutableSample for ${name}.`);
-        chains[name].gasReceiver = gasReceiver.address;
-        contracts[name] = await deployContract(wallet, ExecutableSample, [chains[name].gateway, gasReceiver.address]);
+        contracts[name] = await deployContract(wallet, ExecutableSample, [chains[name].gateway, chains[name].gasReceiver]);
         console.log(`Deployed at ${contracts[name].address}.`);
         chains[name].executableSample = contracts[name].address;
     }
-    setJSON(chains, './chains.json');
+    setJSON(chains, `./examples/testnet/${env}.json`);
     for(const name in chains) {
         const rpc = chains[name].rpc;
         const provider = ethers.getDefaultProvider(rpc);
