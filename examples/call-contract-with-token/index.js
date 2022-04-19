@@ -2,7 +2,7 @@ const axelar = require("@axelar-network/axelar-local-dev");
 const { ethers } = require("ethers");
 const { generateWalletAddresses } = require("../utils/generator");
 const { printMultipleBalances, printBalance } = require("../utils/logger");
-const distributionExecutorAbi = require("../../build/DistributionExecutor.json");
+const distributionExecutableAbi = require("../../build/DistributionExecutable.json");
 const {
   deployContract,
 } = require("@axelar-network/axelar-local-dev/dist/utils");
@@ -25,7 +25,7 @@ const sendAmount = ethers.utils.parseUnits("100", 6);
   console.log("\n==== Deploying DistributionExecutor contract... ====");
   const distributionContract = await deployContract(
     chain2Deployer,
-    distributionExecutorAbi,
+    distributionExecutableAbi,
     [chain2.gateway.address]
   );
   console.log("Deployed:", distributionContract.address);
