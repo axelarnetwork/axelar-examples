@@ -16,19 +16,28 @@ const sendAmount = ethers.utils.parseUnits("100", 6);
 (async () => {
   console.log("==== Preparing chain1... ====");
   const chain1 = await axelar.createNetwork({ seed: "chain1" });
-  const [chain1Sender] = chain1.userWallets;
+  const [chain1Sender, chain1Deployer] = chain1.userWallets;
   console.log("\n==== Preparing chain2... ====");
   const chain2 = await axelar.createNetwork({ seed: "chain2" });
   const [chain2Deployer] = chain2.userWallets;
 
-  // Deploy DistributionExecutor contract
-  console.log("\n==== Deploying DistributionExecutor contract... ====");
-  const distributionContract = await deployContract(
+  // Deploy DistributionExecutor contract on the source chain.
+  console.log("\n==== Deploying DistributionExecutor contract on the destination chain... ====");
+  const sourceDistributionContract = await deployContract(
+    chain1Deployer,
+    distributionExecutableAbi,
+    [chain1.gateway.address, chain1.gasReceiver.address]
+  );
+  console.log("Deployed:", sourceDistributionContract.address);
+
+  // Deploy DistributionExecutor contract on the destination chain.
+  console.log("\n==== Deploying DistributionExecutor contract on the destination chain... ====");
+  const destinationDistributionContract = await deployContract(
     chain2Deployer,
     distributionExecutableAbi,
-    [chain2.gateway.address]
+    [chain2.gateway.address, chain2.gasReceiver.address]
   );
-  console.log("Deployed:", distributionContract.address);
+  console.log("Deployed:", destinationDistributionContract.address);
 
   // Fund sender account with 1000 UST
   await chain1.giveToken(chain1Sender.address, "UST", fundAmount);
@@ -41,7 +50,7 @@ const sendAmount = ethers.utils.parseUnits("100", 6);
   await (
     await chain1.ust
       .connect(chain1Sender)
-      .approve(chain1.gateway.address, sendAmount)
+      .approve(sourceDistributionContract.address, sendAmount)
   ).wait();
 
   console.log("\n==== Calling the gateway contract ====");
@@ -51,14 +60,15 @@ const sendAmount = ethers.utils.parseUnits("100", 6);
     ["address[]"],
     [recipientAddresses]
   );
-  const tx = await chain1.gateway
+  const tx = await sourceDistributionContract
     .connect(chain1Sender)
-    .callContractWithToken(
+    .payGasAndCallContractWithToken(
       chain2.name,
-      distributionContract.address,
+      destinationDistributionContract.address,
       payload,
       "UST",
-      sendAmount
+      sendAmount,
+      {value: 1e6}
     )
     .then((tx) => tx.wait());
 
