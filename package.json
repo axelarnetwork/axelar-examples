@@ -7,19 +7,22 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "send-token": "node src/send-token.js",
-    "call-contract-with-token": "node src/call-contract-with-token.js",
-    "build": "waffle && cd node_modules/@axelar-network/axelar-local-dev && npm run build && cp ./build/IERC20.json ../../../examples/metamask/abi && cp ./build/IAxelarGateway.json ../../../examples/metamask/abi",
-    "compile": "waffle waffle-config.json"
+    "send-token": "node examples/send-token.js",
+    "call-contract": "node examples/call-contract",
+    "call-contract-with-token": "node examples/call-contract-with-token",
+    "build": "waffle && cd node_modules/@axelar-network/axelar-local-dev && npm run build",
+    "compile": "waffle waffle.json"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@axelar-network/axelar-local-dev": "github:axelarnetwork/axelar-local-dev",
+    "@axelar-network/axelar-cgp-solidity": "git+https://github.com/axelarnetwork/axelar-cgp-solidity.git#feat/gas-receiver",
+    "@axelar-network/axelar-local-dev": "git+https://github.com/axelarnetwork/axelar-local-dev.git",
     "@openzeppelin/contracts": "^4.5.0",
     "ethers": "^5.6.2"
   },
   "devDependencies": {
+    "typescript": "^4.6.3",
     "waffle": "^0.0.4"
   }
 }
