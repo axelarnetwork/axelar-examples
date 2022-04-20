@@ -3,18 +3,18 @@
 pragma solidity 0.8.9;
 
 import {IAxelarExecutable} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol";
-import {AxelarGasReceiver} from "@axelar-network/axelar-cgp-solidity/src/gas-receiver/AxelarGasReceiver.sol";
+import {IAxelarGasReceiver} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol";
 
 contract HelloExecutable is IAxelarExecutable {
     string public message;
     string public sourceChain;
     string public sourceAddress;
-    AxelarGasReceiver gasReceiver;
+    IAxelarGasReceiver gasReceiver;
 
     constructor(address _gateway, address _gasReceiver)
         IAxelarExecutable(_gateway)
     {
-        gasReceiver = AxelarGasReceiver(_gasReceiver);
+        gasReceiver = IAxelarGasReceiver(_gasReceiver);
     }
 
     function payGasAndCallContract(

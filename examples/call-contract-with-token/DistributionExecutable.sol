@@ -3,10 +3,34 @@ pragma solidity 0.8.9;
 
 import {IAxelarExecutable} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol";
 import {IERC20} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IERC20.sol";
+import {IAxelarGasReceiver} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol";
 
 contract DistributionExecutable is IAxelarExecutable {
-    constructor(address gatewayAddress) IAxelarExecutable(gatewayAddress) {}
+   IAxelarGasReceiver gasReceiver;
 
+    constructor(address _gateway, address _gasReceiver) IAxelarExecutable(_gateway) {
+        gasReceiver = IAxelarGasReceiver(_gasReceiver);
+    }
+
+    function payGasAndCallContractWithToken(
+        string memory destinationChain,
+        string memory destinationAddress,
+        bytes calldata payload,
+        string memory symbol,
+        uint256 amount
+    ) external payable {
+        address tokenAddress = gateway.tokenAddresses(symbol);
+        IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
+        IERC20(tokenAddress).approve(address(gateway), amount);
+        gasReceiver.payNativeGasForContractCallWithToken{value: msg.value}(
+            destinationChain,
+            destinationAddress,
+            payload,
+            symbol,
+            amount
+        );
+        gateway.callContractWithToken(destinationChain, destinationAddress, payload, symbol, amount);
+    }
     function _executeWithToken(
         string memory,
         string memory,
