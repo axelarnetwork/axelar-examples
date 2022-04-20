@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start-local": "node advanced-examples/testnet/createLocal.js",
-    "send-token": "node examples/send-token.js",
+    "send-token": "node examples/send-token",
     "call-contract": "node examples/call-contract",
     "call-contract-with-token": "node examples/call-contract-with-token",
     "build": "waffle && cd node_modules/@axelar-network/axelar-local-dev && npm run build",

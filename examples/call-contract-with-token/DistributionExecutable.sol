@@ -6,8 +6,8 @@ import {IERC20} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IERC20.
 import {IAxelarGasReceiver} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol";
 
 contract DistributionExecutable is IAxelarExecutable {
-    IAxelarGasReceiver gasReceiver;
-    
+   IAxelarGasReceiver gasReceiver;
+
     constructor(address _gateway, address _gasReceiver) IAxelarExecutable(_gateway) {
         gasReceiver = IAxelarGasReceiver(_gasReceiver);
     }
@@ -31,7 +31,6 @@ contract DistributionExecutable is IAxelarExecutable {
         );
         gateway.callContractWithToken(destinationChain, destinationAddress, payload, symbol, amount);
     }
-
     function _executeWithToken(
         string memory,
         string memory,
