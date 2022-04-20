@@ -4,6 +4,7 @@ const distributionExecutableAbi = require("../../build/DistributionExecutable.js
 const {
   deployContract,
 } = require("@axelar-network/axelar-local-dev/dist/utils");
+const {privateKey} = '../../secret.json'
 
 function generateWalletAddresses(numberOfWallets) {
   return new Array(numberOfWallets)
