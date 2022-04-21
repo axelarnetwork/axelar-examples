@@ -4,7 +4,7 @@ pragma solidity 0.8.9;
 
 import {IAxelarExecutable} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol";
 
-contract GatewayCaller is IAxelarExecutable {
+contract ExampleExecutable is IAxelarExecutable {
     string public message;
 
     constructor(address _gateway) IAxelarExecutable(_gateway) {}

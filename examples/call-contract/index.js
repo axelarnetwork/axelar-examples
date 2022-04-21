@@ -1,64 +1,61 @@
 "use strict";
 
 const {
-  createNetwork: createChain,
   relay,
-  getGasPrice,
   utils: { deployContract },
 } = require("@axelar-network/axelar-local-dev");
+const ExampleExecutable = require("./build/ExampleExecutable.json");
+const GatewayCaller = require("./build/GatewayCaller.json");
+const { setupLocalNetwork, setupTestnetNetwork } = require("../network")
 const {
   constants: { AddressZero },
   ethers,
 } = require("ethers");
+const {privateKey} = require('../secret.json');
 
-const HelloExecutable = require("../../build/HelloExecutable.json");
+const cliArgs = process.argv.slice(2);
+const network = cliArgs[0] || 'local'; // This value should be either 'local' or 'testnet'
 
 (async () => {
-  // Create two chains and get a funded user for each
-  console.log("\n==== Chains and contracts setup ====")
-  const chain1 = await createChain({ seed: "chain1" });
-  const [user1] = chain1.userWallets;
-  const chain2 = await createChain({ seed: "chain2" });
-  const [user2] = chain2.userWallets;
+  // Step 1: Setup Wallet
+  const sourceWallet = new ethers.Wallet(privateKey)
+  const {chainA, chainB} = network === 'local' ? await setupLocalNetwork(sourceWallet.address) : setupTestnetNetwork()
+  const sourceWalletWithProvider = sourceWallet.connect(chainA.provider)
+  const destinationWalletWithProvider = sourceWallet.connect(chainB.provider)
 
-  const chain1HelloContract = await deployContract(user1, HelloExecutable, [
-    chain1.gateway.address,
-    chain1.gasReceiver.address,
-  ]);
-
-  const chain2HelloContract = await deployContract(user2, HelloExecutable, [
-    chain2.gateway.address,
-    chain2.gasReceiver.address,
-  ]);
-  console.log(chain1HelloContract.address, chain2HelloContract.address);
-
-  console.log("\n==== User Addresses ====");
-  console.log("user1 address:", user1.address);
-  console.log("user2 address:", user2.address);
-
-  // This is used for logging.
-  const print = async () => {
-    console.log(`Message at ${chain1.name}: "${await chain1HelloContract.message()}"`);
-    console.log(`Message at ${chain2.name}: "${await chain2HelloContract.message()}"`);
-  };
-
-  console.log("\n==== Message Before Relaying ====");
-  await print();
-
-  // Set the value on chain1. This will also cause the value on chain2 to change after relay() is called.
-  const msgFromUser1 = ethers.utils.defaultAbiCoder.encode(
-    ["string"],
-    ["Hello from: " + user1.address]
+  // Step 2: Deploy contracts on source chain and destination chain.
+  console.log("\n==== Deploying contracts... ====");
+  const gatewayCaller = await deployContract(
+    sourceWalletWithProvider,
+    GatewayCaller,
+    [chainA.gateway.address, chainA.gasReceiver.address]
   );
+  console.log("GatewayCaller is deployed at:", gatewayCaller.address);
 
-  await chain1HelloContract
-    .connect(user1)
+  const exampleExecutable = await deployContract(
+    destinationWalletWithProvider,
+    ExampleExecutable,
+    [chainB.gateway.address]
+  );
+  console.log("ExampleExecutable is deployed at:", exampleExecutable.address);
+
+  // Step 3: Prepare payload and send transaction to GatewayCaller contract.
+  console.log("\n==== Message Before Relaying ====");
+  console.log(`ExampleExecutable's message: "${await exampleExecutable.message()}"`);
+  const payload = ethers.utils.defaultAbiCoder.encode(
+    ["string"],
+    ["Hello from Chain A."]
+    );
+
+  const gasForDestinationContract = 1e6
+  await gatewayCaller
+    .connect(sourceWalletWithProvider)
     .payGasAndCallContract(
-      chain2.name,
-      chain2HelloContract.address,
-      msgFromUser1,
+      chainB.name,
+      exampleExecutable.address,
+      payload,
       {
-        value: "50000000",
+        value: gasForDestinationContract,
       }
     )
     .then((tx) => tx.wait());
@@ -66,5 +63,5 @@ const HelloExecutable = require("../../build/HelloExecutable.json");
   await relay();
 
   console.log("\n==== Message After Relaying ====");
-  await print();
+  console.log(`ExampleExecutable's message: "${await exampleExecutable.message()}"`);
 })();
