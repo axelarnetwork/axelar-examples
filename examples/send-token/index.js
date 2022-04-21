@@ -14,6 +14,9 @@ async function printBalance(alias, address, tokenContract) {
 }
 
 (async () => {
+  // =========================================================
+  // Step 1: Setup wallet and connect with the chain provider
+  // =========================================================
   const sender = new ethers.Wallet(privateKey)
   const receiver = sender // use the same wallet address as a recipient at the destination chain.
 
@@ -24,7 +27,9 @@ async function printBalance(alias, address, tokenContract) {
   await printBalance("sender", sender.address, chainA.ust);
   await printBalance("receiver", receiver.address, chainB.ust);
 
-  // Approve the AxelarGateway to use our UST on chain1.
+  // ===========================================================
+  // Step 2: Approve the AxelarGateway to use our UST on chain A.
+  // ===========================================================
   console.log("\n==== Approve UST to gateway contract ====")
   const approveReceipt = await chainA.ust
       .connect(senderWithProvider)
@@ -32,7 +37,9 @@ async function printBalance(alias, address, tokenContract) {
       .then(tx => tx.wait())
   console.log("Approve tx:", approveReceipt.transactionHash)
 
-  // Send it to the gateway contract
+  // ==========================================================
+  // Step 3: Send a transaction to call sendToken function at AxelarGateway contract.
+  // ==========================================================
   console.log("\n==== Send token to the gateway contract ====");
   const receipt = await chainA.gateway
       .connect(senderWithProvider)
@@ -40,11 +47,17 @@ async function printBalance(alias, address, tokenContract) {
       .then(tx => tx.wait())
   console.log("sendToken Tx", receipt.transactionHash);
 
+  // ===========================================================
+  // Step 4: Waiting for the network to relay the transaction.
+  // ===========================================================
   if(network === "local") {
-    // Relay the transfer to chainB locally.
     await axelar.relay();
+  } else {
   }
 
+  // ===========================================================
+  // Step 5: Verify the result at the destination chain
+  // ===========================================================
   console.log("\n==== After cross-chain balances ====");
   await printBalance("sender", sender.address, chainA.ust);
   await printBalance("receiver", receiver.address, chainB.ust);

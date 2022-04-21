@@ -1,29 +1,9 @@
-const {createNetwork} = require('@axelar-network/axelar-local-dev')
 const { ethers } = require('ethers');
+const {createNetwork} = require('@axelar-network/axelar-local-dev')
 const erc20 = require("./call-contract-with-token/build/IERC20.json")
 const gateway = require("./call-contract-with-token/build/IAxelarGateway.json")
 
-// const deployContract = async (contractAbi, chains) => {
-//   if(!privateKey) return console.log("Required `secret.json` with your private key.")
-//   if(!localChainData) return console.log("`yarn start-local` must be run before execute this")
-
-//   for(const chain of chains) {
-//     const {rpc, gasReceiver, gateway} = chains[chain]
-//     const provider = ethers.getDefaultProvider(rpc);
-//     const deployer = new Wallet(privateKey, provider)
-
-//     const contract = await deployContract(
-//       deployer,
-//       contractAbi,
-//       [gateway, gasReceiver]
-//     );
-
-//     console.log("Deployed:", contract.address);
-//   }
-// }
-
-
-// Create two chains and get a funded user for each
+// Create two chains and fund given wallet address.
 const setupLocalNetwork = async (senderAddress) => {
   console.log("==== Chains and contracts setup ====")
   const chainA = await createNetwork({ seed: "chainA" });
