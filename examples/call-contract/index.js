@@ -50,10 +50,6 @@ const HelloExecutable = require("../../build/HelloExecutable.json");
     ["string"],
     ["Hello from: " + user1.address]
   );
-  const msgFromUser2 = ethers.utils.defaultAbiCoder.encode(
-    ["string"],
-    ["Hello from: " + user2.address]
-  );
 
   await chain1HelloContract
     .connect(user1)
@@ -61,18 +57,6 @@ const HelloExecutable = require("../../build/HelloExecutable.json");
       chain2.name,
       chain2HelloContract.address,
       msgFromUser1,
-      {
-        value: "50000000",
-      }
-    )
-    .then((tx) => tx.wait());
-
-  await chain2HelloContract
-    .connect(user2)
-    .payGasAndCallContract(
-      chain1.name,
-      chain1HelloContract.address,
-      msgFromUser2,
       {
         value: "50000000",
       }

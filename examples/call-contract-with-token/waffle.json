@@ -1,8 +1,8 @@
 {
   "compilerType": "solcjs",
   "compilerVersion": "0.8.9",
-  "sourceDirectory": "./examples",
-  "outputDirectory": "./build",
+  "sourceDirectory": "./examples/call-contract-with-token/contracts",
+  "outputDirectory": "./examples/call-contract-with-token/build",
   "compilerOptions": {
     "evmVersion": "london",
     "optimizer": {

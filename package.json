@@ -7,12 +7,11 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "start-local": "node examples/start-local.js",
     "send-token": "node examples/send-token",
     "call-contract": "node examples/call-contract",
     "call-contract-with-token": "node examples/call-contract-with-token",
-    "build": "waffle && cd node_modules/@axelar-network/axelar-local-dev && npm run build",
-    "compile": "waffle waffle.json"
+    "build": "cd node_modules/@axelar-network/axelar-local-dev && npm run build",
+    "compile": "waffle examples/call-contract/waffle.json && waffle examples/call-contract-with-token/waffle.json"
   },
   "author": "",
   "license": "ISC",
