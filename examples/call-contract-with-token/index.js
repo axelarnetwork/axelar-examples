@@ -46,9 +46,9 @@ const sendAmount = ethers.utils.parseUnits("5", 6); // ust amount to be sent
   // ========================================================
   const sourceWallet = new ethers.Wallet(privateKey);
   const { chainA, chainB } =
-    network === "local"
-      ? await setupLocalNetwork(sourceWallet.address)
-      : setupTestnetNetwork();
+    network === "testnet"
+      ? setupTestnetNetwork()
+      : await setupLocalNetwork(sourceWallet.address);
   const sourceWalletWithProvider = sourceWallet.connect(chainA.provider);
   const destinationWalletWithProvider = sourceWallet.connect(chainB.provider);
 

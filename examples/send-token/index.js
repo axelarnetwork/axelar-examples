@@ -26,9 +26,9 @@ async function printBalance(alias, address, tokenContract) {
   const receiver = sender; // use the same wallet address as a recipient at the destination chain.
 
   const { chainA, chainB } =
-    network === "local"
-      ? await setupLocalNetwork(sender.address)
-      : setupTestnetNetwork();
+    network === "testnet"
+      ? setupTestnetNetwork()
+      : await setupLocalNetwork(sender.address);
   const senderWithProvider = sender.connect(chainA.provider);
 
   console.log("\n==== Initial balances ====");

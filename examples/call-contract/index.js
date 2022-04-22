@@ -17,9 +17,9 @@ const network = cliArgs[0] || "local"; // This value should be either 'local' or
   // ========================================================
   const sourceWallet = new ethers.Wallet(privateKey);
   const { chainA, chainB } =
-    network === "local"
-      ? await setupLocalNetwork(sourceWallet.address)
-      : setupTestnetNetwork();
+    network === "testnet"
+      ? setupTestnetNetwork()
+      : await setupLocalNetwork(sourceWallet.address);
   const sourceWalletWithProvider = sourceWallet.connect(chainA.provider);
   const destinationWalletWithProvider = sourceWallet.connect(chainB.provider);
 
