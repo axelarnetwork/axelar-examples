@@ -5,8 +5,8 @@ const axelar = require("@axelar-network/axelar-local-dev");
 const { ethers } = require("ethers");
 const ExampleExecutable = require("./build/ExampleExecutable.json");
 const GatewayCaller = require("./build/GatewayCaller.json");
-const { setupLocalNetwork, setupTestnetNetwork } = require("../network")
-const {privateKey} = require('../secret.json')
+const { setupLocalNetwork, setupTestnetNetwork } = require("../network");
+const { privateKey } = require("../secret.json");
 
 function generateWalletAddresses(numberOfWallets) {
   return new Array(numberOfWallets)
@@ -22,25 +22,35 @@ async function printMultipleBalances(aliases, addresses, tokenContract) {
 
 async function printBalance(alias, address, tokenContract) {
   const balance = await tokenContract.balanceOf(address);
-  console.log(`${alias} has ${ethers.utils.formatUnits(balance, 6)} ${await tokenContract.symbol()}.`);
+  console.log(
+    `${alias} has ${ethers.utils.formatUnits(
+      balance,
+      6
+    )} ${await tokenContract.symbol()}.`
+  );
 }
 
-const cliArgs = process.argv.slice(2)
-const network = cliArgs[0] || 'local' // This value should be either 'local' or 'testnet'
+const cliArgs = process.argv.slice(2);
+const network = cliArgs[0] || "local"; // This value should be either 'local' or 'testnet'
 
 // Create multiple recipients
 const recipientAddresses = generateWalletAddresses(5); // generate random wallet addresses.
-const aliases = recipientAddresses.map((_, i) => `[Chain B] destination wallet ${i + 1}:`); // recipient wallets aliases used for logging.
+const aliases = recipientAddresses.map(
+  (_, i) => `[Chain B] destination wallet ${i + 1}:`
+); // recipient wallets aliases used for logging.
 const sendAmount = ethers.utils.parseUnits("5", 6); // ust amount to be sent
 
 (async () => {
   // ========================================================
   // Step 1: Setup wallet and connect with the chain provider
   // ========================================================
-  const sourceWallet = new ethers.Wallet(privateKey)
-  const {chainA, chainB} = network === 'local' ? await setupLocalNetwork(sourceWallet.address) : setupTestnetNetwork()
-  const sourceWalletWithProvider = sourceWallet.connect(chainA.provider)
-  const destinationWalletWithProvider = sourceWallet.connect(chainB.provider)
+  const sourceWallet = new ethers.Wallet(privateKey);
+  const { chainA, chainB } =
+    network === "local"
+      ? await setupLocalNetwork(sourceWallet.address)
+      : setupTestnetNetwork();
+  const sourceWalletWithProvider = sourceWallet.connect(chainA.provider);
+  const destinationWalletWithProvider = sourceWallet.connect(chainB.provider);
 
   // ==============================================================
   // Step 2: Deploy the GatewayCaller contract at the source chain.
@@ -64,7 +74,11 @@ const sendAmount = ethers.utils.parseUnits("5", 6); // ust amount to be sent
   console.log("ExampleExecutable is deployed at:", exampleExecutable.address);
 
   console.log("\n==== Initial balances ====");
-  await printBalance("[Chain A] source wallet", sourceWallet.address, chainA.ust);
+  await printBalance(
+    "[Chain A] source wallet",
+    sourceWallet.address,
+    chainA.ust
+  );
   await printMultipleBalances(aliases, recipientAddresses, chainB.ust);
 
   // =====================================================================
@@ -73,7 +87,7 @@ const sendAmount = ethers.utils.parseUnits("5", 6); // ust amount to be sent
   await chainA.ust
     .connect(sourceWalletWithProvider)
     .approve(gatewayCaller.address, sendAmount)
-    .then(tx => tx.wait())
+    .then((tx) => tx.wait());
 
   // =======================================================================
   // Step 5: Prepare payload and send transaction to GatewayCaller contract.
@@ -83,7 +97,7 @@ const sendAmount = ethers.utils.parseUnits("5", 6); // ust amount to be sent
     ["address[]"],
     [recipientAddresses]
   );
-  const gasForDestinationContract = 1e6
+  const gasForDestinationContract = 1e6;
   const tx = await gatewayCaller
     .connect(sourceWalletWithProvider)
     .payGasAndCallContractWithToken(
@@ -92,7 +106,7 @@ const sendAmount = ethers.utils.parseUnits("5", 6); // ust amount to be sent
       payload,
       "UST",
       sendAmount,
-      {value: gasForDestinationContract}
+      { value: gasForDestinationContract }
     )
     .then((tx) => tx.wait());
 
@@ -101,16 +115,20 @@ const sendAmount = ethers.utils.parseUnits("5", 6); // ust amount to be sent
   // =========================================================
   // Step 6: Waiting for the network to relay the transaction.
   // =========================================================
-  if(network === 'local') {
+  if (network === "local") {
     await axelar.relay();
   } else {
-    // waiting for the event
+    // TODO: waiting for the event.
   }
 
   // ===================================================
   // Step 7: Verify the result at the destination chain.
   // ===================================================
   console.log("\n==== After cross-chain balances ====");
-  await printBalance("[Chain A] source wallet", sourceWallet.address, chainA.ust);
+  await printBalance(
+    "[Chain A] source wallet",
+    sourceWallet.address,
+    chainA.ust
+  );
   await printMultipleBalances(aliases, recipientAddresses, chainB.ust);
 })();
