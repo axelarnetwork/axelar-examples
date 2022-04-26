@@ -23,9 +23,11 @@ contract HelloExecutable is IAxelarExecutable {
         bytes calldata payload
     ) external payable {
         gasReceiver.payNativeGasForContractCall{value: msg.value}(
+            address(this),
             destinationChain,
             destinationAddress,
-            payload
+            payload,
+            msg.sender
         );
         gateway.callContract(destinationChain, destinationAddress, payload);
     }

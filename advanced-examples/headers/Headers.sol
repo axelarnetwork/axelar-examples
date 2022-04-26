@@ -57,11 +57,13 @@ contract Headers is IAxelarExecutable, Ownable {
             //Pay gas to the gasReceiver to automatically fullfill the call.
             IERC20(token).approve(address(gasReceiver), gases[i]);
             gasReceiver.payGasForContractCall(
+                address(this),
                 chains[i], 
                 siblings[chains[i]], 
                 payload,
                 token, 
-                gases[i]
+                gases[i],
+                msg.sender
             );
             gateway.callContract(
                 chains[i], 

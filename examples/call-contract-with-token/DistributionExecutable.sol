@@ -23,11 +23,13 @@ contract DistributionExecutable is IAxelarExecutable {
         IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
         IERC20(tokenAddress).approve(address(gateway), amount);
         gasReceiver.payNativeGasForContractCallWithToken{value: msg.value}(
+            address(this),
             destinationChain,
             destinationAddress,
             payload,
             symbol,
-            amount
+            amount,
+            msg.sender
         );
         gateway.callContractWithToken(destinationChain, destinationAddress, payload, symbol, amount);
     }

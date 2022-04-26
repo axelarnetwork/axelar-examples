@@ -61,9 +61,11 @@ contract NftLinker is ERC721, IAxelarExecutable {
         bytes memory payload = abi.encode(originalChain, operator, originalTokenId, destinationAddress);
         //Pay for gas. We could also send the contract call here but then the sourceAddress will be that of the gas receiver which is a problem later.
         gasReceiver.payNativeGasForContractCall{value:msg.value}(
+            address(this),
             destinationChain, 
             linkers[destinationChain], 
-            payload
+            payload,
+            msg.sender
         );
         //Call the remote contract.
         gateway.callContract(
@@ -83,9 +85,11 @@ contract NftLinker is ERC721, IAxelarExecutable {
         bytes memory payload = abi.encode(chainName, operator, tokenId, destinationAddress);
         //Pay for gas. We could also send the contract call here but then the sourceAddress will be that of the gas receiver which is a problem later.
         gasReceiver.payNativeGasForContractCall{value: msg.value}(
+            address(this),
             destinationChain, 
             linkers[destinationChain], 
-            payload
+            payload,
+            msg.sender
         );
         //Call remote contract.
         gateway.callContract(
