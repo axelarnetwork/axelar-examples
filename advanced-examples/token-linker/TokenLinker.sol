@@ -39,11 +39,13 @@ abstract contract TokenLinker is IAxelarExecutable {
         IERC20(gasToken).approve(address(gasReceiver), gasAmount);
         bytes memory payload = abi.encode(recipient_, amount_);
         gasReceiver.payGasForContractCall(
+            address(this),
             chain_,
             links[chain_],
             payload,
             gasToken,
-            gasAmount
+            gasAmount,
+            msg.sender
         );
         gateway.callContract(
             chain_,
