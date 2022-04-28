@@ -68,10 +68,10 @@ const network = cliArgs[0] || "local"; // This value should be either 'local' or
   // =========================================================
   // Step 5: Waiting for the network to relay the transaction.
   // =========================================================
-  console.log("\n==== Waiting for Relaying... ====");
   if (network === "local") {
     await relay();
   } else {
+    console.log("\n==== Waiting for Relaying... ====");
     const executeEventFilter = exampleExecutable.filters.Executed(traceId);
     const relayTxHash = await new Promise((resolve) => {
       chainB.provider.once(executeEventFilter, (...args) => {

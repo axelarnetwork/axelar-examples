@@ -118,10 +118,10 @@ const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
   // =========================================================
   // Step 6: Waiting for the network to relay the transaction.
   // =========================================================
-  console.log("\n==== Waiting for Relaying... ====");
   if (network === "local") {
     await axelar.relay();
   } else {
+    console.log("\n==== Waiting for Relaying... ====");
     const executeEventFilter = exampleExecutable.filters.Executed(traceId);
     const relayTxHash = await new Promise((resolve) => {
       chainB.provider.once(executeEventFilter, (...args) => {
