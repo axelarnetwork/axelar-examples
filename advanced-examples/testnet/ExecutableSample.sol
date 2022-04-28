@@ -11,37 +11,31 @@ contract ExecutableSample is IAxelarExecutable {
     string public sourceChain;
     string public sourceAddress;
     AxelarGasReceiver gasReceiver;
-    mapping(string => string) public siblings;
     
 
     constructor(address gateway_, address gasReceiver_) IAxelarExecutable(gateway_) {
         gasReceiver = AxelarGasReceiver(gasReceiver_);
     }
 
-    //Call this function on setup to tell this contract who it's sibling contracts are.
-    function addSibling(string calldata chain_, string calldata address_) external {
-        siblings[chain_] = address_;
-    }
-
     //Call this function to update the value of this contract along with all its siblings'.
-    function set(
-        string memory chain,
+    function setRemoteValue(
+        string memory destinationChain,
+        string memory destinationAddress,
         string calldata value_
     ) external payable {
-        value = value_;
         bytes memory payload = abi.encode(value_);
         if(msg.value > 0) {
             gasReceiver.payNativeGasForContractCall{ value: msg.value }(
                 address(this),
-                chain,
-                siblings[chain],
+                destinationChain,
+                destinationAddress,
                 payload,
                 msg.sender
             );
         }
         gateway.callContract(
-            chain,
-            siblings[chain],
+            destinationChain,
+            destinationAddress,
             payload
         );
     }

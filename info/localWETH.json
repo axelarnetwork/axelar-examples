@@ -1,0 +1,27 @@
+{
+  "Moonbeam": {
+    "address": "0xc5F1743Cf48B2877f8955dCe802eE4b9062b247E",
+    "name": "Wrapped DEV",
+    "symbol": "WDEV"
+  },
+  "Avalanche": {
+    "address": "0x9C7010Dd10a684e8E20005c995891d0f21DDb198",
+    "name": "Wrapped Avax",
+    "symbol": "WAVAX"
+  },
+  "Fantom": {
+    "address": "0xE69393fBc642109488d94CCc874E6FeF00D2a0B7",
+    "name": "Wrapped Fantom",
+    "symbol": "WFTM"
+  },
+  "Ethereum": {
+    "address": "0x78Ae6b78a1eF9ce63f51a92756e71C7390fD5800",
+    "name": "Wrapped Ether",
+    "symbol": "WETH"
+  },
+  "Polygon": {
+    "address": "0x3EEc5E941c318ba3Fe7Dd2E1Cbf27E6e0532486f",
+    "name": "Wrapped Matic",
+    "symbol": "WMATIC"
+  }
+}
