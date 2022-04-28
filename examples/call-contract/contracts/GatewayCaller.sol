@@ -4,16 +4,17 @@ pragma solidity 0.8.9;
 
 import {IAxelarExecutable} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol";
 import {IAxelarGasReceiver} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol";
+import {IAxelarGateway} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGateway.sol";
 
-contract HelloExecutable is IAxelarExecutable {
+contract GatewayCaller {
     string public message;
     string public sourceChain;
     string public sourceAddress;
     IAxelarGasReceiver gasReceiver;
+    IAxelarGateway gateway;
 
-    constructor(address _gateway, address _gasReceiver)
-        IAxelarExecutable(_gateway)
-    {
+    constructor(address _gateway, address _gasReceiver) {
+        gateway = IAxelarGateway(_gateway);
         gasReceiver = IAxelarGasReceiver(_gasReceiver);
     }
 
@@ -23,23 +24,12 @@ contract HelloExecutable is IAxelarExecutable {
         bytes calldata payload
     ) external payable {
         gasReceiver.payNativeGasForContractCall{value: msg.value}(
-            address(this),
+            msg.sender,
             destinationChain,
             destinationAddress,
             payload,
             msg.sender
         );
         gateway.callContract(destinationChain, destinationAddress, payload);
-    }
-
-    function _execute(
-        string memory _sourceChain,
-        string memory _sourceAddress,
-        bytes calldata payload
-    ) internal override {
-        string memory _message = abi.decode(payload, (string));
-        message = _message;
-        sourceChain = _sourceChain;
-        sourceAddress = _sourceAddress;
     }
 }
