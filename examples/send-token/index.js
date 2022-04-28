@@ -1,48 +1,73 @@
 const axelar = require("@axelar-network/axelar-local-dev");
 const { ethers } = require("ethers");
+const { setupLocalNetwork, setupTestnetNetwork } = require("../network");
+const { privateKey } = require("../secret.json");
 
+const cliArgs = process.argv.slice(2);
+const network = cliArgs[0] || "local"; // This value should be either 'local' or 'testnet'
+const sendAmount = ethers.utils.parseUnits("5", 6); // the amount to send to the destination chain
+
+// A utility function to print balance for the given address of the given token contract.
 async function printBalance(alias, address, tokenContract) {
   const balance = await tokenContract.balanceOf(address);
-  console.log(`${alias} has ${ethers.utils.formatUnits(balance, 6)} UST.`);
+  console.log(
+    `${alias} has ${ethers.utils.formatUnits(
+      balance,
+      6
+    )} ${await tokenContract.symbol()}.`
+  );
 }
 
-const fundAmount = ethers.utils.parseUnits("1000", 6);
-const sendAmount = ethers.utils.parseUnits("100", 6);
-
 (async () => {
-  console.log("==== Preparing chain1... ====");
-  const chain1 = await axelar.createNetwork();
-  const [chain1User] = chain1.userWallets;
-  console.log("\n==== Preparing chain2... ====");
-  const chain2 = await axelar.createNetwork();
-  const [chain2User] = chain2.userWallets;
+  // =========================================================
+  // Step 1: Setup wallet and connect with the chain provider
+  // =========================================================
+  const sender = new ethers.Wallet(privateKey);
+  const receiver = sender; // use the same wallet address as a recipient at the destination chain.
 
-  await chain1.giveToken(chain1User.address, "UST", fundAmount);
+  const { chainA, chainB } =
+    network === "testnet"
+      ? setupTestnetNetwork()
+      : await setupLocalNetwork(sender.address);
+  const senderWithProvider = sender.connect(chainA.provider);
 
   console.log("\n==== Initial balances ====");
-  await printBalance("chain1User", chain1User.address, chain1.ust);
-  await printBalance("chain2User", chain2User.address, chain2.ust);
+  await printBalance("sender", sender.address, chainA.ust);
+  await printBalance("receiver", receiver.address, chainB.ust);
 
-  // Approve the AxelarGateway to use our UST on chain1.
-  await (
-    await chain1.ust
-      .connect(chain1User)
-      .approve(chain1.gateway.address, sendAmount)
-  ).wait();
+  // ===========================================================
+  // Step 2: Approve the AxelarGateway to use our UST on chain A.
+  // ===========================================================
+  console.log("\n==== Approve UST to gateway contract ====");
+  const approveReceipt = await chainA.ust
+    .connect(senderWithProvider)
+    .approve(chainA.gateway.address, sendAmount)
+    .then((tx) => tx.wait());
+  console.log("Approve tx:", approveReceipt.transactionHash);
 
-  // Send it to the gateway contract
+  // ==========================================================
+  // Step 3: Send a transaction to call sendToken function at AxelarGateway contract.
+  // ==========================================================
   console.log("\n==== Send token to the gateway contract ====");
-  const receipt = await (
-    await chain1.gateway
-      .connect(chain1User)
-      .sendToken(chain2.name, chain2User.address, "UST", sendAmount)
-  ).wait();
-  console.log("Tx", receipt.transactionHash);
+  const receipt = await chainA.gateway
+    .connect(senderWithProvider)
+    .sendToken(chainB.name, receiver.address, "UST", sendAmount)
+    .then((tx) => tx.wait());
+  console.log("sendToken Tx", receipt.transactionHash);
 
-  // Have axelar relay the tranfer to chain2.
-  await axelar.relay();
+  // ===========================================================
+  // Step 4: Waiting for the network to relay the transaction.
+  // ===========================================================
+  if (network === "local") {
+    await axelar.relay();
+  } else {
+    // TODO: waiting for the event.
+  }
 
+  // ===========================================================
+  // Step 5: Verify the result at the destination chain
+  // ===========================================================
   console.log("\n==== After cross-chain balances ====");
-  await printBalance("chain1User", chain1User.address, chain1.ust);
-  await printBalance("chain2User", chain2User.address, chain2.ust);
+  await printBalance("sender", sender.address, chainA.ust);
+  await printBalance("receiver", receiver.address, chainB.ust);
 })();

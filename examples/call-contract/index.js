@@ -1,86 +1,92 @@
-"use strict";
-
+const { ethers } = require("ethers");
 const {
-  createNetwork: createChain,
   relay,
-  getGasPrice,
   utils: { deployContract },
 } = require("@axelar-network/axelar-local-dev");
-const {
-  constants: { AddressZero },
-  ethers,
-} = require("ethers");
+const ExampleExecutable = require("./build/ExampleExecutable.json");
+const GatewayCaller = require("./build/GatewayCaller.json");
+const { setupLocalNetwork, setupTestnetNetwork } = require("../network");
+const { privateKey } = require("../secret.json");
 
-const HelloExecutable = require("../../build/HelloExecutable.json");
+const cliArgs = process.argv.slice(2);
+const network = cliArgs[0] || "local"; // This value should be either 'local' or 'testnet'
 
 (async () => {
-  // Create two chains and get a funded user for each
-  console.log("\n==== Chains and contracts setup ====")
-  const chain1 = await createChain({ seed: "chain1" });
-  const [user1] = chain1.userWallets;
-  const chain2 = await createChain({ seed: "chain2" });
-  const [user2] = chain2.userWallets;
+  // ========================================================
+  // Step 1: Setup wallet and connect with the chain provider
+  // ========================================================
+  const sourceWallet = new ethers.Wallet(privateKey);
+  const { chainA, chainB } =
+    network === "testnet"
+      ? setupTestnetNetwork()
+      : await setupLocalNetwork(sourceWallet.address);
+  const sourceWalletWithProvider = sourceWallet.connect(chainA.provider);
+  const destinationWalletWithProvider = sourceWallet.connect(chainB.provider);
 
-  const chain1HelloContract = await deployContract(user1, HelloExecutable, [
-    chain1.gateway.address,
-    chain1.gasReceiver.address,
-  ]);
+  // ==============================================================
+  // Step 2: Deploy the GatewayCaller contract at the source chain.
+  // ==============================================================
+  console.log("\n==== Deploying contracts... ====");
+  const gatewayCaller = await deployContract(
+    sourceWalletWithProvider,
+    GatewayCaller,
+    [chainA.gateway.address, chainA.gasReceiver.address]
+  );
+  console.log("GatewayCaller is deployed at:", gatewayCaller.address);
 
-  const chain2HelloContract = await deployContract(user2, HelloExecutable, [
-    chain2.gateway.address,
-    chain2.gasReceiver.address,
-  ]);
-  console.log(chain1HelloContract.address, chain2HelloContract.address);
+  // =======================================================================
+  // Step 3: Deploy the ExampleExecutable contract at the destination chain.
+  // =======================================================================
+  const exampleExecutable = await deployContract(
+    destinationWalletWithProvider,
+    ExampleExecutable,
+    [chainB.gateway.address]
+  );
+  console.log("ExampleExecutable is deployed at:", exampleExecutable.address);
 
-  console.log("\n==== User Addresses ====");
-  console.log("user1 address:", user1.address);
-  console.log("user2 address:", user2.address);
-
-  // This is used for logging.
-  const print = async () => {
-    console.log(`Message at ${chain1.name}: "${await chain1HelloContract.message()}"`);
-    console.log(`Message at ${chain2.name}: "${await chain2HelloContract.message()}"`);
-  };
-
+  // =======================================================================
+  // Step 4: Prepare payload and send transaction to GatewayCaller contract.
+  // =======================================================================
   console.log("\n==== Message Before Relaying ====");
-  await print();
-
-  // Set the value on chain1. This will also cause the value on chain2 to change after relay() is called.
-  const msgFromUser1 = ethers.utils.defaultAbiCoder.encode(
-    ["string"],
-    ["Hello from: " + user1.address]
+  console.log(
+    `ExampleExecutable's message: "${await exampleExecutable.message()}"`
   );
-  const msgFromUser2 = ethers.utils.defaultAbiCoder.encode(
-    ["string"],
-    ["Hello from: " + user2.address]
+  const traceId = ethers.utils.id(uuid.v4());
+  const payload = ethers.utils.defaultAbiCoder.encode(
+    ["bytes32", "string"],
+    [traceId, "Hello from Chain A."]
   );
 
-  await chain1HelloContract
-    .connect(user1)
-    .payGasAndCallContract(
-      chain2.name,
-      chain2HelloContract.address,
-      msgFromUser1,
-      {
-        value: "50000000",
-      }
-    )
+  const gasForDestinationContract = 1e6;
+  await gatewayCaller
+    .connect(sourceWalletWithProvider)
+    .payGasAndCallContract(chainB.name, exampleExecutable.address, payload, {
+      value: gasForDestinationContract,
+    })
     .then((tx) => tx.wait());
 
-  await chain2HelloContract
-    .connect(user2)
-    .payGasAndCallContract(
-      chain1.name,
-      chain1HelloContract.address,
-      msgFromUser2,
-      {
-        value: "50000000",
-      }
-    )
-    .then((tx) => tx.wait());
+  // =========================================================
+  // Step 5: Waiting for the network to relay the transaction.
+  // =========================================================
+  if (network === "local") {
+    await relay();
+  } else {
+    console.log("\n==== Waiting for Relaying... ====");
+    const executeEventFilter = exampleExecutable.filters.Executed(traceId);
+    const relayTxHash = await new Promise((resolve) => {
+      chainB.provider.once(executeEventFilter, (...args) => {
+        const txHash = args[args.length - 1].transactionHash;
+        resolve(txHash);
+      });
+    });
+    console.log("Relay Tx:", relayTxHash);
+  }
 
-  await relay();
-
+  // ===================================================
+  // Step 6: Verify the result at the destination chain.
+  // ===================================================
   console.log("\n==== Message After Relaying ====");
-  await print();
+  console.log(
+    `ExampleExecutable's message: "${await exampleExecutable.message()}"`
+  );
 })();
