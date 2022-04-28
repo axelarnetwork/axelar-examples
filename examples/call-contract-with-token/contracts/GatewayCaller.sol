@@ -39,7 +39,8 @@ contract GatewayCaller {
             destinationAddress,
             payload,
             symbol,
-            amount
+            amount,
+            msg.sender
         );
     }
 }
