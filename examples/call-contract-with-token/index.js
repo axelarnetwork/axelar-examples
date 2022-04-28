@@ -2,16 +2,12 @@ const {
   deployContract,
 } = require("@axelar-network/axelar-local-dev/dist/utils");
 const axelar = require("@axelar-network/axelar-local-dev");
-const erc20 = require("./call-contract-with-token/build/ERC20.json");
-const gateway = require("./call-contract-with-token/build/IAxelarGateway.json");
-const gasReceiver = require("./call-contract-with-token/build/IAxelarGasReceiver.json");
-
+const erc20 = require("./build/ERC20.json");
 const { ethers } = require("ethers");
 const uuid = require("uuid");
 const ExampleExecutable = require("./build/ExampleExecutable.json");
 const GatewayCaller = require("./build/GatewayCaller.json");
-const { setupLocalNetwork, setupTestnetNetwork } = require("../network");
-const { privateKey } = require("../secret.json");
+const { privateKey } = require("../../secret.json");
 const cliArgs = process.argv.slice(2);
 const network = cliArgs[0] || "local"; // This value should be either 'local' or 'testnet'
 const { chainA, chainB } =
@@ -49,75 +45,44 @@ const aliases = recipientAddresses.map(
 const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
 
 (async () => {
+  if (!chainA.gatewayCaller || !chainB.exampleExecutable)
+    return console.log("Run deploy script first.");
+
   // ========================================================
   // Step 1: Setup wallet and connect with the chain provider
   // ========================================================
+  const providerChainA = new ethers.providers.JsonRpcProvider(chainA.provider);
+  const providerChainB = new ethers.providers.JsonRpcProvider(chainB.provider);
+
   const sourceWallet = new ethers.Wallet(privateKey);
-  const sourceWalletWithProvider = sourceWallet.connect(chainA.provider);
-  const destinationWalletWithProvider = sourceWallet.connect(chainB.provider);
+  const sourceWalletWithProvider = sourceWallet.connect(providerChainA);
 
-  // ==============================================================
-  // Step 2: Deploy the GatewayCaller contract at the source chain.
-  // ==============================================================
-  console.log("\n==== Deploying contracts... ====");
-  const gatewayCaller = await deployContract(
-    sourceWalletWithProvider,
-    GatewayCaller,
-    [chainA.gateway.address, chainA.gasReceiver.address]
-  );
-  console.log("GatewayCaller is deployed at:", gatewayCaller.address);
-
-  const gatewayChainA = new ethers.Contract(
-    chainA.gateway,
-    gateway.abi,
+  const ustChainA = new ethers.Contract(chainA.ust, erc20.abi, providerChainA);
+  const ustChainB = new ethers.Contract(chainB.ust, erc20.abi, providerChainB);
+  const gatewayCaller = new ethers.Contract(
+    chainA.gatewayCaller,
+    GatewayCaller.abi,
     providerChainA
   );
-  const gatewayChainB = new ethers.Contract(
-    chainB.gateway,
-    gateway.abi,
-    providerChainB
-  );
-  const gasReceiverChainA = new ethers.Contract(
-    chainA.gasReceiver,
-    gasReceiver.abi,
-    providerChainA
-  );
-  const gasReceiverChainB = new ethers.Contract(
-    chainB.gasReceiver,
-    gasReceiver.abi,
+  const exampleExecutable = new ethers.Contract(
+    chainB.exampleExecutable,
+    ExampleExecutable.abi,
     providerChainB
   );
 
-  // =======================================================================
-  // Step 3: Deploy the ExampleExecutable contract at the destination chain.
-  // =======================================================================
-  const exampleExecutable = await deployContract(
-    destinationWalletWithProvider,
-    ExampleExecutable,
-    [chainB.gateway.address]
-  );
-  console.log("ExampleExecutable is deployed at:", exampleExecutable.address);
-
-  console.log("\n==== Initial balances ====");
-  await printBalance(
-    "[Chain A] source wallet",
-    sourceWallet.address,
-    chainA.ust
-  );
-  await printMultipleBalances(aliases, recipientAddresses, chainB.ust);
-
   // =====================================================================
-  // Step 4: Approve the GatewayCaller contract to use the UST on chain A.
+  // Step 2: Approve the GatewayCaller contract to use the UST on chain A.
   // =====================================================================
-  await chainA.ust
+  await ustChainA
     .connect(sourceWalletWithProvider)
-    .approve(gatewayCaller.address, sendAmount)
+    .approve(chainA.gatewayCaller, sendAmount)
     .then((tx) => tx.wait());
 
   // =======================================================================
-  // Step 5: Prepare payload and send transaction to GatewayCaller contract.
+  // Step 3: Prepare payload and send transaction to GatewayCaller contract.
   // =======================================================================
   console.log("\n==== Calling the GatewayCaller contract ====");
+
   const traceId = ethers.utils.id(uuid.v4());
   const payload = ethers.utils.defaultAbiCoder.encode(
     ["bytes32", "address[]"],
@@ -139,7 +104,7 @@ const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
   console.log("Tx:", tx.transactionHash);
 
   // =========================================================
-  // Step 6: Waiting for the network to relay the transaction.
+  // Step 4: Waiting for the network to relay the transaction.
   // =========================================================
   if (network === "local") {
     await axelar.relay();
@@ -147,7 +112,7 @@ const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
     console.log("\n==== Waiting for Relaying... ====");
     const executeEventFilter = exampleExecutable.filters.Executed(traceId);
     const relayTxHash = await new Promise((resolve) => {
-      chainB.provider.once(executeEventFilter, (...args) => {
+      providerChainB.once(executeEventFilter, (...args) => {
         const txHash = args[args.length - 1].transactionHash;
         resolve(txHash);
       });
@@ -156,13 +121,13 @@ const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
   }
 
   // ===================================================
-  // Step 7: Verify the result at the destination chain.
+  // Step 5: Verify the result at the destination chain.
   // ===================================================
   console.log("\n==== After cross-chain balances ====");
   await printBalance(
     "[Chain A] source wallet",
     sourceWallet.address,
-    chainA.ust
+    ustChainA
   );
-  await printMultipleBalances(aliases, recipientAddresses, chainB.ust);
+  await printMultipleBalances(aliases, recipientAddresses, ustChainB);
 })();
