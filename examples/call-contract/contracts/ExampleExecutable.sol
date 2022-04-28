@@ -7,6 +7,8 @@ import {IAxelarExecutable} from "@axelar-network/axelar-cgp-solidity/src/interfa
 contract ExampleExecutable is IAxelarExecutable {
     string public message;
 
+    event Executed(bytes32 indexed traceId);
+
     constructor(address _gateway) IAxelarExecutable(_gateway) {}
 
     function _execute(
@@ -14,7 +16,12 @@ contract ExampleExecutable is IAxelarExecutable {
         string memory,
         bytes calldata payload
     ) internal override {
-        string memory _message = abi.decode(payload, (string));
+        (bytes32 traceId, string memory _message) = abi.decode(
+            payload,
+            (bytes32, string)
+        );
         message = _message;
+
+        emit Executed(traceId);
     }
 }

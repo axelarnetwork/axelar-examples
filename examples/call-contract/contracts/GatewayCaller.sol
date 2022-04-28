@@ -13,8 +13,7 @@ contract GatewayCaller {
     IAxelarGasReceiver gasReceiver;
     IAxelarGateway gateway;
 
-    constructor(address _gateway, address _gasReceiver)
-    {
+    constructor(address _gateway, address _gasReceiver) {
         gateway = IAxelarGateway(_gateway);
         gasReceiver = IAxelarGasReceiver(_gasReceiver);
     }
@@ -25,9 +24,11 @@ contract GatewayCaller {
         bytes calldata payload
     ) external payable {
         gasReceiver.payNativeGasForContractCall{value: msg.value}(
+            msg.sender,
             destinationChain,
             destinationAddress,
-            payload
+            payload,
+            msg.sender
         );
         gateway.callContract(destinationChain, destinationAddress, payload);
     }

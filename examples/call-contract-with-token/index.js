@@ -3,6 +3,7 @@ const {
 } = require("@axelar-network/axelar-local-dev/dist/utils");
 const axelar = require("@axelar-network/axelar-local-dev");
 const { ethers } = require("ethers");
+const uuid = require("uuid");
 const ExampleExecutable = require("./build/ExampleExecutable.json");
 const GatewayCaller = require("./build/GatewayCaller.json");
 const { setupLocalNetwork, setupTestnetNetwork } = require("../network");
@@ -38,7 +39,7 @@ const recipientAddresses = generateWalletAddresses(5); // generate random wallet
 const aliases = recipientAddresses.map(
   (_, i) => `[Chain B] destination wallet ${i + 1}:`
 ); // recipient wallets aliases used for logging.
-const sendAmount = ethers.utils.parseUnits("5", 6); // ust amount to be sent
+const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
 
 (async () => {
   // ========================================================
@@ -49,6 +50,7 @@ const sendAmount = ethers.utils.parseUnits("5", 6); // ust amount to be sent
     network === "testnet"
       ? setupTestnetNetwork()
       : await setupLocalNetwork(sourceWallet.address);
+
   const sourceWalletWithProvider = sourceWallet.connect(chainA.provider);
   const destinationWalletWithProvider = sourceWallet.connect(chainB.provider);
 
@@ -93,9 +95,10 @@ const sendAmount = ethers.utils.parseUnits("5", 6); // ust amount to be sent
   // Step 5: Prepare payload and send transaction to GatewayCaller contract.
   // =======================================================================
   console.log("\n==== Calling the GatewayCaller contract ====");
+  const traceId = ethers.utils.id(uuid.v4());
   const payload = ethers.utils.defaultAbiCoder.encode(
-    ["address[]"],
-    [recipientAddresses]
+    ["bytes32", "address[]"],
+    [traceId, recipientAddresses]
   );
   const gasForDestinationContract = 1e6;
   const tx = await gatewayCaller
@@ -115,10 +118,18 @@ const sendAmount = ethers.utils.parseUnits("5", 6); // ust amount to be sent
   // =========================================================
   // Step 6: Waiting for the network to relay the transaction.
   // =========================================================
+  console.log("\n==== Waiting for Relaying... ====");
   if (network === "local") {
     await axelar.relay();
   } else {
-    // TODO: waiting for the event.
+    const executeEventFilter = exampleExecutable.filters.Executed(traceId);
+    const relayTxHash = await new Promise((resolve) => {
+      chainB.provider.once(executeEventFilter, (...args) => {
+        const txHash = args[args.length - 1].transactionHash;
+        resolve(txHash);
+      });
+    });
+    console.log("Relay Tx:", relayTxHash);
   }
 
   // ===================================================
