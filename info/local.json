@@ -6,7 +6,9 @@
     "gateway": "0x80294BD549e8ad04650c475eACEb25041AFF16Bf",
     "gasReceiver": "0xD9C3b5474f1ec7578E3549BAd3ce266bAa5c2D3c",
     "tokenName": "DEV",
-    "tokenSymbol": "DEV"
+    "tokenSymbol": "DEV",
+    "erc721": "0xe8014F32A38EB795BDa32E62a814bF788F42d693",
+    "nftLinker": "0x775C53cd1F4c36ac74Cb4Aa1a3CA1508e9C4Bd24"
   },
   {
     "name": "Avalanche",
@@ -15,7 +17,9 @@
     "gateway": "0xBf93A08559c48D8Ee56661e105B9746323Eb7253",
     "gasReceiver": "0x411fB36E488f22bBE872C345e652e45ff0EB319f",
     "tokenName": "Avax",
-    "tokenSymbol": "AVAX"
+    "tokenSymbol": "AVAX",
+    "erc721": "0xe8014F32A38EB795BDa32E62a814bF788F42d693",
+    "nftLinker": "0x775C53cd1F4c36ac74Cb4Aa1a3CA1508e9C4Bd24"
   },
   {
     "name": "Fantom",
@@ -24,7 +28,9 @@
     "gateway": "0xA3d2Ff30c68043c1d0611714389fE8C2a84a2Fad",
     "gasReceiver": "0x5Cf511753D84Ff93fa305cbEECDD0a701C88b9b6",
     "tokenName": "Fantom",
-    "tokenSymbol": "FTM"
+    "tokenSymbol": "FTM",
+    "erc721": "0xe8014F32A38EB795BDa32E62a814bF788F42d693",
+    "nftLinker": "0x775C53cd1F4c36ac74Cb4Aa1a3CA1508e9C4Bd24"
   },
   {
     "name": "Ethereum",
@@ -33,7 +39,9 @@
     "gateway": "0x439498054f57430336d677FA46F61e7b75D2e274",
     "gasReceiver": "0x043f57C16f6322E42F6D1deB46E0F53e6FaA3379",
     "tokenName": "Ether",
-    "tokenSymbol": "ETH"
+    "tokenSymbol": "ETH",
+    "erc721": "0xe8014F32A38EB795BDa32E62a814bF788F42d693",
+    "nftLinker": "0x775C53cd1F4c36ac74Cb4Aa1a3CA1508e9C4Bd24"
   },
   {
     "name": "Polygon",
@@ -42,6 +50,8 @@
     "gateway": "0x99BDeDE39fE7207706cf61aF8a68D113D0E1c4a6",
     "gasReceiver": "0x186038359000c32da660ecA49C3d494001A30Ffe",
     "tokenName": "Matic",
-    "tokenSymbol": "MATIC"
+    "tokenSymbol": "MATIC",
+    "erc721": "0xe8014F32A38EB795BDa32E62a814bF788F42d693",
+    "nftLinker": "0x775C53cd1F4c36ac74Cb4Aa1a3CA1508e9C4Bd24"
   }
 ]

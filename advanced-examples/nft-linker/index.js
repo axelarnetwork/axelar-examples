@@ -1,6 +1,6 @@
 'use strict';
 
-const { getDefaultProvider, Contract, constants: { AddressZero } } = require('ethers');
+const { getDefaultProvider, Contract, constants: { AddressZero }, utils: { keccak256, defaultAbiCoder } } = require('ethers');
 const { utils: { deployContract }} = require('@axelar-network/axelar-local-dev');
 
 const ERC721 = require('../../build/ERC721Demo.json');
@@ -33,21 +33,7 @@ async function postDeploy(chain, chains, wallet) {
 }
 
 async function test(chains, wallet, options) {
-    const ownerOf = async (sourceChain, operator, tokenId) => {
-        const owner = await operator.ownerOf(tokenId);
-        if(owner != sourceChain.nftLinker.address) {
-            return {chain: sourceChain.name, address: owner, tokenId: BigInt(tokenId)};
-        } else {
-            const newTokenId = BigInt(keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [sourceChain.name, operator.address, tokenId])));
-            for(let chain of networks) {
-                if(chain == sourceChain) continue;
-                try {
-                    const address = await chain.nftLinker.ownerOf(newTokenId);
-                    return {chain: chain.name, address: address, tokenId: newTokenId};
-                } catch (e) {}
-            }
-        }
-    }
+    
     
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
@@ -55,13 +41,32 @@ async function test(chains, wallet, options) {
         const provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(provider);
         chain.contract = new Contract(chain.nftLinker, NftLinker.abi, chain.wallet);
+        chain.erc721 = new Contract(chain.erc721, ERC721.abi, chain.wallet);
     }
-    const source = chains.find(chain => chain.name == (args[0] || 'Avalanche'));
     const destination = chains.find(chain => chain.name == (args[1] || 'Fantom'));
-    const originChain = chains.find(chain => chain.name == (args[2] || 'Avalanche'));
+    const originChain = chains.find(chain => chain.name == (args[0] || 'Avalanche'));
+
+    const ownerOf = async () => {
+        const operator = originChain.erc721;
+        const owner = await operator.ownerOf(tokenId);
+        if(owner != originChain.contract.address) {
+            return {chain: originChain.name, address: owner, tokenId: BigInt(tokenId)};
+        } else {
+            const newTokenId = BigInt(keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [originChain.name, operator.address, tokenId])));
+            for(let chain of chains) {
+                if(chain == originChain) continue;
+                try {
+                    const address = await chain.contract.ownerOf(newTokenId);
+                    return {chain: chain.name, address: address, tokenId: newTokenId};
+                } catch (e) {
+                }
+            }
+        }
+        return {chain: ''};
+    }
 
     async function print() {
-        console.log(await ownerOf(originChain, originChain.erc721, tokenId));
+        console.log(await ownerOf());
     }
     function sleep(ms) {
         return new Promise((resolve)=> {
@@ -70,19 +75,29 @@ async function test(chains, wallet, options) {
     }
 
     console.log('--- Initially ---');
-    await print();
+    const owner = await ownerOf();
+    const source = chains.find(chain => chain.name == (owner.chain));
+    if(source == destination) throw new Error('Token is already where it should be!');
+    console.log(owner);
 
     //Set the gasLimit to 1e6 (a safe overestimate) and get the gas price (this is constant and always 1).
-    const gasLimit = 3e5;
+    const gasLimit = 1e6;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
     // Set the value on chain1. This will also cause the value on chain2 to change after relay() is called.
-    await (await source.contract.setRemoteValue(
+    if(originChain == source) {
+        await (await source.erc721.approve(source.contract.address, owner.tokenId)).wait(); 
+    }
+    await (await source.contract.sendNFT(
+        originChain == source ? source.erc721.address : source.contract.address, 
+        owner.tokenId, 
         destination.name,
-        destination.executableSample,
-        message, 
-        {value: BigInt(Math.floor(gasLimit * gasPrice))}
-    )).wait();
-    while(await destination.contract.value() != message) {
+        wallet.address,
+        {value: gasLimit * gasPrice}
+    )).wait(); 
+
+    while(true) {
+        const owner = await ownerOf();
+        if(owner.chain == destination.name) break;
         await sleep(2000);
     }
 

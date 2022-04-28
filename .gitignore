@@ -1,5 +1,4 @@
 node_modules
 build
 cache
-local.json
-secret.json
+info/local.json
