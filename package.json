@@ -11,7 +11,10 @@
     "call-contract": "node examples/call-contract",
     "call-contract-with-token": "node examples/call-contract-with-token",
     "build": "cd node_modules/@axelar-network/axelar-local-dev && npm run build",
-    "compile": "waffle examples/call-contract/waffle.json && waffle examples/call-contract-with-token/waffle.json"
+    "compile": "waffle examples/call-contract/waffle.json && waffle examples/call-contract-with-token/waffle.json",
+    "start-local": "node examples/start-local.js",
+    "deploy-call-contract": "node examples/call-contract/deploy.js",
+    "deploy-call-contract-with-token": "node examples/call-contract-with-token/deploy.js"
   },
   "author": "",
   "license": "ISC",

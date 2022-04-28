@@ -3,3 +3,4 @@ build
 cache
 local.json
 secret.json
+chain-local.json

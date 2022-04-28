@@ -2,12 +2,22 @@ const {
   deployContract,
 } = require("@axelar-network/axelar-local-dev/dist/utils");
 const axelar = require("@axelar-network/axelar-local-dev");
+const erc20 = require("./call-contract-with-token/build/ERC20.json");
+const gateway = require("./call-contract-with-token/build/IAxelarGateway.json");
+const gasReceiver = require("./call-contract-with-token/build/IAxelarGasReceiver.json");
+
 const { ethers } = require("ethers");
 const uuid = require("uuid");
 const ExampleExecutable = require("./build/ExampleExecutable.json");
 const GatewayCaller = require("./build/GatewayCaller.json");
 const { setupLocalNetwork, setupTestnetNetwork } = require("../network");
 const { privateKey } = require("../secret.json");
+const cliArgs = process.argv.slice(2);
+const network = cliArgs[0] || "local"; // This value should be either 'local' or 'testnet'
+const { chainA, chainB } =
+  network === "testnet"
+    ? require("../../chain-testnet.json")
+    : require("../../chain-local.json");
 
 function generateWalletAddresses(numberOfWallets) {
   return new Array(numberOfWallets)
@@ -31,9 +41,6 @@ async function printBalance(alias, address, tokenContract) {
   );
 }
 
-const cliArgs = process.argv.slice(2);
-const network = cliArgs[0] || "local"; // This value should be either 'local' or 'testnet'
-
 // Create multiple recipients
 const recipientAddresses = generateWalletAddresses(5); // generate random wallet addresses.
 const aliases = recipientAddresses.map(
@@ -46,11 +53,6 @@ const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
   // Step 1: Setup wallet and connect with the chain provider
   // ========================================================
   const sourceWallet = new ethers.Wallet(privateKey);
-  const { chainA, chainB } =
-    network === "testnet"
-      ? setupTestnetNetwork()
-      : await setupLocalNetwork(sourceWallet.address);
-
   const sourceWalletWithProvider = sourceWallet.connect(chainA.provider);
   const destinationWalletWithProvider = sourceWallet.connect(chainB.provider);
 
@@ -64,6 +66,27 @@ const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
     [chainA.gateway.address, chainA.gasReceiver.address]
   );
   console.log("GatewayCaller is deployed at:", gatewayCaller.address);
+
+  const gatewayChainA = new ethers.Contract(
+    chainA.gateway,
+    gateway.abi,
+    providerChainA
+  );
+  const gatewayChainB = new ethers.Contract(
+    chainB.gateway,
+    gateway.abi,
+    providerChainB
+  );
+  const gasReceiverChainA = new ethers.Contract(
+    chainA.gasReceiver,
+    gasReceiver.abi,
+    providerChainA
+  );
+  const gasReceiverChainB = new ethers.Contract(
+    chainB.gasReceiver,
+    gasReceiver.abi,
+    providerChainB
+  );
 
   // =======================================================================
   // Step 3: Deploy the ExampleExecutable contract at the destination chain.
