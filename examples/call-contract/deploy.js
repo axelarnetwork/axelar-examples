@@ -44,8 +44,8 @@ const { chainA, chainB } = require(`../../${chainConfigFile}`);
   );
   console.log("ExampleExecutable is deployed at:", exampleExecutable.address);
 
-  chainA.gatewayCallerWithToken = gatewayCaller.address;
-  chainB.exampleExecutableWithToken = exampleExecutable.address;
+  chainA.gatewayCaller = gatewayCaller.address;
+  chainB.exampleExecutable = exampleExecutable.address;
 
   fs.writeFileSync(
     chainConfigFile,

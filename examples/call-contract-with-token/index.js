@@ -45,7 +45,7 @@ const aliases = recipientAddresses.map(
 const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
 
 (async () => {
-  if (!chainA.gatewayCaller || !chainB.exampleExecutable)
+  if (!chainA.gatewayCallerWithToken || !chainB.exampleExecutableWithToken)
     return console.log("Run deploy script first.");
 
   // ========================================================
@@ -60,12 +60,12 @@ const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
   const ustChainA = new ethers.Contract(chainA.ust, erc20.abi, providerChainA);
   const ustChainB = new ethers.Contract(chainB.ust, erc20.abi, providerChainB);
   const gatewayCaller = new ethers.Contract(
-    chainA.gatewayCaller,
+    chainA.gatewayCallerWithToken,
     GatewayCaller.abi,
     providerChainA
   );
   const exampleExecutable = new ethers.Contract(
-    chainB.exampleExecutable,
+    chainB.exampleExecutableWithToken,
     ExampleExecutable.abi,
     providerChainB
   );
@@ -75,7 +75,7 @@ const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
   // =====================================================================
   await ustChainA
     .connect(sourceWalletWithProvider)
-    .approve(chainA.gatewayCaller, sendAmount)
+    .approve(gatewayCaller.address, sendAmount)
     .then((tx) => tx.wait());
 
   // =======================================================================

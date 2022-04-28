@@ -5,7 +5,7 @@
     "ust": "0x43F4600b552089655645f8c16D86A5a9Fa296bc3",
     "gateway": "0xC249632c2D40b9001FE907806902f63038B737Ab",
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
-    "gatewayCaller": "0x1d521D9C9A7c62F449a501973682c7BaB2ffceA9"
+    "gatewayCaller": "0x53f957a62d992c43ae26953c7D65367cc2615D29"
   },
   "chainB": {
     "name": "moonbeam",
@@ -13,6 +13,6 @@
     "ust": "0xd34007bb8a54b2fbb1d6647c5aba04d507abd21d",
     "gateway": "0x5769D84DD62a6fD969856c75c7D321b84d455929",
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
-    "exampleExecutable": "0x8Df4c5F33B5FEe0909A59aee8791D57887ea33df"
+    "exampleExecutable": "0xC9A9173d45f15dFd55f9c37bC8E2711be79b17DB"
   }
 }
