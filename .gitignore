@@ -1,5 +1,6 @@
 node_modules
 build
 cache
-local.json
-secret.json
+yarn-error.log
+info/local.json
+info/localWETH.json

@@ -8,6 +8,7 @@ const IERC20 = require('../../build/IERC20.json');
 
 async function test(chains, wallet, options = {}) {
     const args = options.args || [];
+    const getDepositAddress = options.getDepositAddress;
     const source = chains.find(chain => chain.name == (args[0] || 'Avalanche'));
     const destination = chains.find(chain => chain.name == (args[1] || 'Fantom'));
     const amount = args[2] || 10e6;
@@ -24,31 +25,27 @@ async function test(chains, wallet, options = {}) {
     
     
     async function print() {
-        console.log(`Balance of ${wallet.address} at ${source.name} is ${await source.token.balanceOf(wallet.address)}`)
-        console.log(`Balance of ${destinationAddress} at ${destination.name} is ${await destination.token.balanceOf(destinationAddress)}`)
+        console.log(`Balance at ${source.name} is ${await source.token.balanceOf(wallet.address)}`)
+        console.log(`Balance at ${destination.name} is ${await destination.token.balanceOf(wallet.address)}`)
     }
     function sleep(ms) {
         return new Promise((resolve)=> {
             setTimeout(() => {resolve()}, ms);
         })
     }
-    const balance = await destination.token.balanceOf(destinationAddress);
+    const balance = await destination.token.balanceOf(wallet.address);
     console.log('--- Initially ---');
     await print();
 
-    await (await source.token.approve(
-        source.gateway,
+    const depositAddress = await getDepositAddress(source.name, destination.name, destinationAddress, symbol);
+    console.log(depositAddress);
+    await (await source.token.transfer(
+        depositAddress,
         amount, 
     )).wait();
     // Set the value on chain1. This will also cause the value on chain2 to change after relay() is called.
-    await (await source.contract.sendToken(
-        destination.name,
-        destinationAddress,
-        symbol,
-        amount, 
-    )).wait();
     while(true) {
-        const newBalance = await destination.token.balanceOf(destinationAddress);
+        const newBalance = await destination.token.balanceOf(wallet.address);
         if(BigInt(balance) != BigInt(newBalance)) break;
         await sleep(2000);
     }
