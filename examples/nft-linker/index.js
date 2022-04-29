@@ -78,7 +78,7 @@ async function test(chains, wallet, options) {
     const owner = await ownerOf();
     const source = chains.find(chain => chain.name == (owner.chain));
     if(source == destination) throw new Error('Token is already where it should be!');
-    console.log(owner);
+    console.log(`Token that was originally minted at ${originChain.name} is at ${owner.chain}.`);
 
     //Set the gasLimit to 1e6 (a safe overestimate) and get the gas price (this is constant and always 1).
     const gasLimit = 1e6;
@@ -101,8 +101,8 @@ async function test(chains, wallet, options) {
         await sleep(2000);
     }
 
-    console.log('--- After ---');
-    await print();
+    console.log('--- Then ---');
+    console.log(`Token that was originally minted at ${originChain.name} is at ${destination.name}.`);
 }
 
 module.exports = {

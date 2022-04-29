@@ -10,8 +10,9 @@ async function test(chains, wallet, options = {}) {
     const args = options.args || [];
     const source = chains.find(chain => chain.name == (args[0] || 'Avalanche'));
     const destination = chains.find(chain => chain.name == (args[1] || 'Fantom'));
-    const symbol = args[2] || 'UST';
-    const amount = args[3] || 10e6;
+    const amount = args[2] || 10e6;
+    const destinationAddress = args[3] || wallet.address;
+    const symbol = 'UST';
 
     for(const chain of [source, destination]) {
         const provider = getDefaultProvider(chain.rpc);
@@ -23,15 +24,15 @@ async function test(chains, wallet, options = {}) {
     
     
     async function print() {
-        console.log(`Balance at ${source.name} is ${await source.token.balanceOf(wallet.address)}`)
-        console.log(`Balance at ${destination.name} is ${await destination.token.balanceOf(wallet.address)}`)
+        console.log(`Balance of ${wallet.address} at ${source.name} is ${await source.token.balanceOf(wallet.address)}`)
+        console.log(`Balance of ${destinationAddress} at ${destination.name} is ${await destination.token.balanceOf(destinationAddress)}`)
     }
     function sleep(ms) {
         return new Promise((resolve)=> {
             setTimeout(() => {resolve()}, ms);
         })
     }
-    const balance = await destination.token.balanceOf(wallet.address);
+    const balance = await destination.token.balanceOf(destinationAddress);
     console.log('--- Initially ---');
     await print();
 
@@ -42,12 +43,12 @@ async function test(chains, wallet, options = {}) {
     // Set the value on chain1. This will also cause the value on chain2 to change after relay() is called.
     await (await source.contract.sendToken(
         destination.name,
-        wallet.address,
+        destinationAddress,
         symbol,
         amount, 
     )).wait();
     while(true) {
-        const newBalance = await destination.token.balanceOf(wallet.address);
+        const newBalance = await destination.token.balanceOf(destinationAddress);
         if(BigInt(balance) != BigInt(newBalance)) break;
         await sleep(2000);
     }

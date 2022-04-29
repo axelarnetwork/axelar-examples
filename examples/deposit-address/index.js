@@ -11,9 +11,9 @@ async function test(chains, wallet, options = {}) {
     const getDepositAddress = options.getDepositAddress;
     const source = chains.find(chain => chain.name == (args[0] || 'Avalanche'));
     const destination = chains.find(chain => chain.name == (args[1] || 'Fantom'));
-    const destinationAddress = args[2] || wallet.address;
-    const symbol = args[3] || 'UST';
-    const amount = args[4] || 10e6;
+    const amount = args[2] || 10e6;
+    const destinationAddress = args[3] || wallet.address;
+    const symbol = 'UST';
 
     for(const chain of [source, destination]) {
         const provider = getDefaultProvider(chain.rpc);
