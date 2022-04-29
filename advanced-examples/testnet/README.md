@@ -8,6 +8,8 @@ The `ExecutableSample` contract keeps a string value in local storage. The `set`
 
 ## Run locally
 
+> Remind to Install, Build and Compile first as defined in the root [README.md](../../README.md#install)
+
 Spin up a local environment:
 
 ```bash
