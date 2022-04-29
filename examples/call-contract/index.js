@@ -1,92 +1,61 @@
-const { ethers } = require("ethers");
-const {
-  relay,
-  utils: { deployContract },
-} = require("@axelar-network/axelar-local-dev");
-const ExampleExecutable = require("./build/ExampleExecutable.json");
-const GatewayCaller = require("./build/GatewayCaller.json");
-const { setupLocalNetwork, setupTestnetNetwork } = require("../network");
-const { privateKey } = require("../secret.json");
+'use strict';
 
-const cliArgs = process.argv.slice(2);
-const network = cliArgs[0] || "local"; // This value should be either 'local' or 'testnet'
+const { getDefaultProvider, Contract, constants: { AddressZero } } = require('ethers');
+const { utils: { deployContract }} = require('@axelar-network/axelar-local-dev');
 
-(async () => {
-  // ========================================================
-  // Step 1: Setup wallet and connect with the chain provider
-  // ========================================================
-  const sourceWallet = new ethers.Wallet(privateKey);
-  const { chainA, chainB } =
-    network === "testnet"
-      ? setupTestnetNetwork()
-      : await setupLocalNetwork(sourceWallet.address);
-  const sourceWalletWithProvider = sourceWallet.connect(chainA.provider);
-  const destinationWalletWithProvider = sourceWallet.connect(chainB.provider);
+const ExecutableSample = require('../../build/ExecutableSample.json');
 
-  // ==============================================================
-  // Step 2: Deploy the GatewayCaller contract at the source chain.
-  // ==============================================================
-  console.log("\n==== Deploying contracts... ====");
-  const gatewayCaller = await deployContract(
-    sourceWalletWithProvider,
-    GatewayCaller,
-    [chainA.gateway.address, chainA.gasReceiver.address]
-  );
-  console.log("GatewayCaller is deployed at:", gatewayCaller.address);
+async function deploy(chain, wallet) {
+    console.log(`Deploying ExecutableSample for ${chain.name}.`);
+    const contract = await deployContract(wallet, ExecutableSample, [chain.gateway, chain.gasReceiver]);
+    chain.executableSample = contract.address;
+    console.log(`Deployed ExecutableSample for ${chain.name} at ${chain.executableSample}.`);
+}
 
-  // =======================================================================
-  // Step 3: Deploy the ExampleExecutable contract at the destination chain.
-  // =======================================================================
-  const exampleExecutable = await deployContract(
-    destinationWalletWithProvider,
-    ExampleExecutable,
-    [chainB.gateway.address]
-  );
-  console.log("ExampleExecutable is deployed at:", exampleExecutable.address);
 
-  // =======================================================================
-  // Step 4: Prepare payload and send transaction to GatewayCaller contract.
-  // =======================================================================
-  console.log("\n==== Message Before Relaying ====");
-  console.log(
-    `ExampleExecutable's message: "${await exampleExecutable.message()}"`
-  );
-  const traceId = ethers.utils.id(uuid.v4());
-  const payload = ethers.utils.defaultAbiCoder.encode(
-    ["bytes32", "string"],
-    [traceId, "Hello from Chain A."]
-  );
+async function test(chains, wallet, options) {
+    const args = options.args || [];
+    const getGasPrice = options.getGasPrice;
+    for(const chain of chains) {
+        const provider = getDefaultProvider(chain.rpc);
+        chain.wallet = wallet.connect(provider);
+        chain.contract = new Contract(chain.executableSample, ExecutableSample.abi, chain.wallet);
+    }
+    const source = chains.find(chain => chain.name == (args[0] || 'Avalanche'));
+    const destination = chains.find(chain =>chain.name == (args[1] || 'Fantom'));
+    const message = args[2] || `Hello ${destination.name} from ${source.name}, it is ${new Date().toLocaleTimeString()}.`;
+    
+    async function print() {
+        console.log(`value at ${destination.name} is ${await destination.contract.value()}`)
+    }
+    function sleep(ms) {
+        return new Promise((resolve)=> {
+            setTimeout(() => {resolve()}, ms);
+        })
+    }
 
-  const gasForDestinationContract = 1e6;
-  await gatewayCaller
-    .connect(sourceWalletWithProvider)
-    .payGasAndCallContract(chainB.name, exampleExecutable.address, payload, {
-      value: gasForDestinationContract,
-    })
-    .then((tx) => tx.wait());
+    console.log('--- Initially ---');
+    await print();
 
-  // =========================================================
-  // Step 5: Waiting for the network to relay the transaction.
-  // =========================================================
-  if (network === "local") {
-    await relay();
-  } else {
-    console.log("\n==== Waiting for Relaying... ====");
-    const executeEventFilter = exampleExecutable.filters.Executed(traceId);
-    const relayTxHash = await new Promise((resolve) => {
-      chainB.provider.once(executeEventFilter, (...args) => {
-        const txHash = args[args.length - 1].transactionHash;
-        resolve(txHash);
-      });
-    });
-    console.log("Relay Tx:", relayTxHash);
-  }
+    //Set the gasLimit to 1e6 (a safe overestimate) and get the gas price (this is constant and always 1).
+    const gasLimit = 3e5;
+    const gasPrice = await getGasPrice(source, destination, AddressZero);
+    // Set the value on chain1. This will also cause the value on chain2 to change after relay() is called.
+    await (await source.contract.setRemoteValue(
+        destination.name,
+        destination.executableSample,
+        message, 
+        {value: BigInt(Math.floor(gasLimit * gasPrice))}
+    )).wait();
+    while(await destination.contract.value() != message) {
+        await sleep(2000);
+    }
 
-  // ===================================================
-  // Step 6: Verify the result at the destination chain.
-  // ===================================================
-  console.log("\n==== Message After Relaying ====");
-  console.log(
-    `ExampleExecutable's message: "${await exampleExecutable.message()}"`
-  );
-})();
+    console.log('--- After ---');
+    await print();
+}
+
+module.exports = {
+    deploy,
+    test,
+}

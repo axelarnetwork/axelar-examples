@@ -6,7 +6,7 @@ const { keccak256, defaultAbiCoder } = require('ethers/lib/utils');
 const { GasCostLogger } = require('./gasCosts');
 const { getGasPrice, getDepositAddress } = require('./utils.js');
 
-const example = require(`../advanced-examples/${process.argv[2]}/index.js`);
+const example = require(`../${process.argv[2]}/index.js`);
 
 const env = process.argv[3];
 if(env == null || (env != 'testnet' && env != 'local')) throw new Error('Need to specify tesntet or local as an argument to this script.');

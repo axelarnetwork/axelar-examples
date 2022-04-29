@@ -7,7 +7,7 @@ const { GasCostLogger } = require('./gasCosts');
 
 
 
-const example = require(`../advanced-examples/${process.argv[2]}/index.js`);
+const example = require(`../${process.argv[2]}/index.js`);
 
 const env = process.argv[3];
 if(env == null || (env != 'testnet' && env != 'local')) throw new Error('Need to specify tesntet or local as an argument to this script.');
