@@ -46,18 +46,18 @@ async function test(chains, wallet, options) {
     const destination = chains.find(chain => chain.name == (args[1] || 'Fantom'));
     const originChain = chains.find(chain => chain.name == (args[0] || 'Avalanche'));
 
-    const ownerOf = async () => {
-        const operator = originChain.erc721;
+    const ownerOf = async (chain = originChain) => {
+        const operator = chain.erc721;
         const owner = await operator.ownerOf(tokenId);
-        if(owner != originChain.contract.address) {
-            return {chain: originChain.name, address: owner, tokenId: BigInt(tokenId)};
+        if(owner != chain.contract.address) {
+            return {chain: chain.name, address: owner, tokenId: BigInt(tokenId)};
         } else {
-            const newTokenId = BigInt(keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [originChain.name, operator.address, tokenId])));
-            for(let chain of chains) {
-                if(chain == originChain) continue;
+            const newTokenId = BigInt(keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [chain.name, operator.address, tokenId])));
+            for(let checkingChain of chains) {
+                if(checkingChain == chain) continue;
                 try {
-                    const address = await chain.contract.ownerOf(newTokenId);
-                    return {chain: chain.name, address: address, tokenId: newTokenId};
+                    const address = await checkingChain.contract.ownerOf(newTokenId);
+                    return {chain: checkingChain.name, address: address, tokenId: newTokenId};
                 } catch (e) {
                 }
             }
@@ -66,7 +66,10 @@ async function test(chains, wallet, options) {
     }
 
     async function print() {
-        console.log(await ownerOf());
+        for(const chain of chains) {
+            const owner = await ownerOf(chain);
+            console.log(`Token that was originally minted at ${chain.name} is at ${owner.chain}.`);
+        }
     }
     function sleep(ms) {
         return new Promise((resolve)=> {
@@ -74,11 +77,13 @@ async function test(chains, wallet, options) {
         })
     }
 
-    console.log('--- Initially ---');
     const owner = await ownerOf();
     const source = chains.find(chain => chain.name == (owner.chain));
     if(source == destination) throw new Error('Token is already where it should be!');
-    console.log(`Token that was originally minted at ${originChain.name} is at ${owner.chain}.`);
+
+
+    console.log('--- Initially ---');
+    await print();
 
     //Set the gasLimit to 1e6 (a safe overestimate) and get the gas price (this is constant and always 1).
     const gasLimit = 1e6;
@@ -102,7 +107,7 @@ async function test(chains, wallet, options) {
     }
 
     console.log('--- Then ---');
-    console.log(`Token that was originally minted at ${originChain.name} is at ${destination.name}.`);
+    await print();
 }
 
 module.exports = {
