@@ -12,7 +12,7 @@ contract ExecutableSample is IAxelarExecutable {
     string public sourceAddress;
     AxelarGasReceiver gasReceiver;
     mapping(string => string) public siblings;
-    
+
 
     constructor(address gateway_, address gasReceiver_) IAxelarExecutable(gateway_) {
         gasReceiver = AxelarGasReceiver(gasReceiver_);
@@ -46,11 +46,11 @@ contract ExecutableSample is IAxelarExecutable {
         );
     }
 
-    /*Handles calls created by setAndSend. Updates this contract's value 
+    /*Handles calls created by setAndSend. Updates this contract's value
     and gives the token received to the destination specified at the source chain. */
     function _execute(
         string memory sourceChain_,
-        string memory sourceAddress_, 
+        string memory sourceAddress_,
         bytes calldata payload_
     ) internal override {
         (value) = abi.decode(payload_, (string));
