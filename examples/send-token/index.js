@@ -9,7 +9,7 @@ const { chainA, chainB } =
   network === "testnet"
     ? require("../../chain-testnet.json")
     : require("../../chain-local.json");
-const sendAmount = ethers.utils.parseUnits("1", 6); // the amount to send to the destination chain
+const sendAmount = ethers.utils.parseUnits("2", 6); // the amount to send to the destination chain
 
 // A utility function to print balance for the given address of the given token contract.
 async function printBalance(alias, address, tokenContract) {
@@ -61,23 +61,20 @@ async function printBalance(alias, address, tokenContract) {
   // ===========================================================
   // Step 4: Waiting for the network to relay the transaction.
   // ===========================================================
-  if (network === "local") {
-    await axelar.relay();
-  } else {
-    console.log("\n==== Waiting for Relaying... ====");
-    const eventFilter = ustChainB.filters.Transfer(
-      ethers.constants.AddressZero,
-      receiver.address
-    );
-    const relayTxHash = await new Promise((resolve) => {
-      providerChainB.once(eventFilter, (...args) => {
-        const txHash = args[args.length - 1].transactionHash;
-        resolve(txHash);
-      });
-    });
-    console.log("Relay Tx:", relayTxHash);
-  }
 
+  console.log("\n==== Waiting for Relaying... ====");
+  const eventFilter = ustChainB.filters.Transfer(
+    ethers.constants.AddressZero,
+    receiver.address
+  );
+  const relayTxHash = await new Promise((resolve) => {
+    providerChainB.once(eventFilter, (...args) => {
+      const txHash = args[args.length - 1].transactionHash;
+      resolve(txHash);
+    });
+  });
+
+  console.log("Relay Tx:", relayTxHash);
   // ===========================================================
   // Step 5: Verify the result at the destination chain
   // ===========================================================
