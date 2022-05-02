@@ -1,25 +1,9 @@
-const {
-  deployContract,
-} = require("@axelar-network/axelar-local-dev/dist/utils");
-const axelar = require("@axelar-network/axelar-local-dev");
-const erc20 = require("./build/ERC20.json");
 const { ethers } = require("ethers");
 const uuid = require("uuid");
+const erc20 = require("./build/ERC20.json");
 const ExampleExecutable = require("./build/ExampleExecutable.json");
 const GatewayCaller = require("./build/GatewayCaller.json");
-const { privateKey } = require("../../secret.json");
-const cliArgs = process.argv.slice(2);
-const network = cliArgs[0] || "local"; // This value should be either 'local' or 'testnet'
-const { chainA, chainB } =
-  network === "testnet"
-    ? require("../../chain-testnet.json")
-    : require("../../chain-local.json");
-
-function generateWalletAddresses(numberOfWallets) {
-  return new Array(numberOfWallets)
-    .fill(0)
-    .map(() => ethers.Wallet.createRandom().address);
-}
+const { chainA, chainB, privateKey } = require("../env");
 
 async function printMultipleBalances(aliases, addresses, tokenContract) {
   for (let i = 0; i < addresses.length; i++) {
@@ -38,11 +22,15 @@ async function printBalance(alias, address, tokenContract) {
 }
 
 // Create multiple recipients
-const recipientAddresses = generateWalletAddresses(5); // generate random wallet addresses.
+const recipientAddresses = new Array(5)
+  .fill(0)
+  .map(() => ethers.Wallet.createRandom().address); // generate random wallet addresses.
+
 const aliases = recipientAddresses.map(
   (_, i) => `[Chain B] destination wallet ${i + 1}:`
 ); // recipient wallets aliases used for logging.
-const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
+
+const sendAmount = ethers.utils.parseUnits("5", 6); // ust amount to be sent
 
 (async () => {
   if (!chainA.gatewayCallerWithToken || !chainB.exampleExecutableWithToken)
@@ -69,14 +57,23 @@ const sendAmount = ethers.utils.parseUnits("1.2", 6); // ust amount to be sent
     ExampleExecutable.abi,
     providerChainB
   );
+  console.log("\n==== Before cross-chain balances ====");
+  await printBalance(
+    "[Chain A] source wallet",
+    sourceWallet.address,
+    ustChainA
+  );
+  await printMultipleBalances(aliases, recipientAddresses, ustChainB);
 
   // =====================================================================
   // Step 2: Approve the GatewayCaller contract to use the UST on chain A.
   // =====================================================================
-  await ustChainA
+  console.log("\n==== Waiting for Approving... ====");
+  const approveTx = await ustChainA
     .connect(sourceWalletWithProvider)
     .approve(gatewayCaller.address, sendAmount)
     .then((tx) => tx.wait());
+  console.log("Approved: ", approveTx.transactionHash);
 
   // =======================================================================
   // Step 3: Prepare payload and send transaction to GatewayCaller contract.

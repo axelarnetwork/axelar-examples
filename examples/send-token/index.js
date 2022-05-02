@@ -1,14 +1,8 @@
 const { ethers } = require("ethers");
-const axelar = require("@axelar-network/axelar-local-dev");
 const Erc20 = require("../call-contract-with-token/build/ERC20.json");
 const Gateway = require("../call-contract-with-token/build/IAxelarGateway.json");
-const { privateKey } = require("../../secret.json");
-const cliArgs = process.argv.slice(2);
-const network = cliArgs[0] || "local"; // This value should be either 'local' or 'testnet'
-const { chainA, chainB } =
-  network === "testnet"
-    ? require("../../chain-testnet.json")
-    : require("../../chain-local.json");
+const { chainA, chainB, privateKey } = require("../env");
+
 const sendAmount = ethers.utils.parseUnits("2", 6); // the amount to send to the destination chain
 
 // A utility function to print balance for the given address of the given token contract.
@@ -61,7 +55,6 @@ async function printBalance(alias, address, tokenContract) {
   // ===========================================================
   // Step 4: Waiting for the network to relay the transaction.
   // ===========================================================
-
   console.log("\n==== Waiting for Relaying... ====");
   const eventFilter = ustChainB.filters.Transfer(
     ethers.constants.AddressZero,

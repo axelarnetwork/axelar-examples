@@ -1,16 +1,8 @@
+const uuid = require("uuid");
 const { ethers } = require("ethers");
-const { relay } = require("@axelar-network/axelar-local-dev");
 const ExampleExecutable = require("./build/ExampleExecutable.json");
 const GatewayCaller = require("./build/GatewayCaller.json");
-const uuid = require("uuid");
-const { privateKey } = require("../../secret.json");
-
-const cliArgs = process.argv.slice(2);
-const network = cliArgs[0] || "local"; // This value should be either 'local' or 'testnet'
-const { chainA, chainB } =
-  network === "testnet"
-    ? require("../../chain-testnet.json")
-    : require("../../chain-local.json");
+const { chainA, chainB, privateKey } = require("../env");
 
 (async () => {
   if (!chainA.gatewayCaller || !chainB.exampleExecutable)
@@ -60,9 +52,6 @@ const { chainA, chainB } =
   // =========================================================
   // Step 3: Waiting for the network to relay the transaction.
   // =========================================================
-  // if (network === "local") {
-  // await relay();
-  // } else {
   console.log("\n==== Waiting for Relaying... ====");
   const executeEventFilter = exampleExecutable.filters.Executed(traceId);
   const relayTxHash = await new Promise((resolve) => {
