@@ -67,12 +67,16 @@ async function printBalance(alias, address, tokenContract) {
     ethers.constants.AddressZero,
     receiver.address
   );
+  const currentBlockNumber = await providerChainB.getBlockNumber();
   const relayTxHash = await new Promise((resolve) => {
-    providerChainB.once(eventFilter, (...args) => {
-      const txHash = args[args.length - 1].transactionHash;
-      resolve(txHash);
+    providerChainB.on(eventFilter, (...args) => {
+      const event = args[args.length - 1];
+      if (event.blockNumber > currentBlockNumber) {
+        return resolve(event.transactionHash);
+      }
     });
   });
+  providerChainB.removeAllListeners();
 
   console.log("Relay Tx:", relayTxHash);
   // ===========================================================
