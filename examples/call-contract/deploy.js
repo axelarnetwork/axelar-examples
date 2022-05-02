@@ -25,8 +25,6 @@ const { chainA, chainB } = require(`../../${chainConfigFile}`);
   // ==============================================================
   // Step 2: Deploy the GatewayCaller contract at the source chain.
   // ==============================================================
-  console.log("\n==== Deploying contracts... ====");
-
   const gatewayCaller = await deployContract(
     sourceWalletWithProvider,
     GatewayCaller,
