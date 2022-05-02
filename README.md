@@ -33,7 +33,7 @@ This example will show you how to call a smart contract that deployed at `chain 
 
 This example will show you how to send a token along with arbitrary payload to `chain B` from the `chain A`.
 
-| Steps                     | Local command               | Testnet command                     |
-| ------------------------- | --------------------------- | ----------------------------------- |
-| **1. Deploying contract** | `yarn deploy-call-contract` | `yarn deploy-call-contract testnet` |
-| **2. Run example**        | `yarn call-contract`        | `yarn call-contract testnet`        |
+| Steps                     | Local command                          | Testnet command                                |
+| ------------------------- | -------------------------------------- | ---------------------------------------------- |
+| **1. Deploying contract** | `yarn deploy-call-contract-with-token` | `yarn deploy-call-contract-with-token testnet` |
+| **2. Run example**        | `yarn call-contract-with-token`        | `yarn call-contract-with-token testnet`        |
