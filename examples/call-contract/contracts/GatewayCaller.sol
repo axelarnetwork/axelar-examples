@@ -24,7 +24,7 @@ contract GatewayCaller {
         bytes calldata payload
     ) external payable {
         gasReceiver.payNativeGasForContractCall{value: msg.value}(
-            msg.sender,
+            address(this),
             destinationChain,
             destinationAddress,
             payload,

@@ -1,7 +1,12 @@
 const { ethers } = require("ethers");
-const { createNetwork } = require("@axelar-network/axelar-local-dev");
+const { createNetwork, relay } = require("@axelar-network/axelar-local-dev");
 const fs = require("fs");
 const { privateKey } = require("../secret.json");
+const {
+  Network,
+  RemoteNetwork,
+} = require("@axelar-network/axelar-local-dev/dist/Network");
+
 async function startLocal() {
   console.log("==== Chains and contracts setup ====");
   const chainA = await createNetwork({ seed: "chainA", port: 8500 });
@@ -45,6 +50,10 @@ async function startLocal() {
   };
 
   fs.writeFileSync("./chain-local.json", JSON.stringify(chainData, null, 2));
+
+  setInterval(async () => {
+    await relay();
+  }, 1000);
 }
 
 startLocal();

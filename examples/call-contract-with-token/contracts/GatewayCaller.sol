@@ -26,7 +26,7 @@ contract GatewayCaller {
         IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
         IERC20(tokenAddress).approve(address(gateway), amount);
         gasReceiver.payNativeGasForContractCallWithToken{value: msg.value}(
-            msg.sender,
+            address(this),
             destinationChain,
             destinationAddress,
             payload,
@@ -39,8 +39,7 @@ contract GatewayCaller {
             destinationAddress,
             payload,
             symbol,
-            amount,
-            msg.sender
+            amount
         );
     }
 }
