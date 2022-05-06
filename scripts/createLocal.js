@@ -1,7 +1,7 @@
 const { createAndExport, utils: { setJSON, deployContract } } = require('@axelar-network/axelar-local-dev');
 const { Wallet, utils: {keccak256, defaultAbiCoder} } = require('ethers');
 
-
+const ConstAddressDeployer = require('../build/ConstAddressDeployer.json');
 
 (async () => {
     const deployer_key = keccak256(defaultAbiCoder.encode(['string'], ['this is a random string to get a random account. You need to provide the private key for a funded account here.']));
@@ -10,6 +10,8 @@ const { Wallet, utils: {keccak256, defaultAbiCoder} } = require('ethers');
 
     async function callback(chain, info) {
         await chain.giveToken(deployer_address, 'UST', 100e6);
+        const contract = await deployContract(new Wallet(deployer_key, chain.provider), ConstAddressDeployer);
+        info.constAddressDeployer = contract.address;
     }
 
     const toFund = [deployer_address]
@@ -21,6 +23,6 @@ const { Wallet, utils: {keccak256, defaultAbiCoder} } = require('ethers');
     await createAndExport({
         chainOutputPath: "./info/local.json",
         accountsToFund: toFund,
-        callback: callback
+        callback: callback,
     });
 })();

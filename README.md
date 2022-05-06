@@ -47,3 +47,16 @@ Run `node scripts/test examples/headers ${local|testnet} ${source-chain} ${desti
 When deploying a singe NFT is minted to the deployer (`0xBa86A5719722B02a5D5e388999C25f3333c7A9fb`) on each chain.
 
 Run `node scripts/test examples/nft-linker ${local|testnet} ${source-chain} ${destination-chain}` to send the NFT that was originally minted at `source-chain` to `destination-chain`. Will fail if the NFT is already at the `destination-chain`.
+
+### Cross Chain Token
+
+Run `node scripts/test examples/cross-chain-token ${local|testnet} ${source-chain} ${destination-chain} ${amount}` to mint some token at `source-chain` and have it sent to `destination-chain`.
+
+### Nonced Execution
+
+Run `node scripts/test examples/nonced-execution ${local|testnet} ${source-chain} ${destination-chain} ${message}` to send a `message` from `source-chain` to `destination-chain`. 
+
+### SendAck
+
+Run `node scripts/test examples/send-ack ${local|testnet} ${source-chain} ${destination-chain} ${message}` to send a `message` from `source-chain` to `destination-chain`.
+

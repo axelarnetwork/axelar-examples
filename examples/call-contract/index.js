@@ -12,7 +12,6 @@ async function deploy(chain, wallet) {
     console.log(`Deployed ExecutableSample for ${chain.name} at ${chain.executableSample}.`);
 }
 
-
 async function test(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
@@ -37,10 +36,10 @@ async function test(chains, wallet, options) {
     console.log('--- Initially ---');
     await print();
 
-    //Set the gasLimit to 1e6 (a safe overestimate) and get the gas price (this is constant and always 1).
+    //Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
     const gasLimit = 3e5;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
-    // Set the value on chain1. This will also cause the value on chain2 to change after relay() is called.
+    
     await (await source.contract.setRemoteValue(
         destination.name,
         destination.executableSample,

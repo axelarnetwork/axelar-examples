@@ -85,10 +85,9 @@ async function test(chains, wallet, options) {
     console.log('--- Initially ---');
     await print();
 
-    //Set the gasLimit to 1e6 (a safe overestimate) and get the gas price (this is constant and always 1).
     const gasLimit = 1e6;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
-    // Set the value on chain1. This will also cause the value on chain2 to change after relay() is called.
+    
     if(originChain == source) {
         await (await source.erc721.approve(source.contract.address, owner.tokenId)).wait(); 
     }

@@ -43,7 +43,7 @@ async function test(chains, wallet, options = {}) {
         depositAddress,
         amount, 
     )).wait();
-    // Set the value on chain1. This will also cause the value on chain2 to change after relay() is called.
+    
     while(true) {
         const newBalance = await destination.token.balanceOf(wallet.address);
         if(BigInt(balance) != BigInt(newBalance)) break;

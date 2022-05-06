@@ -22,7 +22,6 @@ async function test(chains, wallet, options = {}) {
         chain.token = new Contract(tokenAddress, IERC20.abi, chain.wallet);
     }
     
-    
     async function print() {
         console.log(`Balance of ${wallet.address} at ${source.name} is ${await source.token.balanceOf(wallet.address)}`)
         console.log(`Balance of ${destinationAddress} at ${destination.name} is ${await destination.token.balanceOf(destinationAddress)}`)
@@ -40,7 +39,7 @@ async function test(chains, wallet, options = {}) {
         source.gateway,
         amount, 
     )).wait();
-    // Set the value on chain1. This will also cause the value on chain2 to change after relay() is called.
+    
     await (await source.contract.sendToken(
         destination.name,
         destinationAddress,
