@@ -11,13 +11,12 @@ contract ExecutableSample is IAxelarExecutable {
     string public sourceChain;
     string public sourceAddress;
     AxelarGasReceiver gasReceiver;
-    
 
     constructor(address gateway_, address gasReceiver_) IAxelarExecutable(gateway_) {
         gasReceiver = AxelarGasReceiver(gasReceiver_);
     }
 
-    //Call this function to update the value of this contract along with all its siblings'.
+    // Call this function to update the value of this contract along with all its siblings'.
     function setRemoteValue(
         string memory destinationChain,
         string memory destinationAddress,
@@ -40,8 +39,7 @@ contract ExecutableSample is IAxelarExecutable {
         );
     }
 
-    /*Handles calls created by setAndSend. Updates this contract's value 
-    and gives the token received to the destination specified at the source chain. */
+    // Handles calls created by setAndSend. Updates this contract's value 
     function _execute(
         string memory sourceChain_,
         string memory sourceAddress_, 

@@ -50,15 +50,14 @@ async function test(chains, wallet, options) {
     }
     console.log('--- Initially ---');
     await print();
-
-    //Set the gasLimit to 1e6 (a safe overestimate) and get the gas price (this is constant and always 1).
+    
     const gasLimitRemote = 3e5;
     const gasLimitSource = 3e5;
     const gasPriceRemote = await getGasPrice(source, destination, AddressZero);
     const gasPriceSource = await getGasPrice(source, source, AddressZero);
     const gasAmountRemote = BigInt(Math.floor(gasLimitRemote * gasPriceRemote));
     const gasAmountSource = BigInt(Math.floor(gasLimitSource * gasPriceSource));
-    // Set the value on chain1. This will also cause the value on chain2 to change after relay() is called.
+    
     const tx = await (await source.sender.sendContractCall(
         destination.name,
         destination.receiver.address,

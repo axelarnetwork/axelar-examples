@@ -1,7 +1,6 @@
 'use strict';
 
 const { getDefaultProvider, Contract, constants: { AddressZero } } = require('ethers');
-const { utils: { deployContract }} = require('@axelar-network/axelar-local-dev');
 const { deployContractConstant } = require('../../scripts/utils.js');
 
 const ERC20CrossChain = require('../../build/ERC20CrossChain.json');
@@ -49,13 +48,13 @@ async function test(chains, wallet, options) {
     console.log('--- Initially ---');
     await print();
 
-    //Set the gasLimit to 1e6 (a safe overestimate) and get the gas price (this is constant and always 1).
+    // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price (this is constant and always 1).
     const gasLimit = 3e5;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
     await (await source.contract.giveMe(amount)).wait();
     console.log('--- After getting some token on the source chain ---');
     await print();
-    // Set the value on chain1. This will also cause the value on chain2 to change after relay() is called.
+    
     await (await source.contract.transferRemote(
         destination.name,
         wallet.address,
