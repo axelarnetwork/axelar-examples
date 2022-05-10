@@ -55,8 +55,7 @@ async function test(chains, wallet, options) {
     const accounts = args.slice(3);
     
     async function print() {
-        console.log(`Balance at ${source.name} is ${await source.contract.address}`)
-        console.log(`Balance at ${destination.name} is ${await destination.contract.address}`)
+        console.log(`StrategyStub for ${fantom} ${await source.contract.siblings(fantom)}`)
     }
     
     if(accounts.length == 0)
@@ -68,6 +67,9 @@ async function test(chains, wallet, options) {
         const provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(provider);
         chain.contract = new Contract(chain.strategy, StrategySub.abi, chain.wallet);
+        //add sibbling
+        console.log(destination.strategy)
+        await chain.contract.addSibling(destination.name, destination.strategy);
     }
 
     for(const chain of [destination]) {

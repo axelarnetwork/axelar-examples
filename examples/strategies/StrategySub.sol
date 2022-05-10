@@ -47,6 +47,7 @@ contract StrategyStub is IAxelarExecutable {
         siblings[chain_] = address_;
     }
 
+
     function harvest() public {
         uint256 debtOutstanding = _getDebtOutstanding();
         if (state != StrategyState.UPDATED){
