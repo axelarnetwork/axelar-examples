@@ -9,8 +9,11 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC4626} from "./IERC4626.sol";
+import { StringToAddress } from '../temp/StringToAddress.sol';
 
 contract StrategyStub is IAxelarExecutable {
+
+    using StringToAddress for string;
     // vault address reference
     address public vault;
     // token managed and accounted by the vault
@@ -23,11 +26,35 @@ contract StrategyStub is IAxelarExecutable {
     }
     StrategyState state;
     AxelarGasReceiver gasReceiver;
-    string public sourceChain;
-    string public sourceAddress;
     mapping(string => string) public siblings;
+    string private chainName;
+    string private sibblingName;
 
-    uint256 _mockDebtOutstanding;
+    uint256 public _mockDebtOutstanding;
+    
+    /** 
+        -----------------------
+        | modifier definitions|
+        ----------------------- 
+    */
+
+    /**
+    * @notice
+    * check if the sending chains `sourceChainName_` is the `sibblingName`
+    */
+    modifier isValidSourceAddress(string memory sourceChainName_, string memory sourceAddress_){
+        require(sourceAddress_.toAddress() == siblings[sourceChainName_].toAddress(), "Source Address is not allowed");
+        _;
+    }
+
+    /**
+    * @notice
+    * check if the sending chains `sourceChainName_` is the `sibblingName`
+    */
+    modifier isValidSourceChain(string memory sourceChainName_){
+        require(keccak256(abi.encodePacked((sourceChainName_))) == keccak256(abi.encodePacked(sibblingName)), "");
+        _;
+    }
 
     constructor(
         address want,
@@ -38,6 +65,9 @@ contract StrategyStub is IAxelarExecutable {
         //vault = _vault;
         //want = IERC20(IERC4626(vault).asset());
         //want.approve(vault, type(uint256).max - 1);
+        chainName = "Ethereum";
+        sibblingName = "Fantom";
+
         state = StrategyState.UPDATED;
     }
 
@@ -58,12 +88,16 @@ contract StrategyStub is IAxelarExecutable {
 
 
     function _prepareReturn(uint256 debtOutstanding) internal {
-        string memory signature = "prepareReturn(uint256 _debtOutstanding)";
+        string memory signature = "_prepareReturn(uint256 _debtOutstanding)";
         bytes4 _selector = bytes4(keccak256(bytes(signature)));
 
         // calldata to be used to destinationAddress.call(payload)
         bytes memory payload = abi.encodeWithSelector(_selector, debtOutstanding);
-        _sendRemoteMessage('Fantom', siblings['Fantom'], payload);
+        _sendRemoteMessage(sibblingName, siblings[sibblingName], payload);
+    }
+
+
+    function _report(uint256 _profit, uint256 _loss, uint256 _debtPayment) internal {
     }
 
     // Mock function for vault
@@ -72,6 +106,15 @@ contract StrategyStub is IAxelarExecutable {
         return _mockDebtOutstanding;
     }
 
+    /**
+     * @notice
+     * send `payload` to `destinationChain` to be used via low level
+     * call api `destinationAddress.call(payload)`
+     * @dev
+     * @param destinationChain axelar defined chain name
+     * @param destinationAddress destination chain address
+     * @param payload calldata 
+     */
     function _sendRemoteMessage(
         string memory destinationChain,
         string memory destinationAddress,
@@ -97,11 +140,13 @@ contract StrategyStub is IAxelarExecutable {
         string memory sourceChain_,
         string memory sourceAddress_,
         bytes calldata payload_
-    ) internal override {
-        (string memory messageType, bool success, string memory _data) = abi
-            .decode(payload_, (string, bool, string));
-        sourceChain = sourceChain_;
-        sourceAddress = sourceAddress_;
+        ) 
+        internal 
+        isValidSourceChain(sourceChain_)
+        isValidSourceAddress(sourceChain_, sourceAddress_)
+        override 
+    {
+        _callContract(payload_);
     }
 
     function _callContract(bytes memory _callData)

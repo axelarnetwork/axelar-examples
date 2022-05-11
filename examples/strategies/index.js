@@ -76,6 +76,7 @@ async function test(chains, wallet, options) {
         const provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(provider);
         chain.contract = new Contract(chain.strategy, Strategy.abi, chain.wallet);
+        await chain.contract.addSibling(source.name, source.strategy);
     }
 
     console.log('--- After ---');
