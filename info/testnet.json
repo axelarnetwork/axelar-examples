@@ -7,7 +7,9 @@
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "tokenName": "Ether",
     "tokenSymbol": "ETH",
-    "executableSample": "0xF36C15dD3CBCf86D383704200eA8D1906A01A05f"
+    "executableSample": "0xF36C15dD3CBCf86D383704200eA8D1906A01A05f",
+    "distributionExecutable": "0xD4F7f864260c86a960F052bb933cCF6A80b17a02",
+    "DistributionENSExecutable": "0xb123d4aA48fC5012293cf4BFD3659277468e27Cf"
   },
   {
     "name": "Avalanche",
@@ -17,7 +19,9 @@
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "tokenName": "Avax",
     "tokenSymbol": "AVAX",
-    "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4"
+    "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4",
+    "distributionExecutable": "0x5E4E3488E51F38C8FD99Cb0bC10fB78322c96f85",
+    "DistributionENSExecutable": "0xf6Da84C51b5C82039E9E3c64ccb3F1b05d7EF1Be"
   },
   {
     "name": "Fantom",
@@ -27,7 +31,8 @@
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "tokenName": "Fantom",
     "tokenSymbol": "FTM",
-    "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4"
+    "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4",
+    "distributionExecutable": "0xD05180187165eED557c90AB907D1C0B1dd35bDD6"
   },
   {
     "name": "Polygon",
@@ -37,7 +42,8 @@
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "tokenName": "Matic",
     "tokenSymbol": "MATIC",
-    "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4"
+    "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4",
+    "distributionExecutable": "0xD942050D2c3733E58231297Bc7A2c908aC2fF471"
   },
   {
     "name": "Moonbeam",
@@ -47,6 +53,7 @@
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "tokenName": "DEV",
     "tokenSymbol": "DEV",
-    "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4"
+    "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4",
+    "distributionExecutable": "0xD942050D2c3733E58231297Bc7A2c908aC2fF471"
   }
 ]
