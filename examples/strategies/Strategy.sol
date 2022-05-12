@@ -12,13 +12,23 @@ contract Strategy is IAxelarExecutable {
     address public vault;
     IERC20 public want;
 
+    enum StrategyState {
+        UPDATED,
+        PENDING_MSG,
+        PENDING_TRANSFER,
+        MGMT_REQIRED
+    }
+
+    bool public executed; 
+    StrategyState public state;
     string private sibblingName;
     string private chainName;
+
     AxelarGasReceiver public gasReceiver;
     mapping(string => string) public siblings;
     event WrongSourceAddress(string sourceAddress);
 
-    /** 
+    /**
         -----------------------
         | modifier definitions|
         ----------------------- 
@@ -33,6 +43,7 @@ contract Strategy is IAxelarExecutable {
         _;
     }
 
+
     /**
     * @notice
     * check if the sending chains `sourceChainName_` is the `sibblingName`
@@ -41,6 +52,8 @@ contract Strategy is IAxelarExecutable {
         require(keccak256(abi.encodePacked((sourceChainName_))) == keccak256(abi.encodePacked(sibblingName)), "");
         _;
     }
+
+
     constructor(
         address want_,
         address gateway_,
@@ -49,15 +62,26 @@ contract Strategy is IAxelarExecutable {
         gasReceiver = AxelarGasReceiver(gasReceiver_);
         chainName = "Fantom";
         sibblingName = "Ethereum";
+        state = StrategyState.UPDATED;
+        executed = false;
     }
-    
 
 
     function addSibling(string calldata chain_, string calldata address_)
         external
-    {
+    {   
         siblings[chain_] = address_;
     }
+
+
+
+    function flipState()
+        external
+    {
+        state = StrategyState.UPDATED;
+        executed = false;
+    }
+
 
     /**
      * @notice
@@ -74,6 +98,7 @@ contract Strategy is IAxelarExecutable {
         return (100, 0 , 0);
     }
 
+
     /**
      * @notice
      * Called via low level call API when receiving cross chain message.
@@ -81,11 +106,13 @@ contract Strategy is IAxelarExecutable {
     */
     function _prepareReturn(uint256 _debtOutstanding) internal
     {   
-        (uint256 _profit, uint256 _loss, uint256 _debtPayment) = prepareReturn(_debtOutstanding);
-        string memory signature = "_report(uint256 _profit, uint256 _loss, uint256 _debtPayment)";
-        bytes4 _selector = bytes4(keccak256(bytes(signature)));
-        bytes memory payload = abi.encodeWithSelector(_selector, _profit, _loss, _debtPayment);
-        _sendRemoteMessage(sibblingName, siblings[sibblingName], payload);
+
+        state = StrategyState.MGMT_REQIRED;
+        // (uint256 _profit, uint256 _loss, uint256 _debtPayment) = prepareReturn(_debtOutstanding);
+        // string memory signature = "_report(uint256 _profit, uint256 _loss, uint256 _debtPayment)";
+        // bytes4 _selector = bytes4(keccak256(bytes(signature)));
+        // bytes memory payload = abi.encodeWithSelector(_selector, _profit, _loss, _debtPayment);
+        //_sendRemoteMessage(sibblingName, siblings[sibblingName], payload);
     }
 
 
@@ -106,6 +133,7 @@ contract Strategy is IAxelarExecutable {
         gateway.callContract(destinationChain, destinationAddress, payload);
     }
 
+
     /*Handles calls created by setAndSend. Updates this contract's value 
     and gives the token received to the destination specified at the source chain. */
     function _execute(
@@ -114,18 +142,21 @@ contract Strategy is IAxelarExecutable {
         bytes calldata payload_
         ) 
         internal 
-        isValidSourceChain(sourceChain_)
-        isValidSourceAddress(sourceChain_, sourceAddress_)
+        //isValidSourceChain(sourceChain_)
+        //isValidSourceAddress(sourceChain_, sourceAddress_)
         override 
-    {
+    {   
         _callContract(payload_);
     }
+
 
     function _callContract(bytes memory _callData)
         internal
         returns (bool success, bytes memory returnData)
     {
         (success, returnData) = address(this).call(_callData);
+        state = StrategyState.MGMT_REQIRED;
+        executed = success;
         return (success, returnData);
     }
 }
