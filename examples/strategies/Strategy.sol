@@ -104,11 +104,11 @@ contract Strategy is IAxelarExecutable {
      * Called via low level call API when receiving cross chain message.
      * Responsible to call function on cross chain side to report nav
     */
-    function _prepareReturn(uint256 _debtOutstanding) internal
+    function _prepareReturn(uint256 _debtOutstanding) public
     {   
 
         state = StrategyState.MGMT_REQIRED;
-        // (uint256 _profit, uint256 _loss, uint256 _debtPayment) = prepareReturn(_debtOutstanding);
+        (uint256 _profit, uint256 _loss, uint256 _debtPayment) = prepareReturn(_debtOutstanding);
         // string memory signature = "_report(uint256 _profit, uint256 _loss, uint256 _debtPayment)";
         // bytes4 _selector = bytes4(keccak256(bytes(signature)));
         // bytes memory payload = abi.encodeWithSelector(_selector, _profit, _loss, _debtPayment);
@@ -142,8 +142,8 @@ contract Strategy is IAxelarExecutable {
         bytes calldata payload_
         ) 
         internal 
-        //isValidSourceChain(sourceChain_)
-        //isValidSourceAddress(sourceChain_, sourceAddress_)
+        isValidSourceChain(sourceChain_)
+        isValidSourceAddress(sourceChain_, sourceAddress_)
         override 
     {   
         _callContract(payload_);
@@ -155,8 +155,8 @@ contract Strategy is IAxelarExecutable {
         returns (bool success, bytes memory returnData)
     {
         (success, returnData) = address(this).call(_callData);
-        state = StrategyState.MGMT_REQIRED;
-        executed = success;
+        require(success);
+        executed = true;
         return (success, returnData);
     }
 }

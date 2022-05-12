@@ -73,7 +73,7 @@ contract StrategyStub {
 
 
     function _prepareReturn(uint256 debtOutstanding) external payable{
-        string memory signature = "_prepareReturn(uint256 _debtOutstanding)";
+        string memory signature = "_prepareReturn(uint256)";
         bytes4 _selector = bytes4(keccak256(bytes(signature)));
 
         // calldata to be used to destinationAddress.call(payload)

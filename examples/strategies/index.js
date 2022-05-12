@@ -102,7 +102,7 @@ async function test(chains, wallet, options) {
         const provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(provider);
         chain.contract = new Contract(chain.strategy, Strategy.abi, chain.wallet);
-        await chain.contract.addSibling(source.name, source.strategy);
+        await chain.contract.addSibling(source.name, source.router);
         await chain.contract.flipState()
         console.log(`--- Fantom: Strategy State: ${await chain.contract.state()} ---`);
     }
@@ -113,14 +113,14 @@ async function test(chains, wallet, options) {
     await source.contract.flipState()
     console.log(`--- Ethereum: StrategyState: ${await source.contract.state()} ---`);
     console.log('--- Ethereum: Send Message to Fantom() ---');
-    await (await source.contract._prepareReturn( 10, {value: BigInt(Math.floor(gasLimit * gasPrice))})).wait();
+    await (await source.contract._prepareReturn( 10, {value: BigInt(Math.floor(gasLimit *10 * gasPrice))})).wait();
     console.log(`--- Ethereum: StrategyState: ${await source.contract.state()} ---`);
     
 
     
     console.log(`--- Fantom: Strategy State: ${await destination.contract.state()} ---`);
     console.log(`--- Fantom: Strategy Executed: ${await destination.contract.executed()} ---`);
-    while(await destination.contract.state() == 0) {
+    while(await destination.contract.executed() == false) {
         await sleep(2000);
     }
     console.log(`--- Fantom: Strategy State: ${await destination.contract.state()} ---`);
