@@ -11,16 +11,12 @@ import {StringToAddress} from "../temp/StringToAddress.sol";
 contract Router is IAxelarExecutable, IRouter {
     using StringToAddress for string;
     AxelarGasReceiver gasReceiver;
+    bool public executed;
     mapping(string => string) public siblings;
+    mapping(string => address) public strategies;
 
     string private sibblingName;
     string private chainName;
-
-    constructor(address gateway_, address gasReceiver_)
-        IAxelarExecutable(gateway_)
-    {
-        gasReceiver = AxelarGasReceiver(gasReceiver_);
-    }
 
     /**
         -----------------------
@@ -57,6 +53,27 @@ contract Router is IAxelarExecutable, IRouter {
         _;
     }
 
+
+    constructor(address gateway_, address gasReceiver_)
+        IAxelarExecutable(gateway_)
+    {
+        gasReceiver = AxelarGasReceiver(gasReceiver_);
+    }
+
+
+    function addSibling(string calldata chain_, string calldata address_)
+        external
+    {   
+        siblings[chain_] = address_;
+    }
+
+
+    function addStrategy(string calldata destinationAddress_, address strategy_)
+        external
+    {   
+        strategies[destinationAddress_] = strategy_;
+    }
+
     /**
      * @notice
      * send `payload` to `destinationChain` to be used via low level
@@ -70,7 +87,7 @@ contract Router is IAxelarExecutable, IRouter {
         string memory destinationChain,
         string memory destinationAddress,
         bytes memory payload
-    ) external payable override {
+    ) external payable {
         if (msg.value > 0) {
             gasReceiver.payNativeGasForContractCall{value: msg.value}(
                 address(this),
@@ -94,17 +111,20 @@ contract Router is IAxelarExecutable, IRouter {
     )
         internal
         override
-        isValidSourceChain(sourceChain_)
-        isValidSourceAddress(sourceChain_, sourceAddress_)
-    {
-        _callContract(payload_);
+        //isValidSourceChain(sourceChain_)
+        //isValidSourceAddress(sourceChain_, sourceAddress_)
+    {   
+        address target = strategies[sourceAddress_];
+        require(target != address(0), "Strategy not registred");
+        (bool success, bytes memory returnData) = _callContract(target, payload_);
+        executed = success;
+
     }
 
-    function _callContract(bytes memory _callData)
+    function _callContract(address target, bytes memory _callData)
         internal
         returns (bool success, bytes memory returnData)
     {
-        (success, returnData) = address(this).call(_callData);
-        return (success, returnData);
+        (success, returnData) = target.call(_callData);
     }
 }
