@@ -125,8 +125,8 @@ async function test(chains, wallet, options) {
     // whitelist router to each other
     await setupSibbling(source.routerContract, destination.routerContract.address, fantom);
     await setupSibbling(destination.routerContract, source.routerContract.address, ethereum);
-    await setupStrategy(source.routerContract, destination.routerContract.address, destination.contract.address);
-    await setupStrategy(destination.routerContract, source.routerContract.address, source.contract.address);
+    await setupStrategy(source.routerContract, destination.routerContract.address, source.contract.address);
+    await setupStrategy(destination.routerContract, source.routerContract.address, destination.contract.address);
 
     // whitelist strategy to each other
     await setupSibbling(source.contract, destination.routerContract.address, fantom)
@@ -143,10 +143,9 @@ async function test(chains, wallet, options) {
         await sleep(2000);
     }
 
-    
     console.log(`--- Fantom: Strategy State: ${await destination.contract.state()} ---`);
     console.log(`--- Fantom: Strategy Executed: ${await destination.contract.executed()} ---`);
-    while(await destination.contract.executed() == false) {
+    while(await destination.contract.state() == 0) {
         await sleep(2000);
     }
     console.log(`--- Fantom: Strategy State: ${await destination.contract.state()} ---`);
