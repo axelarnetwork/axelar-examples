@@ -29,13 +29,13 @@ async function test(chains, wallet, options) {
         chain.wallet = wallet.connect(provider);
         chain.contract = new Contract(chain.distributionExecutable, DistributionExecutable.abi, chain.wallet);
         chain.gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
-        const usdcAddress = chain.gateway.tokenAddresses('USDC');
+        const usdcAddress = chain.gateway.tokenAddresses('aUSDC');
         chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
     }
     
     async function print() {
         for(const account of accounts) {
-            console.log(`${account} has ${await destination.usdc.balanceOf(account)/1e6} USDC`)
+            console.log(`${account} has ${await destination.usdc.balanceOf(account)/1e6} aUSDC`)
         }
     }
     function sleep(ms) {
@@ -59,7 +59,7 @@ async function test(chains, wallet, options) {
         destination.name,
         destination.distributionExecutable,
         accounts, 
-        'USDC',
+        'aUSDC',
         amount,
         {value: BigInt(Math.floor(gasLimit * gasPrice))}
     )).wait();
