@@ -31,7 +31,7 @@ async function test(chains, wallet, options) {
         chain.wallet = wallet.connect(chain.provider);
         chain.contract = new Contract(chain.headers, Headers.abi, chain.wallet);
         const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
-        const usdcAddress = await gateway.tokenAddresses('USDC');
+        const usdcAddress = await gateway.tokenAddresses('aUSDC');
         chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
     }
     const source = chains.find(chain => chain.name == (args[0] || 'Avalanche'));

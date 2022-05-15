@@ -33,7 +33,7 @@ let amount = BigInt(args[3] || 0);
     const wallet = new Wallet(private_key, provider);
     const erc721 = new Contract(chain.erc721, ERC721.abi, wallet);
     const gateway = new Contract(chain.gateway, IAxelarGateway.abi, wallet);
-    const usdc = new Contract(await gateway.tokenAddresses('USDC'), IERC20.abi, wallet);
+    const usdc = new Contract(await gateway.tokenAddresses('aUSDC'), IERC20.abi, wallet);
     const auctionhouse = new Contract(chain.nftAuctionhouse, NftAuctionhouse.abi, wallet);
     if(amount == 0) {
         const bid = await auctionhouse.bids(erc721.address, tokenId);

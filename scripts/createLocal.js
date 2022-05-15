@@ -9,7 +9,7 @@ const ConstAddressDeployer = require('../build/ConstAddressDeployer.json');
     const weth_addresses = {};
 
     async function callback(chain, info) {
-        await chain.giveToken(deployer_address, 'USDC', 100e6);
+        await chain.giveToken(deployer_address, 'aUSDC', 100e6);
         const contract = await deployContract(new Wallet(deployer_key, chain.provider), ConstAddressDeployer);
         info.constAddressDeployer = contract.address;
     }
