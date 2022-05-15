@@ -55,6 +55,8 @@ contract NftAuctionhouse {
             IERC721(operator).transferFrom(address(this), lastBidder, tokenId);
             bidders[operator][tokenId] = address(0);
             bids[operator][tokenId] = 0;
+        } else {
+            IERC721(operator).transferFrom(address(this), auctioneer, tokenId);
         }
         deadlines[operator][tokenId] = 0;
         minAmounts[operator][tokenId] = 0;

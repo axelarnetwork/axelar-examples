@@ -3,17 +3,15 @@
 const { getDefaultProvider, Contract, constants: { AddressZero }, utils: { keccak256, defaultAbiCoder }, Wallet } = require('ethers');
 const { utils: { deployContract }} = require('@axelar-network/axelar-local-dev');
 
-const ERC721 = require('../../build/ERC721Demo.json');
+const NftAuctionhouse = require('../../build/NftAuctionhouse.json');
 
-async function mint (chain, private_key, tokenId) {
+async function getBidder(chain, tokenId) {
     const provider = getDefaultProvider(chain.rpc);
-    const wallet = new Wallet(private_key, provider);
-    const contract = new Contract(chain.erc721, ERC721.abi, wallet);
-    await (await contract.mint(tokenId))
+    const contract = new Contract(chain.nftAuctionhouse, NftAuctionhouse.abi, provider);
+    return await contract.bidders(chain.erc721, tokenId);
 };
 
-module.exports = mint;
-
+module.exports = getBidder; 
 
 if (require.main === module) {
     const env = process.argv[2];
@@ -32,9 +30,8 @@ if (require.main === module) {
     const args = process.argv.slice(3);
 
     const chainName = args[0];
-    const private_key = args[1];
-    const tokenId = BigInt(args[2]);
+    const tokenId = BigInt(args[1]);
     const chain = chains.find(chain => chain.name == chainName);
 
-    mint(chain, private_key, tokenId);
+    getBidder(chain, tokenId).then((owner) => console.log(owner));
 }
