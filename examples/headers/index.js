@@ -31,8 +31,8 @@ async function test(chains, wallet, options) {
         chain.wallet = wallet.connect(chain.provider);
         chain.contract = new Contract(chain.headers, Headers.abi, chain.wallet);
         const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
-        const ustAddress = await gateway.tokenAddresses('UST');
-        chain.ust = new Contract(ustAddress, IERC20.abi, chain.wallet);
+        const usdcAddress = await gateway.tokenAddresses('USDC');
+        chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
     }
     const source = chains.find(chain => chain.name == (args[0] || 'Avalanche'));
     const destination = chains.find(chain =>chain.name == (args[1] || 'Fantom'));
@@ -45,15 +45,15 @@ async function test(chains, wallet, options) {
     }
 
     const gasLimit = 3e5;
-    const gasPrice = await getGasPrice(source, destination, source.ust.address);
+    const gasPrice = await getGasPrice(source, destination, source.usdc.address);
 
-    await (await source.ust.approve(
+    await (await source.usdc.approve(
         source.contract.address,
         BigInt(gasLimit * gasPrice),
     )).wait();
     
     const tx = await (await source.contract.updateRemoteHeaders(
-        source.ust.address,
+        source.usdc.address,
         [destination.name],
         [BigInt(gasLimit * gasPrice)],
     )).wait();

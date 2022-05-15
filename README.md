@@ -22,11 +22,11 @@ All examples can be tested with `node scripts/test/{example-name} ${local|testne
 
 ### Sent token
 
-Run `node scripts/test examples/send-token ${local|testnet} ${source-chain} ${destination-chain} ${amount}` to send UST from the source to the destination. To run on testnet you need to fund `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` with UST and replace `local` with `testnet`.
+Run `node scripts/test examples/send-token ${local|testnet} ${source-chain} ${destination-chain} ${amount}` to send USDC from the source to the destination. To run on testnet you need to fund `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` with USDC and replace `local` with `testnet`.
 
 ### Deposit Address
 
-Run `node scripts/test examples/deposti-address ${local|testnet} ${source-chain} ${destination-chain} ${amount}` to send UST from the source to the destination. To run on testnet you need to fund `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` with UST and replace `local` with `testnet`.
+Run `node scripts/test examples/deposti-address ${local|testnet} ${source-chain} ${destination-chain} ${amount}` to send USDC from the source to the destination. To run on testnet you need to fund `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` with USDC and replace `local` with `testnet`.
 
 ### Call contract
 
@@ -36,7 +36,7 @@ Run `yarn call-contract`
 
 ### Call contract with Token
 
-Run `node scripts/test examples/call-contract-with-token ${local|testnet} ${source-chain} ${destination-chain} ${amount} ${account1} ${account2}...` to send UST from `source-chain` to `destination-chain` and distribute it equally among all accounts sepcified.
+Run `node scripts/test examples/call-contract-with-token ${local|testnet} ${source-chain} ${destination-chain} ${amount} ${account1} ${account2}...` to send USDC from `source-chain` to `destination-chain` and distribute it equally among all accounts sepcified.
 
 ### Headers
 

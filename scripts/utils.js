@@ -10,7 +10,7 @@ const ConstAddressDeployer = require('../build/ConstAddressDeployer.json');
 function getDepositAddress(env, source, destination, destinationAddress, symbol) {
     if(env == 'testnet') {
         const listing = {
-            'UST': 'uusd',
+            'USDC': 'uusdc',
         }
         const sdk = new AxelarAssetTransfer({
             environment: 'testnet',

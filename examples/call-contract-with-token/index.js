@@ -29,13 +29,13 @@ async function test(chains, wallet, options) {
         chain.wallet = wallet.connect(provider);
         chain.contract = new Contract(chain.distributionExecutable, DistributionExecutable.abi, chain.wallet);
         chain.gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
-        const ustAddress = chain.gateway.tokenAddresses('UST');
-        chain.ust = new Contract(ustAddress, IERC20.abi, chain.wallet);
+        const usdcAddress = chain.gateway.tokenAddresses('USDC');
+        chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
     }
     
     async function print() {
         for(const account of accounts) {
-            console.log(`${account} has ${await destination.ust.balanceOf(account)/1e6} UST`)
+            console.log(`${account} has ${await destination.usdc.balanceOf(account)/1e6} USDC`)
         }
     }
     function sleep(ms) {
@@ -50,8 +50,8 @@ async function test(chains, wallet, options) {
     const gasLimit = 3e6;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
     
-    const balance = BigInt(await destination.ust.balanceOf(accounts[0]));
-    await (await source.ust.approve(
+    const balance = BigInt(await destination.usdc.balanceOf(accounts[0]));
+    await (await source.usdc.approve(
         source.contract.address,
         amount,
     )).wait();
@@ -59,11 +59,11 @@ async function test(chains, wallet, options) {
         destination.name,
         destination.distributionExecutable,
         accounts, 
-        'UST',
+        'USDC',
         amount,
         {value: BigInt(Math.floor(gasLimit * gasPrice))}
     )).wait();
-    while(BigInt(await destination.ust.balanceOf(accounts[0])) == balance) {
+    while(BigInt(await destination.usdc.balanceOf(accounts[0])) == balance) {
         await sleep(2000);
     }
 
