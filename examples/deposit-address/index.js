@@ -13,7 +13,7 @@ async function test(chains, wallet, options = {}) {
     const destination = chains.find(chain => chain.name == (args[1] || 'Fantom'));
     const amount = args[2] || 10e6;
     const destinationAddress = args[3] || wallet.address;
-    const symbol = 'UST';
+    const symbol = 'USDC';
 
     for(const chain of [source, destination]) {
         const provider = getDefaultProvider(chain.rpc);
