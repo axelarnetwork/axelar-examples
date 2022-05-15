@@ -8,27 +8,9 @@ const NftAuctionhouse = require('../../build/NftAuctionhouse.json');
 const IERC20 = require('../../build/IERC20.json');
 const IAxelarGateway = require('../../build/IAxelarGateway.json');
 
-const env = process.argv[2];
-if(env == null || (env != 'testnet' && env != 'local')) throw new Error('Need to specify tesntet or local as an argument to this script.');
-let temp;
-if(env == 'local') {
-    temp = require(`../../info/local.json`);
-} else {
-    try {
-        temp = require(`../../info/testnet.json`);
-    } catch {
-        temp = testnetInfo;
-    }
-}
-const chains = temp;
-const args = process.argv.slice(3);
 
-const chainName = args[0];
-const private_key = args[1];
-const tokenId = BigInt(args[2]);
-let amount = BigInt(args[3] || 0);
-(async () => {
-    const chain = chains.find(chain => chain.name == chainName);
+
+async function bid (chain, private_key, tokenId, amount) {
     const provider = getDefaultProvider(chain.rpc);
     const wallet = new Wallet(private_key, provider);
     const erc721 = new Contract(chain.erc721, ERC721.abi, wallet);
@@ -44,10 +26,34 @@ let amount = BigInt(args[3] || 0);
             amount = Math.floor(bid * 4 / 3 + 1);
         }
     }
-    console.log(amount);
     await (await usdc.approve(auctionhouse.address, amount));
     await (await auctionhouse.bid(erc721.address, tokenId, amount));
-    console.log(await auctionhouse.bidders(erc721.address, tokenId));
-    console.log(await auctionhouse.bids(erc721.address, tokenId));
-    console.log(Number(await auctionhouse.deadlines(erc721.address, tokenId))<(new Date().getTime()));
-})();
+}
+
+
+module.exports = bid;
+
+if (require.main === module) {
+    const env = process.argv[2];
+    if(env == null || (env != 'testnet' && env != 'local')) throw new Error('Need to specify tesntet or local as an argument to this script.');
+    let temp;
+    if(env == 'local') {
+        temp = require(`../../info/local.json`);
+    } else {
+        try {
+            temp = require(`../../info/testnet.json`);
+        } catch {
+            temp = testnetInfo;
+        }
+    }
+    const chains = temp;
+    const args = process.argv.slice(3);
+
+    const chainName = args[0];
+    const private_key = args[1];
+    const tokenId = BigInt(args[2]);
+    const amount = BigInt(args[3] || 0);
+    const chain = chains.find(chain => chain.name == chainName);
+
+    bid(chain, private_key, tokenId, amount);
+}
