@@ -16,11 +16,7 @@ async function deploy(chain, wallet) {
     console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721}.`);
     console.log(`Deploying NftAuctionHouse for ${chain.name}.`);
     const gateway = new Contract(chain.gateway, IAxelarGateway.abi, wallet);
-<<<<<<< HEAD
-    const contract = await deployContract(wallet, NftAuctionHouse, [await gateway.tokenAddresses('USDC')]);
-=======
     const contract = await deployContract(wallet, NftAuctionHouse, [await gateway.tokenAddresses('aUSDC')]);
->>>>>>> main
     chain.nftAuctionhouse = contract.address;
     console.log(`Deployed NftAuctionHouse for ${chain.name} at ${chain.nftAuctionhouse}.`);
 }
