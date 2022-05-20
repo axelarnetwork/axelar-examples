@@ -4,7 +4,8 @@ This repo provides a basic usage of https://github.com/axelarnetwork/axelar-loca
 
 ## Install
 
-1. Run `npm run build` to compile all contracts.
+1. Run `npm update && npm install`.
+2. Run `npm run build` to compile all contracts.
 
 ## Examples
 
