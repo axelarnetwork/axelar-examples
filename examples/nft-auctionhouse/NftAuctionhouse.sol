@@ -16,6 +16,11 @@ contract NftAuctionhouse {
     uint256 constant public DEMONINATOR = 3;
     uint256 constant public NO_MIN = type(uint256).max;
 
+    modifier onlySelf() {
+        require(msg.sender == address(this), 'NOT_SELF');
+        _; 
+    }
+
     constructor(address usdc_) {
         usdc = IERC20(usdc_);
     }
@@ -29,18 +34,31 @@ contract NftAuctionhouse {
     }
 
     function bid(address operator, uint256 tokenId, uint256 amount) external {
+        usdc.transferFrom(msg.sender, address(this), amount);
+        _bid(operator, tokenId, amount);
+    }
+
+    function _bid(address operator, uint256 tokenId, uint256 amount) public onlySelf() {
         uint256 minAmount = minAmounts[operator][tokenId];
         require(minAmount != 0, 'NOT_AUCTIONING');
         require(block.timestamp <= deadlines[operator][tokenId], 'AUCTION_EXPIRED');
-        usdc.transferFrom(msg.sender, address(this), amount);
         address prevBidder = bidders[operator][tokenId];
         uint256 prevBid = bids[operator][tokenId];
         require(prevBid * NUMERATOR <= amount * DEMONINATOR && (minAmount == NO_MIN || amount >= minAmount) && amount > 0, 'BID_TOO_LOW');
         if(prevBidder != address(0)) {
-            usdc.transfer(prevBidder, prevBid);
+            _refundPrevBidder(prevBidder, prevBid, operator, tokenId);
         }
         bidders[operator][tokenId] = msg.sender;
         bids[operator][tokenId] = amount;
+    }
+
+    function _refundPrevBidder(
+        address bidder,
+        uint256 amount, 
+        address /*operator*/, 
+        uint256 /*tokenId*/
+    ) internal virtual {
+        usdc.transfer(bidder, amount);
     }
 
     function resolveAuction(address operator, uint256 tokenId) external {
@@ -51,15 +69,24 @@ contract NftAuctionhouse {
         address lastBidder = bidders[operator][tokenId];
         uint256 lastBid = bids[operator][tokenId];
         if(lastBidder != address(0)) {
-            usdc.transfer(auctioneer, lastBid);
-            IERC721(operator).transferFrom(address(this), lastBidder, tokenId);
-            bidders[operator][tokenId] = address(0);
-            bids[operator][tokenId] = 0;
+            _giveNft(auctioneer, lastBidder, operator, tokenId, lastBid);
         } else {
             IERC721(operator).transferFrom(address(this), auctioneer, tokenId);
         }
         deadlines[operator][tokenId] = 0;
         minAmounts[operator][tokenId] = 0;
         auctioneers[operator][tokenId] = address(0);
+    }
+    function _giveNft(
+        address auctioneer, 
+        address lastBidder, 
+        address operator, 
+        uint256 tokenId, 
+        uint256 lastBid
+    ) internal virtual {
+        usdc.transfer(auctioneer, lastBid);
+        IERC721(operator).transferFrom(address(this), lastBidder, tokenId);
+        bidders[operator][tokenId] = address(0);
+        bids[operator][tokenId] = 0;
     }
 }
