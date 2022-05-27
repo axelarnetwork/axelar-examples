@@ -11,11 +11,11 @@ Note: You may see example folders in this repo that are not described below. The
 
 ## Prerequisites
 
-1. You'll need to have node.js installed to run network dapps. To make sure you have it installed, run `node -v`. TODO how to install the right version of node?
+1. You'll need to have node.js installed to run network dapps. To make sure you have it installed, run `node -v`. If no version is returned, see [Nodejs.org/downloads](https://nodejs.org/en/download/).
 
 2. Clone the repo with `git clone https://github.com/axelarnetwork/axelar-local-gmp-examples.git` and `cd axelar-local-gmp-examples`.
 
-3. Build contracts and tests:
+3. Build contracts and tests (The update and install takes a few minutes.):
    ```
    npm update && npm install
    npm run build
@@ -23,17 +23,15 @@ Note: You may see example folders in this repo that are not described below. The
 
 3. To connect to the axelar network, run `npm install axelarnetwork/axelar-local-dev`.
 
-4. To make sure all contracts are compiled, run `npm run build`.
-
-5. To run a local node, open a separate terminal and run `node scripts/createLocal`. You’ll need to have this node running to deploy the dapps.
+4. To run a local node, open `axelar-local-gmp-examples` in a separate terminal and run `node scripts/createLocal`. You’ll need to have this node running to deploy the dapps.
 
    The five supported networks are deployed: Moonbeam (ChainID: 2500), Avalanche (chainID: 2501), Fantom (chainID: 2502), Ethereum (chainID: 2503), and Polygon (chainID: 2504) on port 8500.
 
-6. To make sure that the address we use for examples is funded on all five supported testnets, run `node scripts/checkBalances`. We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. Alternatively, you can use `--address [<address>]` to specify a different address.
+5. To make sure that the address we use for examples is funded on all five supported testnets, run `node scripts/checkBalances`. We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. Alternatively, you can use `--address [<address>]` to specify a different address.
 
 ## Deploy and test each example
 
-For each example, enter:
+For each example, you can allow the defaults to run or enter:
 
 - `local` or `testnet` for both the test and the deploy steps, except for deposit-address and send-token, which run on testnet.
 
@@ -43,11 +41,11 @@ For each example, enter:
 
 - variables such as `message`, `amount`, and `account`
 
-\[Editor: What is the expected syntax and data type: message: "message"?, amount: integers?, account: "string"? integers? What are the defaults for each?]
+\[Editor: What is the expected syntax and data type: message: "message"?, amount: integer?, account: "string" or integer? What are the defaults for each?]
 
-\[Editor: In regard to this phrase: "All params are optional and have default values and can be ommited." How can you relay a message without a message, source, or destination? These must be required. I think the writer means it in the sense that it's optional for the user to enter a value bc there are defaults. In API, the convention is to call variables with default values "required". Please confirm and I'll find a way to reword this.]
+\[Editor: In regard to this phrase: "All params are optional and have default values and can be ommited." I think the writer means it in the sense that it's optional for the user to enter a value bc there are defaults. In API, the convention is to call variables with default values "required". I've reworded this to avoid this ambiguity.]
 
-and run the test and deploy.
+and run the local deploy and test.
 
 ### Call contract
 
@@ -57,9 +55,13 @@ This dapp relays a message from source-chain to destination-chain.
 
 `node scripts/deploy examples/call-contract [<local|testnet>]`
 
+\Editor: Left it alone and it asked me to specify local and testnet. How do you accept default? Tried again with `node scripts/deploy examples/call-contract local` and it worked.]
+
 2. To test it, run:
 
-`node scripts/test examples/call-contract [<local|testnet>] [<source-chain>] [<destination-chain>] [<message>]`
+`node scripts/test examples/call-contract [<local|testnet>] [<source-chain] [<destination-chain>] [<message]`
+
+\[Editor: Entered: `node scripts/test examples/call-contract 2500 2501 "Hello Axelar!"` and got a result of `>dquote`
 
 3. To share your code cross-chain, run `yarn call-contract`.
 
