@@ -55,13 +55,9 @@ This dapp relays a message from source-chain to destination-chain.
 
 `node scripts/deploy examples/call-contract [<local|testnet>]`
 
-\Editor: Left it alone and it asked me to specify local and testnet. How do you accept default? Tried again with `node scripts/deploy examples/call-contract local` and it worked.]
-
 2. To test it, run:
 
 `node scripts/test examples/call-contract [<local|testnet>] [<source-chain] [<destination-chain>] [<message]`
-
-\[Editor: Entered: `node scripts/test examples/call-contract 2500 2501 "Hello Axelar!"` and got a result of `dquote>`. Looks like I have to use 'strings' .]
 
 3. To share your code cross-chain, run `yarn call-contract`.
 
