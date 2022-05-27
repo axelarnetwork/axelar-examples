@@ -21,8 +21,6 @@ Note: You may see example folders in this repo that are not described below. The
    npm run build
    ```
 
-\[Editor: Admittedly, the above could get old if it was repeated ad infinitum, but maybe it could be stated somewhere early in the doc.]
-
 3. To connect to the axelar network, run `npm install axelarnetwork/axelar-local-dev`.
 
 4. To make sure all contracts are compiled, run `npm run build`.
