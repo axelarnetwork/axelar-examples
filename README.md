@@ -61,7 +61,7 @@ This dapp relays a message from source-chain to destination-chain.
 
 `node scripts/test examples/call-contract [<local|testnet>] [<source-chain] [<destination-chain>] [<message]`
 
-\[Editor: Entered: `node scripts/test examples/call-contract 2500 2501 "Hello Axelar!"` and got a result of `>dquote`
+\[Editor: Entered: `node scripts/test examples/call-contract 2500 2501 "Hello Axelar!"` and got a result of `dquote>`
 
 3. To share your code cross-chain, run `yarn call-contract`.
 
