@@ -11,11 +11,17 @@ Note: You may see example folders in this repo that are not described below. The
 
 ## Prerequisites
 
+### One-time setup
+
 1. You'll need to have node.js installed to run network dapps. To make sure you have it installed, run `node -v`. If no version is returned, see [Nodejs.org/downloads](https://nodejs.org/en/download/).
 
-2. Clone the repo with `git clone https://github.com/axelarnetwork/axelar-local-gmp-examples.git` and `cd axelar-local-gmp-examples`.
+2. Clone the repo with `git clone https://github.com/axelarnetwork/axelar-local-gmp-examples.git`.
 
-3. Build contracts and tests (The update and install takes a few minutes.):
+### Whenever you start a new work session
+
+1. cd to `axelar-local-gmp-examples`.
+
+2. Build contracts and tests (The update and install takes a few minutes.):
    ```
    npm update && npm install
    npm run build
@@ -23,23 +29,24 @@ Note: You may see example folders in this repo that are not described below. The
 
 3. To connect to the axelar network, run `npm install axelarnetwork/axelar-local-dev`.
 
-4. To run a local node, open `axelar-local-gmp-examples` in a separate terminal and run `node scripts/createLocal`. You’ll need to have this node running to deploy the dapps.
+4. To run a local node, cd to `axelar-local-gmp-examples` in a separate terminal and run `node scripts/createLocal`. You’ll need to have this node running to deploy the dapps.
 
 5. To make sure that the address we use for examples is funded on all five supported testnets, run `node scripts/checkBalances`. We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. Alternatively, you can use `--address [<address>]` to specify a different address.
 
 ## Deploy and test each example
 
-For each example, you can allow the defaults to run or enter:
+1. Each example has several variables. Enter a valid value in the format of the example.
 
-- `local` or `testnet` for both the test and the deploy steps, except for deposit-address and send-token, which run on testnet.
+| Variable| Valid Values| Default| Example|
+--- | --- | ---| ---|
+|network|local, testnet|local?|local|
+|source-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|?|"Moonbeam" or 'Moonbeam'|
+|destination-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|?|"Avalanche" or 'Avalanche'|
+|message|any string|?|"Hello World!" or 'Hello World!'|
+|amount|any whole number|?|53|
+|account|?|?|"name" or id-number?|
 
-- `source-chain` and `destination-chain`
-
-The five supported networks are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon.
-
-- variables such as `message`, `amount`, and `account`
-
-and run the local deploy and test.
+2. Run the deploy and test code.
 
 ### Call contract
 
@@ -51,10 +58,18 @@ This dapp relays a message from source-chain to destination-chain.
 
 2. To test it, run:
 
-`node scripts/test examples/call-contract [<local|testnet>] [<source-chain] [<destination-chain>] [<message]`
+`node scripts/test examples/call-contract [<local|testnet>] [<source-chain>] [<destination-chain>] [<message>]`
 
-For example:
-`node scripts/test examples/call-contract local Moonbeam Avalanche 'Hello'`
+Example:
+`node scripts/test examples/call-contract local "Moonbeam" "Avalanche" "Hello World!"`
+
+Result:
+```
+--- Initially ---
+value at Avalanche is
+--- After ---
+value at Avalanche is Hello World!
+```
 
 3. To share your code cross-chain, run `yarn call-contract`.
 
