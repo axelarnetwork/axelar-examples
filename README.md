@@ -40,11 +40,11 @@ Note: You may see example folders in this repo that are not described below. The
 | Variable| Valid Values| Default| Example|
 --- | --- | ---| ---|
 |network|local, testnet|local?|local|
-|source-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|?|"Moonbeam" or 'Moonbeam'|
-|destination-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|?|"Avalanche" or 'Avalanche'|
+|source-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon (case-sensitive)|?|"Moonbeam" or 'Moonbeam'|
+|destination-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon (case-sensitive)|?|"Avalanche" or 'Avalanche'|
 |message|any string|?|"Hello World!" or 'Hello World!'|
 |amount|any whole number|?|53|
-|account|?|?|"name" or id-number?|
+|account|?|?|"name string" or id number?|
 
 2. Run the deploy and test code.
 
