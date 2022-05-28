@@ -45,13 +45,16 @@ and run the local deploy and test.
 
 This dapp relays a message from source-chain to destination-chain.
 
-1. To deploy the dapp, run::
+1. To deploy the dapp, run:
 
 `node scripts/deploy examples/call-contract [<local|testnet>]`
 
 2. To test it, run:
 
 `node scripts/test examples/call-contract [<local|testnet>] [<source-chain] [<destination-chain>] [<message]`
+
+For example:
+`node scripts/test examples/call-contract local Moonbeam Avalanche 'Hello'`
 
 3. To share your code cross-chain, run `yarn call-contract`.
 
