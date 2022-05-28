@@ -37,13 +37,7 @@ For each example, you can allow the defaults to run or enter:
 
 - `source-chain` and `destination-chain`
 
-\[Editor: What's the correct way to identify each? by chain-ID? as a "string" or integer?]
-
 - variables such as `message`, `amount`, and `account`
-
-\[Editor: What is the expected syntax and data type: message: "message"?, amount: integer?, account: "string" or integer? What are the defaults for each?]
-
-\[Editor: In regard to this phrase: "All params are optional and have default values and can be ommited." I think the writer means it in the sense that it's optional for the user to enter a value bc there are defaults. In API, the convention is to call variables with default values "required". I've reworded this to avoid this ambiguity.]
 
 and run the local deploy and test.
 
@@ -60,8 +54,6 @@ This dapp relays a message from source-chain to destination-chain.
 `node scripts/test examples/call-contract [<local|testnet>] [<source-chain] [<destination-chain>] [<message]`
 
 3. To share your code cross-chain, run `yarn call-contract`.
-
-\[Editor: Is that the right characterizzation of what `yarn` is doing? If not, what is it doing and why don't we need one for any of the others? End of questions.]
 
 ### Call contract with token
 
