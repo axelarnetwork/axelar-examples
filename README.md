@@ -5,7 +5,7 @@
 This repo provides the code for several example dapps in the [Axelar Local Development Environment](https://github.com/axelarnetwork/axelar-local-dev). It contains both the JavaScript and the smart contract code (.sol files) for each example. To try them out:
 
 - Set up your system.
-- Deploy and test the apps.
+- Deploy and test the dapps.
 
 Note: You may see example folders in this repo that are not described below. They are either placeholders for future apps, such as the `temp` folder, or they are dapps in progress and we'll add a description when they're finished.
 
