@@ -37,14 +37,14 @@ Note: You may see example folders in this repo that are not described below. The
 
 1. Each example has several variables. Enter a valid value in the format of the example.
 
-| Variable| Valid Values| Default| Example|
---- | --- | ---| ---|
-|network|local, testnet|local?|local|
-|source-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon (case-sensitive)|?|"Moonbeam" or 'Moonbeam'|
-|destination-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon (case-sensitive)|?|"Avalanche" or 'Avalanche'|
-|message|any string|?|"Hello World!" or 'Hello World!'|
-|amount|any whole number|?|53|
-|account|?|?|"name string" or id number?|
+| Variable| Valid Values| Default?| Example| Notes|
+--- | --- | ---| ---| ---|
+|network|local, testnet|none:remove this column?|local|
+|source-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|none?|"Moonbeam" or 'Moonbeam'| case-sensitive|
+|destination-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon (case-sensitive)|none?|"Avalanche" or 'Avalanche'| case-sensitive|
+|message|any string|?|"Hello World!" or 'Hello World!'| |
+|amount|any whole number|none?|53| in aUSDC?|
+|account|any wallet address?|none?|0xBa86A5719722B02a5D5e388999C25f3333c7A9fb | case-sensitive|
 
 2. Run the deploy and test code.
 
