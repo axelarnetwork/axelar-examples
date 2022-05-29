@@ -21,7 +21,7 @@ Note: You may see example folders in this repo that are not described below. The
 
 1. cd to `axelar-local-gmp-examples`.
 
-2. Build contracts and tests (The update and install takes a few minutes.):
+2. Build contracts and tests (The update and install take a few minutes.):
    ```
    npm update && npm install
    npm run build
@@ -39,12 +39,12 @@ Note: You may see example folders in this repo that are not described below. The
 
 | Variable| Valid Values| Default?| Example| Notes|
 --- | --- | ---| ---| ---|
-|network|local, testnet|none:remove this column?|local|
+|network|local, testnet|none:remove this column?|local| |
 |source-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|none?|"Moonbeam" or 'Moonbeam'| case-sensitive|
-|destination-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon (case-sensitive)|none?|"Avalanche" or 'Avalanche'| case-sensitive|
+|destination-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|none?|"Avalanche" or 'Avalanche'| case-sensitive|
 |message|any string|?|"Hello World!" or 'Hello World!'| |
 |amount|any whole number? take decimals?|none?|53| in aUSDC? exchange?|
-|account|any wallet address?|none?|0xBa86A5719722B02a5D5e388999C25f3333c7A9fb | case-sensitive string (need quotation marks)?|
+|account|any wallet address?|none?|0xBa86A5719722B02a5D5e388999C25f3333c7A9fb | case-sensitive. String? (need quotation marks)?|
 
 2. Run the deploy and test code.
 
