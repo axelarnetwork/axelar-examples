@@ -172,7 +172,3 @@ This dApp sends aUSDC from the source to the destination. Run it on testnet. To 
 `node scripts/test examples/send-token [<testnet>] [<source-chain>] [<destination-chain>] [<amount>]`
 
 Send-token is a simple send transaction. There is no smart contract to deploy.
-
-## Conclusion
-
-With each example that you try, look for confirmation in the terminal output.
