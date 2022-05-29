@@ -37,7 +37,7 @@ Note: You may see example folders in this repo that are not described below. The
 
 1. Each example has several variables. Enter a valid value in the format of the example.
 
-| Variable| Valid Values| Default?| Example| Notes|
+| Variable| Valid Values| Default: remove this column?| Example| Notes|
 --- | --- | ---| ---| ---|
 |network|local, testnet|none:remove this column?|local| |
 |source-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|none?|"Moonbeam" or 'Moonbeam'| case-sensitive|
