@@ -154,15 +154,19 @@ Deposit-address is only a send transaction. There is no smart contract to deploy
 
 Run:
 
-`node scripts/test examples/deposit-address testnet ${} ${} ${}`
+`node scripts/test examples/deposit-address testnet "Moonbeam" "Avalanche" 10`
 
 Result:
 
-`--- Initially ---
-
+```
+--- Initially ---
+Balance at Moonbeam is 100
 Balance at Avalanche is 0
-Balance at Fantom is 0
-`
+
+--- After ---
+Balance at Moonbeam is 90
+Balance at Avalanche is 9
+```
 
 ### Headers
 
@@ -318,6 +322,11 @@ Result:
 
 ```
 --- Initially ---
+Balance of 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb at Moonbeam is 100
 Balance of 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb at Avalanche is 0
-Balance of 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb at Fantom is 0
+
+--- After ---
+
+Balance of 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb at Moonbeam is 90
+Balance of 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb at Avalanche is 9
 ```
