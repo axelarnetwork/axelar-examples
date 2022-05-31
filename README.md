@@ -7,7 +7,7 @@ This repo provides the code for several example dApps in the [Axelar Local Devel
 - Set up your system.
 - Deploy and test the dApps.
 
-Note: You may see example folders in this repo that are not described below. They are either placeholders for future dApps, such as the `temp` folder, or they are dApps in progress and we'll add a description when they're finished.
+Note: You may see example folders in this repo that are not described below. They are either for our use, such as the `temp` folder, or they are dApps in progress and we'll add a description when they're finished.
 
 ## Prerequisites
 
@@ -21,38 +21,33 @@ Note: You may see example folders in this repo that are not described below. The
 
  `git clone https://github.com/axelarnetwork/axelar-local-gmp-examples.git`.
 
-### Whenever you start a new work session
+ 3. Build contracts and tests (The update and install take a few minutes.):
+    ```
+    npm update && npm install
+    npm run build
+    ```
 
-1. cd to `axelar-local-gmp-examples`.
+### To start a new work session
 
-2. Build contracts and tests (The update and install take a few minutes.):
-   ```
-   npm update && npm install
-   npm run build
-   ```
+1. To run a local node, cd to `axelar-local-gmp-examples`, and run `node scripts/createLocal`. Leave this node running on a separate terminal window or tab and open a new window or tab to deploy and test the dApps.
 
-3. To connect to the axelar network, run:
-
-  `npm install axelarnetwork/axelar-local-dev`.
-
-4. To run a local node, open a separate terminal, cd to `axelar-local-gmp-examples`, and run `node scripts/createLocal`. You’ll need to have this node running to deploy the dApps.
-
-5. To make sure that the address we use for examples is funded on all five supported testnets, return to the first terminal window and run `node scripts/checkBalances`. We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. Alternatively, you can use `--address <address>` to specify a different address.
+2. To make sure that the address we use for examples is funded on all five supported testnets, return to the first terminal window and run `node scripts/checkBalances`. We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. Alternatively, you can use `--address <address>` to specify a different address.
 
 ## Deploy and test each example
 
 1. Each example has several variables. Enter a valid value in the format of the example.
 
-| Variable| Valid Values| Default: remove this column?| Example| Notes|
+| Variable| Valid Values| Default| Example| Notes|
 --- | --- | ---| ---| ---|
-|network|local, testnet|none:remove this column?|local| |
-|source-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|none?|"Moonbeam" or 'Moonbeam'| case-sensitive|
-|destination-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|none?|"Avalanche" or 'Avalanche'| case-sensitive|
-|message|any string|?|"Hello World!" or 'Hello World!'| |
-|amount|any whole number? take decimals?|none?|53| |
-|account|any wallet address?|none?|0xBa86A5719722B02a5D5e388999C25f3333c7A9fb| case-sensitive.|
+|network|local, testnet|no default|local| |
+|source-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|`Avalanche`|"Moonbeam" or 'Moonbeam'| case-sensitive|
+|destination-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|`Fantom`|"Avalanche" or 'Avalanche'| case-sensitive|
+|message for call-contract|any string|`Hello ${destination.name} from ${source.name}, it is ${new Date().toLocaleTimeString()}.`|'Hello World!'| |
+|message for nonced-execution and send-ack|any string|`Hello, the time is ${time}.`|'Hello World!'| |
+|amount|integer or float|`10`|53|Any non-integer is rounded down to the nearest integer.|
+|account|any wallet address|no default|0xBa86A5719722B02a5D5e388999C25f3333c7A9fb| case-sensitive.|
 
-2. Run the deploy and test code.
+2. Run the deploy and test code. To use defaults, substitute ${} for any or all of the variables.
 
 ### Call contract
 
@@ -60,11 +55,11 @@ This dApp relays a message from source-chain to destination-chain.
 
 1. To deploy the dApp, run:
 
-  `node scripts/deploy examples/call-contract <local|testnet>`
+  `node scripts/deploy examples/call-contract [local|testnet]`
 
 2. To test it, run:
 
-  `node scripts/test examples/call-contract <local|testnet> "<source-chain>" "<destination-chain>" "<message>"`
+  `node scripts/test examples/call-contract [local|testnet] "<source-chain>" "<destination-chain>" "<message>"`
 
 #### Example
 
@@ -72,19 +67,17 @@ Run:
 
 ```
 node scripts/deploy examples/call-contract local
-node scripts/test examples/call-contract local "Moonbeam" "Avalanche" "Hello World!"
+node scripts/test examples/call-contract local "Moonbeam" "Avalanche" 'Hello World!'
 ```
 
 Result:
 
 ```
---- Initially ---
+--- Initially ---›
 value at Avalanche is
 --- After ---
 value at Avalanche is Hello World!
 ```
-
-3. To share your code cross-chain, run `yarn call-contract`.
 
 ### Call contract with token
 
@@ -92,11 +85,11 @@ This dApp sends aUSDC from source-chain to destination-chain and distributes it 
 
 1. To deploy the dApp, run:
 
-  `node scripts/deploy examples/call-contract-with-token <local|testnet>`
+  `node scripts/deploy examples/call-contract-with-token [local|testnet]`
 
 2. To test it, run:
 
-  `node scripts/test examples/call-contract-with-token <local|testnet> "<source-chain>" "<destination-chain>" <amount> "<account>" "<account2>"...`
+  `node scripts/test examples/call-contract-with-token [local|testnet] "<source-chain>" "<destination-chain>" <amount> <account> "<account2>"...`
 
 #### Example
 
@@ -104,13 +97,14 @@ Run:
 
 ```
 node scripts/deploy examples/call-contract-with-token local
-node scripts/test examples/call-contract-with-token local "Moonbeam" "Ethereum" 1 0xAF2696E6bcAd891Cb3C17B63365Bd32Eda24c1aA ?
+node scripts/test examples/call-contract-with-token local "Moonbeam" "Ethereum" 1 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb  0xAF2696E6bcAd891Cb3C17B63365Bd32Eda24c1aA
 ```
 
 Result:
 
 ```
 --- Initially ---
+0xBa86A5719722B02a5D5e388999C25f3333c7A9fb has 100 aUSDC
 0xAF2696E6bcAd891Cb3C17B63365Bd32Eda24c1aA has 0 aUSDC
 ```
 
@@ -120,11 +114,11 @@ This dApp mints some token at source-chain and has it sent to destination-chain.
 
 1. To deploy the dApp, run:
 
-  `node scripts/deploy examples/cross-chain-token <local|testnet>`
+  `node scripts/deploy examples/cross-chain-token [local|testnet]`
 
 2. To test it, run:
 
-  `node scripts/test examples/cross-chain-token <local|testnet> "<source-chain>" "<destination-chain>" <amount>`
+  `node scripts/test examples/cross-chain-token [local|testnet] "<source-chain>" "<destination-chain>" <amount>`
 
 #### Example
 
@@ -157,7 +151,7 @@ This dApp sends aUSDC from source-chain to destination-chain. Run it on testnet.
 
 2. Run:
 
-  `node scripts/test examples/deposit-address <testnet> "<source-chain>" "<destination-chain>" <amount>`
+  `node scripts/test examples/deposit-address testnet "<source-chain>" "<destination-chain>" <amount>`
 
 Deposit-address is only a send transaction. There is no smart contract to deploy.
 
@@ -175,7 +169,7 @@ This dApp informs destination-chain of the last header of source-chain.
 
 1. To deploy the dApp, run:
 
-  `node scripts/deploy examples/headers <local|testnet>`
+  `node scripts/deploy examples/headers [local|testnet]`
 
 2. To test it, run:
 
@@ -202,15 +196,15 @@ This dApp sends the NFT that was originally minted at source-chain to destinatio
 
 1. To deploy the dApp, run:
 
-  `node scripts/deploy examples/nft-linker <local|testnet>`
+  `node scripts/deploy examples/nft-linker [local|testnet]`
 
   A single NFT is minted to the deployer (`0xBa86A5719722B02a5D5e388999C25f3333c7A9fb`) on each chain.
 
 2. To test it, run:
 
-  `node scripts/test examples/nft-linker <local|testnet> "<source-chain>" "<destination-chain>"`
+  `node scripts/test examples/nft-linker [local|testnet] "<source-chain>" "<destination-chain>"`
 
-  Don't worry about sending a duplicate NFT to a chain. The dApp fails when the NFT is already at the destination-chain.
+  It's not possible to send a duplicate NFT to a chain. The dApp fails when the NFT is already at the destination-chain.
 
 #### Example
 
@@ -244,11 +238,11 @@ This dApp sends a message from source-chain to destination-chain.
 
 1. To deploy the dApp, run:
 
-  `node scripts/deploy examples/nonced-execution <local|testnet>`
+  `node scripts/deploy examples/nonced-execution [local|testnet]`
 
 2. To test it, run:
 
-  `node scripts/test examples/nonced-execution <local|testnet> "<source-chain>" "<destination-chain>" <message>`
+  `node scripts/test examples/nonced-execution [local|testnet] "<source-chain>" "<destination-chain>" <message>`
 
 #### Example
 
@@ -274,11 +268,11 @@ This dApp sends a message from source-chain to destination-chain.
 
 1. To deploy the dApp, run:
 
-  `node scripts/deploy examples/send-ack <local|testnet>`
+  `node scripts/deploy examples/send-ack [local|testnet]`
 
 2. To test it, run:
 
-  `node scripts/test examples/send-ack <local|testnet> "<source-chain>" "<destination-chain>" "<message>"`
+  `node scripts/test examples/send-ack [local|testnet] "<source-chain>" "<destination-chain>" "<message>"`
 
 #### Example
 
@@ -307,9 +301,9 @@ This dApp sends aUSDC from the source to the destination. Run it on testnet. To 
 
 2. Run:
 
-  `node scripts/test examples/send-token <testnet> "<source-chain>" "<destination-chain>" <amount>`
+  `node scripts/test examples/send-token testnet "<source-chain>" "<destination-chain>" <amount>`
 
-  Send-token is a simple send transaction. There is no smart contract to deploy.
+  Send-token is only a send transaction. There is no smart contract to deploy.
 
 #### Example  
 
