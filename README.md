@@ -2,16 +2,14 @@
 
 ## Introduction
 
-This repo provides the code for several example dApps in the [Axelar Local Development Environment](https://github.com/axelarnetwork/axelar-local-dev). It contains both the JavaScript and the smart contract code (.sol files) for each example. To try them out:
+This repo provides the code for several example dApps in the [Axelar Local Development Environment](https://github.com/axelarnetwork/axelar-local-dev). It contains both the JavaScript and the smart contract code (.sol files) for each example. To try them:
 
 - Set up your system.
 - Deploy and test the dApps.
 
 **Note:** You may see example folders in this repo that are not described below. They are either for our use, such as the `temp` folder, or they are dApps in progress and we'll add a description when they're finished.
 
-## Prerequisites
-
-### One-time setup
+## One-time setup
 
 1. You'll need to have node.js installed to run network dApps. To make sure you have it installed, run `node -v`. If no version is returned, see [Nodejs.org/downloads](https://nodejs.org/en/download/).
 
@@ -25,13 +23,11 @@ This repo provides the code for several example dApps in the [Axelar Local Devel
     npm run build
     ```
 
-### To start a new work session
-
-Run a local node: cd to `axelar-local-gmp-examples` and run `node scripts/createLocal`. Leave this node running on a separate terminal window or tab before deploying and testing the dApps.
-
 ## Deploy and test each example
 
-1. Each example has several variables. Enter a valid value in the format of the example.
+1. To run a local node, cd to `axelar-local-gmp-examples` and run `node scripts/createLocal`. Leave this node running on a separate terminal window or tab before deploying and testing the dApps.
+
+2. Each example has several variables. Enter a valid value in the format of the example.
 
 | Variable| Valid Values| Default| Example| Notes|
 --- | --- | ---| ---| ---|
@@ -43,7 +39,7 @@ Run a local node: cd to `axelar-local-gmp-examples` and run `node scripts/create
 |amount|integer or float|`10`|53|Any non-integer is rounded down to the nearest integer.|
 |account|any wallet address|no default|0xBa86A5719722B02a5D5e388999C25f3333c7A9fb| case-sensitive.|
 
-2. Run the deploy and test code. To use defaults, substitute `${}` for any or all of the variables.
+3. Run the deploy and test code. To use defaults, substitute `${}` for any or all of the variables.
 
 ### Call contract
 
