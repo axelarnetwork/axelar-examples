@@ -29,9 +29,9 @@ Note: You may see example folders in this repo that are not described below. The
 
 ### To start a new work session
 
-1. To run a local node, cd to `axelar-local-gmp-examples`, and run `node scripts/createLocal`. Leave this node running on a separate terminal window or tab and open a new window or tab to deploy and test the dApps.
+1. To run a local node, cd to `axelar-local-gmp-examples`, and run `node scripts/createLocal`. Leave this node running on a separate terminal window or tab before deploying and testing the dApps.
 
-2. To make sure that the address we use for examples is funded on all five supported testnets, return to the first terminal window and run `node scripts/checkBalances`. We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. Alternatively, you can use `--address <address>` to specify a different address.
+We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. This address is funded by default when creating a local set of chains. To make sure that the address we use for examples is funded on all five supported testnets, run `node/printBalances`.
 
 ## Deploy and test each example
 
@@ -42,12 +42,12 @@ Note: You may see example folders in this repo that are not described below. The
 |network|local, testnet|no default|local| |
 |source-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|`Avalanche`|"Moonbeam" or 'Moonbeam'| case-sensitive|
 |destination-chain|Moonbeam, Avalanche, Fantom, Ethereum, and Polygon|`Fantom`|"Avalanche" or 'Avalanche'| case-sensitive|
-|message for call-contract|any string|`Hello ${destination.name} from ${source.name}, it is ${new Date().toLocaleTimeString()}.`|'Hello World!'| |
-|message for nonced-execution and send-ack|any string|`Hello, the time is ${time}.`|'Hello World!'| |
+|message for call-contract|any string|`Hello ${destination.name} from ${source.name}, it is ${new Date().toLocaleTimeString()}.`|'Hello World'| |
+|message for nonced-execution and send-ack|any string|`Hello, the time is ${time}.`|'Hello World'| |
 |amount|integer or float|`10`|53|Any non-integer is rounded down to the nearest integer.|
 |account|any wallet address|no default|0xBa86A5719722B02a5D5e388999C25f3333c7A9fb| case-sensitive.|
 
-2. Run the deploy and test code. To use defaults, substitute ${} for any or all of the variables.
+2. Run the deploy and test code. To use defaults, substitute `${}` for any or all of the variables, except address. For address, use `${address}`.
 
 ### Call contract
 
@@ -67,7 +67,7 @@ Run:
 
 ```
 node scripts/deploy examples/call-contract local
-node scripts/test examples/call-contract local "Moonbeam" "Avalanche" 'Hello World!'
+node scripts/test examples/call-contract local "Moonbeam" "Avalanche" 'Hello World'
 ```
 
 Result:
@@ -76,7 +76,7 @@ Result:
 --- Initially ---›
 value at Avalanche is
 --- After ---
-value at Avalanche is Hello World!
+value at Avalanche is Hello World
 ```
 
 ### Call contract with token
@@ -159,9 +159,14 @@ Deposit-address is only a send transaction. There is no smart contract to deploy
 
 Run:
 
-Fund....mint?
+`node scripts/test examples/deposit-address testnet ${} ${} ${}`
 
 Result:
+
+`--- Initially ---
+Balance at Avalanche is 0
+Balance at Fantom is 0
+`
 
 ### Headers
 
@@ -309,6 +314,12 @@ This dApp sends aUSDC from the source to the destination. Run it on testnet. To 
 
 Run:
 
-Fund?
+`node scripts/test examples/send-token testnet ${} ${} ${}`
 
 Result:
+
+```
+--- Initially ---
+Balance of 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb at Avalanche is 0
+Balance of 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb at Fantom is 0
+```
