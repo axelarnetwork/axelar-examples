@@ -65,7 +65,7 @@ node scripts/test examples/call-contract local "Moonbeam" "Avalanche" 'Hello Wor
 Result:
 
 ```
---- Initially ---›
+--- Initially ---
 value at Avalanche is
 --- After ---
 value at Avalanche is Hello World
