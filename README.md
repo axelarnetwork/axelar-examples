@@ -96,6 +96,8 @@ Result:
 
 ```
 --- Initially ---
+0xBa86A5719722B02a5D5e388999C25f3333c7A9fb has 100 aUSDC
+--- After ---
 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb has 199 aUSDC
 ```
 
