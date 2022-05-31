@@ -11,7 +11,7 @@ This repo provides the code for several example dApps in the [Axelar Local Devel
 
 ## One-time setup
 
-1. You'll need to have node.js installed to run network dApps. To make sure you have it installed, run `node -v`. If no version is returned, see [Nodejs.org/downloads](https://nodejs.org/en/download/).
+1. You'll need  node.js installed to run network dApps. To make sure you have it installed, run `node -v`. If no version is returned, see [Nodejs.org/downloads](https://nodejs.org/en/download/).
 
 2. Clone the repo with:
 
@@ -89,14 +89,14 @@ Run:
 
 ```
 node scripts/deploy examples/call-contract-with-token local
-node scripts/test examples/call-contract-with-token local "Moonbeam" "Ethereum" 1 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
+node scripts/test examples/call-contract-with-token local "Moonbeam" "Ethereum" 100 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
 ```
 
 Result:
 
 ```
 --- Initially ---
-0xBa86A5719722B02a5D5e388999C25f3333c7A9fb has 100 aUSDC
+0xBa86A5719722B02a5D5e388999C25f3333c7A9fb has 199 aUSDC
 ```
 
 ### Cross chain token
