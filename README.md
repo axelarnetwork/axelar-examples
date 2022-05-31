@@ -7,21 +7,19 @@ This repo provides the code for several example dApps in the [Axelar Local Devel
 - Set up your system.
 - Deploy and test the dApps.
 
-Note: You may see example folders in this repo that are not described below. They are either for our use, such as the `temp` folder, or they are dApps in progress and we'll add a description when they're finished.
+**Note:** You may see example folders in this repo that are not described below. They are either for our use, such as the `temp` folder, or they are dApps in progress and we'll add a description when they're finished.
 
 ## Prerequisites
 
 ### One-time setup
 
-1. You'll need to have node.js installed to run network dApps. To make sure you have it installed, run `node -v`. If no version is returned, see
-
-  [Nodejs.org/downloads](https://nodejs.org/en/download/).
+1. You'll need to have node.js installed to run network dApps. To make sure you have it installed, run `node -v`. If no version is returned, see [Nodejs.org/downloads](https://nodejs.org/en/download/).
 
 2. Clone the repo with:
 
  `git clone https://github.com/axelarnetwork/axelar-local-gmp-examples.git`.
 
- 3. Build contracts and tests (The update and install take a few minutes.):
+3. Build contracts and tests (The update and install take a few minutes.):
     ```
     npm update && npm install
     npm run build
@@ -95,7 +93,7 @@ Run:
 
 ```
 node scripts/deploy examples/call-contract-with-token local
-node scripts/test examples/call-contract-with-token local "Moonbeam" "Ethereum" 1 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb  0xAF2696E6bcAd891Cb3C17B63365Bd32Eda24c1aA
+node scripts/test examples/call-contract-with-token local "Moonbeam" "Ethereum" 1 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
 ```
 
 Result:
@@ -103,7 +101,6 @@ Result:
 ```
 --- Initially ---
 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb has 100 aUSDC
-0xAF2696E6bcAd891Cb3C17B63365Bd32Eda24c1aA has 0 aUSDC
 ```
 
 ### Cross chain token
