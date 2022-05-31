@@ -105,7 +105,7 @@ Result:
 
 ### Cross chain token
 
-This dApp mints some token at source-chain and has it sent to destination-chain.
+This dApp mints some token at source-chain and sends it to destination-chain.
 
 1. To deploy the dApp, run:
 
