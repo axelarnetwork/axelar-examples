@@ -29,9 +29,7 @@ Note: You may see example folders in this repo that are not described below. The
 
 ### To start a new work session
 
-Run a local node: cd to `axelar-local-gmp-examples`, and run `node scripts/createLocal`. Leave this node running on a separate terminal window or tab before deploying and testing the dApps.
-
-We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. This address is funded by default when creating a local set of chains. To make sure that the address we use for examples is funded on all five supported testnets, run `node/printBalances`.
+Run a local node: cd to `axelar-local-gmp-examples` and run `node scripts/createLocal`. Leave this node running on a separate terminal window or tab before deploying and testing the dApps.
 
 ## Deploy and test each example
 
@@ -147,7 +145,9 @@ Balance at Fantom is 1
 
 This dApp sends aUSDC from source-chain to destination-chain. Run it on testnet. To test it:
 
-1. Fund `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` with aUSDC.
+1. Make sure that `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` is funded with aUSDC.
+
+**Note:** We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. It's funded by default when you run `createLocal`. To make sure that it's funded on all five supported testnets, run `node/printBalances`.
 
 2. Run:
 
@@ -277,7 +277,7 @@ This dApp sends a message from source-chain to destination-chain.
 
 2. To test it, run:
 
-  `node scripts/test examples/send-ack [local|testnet] ${"source-chain"} ${"destination-chain"} ${'message"}`
+  `node scripts/test examples/send-ack [local|testnet] ${"source-chain"} ${"destination-chain"} ${'message'}`
 
 #### Example
 
@@ -302,7 +302,9 @@ SendAckReceiverImplementation at Moonbeam has 1 messages and the last one is "Re
 
 This dApp sends aUSDC from the source to the destination. Run it on testnet. To test it:
 
-1. Fund `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` with aUSDC.
+1. Make sure that `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` is funded with aUSDC.
+
+**Note:** We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. It's funded by default when you run `createLocal`. To make sure that it's funded on all five supported testnets, run `node/printBalances`.
 
 2. Run:
 
