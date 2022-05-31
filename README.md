@@ -59,7 +59,7 @@ This dApp relays a message from source-chain to destination-chain.
 
 2. To test it, run:
 
-  `node scripts/test examples/call-contract [local|testnet] "<source-chain>" "<destination-chain>" "<message>"`
+  `node scripts/test examples/call-contract [local|testnet] ${"source-chain"} ${"destination-chain"} ${'message'}`
 
 #### Example
 
@@ -89,7 +89,7 @@ This dApp sends aUSDC from source-chain to destination-chain and distributes it 
 
 2. To test it, run:
 
-  `node scripts/test examples/call-contract-with-token [local|testnet] "<source-chain>" "<destination-chain>" <amount> <account> "<account2>"...`
+  `node scripts/test examples/call-contract-with-token [local|testnet] ${"source-chain"} ${"destination-chain"} ${amount} ${account} ${"account2"}...`
 
 #### Example
 
@@ -118,7 +118,7 @@ This dApp mints some token at source-chain and has it sent to destination-chain.
 
 2. To test it, run:
 
-  `node scripts/test examples/cross-chain-token [local|testnet] "<source-chain>" "<destination-chain>" <amount>`
+  `node scripts/test examples/cross-chain-token [local|testnet] ${"source-chain"} ${"destination-chain}" ${amount}`
 
 #### Example
 
@@ -151,7 +151,7 @@ This dApp sends aUSDC from source-chain to destination-chain. Run it on testnet.
 
 2. Run:
 
-  `node scripts/test examples/deposit-address testnet "<source-chain>" "<destination-chain>" <amount>`
+  `node scripts/test examples/deposit-address testnet ${"source-chain"} ${"destination-chain"} ${amount}`
 
 Deposit-address is only a send transaction. There is no smart contract to deploy.
 
@@ -178,7 +178,7 @@ This dApp informs destination-chain of the last header of source-chain.
 
 2. To test it, run:
 
-  `node scripts/test examples/headers <local|testnet> "<source-chain>" "<destination-chain>"`
+  `node scripts/test examples/headers <local|testnet> ${"source-chain"} ${"destination-chain"}`
 
 #### Example
 
@@ -207,7 +207,7 @@ This dApp sends the NFT that was originally minted at source-chain to destinatio
 
 2. To test it, run:
 
-  `node scripts/test examples/nft-linker [local|testnet] "<source-chain>" "<destination-chain>"`
+  `node scripts/test examples/nft-linker [local|testnet] ${"source-chain"} ${"destination-chain"}`
 
   It's not possible to send a duplicate NFT to a chain. The dApp fails when the NFT is already at the destination-chain.
 
@@ -247,7 +247,7 @@ This dApp sends a message from source-chain to destination-chain.
 
 2. To test it, run:
 
-  `node scripts/test examples/nonced-execution [local|testnet] "<source-chain>" "<destination-chain>" <message>`
+  `node scripts/test examples/nonced-execution [local|testnet] ${"source-chain"} ${"destination-chain"} ${message}`
 
 #### Example
 
@@ -277,7 +277,7 @@ This dApp sends a message from source-chain to destination-chain.
 
 2. To test it, run:
 
-  `node scripts/test examples/send-ack [local|testnet] "<source-chain>" "<destination-chain>" "<message>"`
+  `node scripts/test examples/send-ack [local|testnet] ${"source-chain"} ${"destination-chain"} ${'message"}`
 
 #### Example
 
@@ -306,7 +306,7 @@ This dApp sends aUSDC from the source to the destination. Run it on testnet. To 
 
 2. Run:
 
-  `node scripts/test examples/send-token testnet "<source-chain>" "<destination-chain>" <amount>`
+  `node scripts/test examples/send-token testnet ${"source-chain"} ${"destination-chain"} ${amount}`
 
   Send-token is only a send transaction. There is no smart contract to deploy.
 
