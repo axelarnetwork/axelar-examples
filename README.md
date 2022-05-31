@@ -47,7 +47,7 @@ We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examp
 |amount|integer or float|`10`|53|Any non-integer is rounded down to the nearest integer.|
 |account|any wallet address|no default|0xBa86A5719722B02a5D5e388999C25f3333c7A9fb| case-sensitive.|
 
-2. Run the deploy and test code. To use defaults, substitute `${}` for any or all of the variables, except address. For address, use `${address}`.
+2. Run the deploy and test code. To use defaults, substitute `${}` for any or all of the variables.
 
 ### Call contract
 
