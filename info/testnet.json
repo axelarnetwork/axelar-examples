@@ -8,8 +8,8 @@
     "tokenName": "Ether",
     "tokenSymbol": "ETH",
     "executableSample": "0xF36C15dD3CBCf86D383704200eA8D1906A01A05f",
-    "constAddressDeployer": "0xBb2DC9A3fd0E738F2560635cfe522afFA7254A27",
-    "crossChainToken": "0x585b704852B46F8A0e92c301561511cDCcA0Cc55"
+    "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
+    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
   },
   {
     "name": "Avalanche",
@@ -20,8 +20,8 @@
     "tokenName": "Avax",
     "tokenSymbol": "AVAX",
     "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4",
-    "constAddressDeployer": "0xBb2DC9A3fd0E738F2560635cfe522afFA7254A27",
-    "crossChainToken": "0x585b704852B46F8A0e92c301561511cDCcA0Cc55"
+    "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
+    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
   },
   {
     "name": "Fantom",
@@ -32,8 +32,8 @@
     "tokenName": "Fantom",
     "tokenSymbol": "FTM",
     "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4",
-    "constAddressDeployer": "0xBb2DC9A3fd0E738F2560635cfe522afFA7254A27",
-    "crossChainToken": "0x585b704852B46F8A0e92c301561511cDCcA0Cc55"
+    "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
+    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
   },
   {
     "name": "Polygon",
@@ -44,8 +44,8 @@
     "tokenName": "Matic",
     "tokenSymbol": "MATIC",
     "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4",
-    "constAddressDeployer": "0xBb2DC9A3fd0E738F2560635cfe522afFA7254A27",
-    "crossChainToken": "0x585b704852B46F8A0e92c301561511cDCcA0Cc55"
+    "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
+    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
   },
   {
     "name": "Moonbeam",
@@ -56,7 +56,7 @@
     "tokenName": "DEV",
     "tokenSymbol": "DEV",
     "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4",
-    "constAddressDeployer": "0xBb2DC9A3fd0E738F2560635cfe522afFA7254A27",
-    "crossChainToken": "0x585b704852B46F8A0e92c301561511cDCcA0Cc55"
+    "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
+    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
   }
 ]
