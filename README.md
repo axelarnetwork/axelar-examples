@@ -81,7 +81,7 @@ This dApp sends aUSDC from source-chain to destination-chain and distributes it 
 
 2. To test it, run:
 
-  `node scripts/test examples/call-contract-with-token [local|testnet] ${"source-chain"} ${"destination-chain"} ${amount} ${account} ${"account2"}...`
+  `node scripts/test examples/call-contract-with-token [local|testnet] ${"source-chain"} ${"destination-chain"} ${amount} ${account} ${account2}...`
 
 #### Example
 
@@ -255,16 +255,16 @@ Run:
 
 ```
 node scripts/deploy examples/nonced-execution local
-node scripts/test examples/nonced-execution local "Polygon" "Ethereum" 0000
+node scripts/test examples/nonced-execution local ${} ${} ${}
 ```
 
 Result:
 
 ```
 --- Initially ---
-Last message sent from Polygon@0xBa86A5719722B02a5D5e388999C25f3333c7A9fb to Ethereum was "" with a nonce of -1.
+Last message sent from Avalanche@0xBa86A5719722B02a5D5e388999C25f3333c7A9fb to Fantom was "" with a nonce of -1.
 --- After ---
-Last message sent from Polygon@0xBa86A5719722B02a5D5e388999C25f3333c7A9fb to Ethereum was "0000" with a nonce of 0.
+Last message sent from Avalanche@0xBa86A5719722B02a5D5e388999C25f3333c7A9fb to Fantom was "Hello, the time is 1654191658288." with a nonce of 0.
 ```
 
 ### Send ack
@@ -285,7 +285,7 @@ Run:
 
 ```
 node scripts/deploy examples/send-ack local
-node scripts/test examples/send-ack local "Fantom" "Moonbeam" "Received"
+node scripts/test examples/send-ack local "Fantom" "Moonbeam" 'Received'
 ```
 
 Result:
