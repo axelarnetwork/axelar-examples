@@ -247,7 +247,7 @@ This dApp sends a message from source-chain to destination-chain.
 
 2. To test it, run:
 
-  `node scripts/test examples/nonced-execution [local|testnet] ${"source-chain"} ${"destination-chain"} ${message}`
+  `node scripts/test examples/nonced-execution [local|testnet] ${"source-chain"} ${"destination-chain"} ${'message'}`
 
 #### Example
 
