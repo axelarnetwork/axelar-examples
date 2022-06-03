@@ -25,7 +25,7 @@ contract ERC20CrossChain is IAxelarExecutable, IERC20CrossChain, ERC20 {
         string memory symbol_,
         uint8 decimals_
     )
-    IAxelarExecutable(address(0)) ERC20(name_, symbol, decimals){}
+    IAxelarExecutable(address(0)) ERC20(name_, symbol, decimals_){}
 
     function init(address gateway_, address gasReceiver_) external {
         if(address(gateway) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
