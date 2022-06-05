@@ -39,7 +39,11 @@ This repo provides the code for several example dApps in the [Axelar Local Devel
 |amount|integer or float|`10`|53|Any non-integer is rounded down to the nearest integer.|
 |account|any wallet address|no default|0xBa86A5719722B02a5D5e388999C25f3333c7A9fb| case-sensitive.|
 
-3. Run the deploy and test code. To use defaults, substitute `${}` for any or all of the variables.
+3. Run the deploy and test code.
+
+   To use defaults, substitute `${}` for any or all of the variables.
+
+   To try `deposit-address` and `send-token` you'll need access to the Axelar testnet, see [Axelar Incentivized Testnet Signup](https://axelar.network/axelar-network-opens-registration-for-its-incentivized-testnet).
 
 ### Call contract
 
