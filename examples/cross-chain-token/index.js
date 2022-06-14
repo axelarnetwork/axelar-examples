@@ -1,7 +1,7 @@
 'use strict';
 
 const { getDefaultProvider, Contract, constants: { AddressZero } } = require('ethers');
-const { deployContractConstant } = require('../../scripts/utils.js');
+const { deployAndInitContractConstant } = require('axelar-utils-solidity');
 
 const ERC20CrossChain = require('../../build/ERC20CrossChain.json');
 
@@ -11,14 +11,14 @@ const decimals = 13;
 
 async function deploy(chain, wallet) {
     console.log(`Deploying ERC20CrossChain for ${chain.name}.`);
-    const contract = await deployContractConstant(
+    const contract = await deployAndInitContractConstant(
         chain.constAddressDeployer, 
         wallet, 
         ERC20CrossChain, 
         'cross-chain-token',
         [name, symbol, decimals],
+        [chain.gateway, chain.gasReceiver],
     );
-    await (await contract.init(chain.gateway, chain.gasReceiver)).wait();
     chain.crossChainToken = contract.address;
     console.log(`Deployed ERC20CrossChain for ${chain.name} at ${chain.crossChainToken}.`);
 }
