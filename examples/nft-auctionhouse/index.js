@@ -5,11 +5,12 @@ const { utils: { deployContract }} = require('@axelar-network/axelar-local-dev')
 const mint = require('./mint');
 const ownerOf = require('./ownerOf');
 const bid = require('./bid');
+const bidRemote = require('./bidRemote');
 const auction = require('./auction');
 const resolveAuction = require('./resolveAuction');
 
 const ERC721 = require('../../build/ERC721Demo.json');
-const NftAuctionHouse = require('../../build/NftAuctionHouse.json');
+const NftAuctionHouse = require('../../build/NftAuctionHouseRemote.json');
 const IERC20 = require('../../build/IERC20.json');
 const IAxelarGateway = require('../../build/IAxelarGateway.json');
 
@@ -22,7 +23,7 @@ async function deploy(chain, wallet) {
     console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721}.`);
     console.log(`Deploying NftAuctionhouse for ${chain.name}.`);
     const gateway = new Contract(chain.gateway, IAxelarGateway.abi, wallet);
-    const contract = await deployContract(wallet, NftAuctionHouse, [await gateway.tokenAddresses('aUSDC')]);
+    const contract = await deployContract(wallet, NftAuctionHouse, [gateway.address, chain.gasReceiver, await gateway.tokenAddresses('aUSDC')]);
     chain.nftAuctionhouse = contract.address;
     console.log(`Deployed NftAuctionhouse for ${chain.name} at ${chain.nftAuctionhouse}.`);
 }
@@ -47,6 +48,17 @@ async function test(chains, wallet, options) {
         
         const gateway = new Contract(chain.gateway, IAxelarGateway.abi, chain.wallet);
         chain.usdc = new Contract(await gateway.tokenAddresses('aUSDC'), IERC20.abi, chain.wallet);
+
+        chain.bidder = new Wallet(keccak256(defaultAbiCoder.encode(['string'], ['bidder-' + chain.name])), chain.provider)
+        
+        console.log(`Funding Bidder ${chain.bidder.address}`);
+        await (await chain.wallet.sendTransaction({
+            to: chain.bidder.address,
+            value: BigInt(1e18),
+        })).wait();
+        const deficit = 11e6 - await chain.usdc.balanceOf(chain.bidder.address);
+        if(deficit > 0)
+            await (await chain.usdc.transfer(chain.bidder.address, deficit)).wait();
     }
 
     const firstUnminted = async (chain) => {
@@ -58,65 +70,67 @@ async function test(chains, wallet, options) {
             }
         }
     }
-    const chain = chains.find(chain => chain.name == (args[0] || 'Ethereum'));
-    const tokenId = args[1] || await firstUnminted(chain);
+    const destination = chains.find(chain => chain.name == (args[1] || 'Avalanche'));
+    const tokenId = args[2] || await firstUnminted(destination);
     console.log(tokenId);
     function sleep(ms) {
         return new Promise((resolve)=> {
             setTimeout(() => {resolve()}, ms);
         })
     }
-    const auctioneer = new Wallet(keccak256(defaultAbiCoder.encode(['string'], ['auctioneer'])) , chain.provider);
+    const auctioneer = new Wallet(keccak256(defaultAbiCoder.encode(['string'], ['auctioneer'])) , destination.provider);
 
     console.log(`Funding Auctioneer ${auctioneer.address}`);
-    await (await chain.wallet.sendTransaction({
+    await (await destination.wallet.sendTransaction({
         to: auctioneer.address,
         value: BigInt(1e18),
     })).wait();
-    const bidders = [];
-    for(let i=0; i<5; i++) {
-        const bidder = new Wallet(keccak256(defaultAbiCoder.encode(['string'], ['bidder-'+i])), chain.provider)
-        
-        console.log(`Funding Bidder ${bidder.address}`);
-        await (await chain.wallet.sendTransaction({
-            to: bidder.address,
-            value: BigInt(1e18),
-        })).wait();
-        await (await chain.usdc.transfer(bidder.address, 1e6)).wait();
-        bidders.push(bidder);
-    }
+
     
 
     async function print() {
-        console.log(`Auctioneer has ${await chain.usdc.balanceOf(auctioneer.address)}.`);
-        for(const i in bidders) {
-            const bidder = bidders[i]
-            console.log(`Bidder ${i} has ${await chain.usdc.balanceOf(bidder.address)}.`);
+        console.log(`Auctioneer has ${await destination.usdc.balanceOf(auctioneer.address)}.`);
+        for(const chain of chains) {
+            const bidder = chain.bidder
+            console.log(`Bidder at ${chain.name} has ${await chain.usdc.balanceOf(bidder.address)}.`);
         }
     }
 
     await print();
 
     console.log(`Minting ${tokenId}`);
-    await mint(chain, auctioneer.privateKey, tokenId);
+    await mint(destination, auctioneer.privateKey, tokenId);
     console.log(`Auctioning ${tokenId}`);
-    await auction(chain, auctioneer.privateKey, tokenId, Math.floor(new Date().getTime() / 1000 + 1));
+    await auction(destination, auctioneer.privateKey, tokenId, Math.floor(new Date().getTime() / 1000 + 10));
 
-    for(const bidder of bidders) {
-        console.log(`${bidder.address} is bidding.`);
-        const balance = await chain.usdc.balanceOf(bidder.address);
-        await bid(chain, bidder.privateKey, tokenId, 0);
-        const spent = balance - await chain.usdc.balanceOf(bidder.address);
+    for(const chain of chains) {
+        console.log(`${chain.bidder.address} from ${chain.name} is bidding.`);
+        const balance = await chain.usdc.balanceOf(chain.bidder.address);
+        if(chain == destination) {
+            await bid(chain, chain.bidder.privateKey, tokenId, 0);
+        } else {
+            await bidRemote(chain, destination, chain.bidder.privateKey, tokenId, 0);
+        }
+        const spent = balance - await chain.usdc.balanceOf(chain.bidder.address);
         console.log(`Bid ${spent}.`);
     }
-    await sleep(2000);
-    await (await chain.wallet.sendTransaction({
+    while(await destination.auctionhouse.isAuctionRunning(destination.erc721contract.address, tokenId)) {
+        console.log('waiting for auction end.');
+        await sleep(1000);
+        await (await destination.wallet.sendTransaction({
+            to: wallet.address,
+            value: 0,
+        })).wait();
+    }
+    await sleep(1000);
+    await (await destination.wallet.sendTransaction({
         to: wallet.address,
         value: 0,
     })).wait();
     
-    await resolveAuction(chain, wallet.privateKey, tokenId);
-    console.log(`${await ownerOf(chain, tokenId)} won the auction.`);
+    await resolveAuction(destination, wallet.privateKey, tokenId);
+    const winner = await ownerOf(destination, tokenId) 
+    console.log(`Bidder at ${chains.find(chain => (chain.bidder.address == winner)).name} (${winner}) won the auction.`);
     await print();
 }
 

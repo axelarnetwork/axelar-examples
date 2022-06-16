@@ -17,15 +17,17 @@ async function bidRemote (sourceChain, destinationChain, private_key, tokenId, a
     const usdc = new Contract(await gateway.tokenAddresses('aUSDC'), IERC20.abi, wallet);
     const auctionhouse = new Contract(sourceChain.nftAuctionhouse, NftAuctionhouse.abi, wallet);
 
+
+    const destinationProvider = getDefaultProvider(destinationChain.rpc);
+    const destinationAuctionhouse = new Contract(destinationChain.nftAuctionhouse, NftAuctionhouse.abi, destinationProvider);
+    const lastBid = await destinationAuctionhouse.bids(destinationChain.erc721, tokenId);
+
     if(amount == 0) {   
-        const destinationProvider = getDefaultProvider(destinationChain.rpc);
-        const auctionhouse = new Contract(destinationChain.nftAuctionhouse, NftAuctionhouse.abi, destinationProvider);
-        const bid = await auctionhouse.bids(destinationChain.erc721, tokenId);
-        const minAmount = await auctionhouse.minAmounts(destinationChain.erc721, tokenId);
-        if(bid == 0) {
-            amount = BigInt(minAmount) == BigInt(await auctionhouse.NO_MIN()) ? 100 : minAmount;
+        const minAmount = await destinationAuctionhouse.minAmounts(destinationChain.erc721, tokenId);
+        if(lastBid == 0) {
+            amount = BigInt(minAmount) == BigInt(await destinationAuctionhouse.NO_MIN()) ? 3e6 : minAmount;
         } else {
-            amount = Math.floor(bid * 4 / 3 + 1);
+            amount = Math.floor(lastBid * 4 / 3 + 1);
         }
     }
     const gasLimit = 3e5;
@@ -33,15 +35,6 @@ async function bidRemote (sourceChain, destinationChain, private_key, tokenId, a
 
     const fee = await options?.getFee(sourceChain, destinationChain, 'aUSDC') || 1e6;
     await (await usdc.approve(auctionhouse.address, amount+fee)).wait();
-    console.log(
-        destinationChain.name, 
-        destinationChain.nftAuctionhouse,
-        destinationChain.erc721, 
-        tokenId, 
-        wallet.address,
-        amount+fee,
-        {value: gasLimit * gasPrice}
-    );
     await (await auctionhouse.bidRemote(
         destinationChain.name, 
         destinationChain.nftAuctionhouse,
@@ -51,6 +44,19 @@ async function bidRemote (sourceChain, destinationChain, private_key, tokenId, a
         BigInt(amount+fee),
         {value: gasLimit * gasPrice}
     )).wait();
+
+    function sleep(ms) {
+        return new Promise((resolve)=> {
+            setTimeout(() => {resolve()}, ms);
+        })
+    }
+    while (true) {
+        const currentBid = await destinationAuctionhouse.bids(destinationChain.erc721, tokenId);
+        console.log(`Waiting for bid... Last bid: ${lastBid}, currentBid: ${currentBid}.`);
+        if(currentBid * 3 > lastBid * 4) break;
+        await sleep(1000);
+    }
+    
 }
 
 

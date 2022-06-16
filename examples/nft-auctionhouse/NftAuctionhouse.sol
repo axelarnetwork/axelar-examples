@@ -24,6 +24,10 @@ contract NftAuctionhouse {
     constructor(address usdc_) {
         usdc = IERC20(usdc_);
     }
+    
+    function isAuctionRunning(address operator, uint256 tokenId) public view returns (bool) {
+        return deadlines[operator][tokenId] > block.timestamp;
+    }
 
     function auction(address operator, uint256 tokenId, uint256 minAmount, uint256 deadline) external {
         IERC721(operator).transferFrom(msg.sender, address(this), tokenId);
@@ -35,10 +39,10 @@ contract NftAuctionhouse {
 
     function bid(address operator, uint256 tokenId, uint256 amount) external {
         usdc.transferFrom(msg.sender, address(this), amount);
-        _bid(operator, tokenId, amount);
+        this._bid(msg.sender, operator, tokenId, amount);
     }
 
-    function _bid(address operator, uint256 tokenId, uint256 amount) public onlySelf() {
+    function _bid(address bidder, address operator, uint256 tokenId, uint256 amount) public onlySelf() {
         uint256 minAmount = minAmounts[operator][tokenId];
         require(minAmount != 0, 'NOT_AUCTIONING');
         require(block.timestamp <= deadlines[operator][tokenId], 'AUCTION_EXPIRED');
@@ -48,7 +52,7 @@ contract NftAuctionhouse {
         if(prevBidder != address(0)) {
             _refundPrevBidder(prevBidder, prevBid, operator, tokenId);
         }
-        bidders[operator][tokenId] = msg.sender;
+        bidders[operator][tokenId] = bidder;
         bids[operator][tokenId] = amount;
     }
 

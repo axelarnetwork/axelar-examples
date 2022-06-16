@@ -6,7 +6,7 @@ const { Wallet, utils: {keccak256, defaultAbiCoder} } = require('ethers');
     const deployer_address = new Wallet(deployer_key).address;
 
     async function callback(chain, info) {
-        await chain.giveToken(deployer_address, 'aUSDC', 100e6);
+        await chain.giveToken(deployer_address, 'aUSDC', BigInt(1e18));
     }
 
     const toFund = [deployer_address]

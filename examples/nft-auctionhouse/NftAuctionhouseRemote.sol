@@ -7,7 +7,7 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol';
 import '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol';
 import './NftAuctionhouse.sol';
-import { AddressFormat } from '@axelar-network/axelar-cgp-solidity/src/util/AddressFormat.sol';
+import { AddressToString } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
 
 
 contract NftAuctionhouseRemote is NftAuctionhouse, IAxelarExecutable {
@@ -16,7 +16,7 @@ contract NftAuctionhouseRemote is NftAuctionhouse, IAxelarExecutable {
     mapping(address => mapping(uint256 => string)) sourceChains;
     mapping(address => mapping(uint256 => address)) refundAddresses;
 
-    using AddressFormat for address;
+    using AddressToString for address;
 
     constructor(address gateway_, address gasReceiver_, address usdc_) 
     IAxelarExecutable(gateway_) NftAuctionhouse(usdc_) {
@@ -30,7 +30,7 @@ contract NftAuctionhouseRemote is NftAuctionhouse, IAxelarExecutable {
         uint256 tokenId,
         address bidder,
         uint256 amount
-    ) external payable {revert('here');
+    ) external payable {
         usdc.transferFrom(msg.sender, address(this), amount);
         usdc.approve(address(gateway), amount);
         bytes memory payload = abi.encode(msg.sender, bidder, operator, tokenId);
@@ -67,9 +67,10 @@ contract NftAuctionhouseRemote is NftAuctionhouse, IAxelarExecutable {
             address operator, 
             uint256 tokenId
         ) = abi.decode(payload, (address, address, address, uint256));
-        (bool success, ) = address(this).call(abi.encodeWithSelector(this._bid.selector, operator, tokenId, amount));
+        (bool success, ) = address(this).call(abi.encodeWithSelector(this._bid.selector, address(this), operator, tokenId, amount));
         if(!success) {
-            gateway.sendToken(sourceChain, refundAddress.toLowerString(), tokenSymbol, amount);
+            usdc.approve(address(gateway), amount);
+            gateway.sendToken(sourceChain, refundAddress.toString(), tokenSymbol, amount);
         } else {
             biddersRemote[operator][tokenId] = bidder;
             sourceChains[operator][tokenId] = sourceChain;
@@ -84,9 +85,10 @@ contract NftAuctionhouseRemote is NftAuctionhouse, IAxelarExecutable {
         uint256 tokenId
     ) internal override {
         if(bidder == address(this)) {
+            usdc.approve(address(gateway), amount);
             gateway.sendToken(
                 sourceChains[operator][tokenId], 
-                refundAddresses[operator][tokenId].toLowerString(),
+                refundAddresses[operator][tokenId].toString(),
                 'aUSDC',
                 amount
             );
