@@ -69,19 +69,15 @@ contract DistributionENSExecutable is IAxelarExecutable {
         uint256 sentAmount = amount / recipients.length;
 
         for (uint256 i = 0; i < recipients.length; i++) {
+            bytes32 recipient = recipients[i];
             address ensResolvedAddress;
-            // doesn't seem to work
-            // int256 a = ~0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff;
-            // if (uint256(recipients[i]) & uint256(a) == 0) {
-            //     ensResolvedAddress = address(uint160(recipients[i]));
-            // } else {
-            //     IENS ens = IENS(ensRegistryAddress);
-            //     IENSResolver resolver = ens.resolver(recipients[i]);
-            //     ensResolvedAddress = resolver.addr(recipients[i]);
-            // }
-            IENS ens = IENS(ensRegistryAddress);
-            IENSResolver resolver = ens.resolver(recipients[i]);
-            ensResolvedAddress = resolver.addr(recipients[i]);
+            if (recipient == bytes32(uint256(uint160(uint256(recipient))))) {
+                ensResolvedAddress = address(uint160(uint256(recipient)));
+            } else {
+                IENS ens = IENS(ensRegistryAddress);
+                IENSResolver resolver = ens.resolver(recipients[i]);
+                ensResolvedAddress = resolver.addr(recipients[i]);
+            }
             IERC20(tokenAddress).transfer(ensResolvedAddress, sentAmount);
         }
     }
