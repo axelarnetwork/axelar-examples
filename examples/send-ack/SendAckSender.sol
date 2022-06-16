@@ -4,12 +4,11 @@ pragma solidity 0.8.9;
 
 import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol';
 import { IAxelarGasReceiver } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol';
-import { StringToAddress } from '../temp/StringToAddress.sol';
-import { AddressFormat } from '@axelar-network/axelar-cgp-solidity/src/util/AddressFormat.sol';
+import { StringToAddress, AddressToString } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
 
 contract SendAckSender is IAxelarExecutable {
     using StringToAddress for string;
-    using AddressFormat for address;
+    using AddressToString for address;
 
     error NotEnoughValueForGas();
 
@@ -46,7 +45,7 @@ contract SendAckSender is IAxelarExecutable {
                 (address(this), destinationChain, contractAddress, modifiedPayload, msg.sender);
             if(msg.value > gasForRemote) {
                 gasReceiver.payNativeGasForContractCall{value: msg.value - gasForRemote}
-                    (contractAddress.toAddress(), thisChain, address(this).toLowerString(), abi.encode(nonce_), msg.sender);
+                    (contractAddress.toAddress(), thisChain, address(this).toString(), abi.encode(nonce_), msg.sender);
             }
         }
 

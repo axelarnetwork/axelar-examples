@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@axelar-network/axelar-cgp-solidity": "3.2.0",
+    "@axelar-network/axelar-cgp-solidity": "3.2.1",
     "@axelar-network/axelar-local-dev": "git+https://github.com/axelarnetwork/axelar-local-dev.git",
     "@axelar-network/axelarjs-sdk": "^0.5.0-alpha.12",
     "@ensdomains/eth-ens-namehash": "^2.0.15",
@@ -26,6 +26,8 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "axelar-utils-solidity": "github:axelarnetwork/axelar-utils-solidity",
+    "ethereum-waffle": "^3.4.4",
     "typescript": "^4.6.3",
     "waffle": "^0.0.4"
   }

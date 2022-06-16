@@ -2,10 +2,10 @@
 
 const { getDefaultProvider, Contract, constants: { AddressZero }, utils: { keccak256, defaultAbiCoder } } = require('ethers');
 const { utils: { deployContract }} = require('@axelar-network/axelar-local-dev');
-const { deployAndInitContractConstant } = require('axelar-utils-solidity');
 
 const ERC721 = require('../../build/ERC721Demo.json');
-const NftLinker = require('../../build/NftLinker.json');
+const NftAuctionHouse = require('../../build/NftAuctionHouse.json');
+const IAxelarGateway = require('../../build/IAxelarGateway.json');
 
 const tokenId = 0;
 
@@ -14,23 +14,22 @@ async function deploy(chain, wallet) {
     const erc721 = await deployContract(wallet, ERC721, ['Test', 'TEST']);
     chain.erc721 = erc721.address;
     console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721}.`);
-    console.log(`Deploying NftLinker for ${chain.name}.`);
-    const contract = await deployAndInitContractConstant(
-        chain.constAddressDeployer, 
-        wallet, 
-        NftLinker, 
-        'nftLinkker',
-        [],
-        [chain.name, chain.gateway, chain.gasReceiver],
-    );
-    chain.nftLinker = contract.address;
-    console.log(`Deployed NftLinker for ${chain.name} at ${chain.nftLinker}.`);
-    console.log(`Minting token ${tokenId} for ${chain.name}`);
-    await (await erc721.mint(tokenId)).wait();
-    console.log(`Minted token ${tokenId} for ${chain.name}`);
+    console.log(`Deploying NftAuctionHouse for ${chain.name}.`);
+    const gateway = new Contract(chain.gateway, IAxelarGateway.abi, wallet);
+    const contract = await deployContract(wallet, NftAuctionHouse, [await gateway.tokenAddresses('aUSDC')]);
+    chain.nftAuctionhouse = contract.address;
+    console.log(`Deployed NftAuctionHouse for ${chain.name} at ${chain.nftAuctionhouse}.`);
 }
 
-
+async function postDeploy(chain, chains, wallet) {
+    /*const contract = new Contract(chain.nftLinker, NftLinker.abi, wallet);
+    for(const otherChain of chains) {
+        if(chain == otherChain) continue;
+        console.log(`Linking ${chain.name} -> ${otherChain.name}.`);
+        await (await contract.addLinker(otherChain.name, otherChain.nftLinker)).wait();
+        console.log(`Linked ${chain.name} -> ${otherChain.name}.`);
+    }*/
+}
 
 async function test(chains, wallet, options) {
     
@@ -112,4 +111,5 @@ async function test(chains, wallet, options) {
 module.exports = {
     deploy,
     test,
+    postDeploy,
 }

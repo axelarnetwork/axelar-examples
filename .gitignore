@@ -5,3 +5,4 @@ yarn-error.log
 info/local.json
 info/localWETH.json
 .DS_Store
+scripts/deployConst.js

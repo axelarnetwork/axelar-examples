@@ -3,28 +3,30 @@
 pragma solidity 0.8.9;
 
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
-import { AxelarGasReceiver } from '@axelar-network/axelar-cgp-solidity/src/gas-receiver/AxelarGasReceiver.sol';
 import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol';
+import { StringToAddress, AddressToString } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
 import { IERC20 } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IERC20.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGateway.sol';
+import { IAxelarGasReceiver } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol';
 
 contract NftLinker is ERC721, IAxelarExecutable {
+    using StringToAddress for string;
+    using AddressToString for address;
+
+    error AlreadyInitialized();
+
     mapping(uint256 => bytes) public original; //abi.encode(originaChain, operator, tokenId);
-    mapping(string => string) public linkers; //Who we trust.
     string chainName;   //To check if we are the source chain.
-    AxelarGasReceiver gasReceiver;
+    IAxelarGasReceiver gasReceiver;
 
-
-    //Contructor that initializes the ERC721 portion of our linker as well as knows where the gateway and gasReceiver are.
-    constructor(string memory chainName_, address gateway_, address gasReceiver_) 
-    ERC721('Axelar NFT Linker', 'ANL') 
-    IAxelarExecutable(gateway_) {
-        chainName = chainName_;
-        gasReceiver = AxelarGasReceiver(gasReceiver_);
+    constructor() IAxelarExecutable(address(0)) ERC721('Axelar NFT Linker', 'ANL') {
     }
 
-    //Used to add linkers. This should be only callably by trusted sources normally.
-    function addLinker(string memory chain, string memory linker) external {
-        linkers[chain] = linker;
+    function init(string memory chainName_, address gateway_, address gasReceiver_) external {
+        if(address(gateway) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
+        gasReceiver = IAxelarGasReceiver(gasReceiver_);
+        gateway = IAxelarGateway(gateway_);
+        chainName = chainName_;
     }
 
     //The main function users will interract with.
@@ -59,18 +61,19 @@ contract NftLinker is ERC721, IAxelarExecutable {
         ) = abi.decode(original[tokenId], (string, address, uint256));
         //Create the payload.
         bytes memory payload = abi.encode(originalChain, operator, originalTokenId, destinationAddress);
+        string memory stringAddress = address(this).toString();
         //Pay for gas. We could also send the contract call here but then the sourceAddress will be that of the gas receiver which is a problem later.
         gasReceiver.payNativeGasForContractCall{value:msg.value}(
             address(this),
             destinationChain, 
-            linkers[destinationChain], 
+            stringAddress, 
             payload,
             msg.sender
         );
         //Call the remote contract.
         gateway.callContract(
             destinationChain, 
-            linkers[destinationChain], 
+            stringAddress, 
             payload
         );
     }
@@ -83,26 +86,27 @@ contract NftLinker is ERC721, IAxelarExecutable {
     ) internal {
         //Create the payload.
         bytes memory payload = abi.encode(chainName, operator, tokenId, destinationAddress);
+        string memory stringAddress = address(this).toString();
         //Pay for gas. We could also send the contract call here but then the sourceAddress will be that of the gas receiver which is a problem later.
         gasReceiver.payNativeGasForContractCall{value: msg.value}(
             address(this),
             destinationChain, 
-            linkers[destinationChain], 
+            stringAddress, 
             payload,
             msg.sender
         );
         //Call remote contract.
         gateway.callContract(
             destinationChain, 
-            linkers[destinationChain], 
+            stringAddress, 
             payload
         );
     }
 
     //This is automatically executed by Axelar Microservices since gas was payed for.
-    function _execute(string memory sourceChain, string memory sourceAddress, bytes calldata payload) internal override {
+    function _execute(string memory /*sourceChain*/, string memory sourceAddress, bytes calldata payload) internal override {
         //Check that the sender is another token linker.
-        require(keccak256(bytes(sourceAddress)) == keccak256(bytes(linkers[sourceChain])), 'NOT_A_LINKER');
+        require(sourceAddress.toAddress() == address(this), 'NOT_A_LINKER');
         //Decode the payload.
         (
             string memory originalChain,

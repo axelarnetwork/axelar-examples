@@ -10,7 +10,7 @@ const ConstAddressDeployer = require('../build/ConstAddressDeployer.json');
 function getDepositAddress(env, source, destination, destinationAddress, symbol) {
     if(env == 'testnet') {
         const listing = {
-            'UST': 'uusd',
+            'aUSDC': 'uusdc',
         }
         const sdk = new AxelarAssetTransfer({
             environment: 'testnet',
@@ -60,8 +60,8 @@ async function deployContractConstant(deployerContractAddress, wallet, contract,
         contract.bytecode
     );
     const bytecode = (await factory.getDeployTransaction(...args)).data;
-    await (await deployerContract.connect(wallet).deploy(bytecode, salt)).wait();
-    const address = await deployerContract.predict(bytecode, salt);
+    await (await deployerContract.connect(wallet).deploy(bytecode, salt, {gasLimit: 2e6})).wait();
+    const address = await deployerContract.deployedAddress(bytecode, wallet.address, salt);
     return new Contract(address, contract.abi, wallet);
   };
   async function predictContractConstant (deployerContractAddress, wallet, contract, key, args = []) {
@@ -72,7 +72,7 @@ async function deployContractConstant(deployerContractAddress, wallet, contract,
         contract.bytecode
     );
     const bytecode = (await factory.getDeployTransaction(...args)).data;
-    return await deployerContract.predict(bytecode, salt);
+    return await deployerContract.deployedAddress(bytecode, wallet.address, salt);
   };
 
 module.exports = {

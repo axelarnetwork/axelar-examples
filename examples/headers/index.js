@@ -1,7 +1,7 @@
 'use strict';
 
 const { getDefaultProvider, Contract, constants: { AddressZero } } = require('ethers');
-const { utils: { deployContract }} = require('@axelar-network/axelar-local-dev');
+const { deployAndInitContractConstant } = require('axelar-utils-solidity');
 
 const Headers = require('../../build/Headers.json');
 const Gateway = require('../../build/IAxelarGateway.json');
@@ -9,18 +9,16 @@ const IERC20 = require('../../build/IERC20.json');
 
 async function deploy(chain, wallet) {
     console.log(`Deploying Headers for ${chain.name}.`);
-    const contract = await deployContract(wallet, Headers, [chain.gateway, chain.gasReceiver, 10]);
+    const contract = await deployAndInitContractConstant(
+        chain.constAddressDeployer, 
+        wallet, 
+        Headers, 
+        'headers',
+        [10],
+        [chain.gateway, chain.gasReceiver],
+    );
     chain.headers = contract.address;
-    console.log(`Deployed Headers for ${chain.name} at ${chain.executableSample}.`);
-}
-async function postDeploy(chain, chains, wallet) {
-    const contract = new Contract(chain.headers, Headers.abi, wallet);
-    for(const otherChain of chains) {
-        if(chain == otherChain) continue;
-        console.log(`Linking ${chain.name} -> ${otherChain.name}.`);
-        await (await contract.addSibling(otherChain.name, otherChain.headers)).wait();
-        console.log(`Linked ${chain.name} -> ${otherChain.name}.`);
-    }
+    console.log(`Deployed Headers for ${chain.name} at ${chain.headers}.`);
 }
 
 async function test(chains, wallet, options) {
@@ -31,8 +29,8 @@ async function test(chains, wallet, options) {
         chain.wallet = wallet.connect(chain.provider);
         chain.contract = new Contract(chain.headers, Headers.abi, chain.wallet);
         const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
-        const ustAddress = await gateway.tokenAddresses('UST');
-        chain.ust = new Contract(ustAddress, IERC20.abi, chain.wallet);
+        const usdcAddress = await gateway.tokenAddresses('aUSDC');
+        chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
     }
     const source = chains.find(chain => chain.name == (args[0] || 'Avalanche'));
     const destination = chains.find(chain =>chain.name == (args[1] || 'Fantom'));
@@ -45,15 +43,15 @@ async function test(chains, wallet, options) {
     }
 
     const gasLimit = 3e5;
-    const gasPrice = await getGasPrice(source, destination, source.ust.address);
+    const gasPrice = await getGasPrice(source, destination, source.usdc.address);
 
-    await (await source.ust.approve(
+    await (await source.usdc.approve(
         source.contract.address,
         BigInt(gasLimit * gasPrice),
     )).wait();
     
     const tx = await (await source.contract.updateRemoteHeaders(
-        source.ust.address,
+        source.usdc.address,
         [destination.name],
         [BigInt(gasLimit * gasPrice)],
     )).wait();
@@ -74,6 +72,5 @@ async function test(chains, wallet, options) {
 
 module.exports = {
     deploy,
-    postDeploy,
     test,
 }
