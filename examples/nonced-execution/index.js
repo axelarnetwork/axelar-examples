@@ -1,7 +1,7 @@
 'use strict';
 
 const { getDefaultProvider, Contract, constants: { AddressZero }, utils: { defaultAbiCoder } } = require('ethers');
-const { deployContractConstant, predictContractConstant } = require('../../scripts/utils.js');
+const { deployAndInitContractConstant, predictContractConstant} = require('axelar-utils-solidity');
 
 const CallSender = require('../../build/NoncedContractCallSender.json');
 const Executable = require('../../build/ExecutableImplementation.json');
@@ -21,26 +21,28 @@ async function deploy(chain, wallet) {
         'call-executable-'+time,
     );
 
-    const sender = await deployContractConstant(
+    const sender = await deployAndInitContractConstant(
         chain.constAddressDeployer, 
         wallet, 
         CallSender, 
         'call-sender-'+time,
+        [],
+        [chain.gateway, chain.gasReceiver, executableAddress],
     );
-    await (await sender.init(chain.gateway, chain.gasReceiver, executableAddress)).wait();
     chain.noncedSender = sender.address;
     console.log(`Deployed NoncedContractCallSender for ${chain.name} at ${chain.noncedSender}.`);
 
     console.log(`Deploying ExecutableImplementation for ${chain.name}.`);
-    const executable = await deployContractConstant(
+    const executable = await deployAndInitContractConstant(
         chain.constAddressDeployer, 
         wallet, 
         Executable, 
         'call-executable-'+time,
+        [],
+        [chain.gateway, sender.address],
     );
     if(executable.address.toLowerCase() != executableAddress.toLowerCase()) 
         throw new Error(`Not deployed as expected! ${executable.address} was supposed to be ${executableAddress}`);
-    await (await executable.init(chain.gateway, sender.address)).wait();
 
     chain.noncedExecutable = executable.address;
     console.log(`Deployed ExecutableImplementation for ${chain.name} at ${chain.noncedExecutable}.`);

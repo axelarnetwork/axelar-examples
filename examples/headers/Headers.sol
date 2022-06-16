@@ -4,28 +4,32 @@ pragma solidity 0.8.9;
 
 
 import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol';
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { IERC20 } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IERC20.sol';
-import { AxelarGasReceiver } from '@axelar-network/axelar-cgp-solidity/src/gas-receiver/AxelarGasReceiver.sol';
+import { StringToAddress, AddressToString } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGateway.sol';
+import { IAxelarGasReceiver } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol';
 
-contract Headers is IAxelarExecutable, Ownable {
+contract Headers is IAxelarExecutable {
+    using StringToAddress for string;
+    using AddressToString for address;
+
+    error AlreadyInitialized();
+
     uint256 public immutable length;
     uint256 public n;
     mapping(string => bytes32[]) public headersMap;
     mapping(string => uint256[]) public blocksMap;
-    AxelarGasReceiver gasReceiver;
-    mapping(string => string) public siblings;
+    IAxelarGasReceiver gasReceiver;
 
     //We need to know where the gateway is as well as where the gasReceiver is. length_ is the maximum number of headers to cache per chain.
-    constructor(address gateway_, address gasReceiver_, uint256 length_) IAxelarExecutable(gateway_) {
+    constructor(uint256 length_) IAxelarExecutable(address(0)) {
         length = length_;
-        gasReceiver = AxelarGasReceiver(gasReceiver_);
     }
 
-    //Use this to register additional siblings. Siblings are used to send headers to as well as to know who to trust for headers.
-    function addSibling(string memory chain_, string memory address_) external onlyOwner() {
-        require(bytes(siblings[chain_]).length == 0, 'SIBLING_EXISTS');
-        siblings[chain_] = address_;
+    function init(address gateway_, address gasReceiver_) external {
+        if(address(gateway) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
+        gasReceiver = IAxelarGasReceiver(gasReceiver_);
+        gateway = IAxelarGateway(gateway_);
     }
 
     //i_ here is how old the header to fetch is. i_=0 is the lastest header we have in store.
@@ -56,10 +60,11 @@ contract Headers is IAxelarExecutable, Ownable {
         for(uint256 i = 0; i < chains.length; i++) {
             //Pay gas to the gasReceiver to automatically fullfill the call.
             IERC20(token).approve(address(gasReceiver), gases[i]);
+            string memory thisAddress = address(this).toString();
             gasReceiver.payGasForContractCall(
                 address(this),
                 chains[i], 
-                siblings[chains[i]], 
+                thisAddress, 
                 payload,
                 token, 
                 gases[i],
@@ -67,7 +72,7 @@ contract Headers is IAxelarExecutable, Ownable {
             );
             gateway.callContract(
                 chains[i], 
-                siblings[chains[i]], 
+                thisAddress, 
                 payload
             );
         }
@@ -79,7 +84,7 @@ contract Headers is IAxelarExecutable, Ownable {
         bytes calldata payload
     ) internal override {
         //Ensure the sender is a sibling. There are more efficient way to do this.
-        require(keccak256(bytes(sourceAddress)) == keccak256(bytes(siblings[sourceChain])), 'WRONG_SENDER');
+        require(sourceAddress.toAddress() == address(this), 'WRONG_SENDER');
         (
             uint256 block_,
             bytes32 header_

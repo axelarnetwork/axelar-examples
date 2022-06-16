@@ -3,10 +3,8 @@
 pragma solidity 0.8.9;
 
 import { NoncedExecutable } from './NoncedExecutable.sol';
-import { AddressFormat } from '@axelar-network/axelar-cgp-solidity/src/util/AddressFormat.sol';
 
 contract ExecutableImplementation is NoncedExecutable {
-    using AddressFormat for address;
 
     mapping(string => mapping(address => mapping(uint256 => string))) public messages;
     // Override these.
