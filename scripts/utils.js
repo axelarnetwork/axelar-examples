@@ -5,7 +5,6 @@ const axelarLocal = require('@axelar-network/axelar-local-dev');
 const {
     AxelarAssetTransfer
 } = require("@axelar-network/axelarjs-sdk");
-const ConstAddressDeployer = require('../build/ConstAddressDeployer.json');
 
 function getDepositAddress(env, source, destination, destinationAddress, symbol) {
     if(env == 'testnet') {
@@ -49,35 +48,8 @@ async function getGasPrice(env, source, destination, tokenAddress) {
     const destPrice = 1e18*dest.gas_price*dest.token_price.usd;
     return destPrice / result.source_token.token_price.usd;
 }
-function getSaltFromKey(key) {
-    return keccak256(defaultAbiCoder.encode(['string'], [key]));
-}
-async function deployContractConstant(deployerContractAddress, wallet, contract, key, args = []) {
-    const deployerContract = new Contract(deployerContractAddress, ConstAddressDeployer.abi, wallet);
-    const salt = getSaltFromKey(key);
-    const factory = new ContractFactory(
-        contract.abi,
-        contract.bytecode
-    );
-    const bytecode = (await factory.getDeployTransaction(...args)).data;
-    await (await deployerContract.connect(wallet).deploy(bytecode, salt, {gasLimit: 2e6})).wait();
-    const address = await deployerContract.deployedAddress(bytecode, wallet.address, salt);
-    return new Contract(address, contract.abi, wallet);
-  };
-  async function predictContractConstant (deployerContractAddress, wallet, contract, key, args = []) {
-    const deployerContract = new Contract(deployerContractAddress, ConstAddressDeployer.abi, wallet);
-    const salt = getSaltFromKey(key);
-    const factory = new ContractFactory(
-        contract.abi,
-        contract.bytecode
-    );
-    const bytecode = (await factory.getDeployTransaction(...args)).data;
-    return await deployerContract.deployedAddress(bytecode, wallet.address, salt);
-  };
 
 module.exports = {
     getGasPrice,
     getDepositAddress,
-    deployContractConstant,
-    predictContractConstant,
 }
