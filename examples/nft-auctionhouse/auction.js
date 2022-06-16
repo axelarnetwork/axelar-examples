@@ -5,33 +5,22 @@ const { utils: { deployContract }} = require('@axelar-network/axelar-local-dev')
 
 const ERC721 = require('../../build/ERC721Demo.json');
 const NftAuctionhouse = require('../../build/NftAuctionhouse.json');
-const IERC20 = require('../../build/IERC20.json');
-const IAxelarGateway = require('../../build/IAxelarGateway.json');
 
 
-
-async function bid (chain, private_key, tokenId, amount) {
+async function auction(chain, private_key, tokenId, deadline, min) {
+    deadline = deadline || Math.floor(new Date().getTime()/1000 + 60);
+    min = min || 0;
     const provider = getDefaultProvider(chain.rpc);
     const wallet = new Wallet(private_key, provider);
     const erc721 = new Contract(chain.erc721, ERC721.abi, wallet);
-    const gateway = new Contract(chain.gateway, IAxelarGateway.abi, wallet);
-    const usdc = new Contract(await gateway.tokenAddresses('aUSDC'), IERC20.abi, wallet);
     const auctionhouse = new Contract(chain.nftAuctionhouse, NftAuctionhouse.abi, wallet);
-    if(amount == 0) {
-        const bid = await auctionhouse.bids(erc721.address, tokenId);
-        const minAmount = await auctionhouse.minAmounts(erc721.address, tokenId);
-        if(bid == 0) {
-            amount = minAmount == BigInt(await auctionhouse.NO_MIN()) ? 100 : minAmount;
-        } else {
-            amount = Math.floor(bid * 4 / 3 + 1);
-        }
-    }
-    await (await usdc.approve(auctionhouse.address, amount));
-    await (await auctionhouse.bid(erc721.address, tokenId, amount));
-}
+    
+    await (await erc721.approve(auctionhouse.address, tokenId));
 
+    await (await auctionhouse.auction(erc721.address, tokenId, min, deadline));
+};
 
-module.exports = bid;
+module.exports = auction;
 
 if (require.main === module) {
     const env = process.argv[2];
@@ -52,8 +41,10 @@ if (require.main === module) {
     const chainName = args[0];
     const private_key = args[1];
     const tokenId = BigInt(args[2]);
-    const amount = BigInt(args[3] || 0);
+    
     const chain = chains.find(chain => chain.name == chainName);
+    const deadline = BigInt(args[3] || Math.floor(new Date().getTime()/1000 + 60));
+    const min = BigInt(args[4] || 0);
 
-    bid(chain, private_key, tokenId, amount);
+    auction(chain, private_key, tokenId, deadline, min);
 }
