@@ -3,11 +3,11 @@
 pragma solidity 0.8.9;
 
 
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol';
-import { IERC20 } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IERC20.sol';
+import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
+import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
 import { StringToAddress, AddressToString } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGateway.sol';
-import { IAxelarGasReceiver } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 
 contract Headers is IAxelarExecutable {
     using StringToAddress for string;
@@ -19,7 +19,7 @@ contract Headers is IAxelarExecutable {
     uint256 public n;
     mapping(string => bytes32[]) public headersMap;
     mapping(string => uint256[]) public blocksMap;
-    IAxelarGasReceiver gasReceiver;
+    IAxelarGasService gasReceiver;
 
     //We need to know where the gateway is as well as where the gasReceiver is. length_ is the maximum number of headers to cache per chain.
     constructor(uint256 length_) IAxelarExecutable(address(0)) {
@@ -28,7 +28,7 @@ contract Headers is IAxelarExecutable {
 
     function init(address gateway_, address gasReceiver_) external {
         if(address(gateway) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
-        gasReceiver = IAxelarGasReceiver(gasReceiver_);
+        gasReceiver = IAxelarGasService(gasReceiver_);
         gateway = IAxelarGateway(gateway_);
     }
 

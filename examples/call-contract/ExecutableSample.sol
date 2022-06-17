@@ -2,18 +2,18 @@
 
 pragma solidity 0.8.9;
 
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol';
-import { AxelarGasReceiver } from '@axelar-network/axelar-cgp-solidity/src/gas-receiver/AxelarGasReceiver.sol';
-import { IERC20 } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IERC20.sol';
+import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
+import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
 
 contract ExecutableSample is IAxelarExecutable {
     string public value;
     string public sourceChain;
     string public sourceAddress;
-    AxelarGasReceiver gasReceiver;
+    IAxelarGasService gasReceiver;
 
     constructor(address gateway_, address gasReceiver_) IAxelarExecutable(gateway_) {
-        gasReceiver = AxelarGasReceiver(gasReceiver_);
+        gasReceiver = IAxelarGasService(gasReceiver_);
     }
 
     // Call this function to update the value of this contract along with all its siblings'.

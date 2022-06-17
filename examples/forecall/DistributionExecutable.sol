@@ -1,15 +1,15 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import {IAxelarExecutable} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol";
+import {IAxelarForecallable} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarForecallable.sol";
 import {IERC20} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol";
-import {IAxelarGasReceiver} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasReceiver.sol";
+import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 
-contract DistributionExecutable is IAxelarExecutable {
-   IAxelarGasReceiver gasReceiver;
+contract DistributionExecutable is IAxelarForecallable {
+   IAxelarGasService gasReceiver;
 
-    constructor(address _gateway, address _gasReceiver) IAxelarExecutable(_gateway) {
-        gasReceiver = IAxelarGasReceiver(_gasReceiver);
+    constructor(address _gateway, address _gasReceiver) IAxelarForecallable(_gateway) {
+        gasReceiver = IAxelarGasService(_gasReceiver);
     }
 
     function sendToMany(
@@ -50,5 +50,9 @@ contract DistributionExecutable is IAxelarExecutable {
         for (uint256 i = 0; i < recipients.length; i++) {
             IERC20(tokenAddress).transfer(recipients[i], sentAmount);
         }
+    }
+
+    function amountPostFee(uint256 amount) public override returns (uint256) {
+
     }
 }
