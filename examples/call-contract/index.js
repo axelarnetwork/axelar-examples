@@ -25,7 +25,7 @@ async function test(chains, wallet, options) {
     const message = args[2] || `Hello ${destination.name} from ${source.name}, it is ${new Date().toLocaleTimeString()}.`;
     
     async function print() {
-        console.log(`value at ${destination.name} is ${await destination.contract.value()}`)
+        console.log(`value at ${destination.name} is "${await destination.contract.value()}"`)
     }
     function sleep(ms) {
         return new Promise((resolve)=> {

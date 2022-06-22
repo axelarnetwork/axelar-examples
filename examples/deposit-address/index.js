@@ -26,7 +26,7 @@ async function test(chains, wallet, options = {}) {
     
     async function print() {
         console.log(`Balance at ${source.name} is ${await source.token.balanceOf(wallet.address)}`)
-        console.log(`Balance at ${destination.name} is ${await destination.token.balanceOf(wallet.address)}`)
+        console.log(`Balance at ${destination.name} is ${await destination.token.balanceOf(destinationAddress)}`)
     }
     function sleep(ms) {
         return new Promise((resolve)=> {
@@ -46,7 +46,7 @@ async function test(chains, wallet, options = {}) {
     
     while(true) {
         const newBalance = await destination.token.balanceOf(destinationAddress);
-        if(balance != newBalance) break;
+        if(Number(balance) != Number(newBalance)) break;
         await sleep(2000);
     }
 

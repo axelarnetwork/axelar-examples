@@ -11,7 +11,7 @@ const { createLocal } = require('../scripts/createLocal.js');
 const { test } = require('../scripts/test.js');
 const { deploy } = require('../scripts/deploy.js');
 const { stopAll, utils: {setLogger} } = require('@axelar-network/axelar-local-dev');
-const fs = require('fs-extra')
+const fs = require('fs-extra');
 
 const examples = [
     'call-contract',

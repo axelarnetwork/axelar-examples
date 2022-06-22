@@ -56,7 +56,6 @@ async function bidRemote (sourceChain, destinationChain, private_key, tokenId, a
         if(currentBid * 3 > lastBid * 4) break;
         await sleep(1000);
     }
-    
 }
 
 
