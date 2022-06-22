@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.9;
 
-import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/src//interfaces/IAxelarGateway.sol';
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/src//interfaces/IAxelarExecutable.sol';
-import { StringToAddress } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
+import {IAxelarGateway} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGateway.sol";
+import {IAxelarExecutable} from "@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol";
+import {StringToAddress} from "axelar-utils-solidity/src/StringAddressUtils.sol";
 
 abstract contract NoncedExecutable is IAxelarExecutable {
     using StringToAddress for string;
@@ -14,16 +14,14 @@ abstract contract NoncedExecutable is IAxelarExecutable {
 
     event WrongSourceAddress(string sourceAddress);
 
-    mapping (string => mapping (address => uint256)) public incomingNonces;
+    mapping(string => mapping(address => uint256)) public incomingNonces;
     address public senderContract;
 
     constructor() IAxelarExecutable(address(0)) {}
 
-    function init (address gateway_, address senderContract_) external virtual {
-        if(
-            address(gateway) != address(0) || 
-            senderContract != address(0)
-        ) revert AlreadyInitialized();
+    function init(address gateway_, address senderContract_) external virtual {
+        if (address(gateway) != address(0) || senderContract != address(0))
+            revert AlreadyInitialized();
         senderContract = senderContract_;
         gateway = IAxelarGateway(gateway_);
     }
@@ -37,12 +35,12 @@ abstract contract NoncedExecutable is IAxelarExecutable {
             emit WrongSourceAddress(sourceAddress);
             return;
         }
-        (
-            uint256 nonce,
-            address sender,
-            bytes memory newPayload
-        ) = abi.decode(payload, (uint256, address, bytes));
-        if(nonce != incomingNonces[sourceChain][sender]++) revert IncorrectNonce();
+        (uint256 nonce, address sender, bytes memory newPayload) = abi.decode(
+            payload,
+            (uint256, address, bytes)
+        );
+        if (nonce != incomingNonces[sourceChain][sender]++)
+            revert IncorrectNonce();
         gateway.callContract(sourceChain, sourceAddress, abi.encode(nonce));
         _executeNonced(sourceChain, sender, nonce, newPayload);
     }
@@ -58,13 +56,20 @@ abstract contract NoncedExecutable is IAxelarExecutable {
             emit WrongSourceAddress(sourceAddress);
             return;
         }
-        (
-            uint256 nonce,
-            address sender,
-            bytes memory newPayload
-        ) = abi.decode(payload, (uint256, address, bytes));
-        if (nonce != incomingNonces[sourceChain][sender]++) revert IncorrectNonce();
-        _executeNoncedWithToken(sourceChain, sender, nonce, newPayload, tokenSymbol, amount);
+        (uint256 nonce, address sender, bytes memory newPayload) = abi.decode(
+            payload,
+            (uint256, address, bytes)
+        );
+        if (nonce != incomingNonces[sourceChain][sender]++)
+            revert IncorrectNonce();
+        _executeNoncedWithToken(
+            sourceChain,
+            sender,
+            nonce,
+            newPayload,
+            tokenSymbol,
+            amount
+        );
     }
 
     // Override these.
@@ -83,5 +88,4 @@ abstract contract NoncedExecutable is IAxelarExecutable {
         string memory tokenSymbol,
         uint256 amount
     ) internal virtual {}
-
 }
