@@ -9,7 +9,6 @@ const {
 const Gateway = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
 const IERC20 = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
-
 async function test(chains, wallet, options = {}) {
     const args = options.args || [];
     const getDepositAddress = options.getDepositAddress;

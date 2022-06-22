@@ -11,7 +11,6 @@ const Headers = require('../../artifacts/examples/headers/Headers.sol/Headers.js
 const Gateway = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
 const IERC20 = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
-
 async function deploy(chain, wallet) {
     console.log(`Deploying Headers for ${chain.name}.`);
     const contract = await deployAndInitContractConstant(

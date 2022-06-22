@@ -15,7 +15,6 @@ const NftAuctionhouse = require('../../artifacts/examples/nft-auctionhouse/NftAu
 const IAxelarGateway = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
 const IERC20 = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
-
 async function bidRemote(sourceChain, destinationChain, private_key, tokenId, amount, options = null) {
     const provider = getDefaultProvider(sourceChain.rpc);
     const wallet = new Wallet(private_key, provider);
