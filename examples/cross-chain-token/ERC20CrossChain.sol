@@ -23,34 +23,33 @@ contract ERC20CrossChain is IAxelarExecutable, IERC20CrossChain, ERC20 {
         string memory name_,
         string memory symbol_,
         uint8 decimals_
-    )
-    IAxelarExecutable(address(0)) ERC20(name_, symbol, decimals_){}
+    ) IAxelarExecutable(address(0)) ERC20(name_, symbol, decimals_) {}
 
     function init(address gateway_, address gasReceiver_) external {
-        if(address(gateway) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
+        if (address(gateway) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
         gasReceiver = IAxelarGasService(gasReceiver_);
         gateway = IAxelarGateway(gateway_);
     }
 
     // This is for testing.
-    function giveMe(uint256 amount) external{
+    function giveMe(uint256 amount) external {
         _mint(msg.sender, amount);
     }
 
     function transferRemote(
-        string calldata destinationChain, 
-        address destinationAddress, 
+        string calldata destinationChain,
+        address destinationAddress,
         uint256 amount
     ) public payable override {
         _burn(msg.sender, amount);
         bytes memory payload = abi.encode(destinationAddress, amount);
         string memory stringAddress = address(this).toString();
-        if(msg.value > 0) {
-            gasReceiver.payNativeGasForContractCall{value: msg.value}(
-                address(this), 
-                destinationChain, 
-                stringAddress, 
-                payload, 
+        if (msg.value > 0) {
+            gasReceiver.payNativeGasForContractCall{ value: msg.value }(
+                address(this),
+                destinationChain,
+                stringAddress,
+                payload,
                 msg.sender
             );
         }
@@ -58,18 +57,15 @@ contract ERC20CrossChain is IAxelarExecutable, IERC20CrossChain, ERC20 {
     }
 
     function _execute(
-        string memory /*sourceChain*/,
+        string memory, /*sourceChain*/
         string memory sourceAddress,
         bytes calldata payload
     ) internal override {
-        if(sourceAddress.toAddress() != address(this)) {
+        if (sourceAddress.toAddress() != address(this)) {
             emit FalseSender(sourceAddress, sourceAddress);
             return;
         }
-        (
-            address to,
-            uint256 amount
-        ) = abi.decode(payload, (address, uint256));
+        (address to, uint256 amount) = abi.decode(payload, (address, uint256));
         _mint(to, amount);
     }
 }

@@ -2,7 +2,6 @@
 
 pragma solidity 0.8.9;
 
-
 import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
 import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
 import { StringToAddress, AddressToString } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
@@ -27,7 +26,7 @@ contract Headers is IAxelarExecutable {
     }
 
     function init(address gateway_, address gasReceiver_) external {
-        if(address(gateway) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
+        if (address(gateway) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
         gasReceiver = IAxelarGasService(gasReceiver_);
         gateway = IAxelarGateway(gateway_);
     }
@@ -47,50 +46,35 @@ contract Headers is IAxelarExecutable {
     }
 
     function updateRemoteHeaders(
-        address token, 
+        address token,
         string[] memory chains,
         uint256[] memory gases
     ) external {
-        bytes memory payload = abi.encode(block.number-1, blockhash(block.number - 1));
+        bytes memory payload = abi.encode(block.number - 1, blockhash(block.number - 1));
         uint256 total;
-        for(uint256 i = 0; i< chains.length; i++) {
+        for (uint256 i = 0; i < chains.length; i++) {
             total += gases[i];
         }
         IERC20(token).transferFrom(msg.sender, address(this), total);
-        for(uint256 i = 0; i < chains.length; i++) {
+        for (uint256 i = 0; i < chains.length; i++) {
             //Pay gas to the gasReceiver to automatically fullfill the call.
             IERC20(token).approve(address(gasReceiver), gases[i]);
             string memory thisAddress = address(this).toString();
-            gasReceiver.payGasForContractCall(
-                address(this),
-                chains[i], 
-                thisAddress, 
-                payload,
-                token, 
-                gases[i],
-                msg.sender
-            );
-            gateway.callContract(
-                chains[i], 
-                thisAddress, 
-                payload
-            );
+            gasReceiver.payGasForContractCall(address(this), chains[i], thisAddress, payload, token, gases[i], msg.sender);
+            gateway.callContract(chains[i], thisAddress, payload);
         }
     }
 
     function _execute(
-        string memory sourceChain, 
-        string memory sourceAddress, 
+        string memory sourceChain,
+        string memory sourceAddress,
         bytes calldata payload
     ) internal override {
         //Ensure the sender is a sibling. There are more efficient way to do this.
         require(sourceAddress.toAddress() == address(this), 'WRONG_SENDER');
-        (
-            uint256 block_,
-            bytes32 header_
-        ) = abi.decode(payload, (uint256, bytes32));
+        (uint256 block_, bytes32 header_) = abi.decode(payload, (uint256, bytes32));
         uint256 l = headersMap[sourceChain].length;
-        if(l < length) {
+        if (l < length) {
             n = l;
             blocksMap[sourceChain].push(block_);
             headersMap[sourceChain].push(header_);

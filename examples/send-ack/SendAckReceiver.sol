@@ -10,13 +10,11 @@ abstract contract SendAckReceiver is IAxelarExecutable {
         string memory sourceAddress,
         bytes calldata payload
     ) internal override {
-        (
-            uint256 nonce,
-            bytes memory payloadActual
-        ) = abi.decode(payload, (uint256, bytes));
+        (uint256 nonce, bytes memory payloadActual) = abi.decode(payload, (uint256, bytes));
         gateway.callContract(sourceChain, sourceAddress, abi.encode(nonce));
         _executePostAck(sourceChain, sourceAddress, payloadActual);
     }
+
     // override this to do stuff
     function _executePostAck(
         string memory sourceChain,

@@ -1,0 +1,21 @@
+{
+    "printWidth": 140,
+    "singleQuote": true,
+    "tabWidth": 4,
+    "useTabs": false,
+    "bracketSpacing": true,
+    "overrides": [
+        {
+            "files": "*.sol",
+            "options": {
+                "explicitTypes": "always"
+            }
+        },
+        {
+            "files": "*.js",
+            "options": {
+                "trailingComma": "all"
+            }
+        }
+    ]
+}
