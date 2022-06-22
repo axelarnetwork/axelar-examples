@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.9;
 
-import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/src//interfaces/IAxelarGateway.sol';
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/src//interfaces/IAxelarExecutable.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
 import { StringToAddress } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
 
 abstract contract NoncedExecutable is IAxelarExecutable {

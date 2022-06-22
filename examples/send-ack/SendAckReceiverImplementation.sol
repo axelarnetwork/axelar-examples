@@ -3,7 +3,7 @@
 pragma solidity 0.8.9;
 
 import { SendAckReceiver } from './SendAckReceiver.sol';
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/src//interfaces/IAxelarExecutable.sol';
+import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
 
 contract SendAckReceiverImplementation is SendAckReceiver {
     

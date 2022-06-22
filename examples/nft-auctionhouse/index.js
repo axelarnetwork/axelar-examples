@@ -72,7 +72,6 @@ async function test(chains, wallet, options) {
     }
     const destination = chains.find(chain => chain.name == (args[1] || 'Avalanche'));
     const tokenId = args[2] || await firstUnminted(destination);
-    console.log(tokenId);
     function sleep(ms) {
         return new Promise((resolve)=> {
             setTimeout(() => {resolve()}, ms);

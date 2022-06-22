@@ -2,10 +2,10 @@
 
 pragma solidity 0.8.9;
 
-import { ERC20 } from '@axelar-network/axelar-cgp-solidity/src/ERC20.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGateway.sol';
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol';
-import { IAxelarGasReceiver } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol';
+import { ERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/ERC20.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { StringToAddress, AddressToString } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
 import { IERC20CrossChain } from './IERC20CrossChain.sol';
 
@@ -17,7 +17,7 @@ contract ERC20CrossChain is IAxelarExecutable, IERC20CrossChain, ERC20 {
 
     event FalseSender(string sourceChain, string sourceAddress);
 
-    IAxelarGasReceiver public gasReceiver;
+    IAxelarGasService public gasReceiver;
 
     constructor(
         string memory name_,
@@ -28,7 +28,7 @@ contract ERC20CrossChain is IAxelarExecutable, IERC20CrossChain, ERC20 {
 
     function init(address gateway_, address gasReceiver_) external {
         if(address(gateway) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
-        gasReceiver = IAxelarGasReceiver(gasReceiver_);
+        gasReceiver = IAxelarGasService(gasReceiver_);
         gateway = IAxelarGateway(gateway_);
     }
 

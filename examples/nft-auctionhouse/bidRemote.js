@@ -52,7 +52,7 @@ async function bidRemote (sourceChain, destinationChain, private_key, tokenId, a
     }
     while (true) {
         const currentBid = await destinationAuctionhouse.bids(destinationChain.erc721, tokenId);
-        console.log(`Waiting for bid... Last bid: ${lastBid}, currentBid: ${currentBid}.`);
+        //console.log(`Waiting for bid... Last bid: ${lastBid}, currentBid: ${currentBid}.`);
         if(currentBid * 3 > lastBid * 4) break;
         await sleep(1000);
     }

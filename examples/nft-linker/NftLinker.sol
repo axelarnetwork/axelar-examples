@@ -3,11 +3,11 @@
 pragma solidity 0.8.9;
 
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol';
+import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
 import { StringToAddress, AddressToString } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
-import { IERC20 } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IERC20.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGateway.sol';
-import { IAxelarGasReceiver } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol';
+import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 
 contract NftLinker is ERC721, IAxelarExecutable {
     using StringToAddress for string;
@@ -17,14 +17,14 @@ contract NftLinker is ERC721, IAxelarExecutable {
 
     mapping(uint256 => bytes) public original; //abi.encode(originaChain, operator, tokenId);
     string chainName;   //To check if we are the source chain.
-    IAxelarGasReceiver gasReceiver;
+    IAxelarGasService gasReceiver;
 
     constructor() IAxelarExecutable(address(0)) ERC721('Axelar NFT Linker', 'ANL') {
     }
 
     function init(string memory chainName_, address gateway_, address gasReceiver_) external {
         if(address(gateway) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
-        gasReceiver = IAxelarGasReceiver(gasReceiver_);
+        gasReceiver = IAxelarGasService(gasReceiver_);
         gateway = IAxelarGateway(gateway_);
         chainName = chainName_;
     }

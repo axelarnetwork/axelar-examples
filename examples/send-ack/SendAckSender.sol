@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.9;
 
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol';
-import { IAxelarGasReceiver } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol';
+import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { StringToAddress, AddressToString } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
 
 contract SendAckSender is IAxelarExecutable {
@@ -18,11 +18,11 @@ contract SendAckSender is IAxelarExecutable {
     uint256 public nonce;
     mapping (uint256 => bool) public executed;
     mapping (uint256 => bytes32) public destination;
-    IAxelarGasReceiver public gasReceiver;
+    IAxelarGasService public gasReceiver;
     string public thisChain;
 
     constructor(address gateway_, address gasReceiver_, string memory thisChain_) IAxelarExecutable(gateway_){
-        gasReceiver = IAxelarGasReceiver(gasReceiver_);
+        gasReceiver = IAxelarGasService(gasReceiver_);
         thisChain = thisChain_;
     }
 

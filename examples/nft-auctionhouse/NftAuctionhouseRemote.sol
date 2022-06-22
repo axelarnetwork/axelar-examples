@@ -4,14 +4,14 @@ pragma solidity 0.8.9;
 
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarExecutable.sol';
-import '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGasReceiver.sol';
+import '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
+import '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 import './NftAuctionhouse.sol';
 import { AddressToString } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
 
 
 contract NftAuctionhouseRemote is NftAuctionhouse, IAxelarExecutable {
-    IAxelarGasReceiver gasReceiver;
+    IAxelarGasService gasReceiver;
     mapping(address => mapping(uint256 => address)) biddersRemote;
     mapping(address => mapping(uint256 => string)) sourceChains;
     mapping(address => mapping(uint256 => address)) refundAddresses;
@@ -20,7 +20,7 @@ contract NftAuctionhouseRemote is NftAuctionhouse, IAxelarExecutable {
 
     constructor(address gateway_, address gasReceiver_, address usdc_) 
     IAxelarExecutable(gateway_) NftAuctionhouse(usdc_) {
-        gasReceiver = IAxelarGasReceiver(gasReceiver_);
+        gasReceiver = IAxelarGasService(gasReceiver_);
     }
 
     function bidRemote(

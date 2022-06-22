@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.9;
 
-import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/src/interfaces/IAxelarGateway.sol';
-import { IAxelarGasReceiver } from '@axelar-network/axelar-cgp-solidity/src//interfaces/IAxelarGasReceiver.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 
 contract NoncedContractCallSender {
     error AlreadyInitialized();
@@ -11,7 +11,7 @@ contract NoncedContractCallSender {
     IAxelarGateway public gateway;
     mapping (string => mapping (address => uint256)) public outgoingNonces;
     string public executableContract;
-    IAxelarGasReceiver public gasReceiver;
+    IAxelarGasService public gasReceiver;
 
     function init(address gateway_, address gasReceiver_, string memory executableContract_) external {
         if(
@@ -21,7 +21,7 @@ contract NoncedContractCallSender {
         ) revert AlreadyInitialized();
 
         gateway = IAxelarGateway(gateway_);
-        gasReceiver = IAxelarGasReceiver(gasReceiver_);
+        gasReceiver = IAxelarGasService(gasReceiver_);
         executableContract = executableContract_;
     }
 

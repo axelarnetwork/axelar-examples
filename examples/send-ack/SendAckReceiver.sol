@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.9;
 
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/src//interfaces/IAxelarExecutable.sol';
+import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
 
 abstract contract SendAckReceiver is IAxelarExecutable {
     function _execute(

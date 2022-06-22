@@ -33,7 +33,7 @@ async function test(chains, wallet, options = {}) {
             setTimeout(() => {resolve()}, ms);
         })
     }
-    const balance = await destination.token.balanceOf(wallet.address);
+    const balance = await destination.token.balanceOf(destinationAddress);
     console.log('--- Initially ---');
     await print();
 
@@ -45,8 +45,8 @@ async function test(chains, wallet, options = {}) {
     )).wait();
     
     while(true) {
-        const newBalance = await destination.token.balanceOf(wallet.address);
-        if(BigInt(balance) != BigInt(newBalance)) break;
+        const newBalance = await destination.token.balanceOf(destinationAddress);
+        if(balance != newBalance) break;
         await sleep(2000);
     }
 
