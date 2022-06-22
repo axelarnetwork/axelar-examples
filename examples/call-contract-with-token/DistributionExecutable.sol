@@ -1,12 +1,12 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import {IAxelarExecutable} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol";
-import {IERC20} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol";
-import {IAxelarGasService} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol";
+import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
+import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 
 contract DistributionExecutable is IAxelarExecutable {
-   IAxelarGasService gasReceiver;
+    IAxelarGasService gasReceiver;
 
     constructor(address _gateway, address _gasReceiver) IAxelarExecutable(_gateway) {
         gasReceiver = IAxelarGasService(_gasReceiver);
@@ -23,8 +23,8 @@ contract DistributionExecutable is IAxelarExecutable {
         IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
         IERC20(tokenAddress).approve(address(gateway), amount);
         bytes memory payload = abi.encode(destinationAddresses);
-        if(msg.value > 0) {
-            gasReceiver.payNativeGasForContractCallWithToken{value: msg.value}(
+        if (msg.value > 0) {
+            gasReceiver.payNativeGasForContractCallWithToken{ value: msg.value }(
                 address(this),
                 destinationChain,
                 destinationAddress,
@@ -36,6 +36,7 @@ contract DistributionExecutable is IAxelarExecutable {
         }
         gateway.callContractWithToken(destinationChain, destinationAddress, payload, symbol, amount);
     }
+
     function _executeWithToken(
         string memory,
         string memory,

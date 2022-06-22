@@ -1,31 +1,27 @@
 'use strict';
 
-const { getDefaultProvider, Contract, constants: { AddressZero }, utils: { defaultAbiCoder } } = require('ethers');
-const { deployAndInitContractConstant, predictContractConstant} = require('axelar-utils-solidity');
+const {
+    getDefaultProvider,
+    Contract,
+    constants: { AddressZero },
+    utils: { defaultAbiCoder },
+} = require('ethers');
+const { deployAndInitContractConstant, predictContractConstant } = require('axelar-utils-solidity');
 
-const CallSender = require('../../build/NoncedContractCallSender.json');
-const Executable = require('../../build/ExecutableImplementation.json');
-const Gateway = require('@axelar-network/axelar-local-dev/build/IAxelarGateway.json');
+const CallSender = require('../../artifacts/examples/nonced-execution/NoncedContractCallSender.sol/NoncedContractCallSender.json');
+const Executable = require('../../artifacts/examples/nonced-execution/ExecutableImplementation.sol/ExecutableImplementation.json');
 
-const name = 'An Awesome Axelar Cross Chain Token';
-const symbol = 'AACCT';
-const decimals = 13;
 const time = new Date().getTime();
 
 async function deploy(chain, wallet) {
     console.log(`Deploying NoncedContractCallSender for ${chain.name}.`);
-    const executableAddress = await predictContractConstant(
-        chain.constAddressDeployer, 
-        wallet, 
-        Executable, 
-        'call-executable-'+time,
-    );
+    const executableAddress = await predictContractConstant(chain.constAddressDeployer, wallet, Executable, 'call-executable-' + time);
 
     const sender = await deployAndInitContractConstant(
-        chain.constAddressDeployer, 
-        wallet, 
-        CallSender, 
-        'call-sender-'+time,
+        chain.constAddressDeployer,
+        wallet,
+        CallSender,
+        'call-sender-' + time,
         [],
         [chain.gateway, chain.gasReceiver, executableAddress],
     );
@@ -34,14 +30,14 @@ async function deploy(chain, wallet) {
 
     console.log(`Deploying ExecutableImplementation for ${chain.name}.`);
     const executable = await deployAndInitContractConstant(
-        chain.constAddressDeployer, 
-        wallet, 
-        Executable, 
-        'call-executable-'+time,
+        chain.constAddressDeployer,
+        wallet,
+        Executable,
+        'call-executable-' + time,
         [],
         [chain.gateway, sender.address],
     );
-    if(executable.address.toLowerCase() != executableAddress.toLowerCase()) 
+    if (executable.address.toLowerCase() != executableAddress.toLowerCase())
         throw new Error(`Not deployed as expected! ${executable.address} was supposed to be ${executableAddress}`);
 
     chain.noncedExecutable = executable.address;
@@ -51,40 +47,42 @@ async function deploy(chain, wallet) {
 async function test(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
-    for(const chain of chains) {
+    for (const chain of chains) {
         chain.provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(chain.provider);
         chain.sender = new Contract(chain.noncedSender, CallSender.abi, chain.wallet);
         chain.executable = new Contract(chain.noncedExecutable, Executable.abi, chain.wallet);
     }
-    const source = chains.find(chain => chain.name == (args[0] || 'Avalanche'));
-    const destination = chains.find(chain =>chain.name == (args[1] || 'Fantom'));
+    const source = chains.find((chain) => chain.name == (args[0] || 'Avalanche'));
+    const destination = chains.find((chain) => chain.name == (args[1] || 'Fantom'));
     const message = args[2] || `Hello, the time is ${time}.`;
     const payload = defaultAbiCoder.encode(['string'], [message]);
     const expectedNonce = await destination.executable.incomingNonces(source.name, wallet.address);
-    
+
     async function print() {
-        const nonce = await destination.executable.incomingNonces(source.name, wallet.address) - 1;
-        console.log(`Last message sent from ${source.name}@${wallet.address} to ${destination.name} was "${nonce>=0 ? await destination.executable.messages(source.name, wallet.address, nonce) : ''}" with a nonce of ${nonce}.`)
+        const nonce = (await destination.executable.incomingNonces(source.name, wallet.address)) - 1;
+        console.log(
+            `Last message sent from ${source.name}@${wallet.address} to ${destination.name} was "${
+                nonce >= 0 ? await destination.executable.messages(source.name, wallet.address, nonce) : ''
+            }" with a nonce of ${nonce}.`,
+        );
     }
     function sleep(ms) {
-        return new Promise((resolve)=> {
-            setTimeout(() => {resolve()}, ms);
-        })
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, ms);
+        });
     }
     console.log('--- Initially ---');
     await print();
 
     const gasLimit = 3e5;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
-    
-    await (await source.sender.sendContractCall(
-        destination.name,
-        payload,
-        {value: BigInt(Math.floor(gasLimit * gasPrice))}
-    )).wait();
-    
-    while(await destination.executable.messages(source.name, wallet.address, expectedNonce) != message) {
+
+    await (await source.sender.sendContractCall(destination.name, payload, { value: BigInt(Math.floor(gasLimit * gasPrice)) })).wait();
+
+    while ((await destination.executable.messages(source.name, wallet.address, expectedNonce)) != message) {
         await sleep(2000);
     }
 
@@ -95,4 +93,4 @@ async function test(chains, wallet, options) {
 module.exports = {
     deploy,
     test,
-}
+};

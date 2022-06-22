@@ -16,12 +16,16 @@ contract SendAckSender is IAxelarExecutable {
     event FalseAcknowledgment(string destinationChain, string contractAddress, uint256 nonce);
 
     uint256 public nonce;
-    mapping (uint256 => bool) public executed;
-    mapping (uint256 => bytes32) public destination;
+    mapping(uint256 => bool) public executed;
+    mapping(uint256 => bytes32) public destination;
     IAxelarGasService public gasReceiver;
     string public thisChain;
 
-    constructor(address gateway_, address gasReceiver_, string memory thisChain_) IAxelarExecutable(gateway_){
+    constructor(
+        address gateway_,
+        address gasReceiver_,
+        string memory thisChain_
+    ) IAxelarExecutable(gateway_) {
         gasReceiver = IAxelarGasService(gasReceiver_);
         thisChain = thisChain_;
     }
@@ -39,13 +43,23 @@ contract SendAckSender is IAxelarExecutable {
         uint256 nonce_ = nonce;
         bytes memory modifiedPayload = abi.encode(nonce_, payload);
 
-        if(gasForRemote > 0) {
-            if(gasForRemote > msg.value) revert NotEnoughValueForGas();
-            gasReceiver.payNativeGasForContractCall{value: gasForRemote}
-                (address(this), destinationChain, contractAddress, modifiedPayload, msg.sender);
-            if(msg.value > gasForRemote) {
-                gasReceiver.payNativeGasForContractCall{value: msg.value - gasForRemote}
-                    (contractAddress.toAddress(), thisChain, address(this).toString(), abi.encode(nonce_), msg.sender);
+        if (gasForRemote > 0) {
+            if (gasForRemote > msg.value) revert NotEnoughValueForGas();
+            gasReceiver.payNativeGasForContractCall{ value: gasForRemote }(
+                address(this),
+                destinationChain,
+                contractAddress,
+                modifiedPayload,
+                msg.sender
+            );
+            if (msg.value > gasForRemote) {
+                gasReceiver.payNativeGasForContractCall{ value: msg.value - gasForRemote }(
+                    contractAddress.toAddress(),
+                    thisChain,
+                    address(this).toString(),
+                    abi.encode(nonce_),
+                    msg.sender
+                );
             }
         }
 
@@ -61,7 +75,7 @@ contract SendAckSender is IAxelarExecutable {
         bytes calldata payload
     ) internal override {
         uint256 nonce_ = abi.decode(payload, (uint256));
-        if(destination[nonce_] != _getDestinationHash(sourceChain, sourceAddress)) {
+        if (destination[nonce_] != _getDestinationHash(sourceChain, sourceAddress)) {
             emit FalseAcknowledgment(sourceChain, sourceAddress, nonce_);
             return;
         }

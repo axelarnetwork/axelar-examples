@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import {IAxelarForecallable} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarForecallable.sol";
-import {IERC20} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol";
+import { IAxelarForecallable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarForecallable.sol';
+import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { AddressToString } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
@@ -11,15 +11,14 @@ contract DistributionForecallable is IAxelarForecallable {
     using AddressToString for address;
     IAxelarGasService gasReceiver;
 
-    constructor() IAxelarForecallable(address(0)) {
-    }
+    constructor() IAxelarForecallable(address(0)) {}
 
     function init(address _gateway, address _gasReceiver) external {
-        if(address(gateway) != address(0) || address(gasReceiver) != address(0)) revert('Already Initialized.');
+        if (address(gateway) != address(0) || address(gasReceiver) != address(0)) revert('Already Initialized.');
         gateway = IAxelarGateway(_gateway);
         gasReceiver = IAxelarGasService(_gasReceiver);
     }
-    
+
     function _sendToMany(
         string memory destinationChain,
         address[] calldata destinationAddresses,
@@ -76,8 +75,7 @@ contract DistributionForecallable is IAxelarForecallable {
         uint256 feePercent = abi.decode(payload, (uint256));
         uint64 num = uint64(feePercent);
         uint64 denom = uint64(feePercent >> 64);
-        if(denom == 0) return amount;
-        return amount - amount * num / denom;
-
+        if (denom == 0) return amount;
+        return amount - (amount * num) / denom;
     }
 }

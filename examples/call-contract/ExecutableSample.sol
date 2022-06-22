@@ -23,7 +23,7 @@ contract ExecutableSample is IAxelarExecutable {
         string calldata value_
     ) external payable {
         bytes memory payload = abi.encode(value_);
-        if(msg.value > 0) {
+        if (msg.value > 0) {
             gasReceiver.payNativeGasForContractCall{ value: msg.value }(
                 address(this),
                 destinationChain,
@@ -32,17 +32,13 @@ contract ExecutableSample is IAxelarExecutable {
                 msg.sender
             );
         }
-        gateway.callContract(
-            destinationChain,
-            destinationAddress,
-            payload
-        );
+        gateway.callContract(destinationChain, destinationAddress, payload);
     }
 
-    // Handles calls created by setAndSend. Updates this contract's value 
+    // Handles calls created by setAndSend. Updates this contract's value
     function _execute(
         string memory sourceChain_,
-        string memory sourceAddress_, 
+        string memory sourceAddress_,
         bytes calldata payload_
     ) internal override {
         (value) = abi.decode(payload_, (string));
