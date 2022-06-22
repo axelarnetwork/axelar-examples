@@ -3,13 +3,13 @@ pragma solidity 0.8.9;
 
 import {IAxelarExecutable} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol";
 import {IERC20} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol";
-import {IAxelarGasReceiver} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasReceiver.sol";
+import {IAxelarGasService} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol";
 
 contract DistributionExecutable is IAxelarExecutable {
-   IAxelarGasReceiver gasReceiver;
+   IAxelarGasService gasReceiver;
 
     constructor(address _gateway, address _gasReceiver) IAxelarExecutable(_gateway) {
-        gasReceiver = IAxelarGasReceiver(_gasReceiver);
+        gasReceiver = IAxelarGasService(_gasReceiver);
     }
 
     function sendToMany(

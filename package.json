@@ -7,6 +7,7 @@
     "node": ">=16.0.0"
   },
   "scripts": {
+    "test": "mocha -timeout=20000",
     "send-token": "node examples/send-token",
     "call-contract": "node examples/call-contract",
     "call-contract-with-token": "node examples/call-contract-with-token",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "axelar-utils-solidity": "github:axelarnetwork/axelar-utils-solidity",
     "ethereum-waffle": "^3.4.4",
+    "mocha": "^10.0.0",
     "typescript": "^4.6.3",
     "waffle": "^0.0.0"
   }
