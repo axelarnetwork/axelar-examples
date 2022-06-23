@@ -10,6 +10,13 @@ This repo provides the code for several example dApps in the [Axelar Local Devel
 
 Install [nodejs](https://nodejs.org/en/download/). Run `node -v` to check your installation.
 
+Version 16 is required. If needed you can switch your node version (or lower, if you are on a higher version) via
+
+```bash
+sudo npm i -g n
+n v16.15.0
+```
+
 Clone this repo:
 
 ```bash
