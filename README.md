@@ -14,7 +14,7 @@ Version 16 is required. If needed you can switch your node version (or lower, if
 
 ```bash
 sudo npm i -g n
-n v16.15.0
+sudo n v16.15.0
 ```
 
 Clone this repo:
