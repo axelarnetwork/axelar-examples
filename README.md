@@ -126,7 +126,7 @@ node scripts/deploy examples/cross-chain-token [local|testnet]
 Run the test:
 
 ```bash
-node scripts/test examples/cross-chain-token [local|testnet] ${"source-chain"} ${"destination-chain}" ${amount}
+node scripts/test examples/cross-chain-token [local|testnet] ${"source-chain"} ${"destination-chain"} ${amount}
 ```
 
 #### Example
