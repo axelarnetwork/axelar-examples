@@ -6,8 +6,6 @@ import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces
 import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 
 contract HelloBack is IAxelarExecutable {
-    using StringToAddress for string;
-
     string public message;
     IAxelarGasService gasReceiver;
 
