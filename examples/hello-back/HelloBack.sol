@@ -4,7 +4,6 @@ pragma solidity 0.8.9;
 import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
 import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
-import { StringToAddress } from 'axelar-utils-solidity/src/StringAddressUtils.sol';
 
 contract HelloBack is IAxelarExecutable {
     using StringToAddress for string;
@@ -56,8 +55,10 @@ contract HelloBack is IAxelarExecutable {
         string memory tokenSymbol,
         uint256 _amount
     ) internal override {
-        (uint256 _gasFeeAmountForReturn, address _refundAddress, string memory _finalTokenRecipients, bytes memory originalPayload) = abi
-            .decode(payload, (uint256, address, string, bytes));
+        (uint256 _gasFeeAmountForReturn, address _refundAddress, address _finalTokenRecipients, bytes memory originalPayload) = abi.decode(
+            payload,
+            (uint256, address, address, bytes)
+        );
         if (_amount > _gasFeeAmountForReturn) {
             _sayHelloBack(sourceChain, sourceContract, originalPayload, tokenSymbol, _gasFeeAmountForReturn, _refundAddress);
         }
@@ -65,7 +66,7 @@ contract HelloBack is IAxelarExecutable {
             originalPayload,
             (_amount > _gasFeeAmountForReturn) ? (_amount - _gasFeeAmountForReturn) : _amount,
             tokenSymbol,
-            StringToAddress.toAddress(_finalTokenRecipients)
+            _finalTokenRecipients
         );
     }
 }

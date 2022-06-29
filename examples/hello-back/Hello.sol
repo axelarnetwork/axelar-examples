@@ -6,7 +6,6 @@ import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces
 import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 
 contract Hello is IAxelarExecutable {
-
     string public message;
     string public sourceChain;
     string public sourceAddress;
@@ -22,7 +21,7 @@ contract Hello is IAxelarExecutable {
         bytes calldata payload,
         string memory symbol,
         uint256 amount,
-        string memory finalTokenRecipient,
+        address finalTokenRecipient,
         uint256 gasFeeAmount,
         uint256 gasFeeAmountForReturn
     ) external {
