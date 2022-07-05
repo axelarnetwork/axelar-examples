@@ -17,8 +17,8 @@ const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 
 // load contracts
-const MessageSenderContract = require("../artifacts/contracts/send-message/MessageSender.sol/MessageSender.json");
-const MessageReceiverContract = require("../artifacts/contracts/send-message/MessageReceiver.sol/MessageReceiver.json");
+const MessageSenderContract = require("../artifacts/contracts/MessageSender.sol/MessageSender.json");
+const MessageReceiverContract = require("../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json");
 
 async function main() {
   // deploy on ethereum
