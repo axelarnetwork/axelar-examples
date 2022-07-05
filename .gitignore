@@ -6,3 +6,6 @@ yarn-error.log
 info/local.json
 info/localWETH.json
 scripts/deployConst.js
+
+
+.DS_Store
