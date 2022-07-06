@@ -3,6 +3,9 @@
 ## Instructions
 
 ```sh
+# install dependancies
+yarn
+
 # compile contracts with hardhat
 yarn contracts:build
 
