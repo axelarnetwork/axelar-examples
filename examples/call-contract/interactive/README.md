@@ -10,7 +10,7 @@ yarn contracts:build
 yarn local-dev:start
 
 # 2nd terminal: deploy contracts
-yarn contracts:build
+yarn contracts:deploy
 
 # start the ui
 yarn dev
