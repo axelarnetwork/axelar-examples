@@ -9,6 +9,7 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
+const { sleep } = require('../../utils');
 const DistributionExecutable = require('../../artifacts/examples/call-contract-with-token/DistributionExecutable.sol/DistributionExecutable.json');
 const Gateway = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
 const IERC20 = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
@@ -27,7 +28,9 @@ async function test(chains, wallet, options) {
     const destination = chains.find((chain) => chain.name == (args[1] || 'Fantom'));
     const amount = Math.floor(parseFloat(args[2])) * 1e6 || 10e6;
     const accounts = args.slice(3);
+
     if (accounts.length == 0) accounts.push(wallet.address);
+
     for (const chain of [source, destination]) {
         const provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(provider);
@@ -37,21 +40,14 @@ async function test(chains, wallet, options) {
         chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
     }
 
-    async function print() {
+    async function logAccountBalances() {
         for (const account of accounts) {
             console.log(`${account} has ${(await destination.usdc.balanceOf(account)) / 1e6} aUSDC`);
         }
     }
-    function sleep(ms) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
-    }
 
     console.log('--- Initially ---');
-    await print();
+    await logAccountBalances();
 
     const gasLimit = 3e6;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
@@ -71,7 +67,7 @@ async function test(chains, wallet, options) {
     }
 
     console.log('--- After ---');
-    await print();
+    await logAccountBalances();
 }
 
 module.exports = {
