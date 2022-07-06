@@ -3,7 +3,7 @@
 ## Instructions
 
 ```sh
-# install dependancies
+# install dependencies
 yarn
 
 # compile contracts with hardhat
