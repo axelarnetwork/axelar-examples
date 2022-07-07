@@ -12,10 +12,6 @@ const {
 const { sleep } = require('../../utils');
 const ExecutableSample = require('../../artifacts/examples/call-contract/ExecutableSample.sol/ExecutableSample.json');
 
-function logValue(chain, value) {
-    console.log(`value at ${chain} is "${value}"`);
-}
-
 async function deploy(chain, wallet) {
     console.log(`Deploying ExecutableSample for ${chain.name}.`);
     const contract = await deployContract(wallet, ExecutableSample, [chain.gateway, chain.gasReceiver]);
@@ -37,8 +33,12 @@ async function test(chains, wallet, options) {
     const destination = chains.find((chain) => chain.name == (args[1] || 'Fantom'));
     const message = args[2] || `Hello ${destination.name} from ${source.name}, it is ${new Date().toLocaleTimeString()}.`;
 
+    async function logValue() {
+        console.log(`value at ${destination.name} is "${await destination.contract.value()}"`);
+    }
+
     console.log('--- Initially ---');
-    logValue(destination.name, await destination.contract.value());
+    await logValue();
 
     //Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
     const gasLimit = 3e5;
@@ -54,7 +54,7 @@ async function test(chains, wallet, options) {
     }
 
     console.log('--- After ---');
-    logValue(destination.name, await destination.contract.value());
+    await logValue();
 }
 
 module.exports = {
