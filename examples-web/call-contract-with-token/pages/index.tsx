@@ -132,12 +132,12 @@ const Home: NextPage = () => {
                   </div>
                 </div>
               </div>
-              <div
+              {/* <div
                 className="justify-center mt-5 card-actions"
                 onClick={handleRefreshDestBalances}
               >
                 <button className="btn btn-primary">Refresh Balances</button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
