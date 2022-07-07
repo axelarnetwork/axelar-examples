@@ -3,8 +3,8 @@ import { createAndExport } from "@axelar-network/axelar-local-dev";
 import { Wallet } from "ethers";
 
 // create wallet
-const privateKey = process.env.NEXT_PUBLIC_EVM_PRIVATE_KEY as string;
-const wallet = new Wallet(privateKey);
+const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
+const wallet = Wallet.fromMnemonic(mnemonic);
 
 // deploy network
 createAndExport({

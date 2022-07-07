@@ -8,8 +8,8 @@ const {
 // load env
 
 // create wallet
-const privateKey = process.env.NEXT_PUBLIC_EVM_PRIVATE_KEY as string;
-const wallet = new Wallet(privateKey);
+const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
+const wallet = Wallet.fromMnemonic(mnemonic);
 
 const chains = require("../config/chains");
 const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");

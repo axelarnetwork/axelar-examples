@@ -10,8 +10,8 @@ const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 
 if (!ethereumChain || !avalancheChain) process.exit(0);
 
-const privateKey = process.env.NEXT_PUBLIC_EVM_PRIVATE_KEY as string;
-export const wallet = new Wallet(privateKey);
+const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
+export const wallet = Wallet.fromMnemonic(mnemonic);
 
 const ethProvider = getDefaultProvider(ethereumChain.rpc);
 const ethConnectedWallet = wallet.connect(ethProvider);
