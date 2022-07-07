@@ -48,18 +48,16 @@ async function main() {
   const tx = await sourceContract.sendMessage(
     "Avalanche",
     avalancheChain.messageReceiver,
-    "hello world! 13",
+    "hello world!",
     {
       value: BigInt(3000000),
     }
   );
+  await tx.wait();
 
   const event = destContract.on("Executed", (from, value) => {
-    if (value === "hello world! 13")
-      destContract.removeAllListeners("Executed");
+    if (value === "hello world!") destContract.removeAllListeners("Executed");
   });
-
-  await tx.wait();
 
   console.log({
     msg: await destContract.message(),

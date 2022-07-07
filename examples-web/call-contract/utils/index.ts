@@ -48,3 +48,7 @@ export async function sendMessageToAvalanche(message: string) {
 export async function getAvalancheMessage() {
   return destContract.message();
 }
+
+export async function getAvalancheSourceChain() {
+  return destContract.sourceChain();
+}

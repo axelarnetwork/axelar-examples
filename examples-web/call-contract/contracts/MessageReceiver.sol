@@ -5,7 +5,8 @@ import {IAxelarExecutable} from "@axelar-network/axelar-cgp-solidity/contracts/i
 import {IAxelarGasService} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol";
 
 contract MessageReceiver is IAxelarExecutable {
-    string public message = "initial string";
+    string public message = "no data";
+    string public sourceChain;
 
     constructor(address gateway, address _gasReceiver)
         IAxelarExecutable(gateway)
@@ -14,11 +15,12 @@ contract MessageReceiver is IAxelarExecutable {
     event Executed(address indexed _from, string _value);
 
     function _execute(
-        string memory sourceChain,
-        string memory sourceAddress,
+        string memory sourceChain_,
+        string memory,
         bytes calldata payload
     ) internal override {
-        (message) = abi.decode(payload, (string));
+        message = abi.decode(payload, (string));
+        sourceChain = sourceChain_;
         emit Executed(msg.sender, message);
     }
 }
