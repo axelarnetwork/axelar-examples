@@ -73,11 +73,9 @@ export async function sendTokenToAvalanche(
 ) {
   const tokenAddress = await srcGatewayContract.tokenAddresses("aUSDC");
   const erc20 = new Contract(tokenAddress, IERC20.abi, ethConnectedWallet);
-  await erc20.approve(
-    sourceContract.address,
-    ethers.utils.parseUnits(amount, 6)
-  );
-  console.log(amount);
+  await erc20
+    .approve(sourceContract.address, ethers.utils.parseUnits(amount, 6))
+    .then((tx: any) => tx.wait());
   const tx = await sourceContract.sendToMany(
     "Avalanche",
     destContract.address,
@@ -89,7 +87,6 @@ export async function sendTokenToAvalanche(
     }
   );
   await tx.wait();
-  console.log(tx.hash);
 
   return new Promise((resolve, reject) => {
     destContract.on("Executed", () => {
@@ -112,7 +109,6 @@ export async function getBalance(addresses: string[], isSource: boolean) {
     : avalancheConnectedWallet;
   const tokenAddress = await contract.tokenAddresses("aUSDC");
   const erc20 = new Contract(tokenAddress, IERC20.abi, connectedWallet);
-  console.log(tokenAddress);
   const balances = await Promise.all(
     addresses.map(async (address) => {
       const balance = await erc20.balanceOf(address);
