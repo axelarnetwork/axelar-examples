@@ -12,7 +12,6 @@ createAndExport({
   accountsToFund: [wallet.address],
   chains: ["Ethereum", "Avalanche"],
   chainOutputPath: "config/chains.json",
-  relayInterval: 1000,
   async callback(network: Network) {
     if (network.name === "Ethereum") {
       await network.giveToken(
