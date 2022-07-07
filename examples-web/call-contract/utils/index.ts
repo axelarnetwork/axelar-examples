@@ -7,8 +7,8 @@ const MessageReceiverContract = require("../artifacts/contracts/MessageReceiver.
 const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 
-const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
-const wallet = Wallet.fromMnemonic(mnemonic);
+const privateKey = process.env.NEXT_PUBLIC_EVM_PRIVATE_KEY as string;
+const wallet = new Wallet(privateKey);
 
 const ethProvider = getDefaultProvider(ethereumChain.rpc);
 const ethConnectedWallet = wallet.connect(ethProvider);

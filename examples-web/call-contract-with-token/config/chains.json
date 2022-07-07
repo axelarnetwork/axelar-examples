@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Ethereum",
+    "chainId": 2500,
+    "rpc": "http://localhost:8500/0",
+    "gateway": "0x439498054f57430336d677FA46F61e7b75D2e274",
+    "gasReceiver": "0x043f57C16f6322E42F6D1deB46E0F53e6FaA3379",
+    "tokenName": "Ether",
+    "tokenSymbol": "ETH",
+    "messageSender": "0xa056589453813E5C644Fe020a9Cc4421AF68e929"
+  },
+  {
+    "name": "Avalanche",
+    "chainId": 2501,
+    "rpc": "http://localhost:8500/1",
+    "gateway": "0xBf93A08559c48D8Ee56661e105B9746323Eb7253",
+    "gasReceiver": "0x411fB36E488f22bBE872C345e652e45ff0EB319f",
+    "tokenName": "Avax",
+    "tokenSymbol": "AVAX",
+    "messageReceiver": "0xa056589453813E5C644Fe020a9Cc4421AF68e929"
+  }
+]
