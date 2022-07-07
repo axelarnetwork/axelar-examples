@@ -29,11 +29,8 @@ const Home: NextPage = () => {
     async (isSource: boolean) => {
       const _balances = await getAvalancheBalance(recipientAddresses, isSource);
       setBalances(_balances);
-      console.log({
-        balances,
-      });
     },
-    [balances, recipientAddresses]
+    [recipientAddresses]
   );
 
   const handleOnGenerateRecipientAddress = () => {
