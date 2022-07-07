@@ -56,7 +56,7 @@ const Home: NextPage = () => {
 
         <div className="grid grid-cols-2 gap-20 mt-20 justify-items-center">
           {/* ETHEREUM CARD */}
-          <div className="row-span-1 shadow-xl card w-96 bg-base-100">
+          <div className="row-span-2 shadow-xl card w-96 bg-base-100">
             <figure
               className="h-64 bg-center bg-no-repeat bg-cover image-full"
               style={{ backgroundImage: "url('/assets/ethereum.gif')" }}
@@ -91,7 +91,7 @@ const Home: NextPage = () => {
                     </button>
                   </div>
                   <div className="flex flex-col mt-2">
-                    <span className="mt-2">Recipients</span>
+                    <span className="mt-2 font-bold">Recipients</span>
                     {recipientAddresses.map((recipientAddress) => (
                       <span key={recipientAddress} className="mt-1">
                         {truncatedAddress(recipientAddress)}
@@ -114,20 +114,24 @@ const Home: NextPage = () => {
           </div>
 
           {/* AVALANCHE CARD */}
-          <div className="shadow-xl card w-96 bg-base-100">
+          <div className="row-span-1 shadow-xl card w-96 bg-base-100">
             <figure
               className="h-64 bg-center bg-no-repeat bg-cover image-full"
               style={{ backgroundImage: "url('/assets/avalanche.gif')" }}
             />
             <div className="card-body">
               <h2 className="card-title">Avalanche (Token Receiver)</h2>
-              <div>
+              <div className="h-40">
                 <div className="w-full max-w-xs form-control">
-                  <div className="flex flex-col">
+                  <div>
                     {recipientAddresses.map((recipientAddress, i) => (
-                      <span key={recipientAddress}>
-                        {truncatedAddress(recipientAddress)} {balances[i]}
-                      </span>
+                      <div
+                        key={recipientAddress}
+                        className="flex justify-between"
+                      >
+                        <span>{truncatedAddress(recipientAddress)}</span>
+                        <span className="font-bold">{balances[i]}</span>
+                      </div>
                     ))}
                   </div>
                 </div>
