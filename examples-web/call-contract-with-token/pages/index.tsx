@@ -1,16 +1,18 @@
 import cn from "classnames";
 import type { NextPage } from "next";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   sendTokenToAvalanche,
-  getAvalancheBalance,
+  getBalance,
   generateRecipientAddress,
   truncatedAddress,
+  wallet,
 } from "../utils";
 
 const Home: NextPage = () => {
   const [recipientAddresses, setRecipientAddresses] = useState<string[]>([]);
   const [balances, setBalances] = useState<string[]>([]);
+  const [senderBalance, setSenderBalance] = useState<string>();
   const [loading, setLoading] = useState(false);
 
   async function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -21,17 +23,24 @@ const Home: NextPage = () => {
     setLoading(true);
     await sendTokenToAvalanche(amount, recipientAddresses).finally(() => {
       setLoading(false);
-      handleRefreshBalances(false);
+      handleRefreshSrcBalances();
+      handleRefreshDestBalances();
     });
   }
 
-  const handleRefreshBalances = useCallback(
-    async (isSource: boolean) => {
-      const _balances = await getAvalancheBalance(recipientAddresses, isSource);
-      setBalances(_balances);
-    },
-    [recipientAddresses]
-  );
+  const handleRefreshDestBalances = useCallback(async () => {
+    const _balances = await getBalance(recipientAddresses, false);
+    setBalances(_balances);
+  }, [recipientAddresses]);
+
+  const handleRefreshSrcBalances = useCallback(async () => {
+    const [_balance] = await getBalance([wallet.address], true);
+    setSenderBalance(_balance);
+  }, []);
+
+  useEffect(() => {
+    handleRefreshSrcBalances();
+  }, [handleRefreshSrcBalances]);
 
   const handleOnGenerateRecipientAddress = () => {
     const recipientAddress = generateRecipientAddress();
@@ -55,6 +64,7 @@ const Home: NextPage = () => {
             <div className="card-body">
               <h2 className="card-title">Ethereum (Token Sender)</h2>
 
+              <p>Sender balance: {senderBalance}</p>
               <p>Send a cross-chain token</p>
               <div className="justify-end mt-2 card-actions">
                 <form className="w-full" onSubmit={handleOnSubmit}>
@@ -124,7 +134,7 @@ const Home: NextPage = () => {
               </div>
               <div
                 className="justify-center mt-5 card-actions"
-                onClick={() => handleRefreshBalances(false)}
+                onClick={handleRefreshDestBalances}
               >
                 <button className="btn btn-primary">Refresh Balances</button>
               </div>

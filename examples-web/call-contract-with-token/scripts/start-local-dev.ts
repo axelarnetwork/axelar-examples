@@ -18,7 +18,7 @@ createAndExport({
       await network.giveToken(
         wallet.address,
         "aUSDC",
-        BigInt("10000000000000000000")
+        BigInt("100000000000000")
       );
     }
 

@@ -11,7 +11,7 @@ const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 if (!ethereumChain || !avalancheChain) process.exit(0);
 
 const privateKey = process.env.NEXT_PUBLIC_EVM_PRIVATE_KEY as string;
-const wallet = new Wallet(privateKey);
+export const wallet = new Wallet(privateKey);
 
 const ethProvider = getDefaultProvider(ethereumChain.rpc);
 const ethConnectedWallet = wallet.connect(ethProvider);
@@ -105,10 +105,7 @@ export function truncatedAddress(address: string): string {
   );
 }
 
-export async function getAvalancheBalance(
-  addresses: string[],
-  isSource: boolean
-) {
+export async function getBalance(addresses: string[], isSource: boolean) {
   const contract = isSource ? srcGatewayContract : destGatewayContract;
   const connectedWallet = isSource
     ? ethConnectedWallet
