@@ -1,22 +1,18 @@
-import "dotenv/config";
-
 import { Contract, getDefaultProvider, Wallet } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
+import { wallet } from "../config/constants";
+
 const {
   utils: { deployContract },
 } = require("@axelar-network/axelar-local-dev");
 
 const chains = require("../config/chains");
-const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");
+const moonbeamChain = chains.find((chain: any) => chain.name === "Moonbeam");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 
 // load contracts
 const MessageSenderContract = require("../artifacts/contracts/MessageSender.sol/MessageSender.json");
 const MessageReceiverContract = require("../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json");
-
-// create wallet
-const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
-const wallet = Wallet.fromMnemonic(mnemonic);
 
 console.log({
   address: wallet.address,
@@ -29,7 +25,7 @@ async function main() {
   const destContract = new Contract(
     avalancheChain.messageReceiver,
     MessageReceiverContract.abi,
-    avalancheConnectedWallet
+    avalancheConnectedWallet,
   );
 
   console.log({
@@ -37,12 +33,12 @@ async function main() {
   });
 
   // call on source chain
-  const ethProvider = getDefaultProvider(ethereumChain.rpc);
+  const ethProvider = getDefaultProvider(moonbeamChain.rpc);
   const ethConnectedWallet = wallet.connect(ethProvider);
   const sourceContract = new Contract(
-    ethereumChain.messageSender,
+    moonbeamChain.messageSender,
     MessageSenderContract.abi,
-    ethConnectedWallet
+    ethConnectedWallet,
   );
 
   const tx = await sourceContract.sendMessage(
@@ -51,7 +47,7 @@ async function main() {
     "hello world!",
     {
       value: BigInt(3000000),
-    }
+    },
   );
   await tx.wait();
 
