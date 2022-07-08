@@ -10,7 +10,7 @@ const wallet = getWallet();
 createAndExport({
   accountsToFund: [wallet.address],
   chains: ["Moonbeam", "Avalanche"],
-  chainOutputPath: "config/chains.json",
+  chainOutputPath: "config/local.json",
   async callback(network: Network) {
     if (network.name === "Avalanche") {
       await network.giveToken(

@@ -12,10 +12,12 @@ import {
   GasToken,
 } from "@axelar-network/axelarjs-sdk";
 
-export const isTestnet = process.env.NEXT_PUBLIC_ENVIRONMENT === "testnet";
-
-const moonbeamChain = chains.find((chain: any) => chain.name === "Moonbeam");
-const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
+const moonbeamChain = chains.find(
+  (chain: any) => chain.name === "Moonbeam"
+) as any;
+const avalancheChain = chains.find(
+  (chain: any) => chain.name === "Avalanche"
+) as any;
 
 if (!moonbeamChain || !avalancheChain) process.exit(0);
 
@@ -71,6 +73,7 @@ const destContract = new Contract(
   MessageReceiverContract.abi,
   ethConnectedWallet
 );
+
 const destGatewayContract = new Contract(
   moonbeamChain.gateway,
   gatewayAbi,
