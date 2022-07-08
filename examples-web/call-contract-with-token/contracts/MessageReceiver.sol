@@ -1,14 +1,16 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
-import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
-import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
+import {IAxelarExecutable} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol";
+import {IERC20} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol";
+import {IAxelarGasService} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol";
 
 contract MessageReceiver is IAxelarExecutable {
     IAxelarGasService gasReceiver;
 
-    constructor(address _gateway, address _gasReceiver) IAxelarExecutable(_gateway) {
+    constructor(address _gateway, address _gasReceiver)
+        IAxelarExecutable(_gateway)
+    {
         gasReceiver = IAxelarGasService(_gasReceiver);
     }
 
