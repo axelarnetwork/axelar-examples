@@ -41,14 +41,14 @@ const Home: NextPage = () => {
     setSenderBalance(_balance);
   }, []);
 
-  useEffect(() => {
-    handleRefreshSrcBalances();
-  }, [handleRefreshSrcBalances]);
-
   const handleOnGenerateRecipientAddress = () => {
     const recipientAddress = generateRecipientAddress();
     setRecipientAddresses([...recipientAddresses, recipientAddress]);
   };
+
+  useEffect(() => {
+    handleRefreshSrcBalances();
+  }, [handleRefreshSrcBalances]);
 
   return (
     <div>
