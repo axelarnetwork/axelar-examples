@@ -1,9 +1,17 @@
-import { Contract, ethers, getDefaultProvider, providers } from "ethers";
+import {
+  Contract,
+  ContractReceipt,
+  ethers,
+  getDefaultProvider,
+  providers,
+} from "ethers";
 import chains from "../config/chains.json";
 import MessageSenderContract from "../artifacts/contracts/MessageSender.sol/MessageSender.json";
 import MessageReceiverContract from "../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json";
 import IERC20 from "../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json";
 import { getWallet } from "./getWallet";
+
+export const isTestnet = process.env.NEXT_PUBLIC_ENVIRONMENT === "testnet";
 
 const moonbeamChain = chains.find((chain: any) => chain.name === "Moonbeam");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
@@ -74,7 +82,8 @@ export function generateRecipientAddress(): string {
 
 export async function sendTokenToDestChain(
   amount: string,
-  recipientAddresses: string[]
+  recipientAddresses: string[],
+  onSent: (txhash: string) => void
 ) {
   const tokenAddress = await srcGatewayContract.tokenAddresses("aUSDC");
   const erc20 = new Contract(
@@ -95,7 +104,9 @@ export async function sendTokenToDestChain(
       value: BigInt(700000),
     }
   );
-  await tx.wait();
+  const receipt = await tx.wait();
+
+  onSent(receipt.transactionHash);
 
   return new Promise((resolve, reject) => {
     destContract.on("Executed", () => {

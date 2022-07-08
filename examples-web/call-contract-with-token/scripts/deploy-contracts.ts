@@ -2,19 +2,17 @@ import "dotenv/config";
 import fs from "fs/promises";
 import { getDefaultProvider } from "ethers";
 import { getWallet } from "../utils/getWallet";
+import { isTestnet } from "../utils";
 const {
   utils: { deployContract },
 } = require("@axelar-network/axelar-local-dev");
 
-// load env
-
 // create wallet
 const wallet = getWallet();
 
-const chains =
-  process.env.NEXT_PUBLIC_ENVIRONMENT === "testnet"
-    ? require("../config/testnet")
-    : require("../config/chains");
+const chains = isTestnet
+  ? require("../config/testnet")
+  : require("../config/chains");
 const moonbeamChain = chains.find((chain: any) => chain.name === "Moonbeam");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 
