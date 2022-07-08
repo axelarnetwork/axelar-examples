@@ -68,10 +68,17 @@ async function main() {
 
   // update chains
   const updatedChains = [moonbeamChain, avalancheChain];
-  await fs.writeFile(
-    "config/local.json",
-    JSON.stringify(updatedChains, null, 2),
-  );
+  if (isTestnet) {
+    await fs.writeFile(
+      "config/testnet.json",
+      JSON.stringify(updatedChains, null, 2),
+    );
+  } else {
+    await fs.writeFile(
+      "config/local.json",
+      JSON.stringify(updatedChains, null, 2),
+    );
+  }
 }
 
 main();
