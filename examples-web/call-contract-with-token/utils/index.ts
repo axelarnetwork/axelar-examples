@@ -1,10 +1,4 @@
-import {
-  Contract,
-  ContractReceipt,
-  ethers,
-  getDefaultProvider,
-  providers,
-} from "ethers";
+import { Contract, ethers, getDefaultProvider, providers } from "ethers";
 import chains from "../config/chains.json";
 import MessageSenderContract from "../artifacts/contracts/MessageSender.sol/MessageSender.json";
 import MessageReceiverContract from "../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json";
@@ -85,29 +79,39 @@ export async function sendTokenToDestChain(
   recipientAddresses: string[],
   onSent: (txhash: string) => void
 ) {
+  // Get token address from the gateway contract
   const tokenAddress = await srcGatewayContract.tokenAddresses("aUSDC");
+
   const erc20 = new Contract(
     tokenAddress,
     IERC20.abi,
     avalancheConnectedWallet
   );
+
+  // Approve the token for the amount to be sent
   await erc20
     .approve(sourceContract.address, ethers.utils.parseUnits(amount, 6))
     .then((tx: any) => tx.wait());
-  const tx = await sourceContract.sendToMany(
-    "Moonbeam",
-    destContract.address,
-    recipientAddresses,
-    "aUSDC",
-    ethers.utils.parseUnits(amount, 6),
-    {
-      value: BigInt(700000),
-    }
-  );
+
+  // Send the token
+  const tx = await sourceContract
+    .sendToMany(
+      "Moonbeam",
+      destContract.address,
+      recipientAddresses,
+      "aUSDC",
+      ethers.utils.parseUnits(amount, 6),
+      {
+        value: BigInt(700000),
+      }
+    )
+    .then((tx: any) => tx.wait());
+
   const receipt = await tx.wait();
 
   onSent(receipt.transactionHash);
 
+  // Wait destination contract to execute the transaction.
   return new Promise((resolve, reject) => {
     destContract.on("Executed", () => {
       destContract.removeAllListeners("Executed");
