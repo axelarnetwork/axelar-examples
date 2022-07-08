@@ -148,7 +148,9 @@ const Home: NextPage = () => {
                         className="flex justify-between"
                       >
                         <span>{truncatedAddress(recipientAddress)}</span>
-                        <span className="font-bold">{balances[i]}</span>
+                        <span className="font-bold">
+                          {balances[i] || `0.00`}
+                        </span>
                       </div>
                     ))}
                   </div>
