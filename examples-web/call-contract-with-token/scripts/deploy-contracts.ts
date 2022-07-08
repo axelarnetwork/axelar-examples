@@ -1,6 +1,6 @@
 import "dotenv/config";
 import fs from "fs/promises";
-import { getDefaultProvider, Wallet } from "ethers";
+import { getDefaultProvider } from "ethers";
 import { getWallet } from "../utils/getWallet";
 const {
   utils: { deployContract },
@@ -11,7 +11,10 @@ const {
 // create wallet
 const wallet = getWallet();
 
-const chains = process.env.NEXT_PUBLIC_ENVIRONMENT === "testnet" ? require("../config/testnet") : require("../config/chains");
+const chains =
+  process.env.NEXT_PUBLIC_ENVIRONMENT === "testnet"
+    ? require("../config/testnet")
+    : require("../config/chains");
 const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 
@@ -28,12 +31,14 @@ async function main() {
     MessageSenderContract,
     [ethereumChain.gateway, ethereumChain.gasReceiver]
   );
+  console.log("MessageSender deployed on Ethereum:", ethSender.address);
   ethereumChain.messageSender = ethSender.address;
   const ethReceiver = await deployContract(
     ethConnectedWallet,
     MessageReceiverContract,
     [ethereumChain.gateway, ethereumChain.gasReceiver]
   );
+  console.log("MessageReceiver deployed on Ethereum:", ethReceiver.address);
   ethereumChain.messageReceiver = ethReceiver.address;
 
   const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
@@ -43,11 +48,16 @@ async function main() {
     MessageSenderContract,
     [avalancheChain.gateway, avalancheChain.gasReceiver]
   );
+  console.log("MessageSender deployed on Avalanche:", avalancheSender.address);
   avalancheChain.messageSender = avalancheSender.address;
   const avalancheReceiver = await deployContract(
     avalancheConnectedWallet,
     MessageReceiverContract,
     [avalancheChain.gateway, avalancheChain.gasReceiver]
+  );
+  console.log(
+    "MessageReceiver deployed on Avalanche:",
+    avalancheReceiver.address
   );
   avalancheChain.messageReceiver = avalancheReceiver.address;
 
