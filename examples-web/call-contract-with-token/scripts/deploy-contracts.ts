@@ -23,23 +23,33 @@ async function main() {
   // deploy on ethereum
   const ethProvider = getDefaultProvider(ethereumChain.rpc);
   const ethConnectedWallet = wallet.connect(ethProvider);
-  const ethContract = await deployContract(
+  const ethSender = await deployContract(
     ethConnectedWallet,
     MessageSenderContract,
     [ethereumChain.gateway, ethereumChain.gasReceiver]
   );
-
-  ethereumChain.messageSender = ethContract.address;
+  ethereumChain.messageSender = ethSender.address;
+  const ethReceiver = await deployContract(
+    ethConnectedWallet,
+    MessageReceiverContract,
+    [ethereumChain.gateway, ethereumChain.gasReceiver]
+  );
+  ethereumChain.messageReceiver = ethReceiver.address;
 
   const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
   const avalancheConnectedWallet = wallet.connect(avalancheProvider);
-  const avalancheContract = await deployContract(
+  const avalancheSender = await deployContract(
+    avalancheConnectedWallet,
+    MessageSenderContract,
+    [avalancheChain.gateway, avalancheChain.gasReceiver]
+  );
+  avalancheChain.messageSender = avalancheSender.address;
+  const avalancheReceiver = await deployContract(
     avalancheConnectedWallet,
     MessageReceiverContract,
     [avalancheChain.gateway, avalancheChain.gasReceiver]
   );
-
-  avalancheChain.messageReceiver = avalancheContract.address;
+  avalancheChain.messageReceiver = avalancheReceiver.address;
 
   // update chains
   const updatedChains = [ethereumChain, avalancheChain];

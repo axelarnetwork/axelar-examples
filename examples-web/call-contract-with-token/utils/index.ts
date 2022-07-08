@@ -16,6 +16,8 @@ export const wallet = getWallet();
 const useMetamask = false //typeof window === 'object';
 const ethProvider =  useMetamask ? new providers.Web3Provider((window as any).ethereum) : getDefaultProvider(ethereumChain.rpc);
 const ethConnectedWallet = useMetamask ? (ethProvider as providers.Web3Provider).getSigner() : wallet.connect(ethProvider);
+const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
+const avalancheConnectedWallet = wallet.connect(avalancheProvider);
 
 const gatewayAbi = [
   {
@@ -40,51 +42,51 @@ const gatewayAbi = [
 ];
 
 const srcGatewayContract = new Contract(
-  ethereumChain.gateway,
-  gatewayAbi,
-  ethConnectedWallet
-);
-
-const sourceContract = new Contract(
-  ethereumChain.messageSender as string,
-  MessageSenderContract.abi,
-  ethConnectedWallet
-);
-
-const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
-const avalancheConnectedWallet = wallet.connect(avalancheProvider);
-const destContract = new Contract(
-  avalancheChain.messageReceiver as string,
-  MessageReceiverContract.abi,
-  avalancheConnectedWallet
-);
-const destGatewayContract = new Contract(
   avalancheChain.gateway,
   gatewayAbi,
   avalancheConnectedWallet
+);
+
+const sourceContract = new Contract(
+  avalancheChain.messageSender as string,
+  MessageSenderContract.abi,
+  avalancheConnectedWallet
+);
+
+
+const destContract = new Contract(
+  ethereumChain.messageReceiver as string,
+  MessageReceiverContract.abi,
+  ethConnectedWallet
+);
+const destGatewayContract = new Contract(
+  ethereumChain.gateway,
+  gatewayAbi,
+  ethConnectedWallet
 );
 
 export function generateRecipientAddress(): string {
   return ethers.Wallet.createRandom().address;
 }
 
-export async function sendTokenToAvalanche(
+export async function sendTokenToEthereum(
   amount: string,
   recipientAddresses: string[]
 ) {
   const tokenAddress = await srcGatewayContract.tokenAddresses("aUSDC");
-  const erc20 = new Contract(tokenAddress, IERC20.abi, ethConnectedWallet);
+  const erc20 = new Contract(tokenAddress, IERC20.abi, avalancheConnectedWallet);
   await erc20
     .approve(sourceContract.address, ethers.utils.parseUnits(amount, 6))
     .then((tx: any) => tx.wait());
+    debugger;
   const tx = await sourceContract.sendToMany(
-    "Avalanche",
+    "Ethereum",
     destContract.address,
     recipientAddresses,
     "aUSDC",
     ethers.utils.parseUnits(amount, 6),
     {
-      value: BigInt(30000000),
+      value: BigInt(700000),
     }
   );
   await tx.wait();
@@ -106,8 +108,7 @@ export function truncatedAddress(address: string): string {
 export async function getBalance(addresses: string[], isSource: boolean) {
   const contract = isSource ? srcGatewayContract : destGatewayContract;
   const connectedWallet = isSource
-    ? ethConnectedWallet
-    : avalancheConnectedWallet;
+    ? avalancheConnectedWallet : ethConnectedWallet;
   const tokenAddress = await contract.tokenAddresses("aUSDC");
   const erc20 = new Contract(tokenAddress, IERC20.abi, connectedWallet);
   const balances = await Promise.all(
