@@ -38,6 +38,3 @@ yarn-error.log*
 
 artifacts
 cache
-
-chains.json
-local.json
