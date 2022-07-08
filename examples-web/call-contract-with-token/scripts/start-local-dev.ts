@@ -12,7 +12,7 @@ createAndExport({
   chains: ["Ethereum", "Avalanche"],
   chainOutputPath: "config/chains.json",
   async callback(network: Network) {
-    if (network.name === "Ethereum") {
+    if (network.name === "Avalanche") {
       await network.giveToken(
         wallet.address,
         "aUSDC",
