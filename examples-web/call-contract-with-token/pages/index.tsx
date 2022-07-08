@@ -2,7 +2,7 @@ import cn from "classnames";
 import type { NextPage } from "next";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  sendTokenToEthereum,
+  sendTokenToDestChain,
   getBalance,
   generateRecipientAddress,
   truncatedAddress,
@@ -10,7 +10,9 @@ import {
 } from "../utils";
 
 const Home: NextPage = () => {
-  const [recipientAddresses, setRecipientAddresses] = useState<string[]>([wallet.address]);
+  const [recipientAddresses, setRecipientAddresses] = useState<string[]>([
+    wallet.address,
+  ]);
   const [balances, setBalances] = useState<string[]>([]);
   const [senderBalance, setSenderBalance] = useState<string>();
   const [loading, setLoading] = useState(false);
@@ -21,7 +23,7 @@ const Home: NextPage = () => {
     const formData = new FormData(e.currentTarget);
     const amount = formData.get("amount") as string;
     setLoading(true);
-    await sendTokenToEthereum(amount, recipientAddresses).finally(() => {
+    await sendTokenToDestChain(amount, recipientAddresses).finally(() => {
       setLoading(false);
       handleRefreshSrcBalances();
       handleRefreshDestBalances();
@@ -64,7 +66,10 @@ const Home: NextPage = () => {
             <div className="card-body">
               <h2 className="card-title">Avalanche (Token Sender)</h2>
 
-              <p>Sender ({truncatedAddress(wallet.address)}) balance: {senderBalance}</p>
+              <p>
+                Sender ({truncatedAddress(wallet.address)}) balance:{" "}
+                {senderBalance}
+              </p>
               <p>Send a cross-chain token</p>
               <div className="justify-end mt-2 card-actions">
                 <form className="w-full" onSubmit={handleOnSubmit}>
@@ -113,14 +118,14 @@ const Home: NextPage = () => {
             </div>
           </div>
 
-          {/* ETHEREUM CARD */}
+          {/* Destination chain card */}
           <div className="row-span-1 shadow-xl card w-96 bg-base-100">
             <figure
               className="h-64 bg-center bg-no-repeat bg-cover image-full"
-              style={{ backgroundImage: "url('/assets/ethereum.gif')" }}
+              style={{ backgroundImage: "url('/assets/moonbeam.gif')" }}
             />
             <div className="card-body">
-              <h2 className="card-title">Ethereum (Token Receiver)</h2>
+              <h2 className="card-title">Moonbeam (Token Receiver)</h2>
               <div className="h-40">
                 <div className="w-full max-w-xs form-control">
                   <div>

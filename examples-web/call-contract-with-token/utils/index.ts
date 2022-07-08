@@ -1,21 +1,25 @@
 import { Contract, ethers, getDefaultProvider, providers } from "ethers";
-
 import chains from "../config/chains.json";
 import MessageSenderContract from "../artifacts/contracts/MessageSender.sol/MessageSender.json";
 import MessageReceiverContract from "../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json";
 import IERC20 from "../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json";
 import { getWallet } from "./getWallet";
 
-const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");
+const moonbeamChain = chains.find((chain: any) => chain.name === "Moonbeam");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 
-if (!ethereumChain || !avalancheChain) process.exit(0);
+if (!moonbeamChain || !avalancheChain) process.exit(0);
 
 export const wallet = getWallet();
 
-const useMetamask = false //typeof window === 'object';
-const ethProvider =  useMetamask ? new providers.Web3Provider((window as any).ethereum) : getDefaultProvider(ethereumChain.rpc);
-const ethConnectedWallet = useMetamask ? (ethProvider as providers.Web3Provider).getSigner() : wallet.connect(ethProvider);
+const useMetamask = false; // typeof window === 'object';
+
+const ethProvider = useMetamask
+  ? new providers.Web3Provider((window as any).ethereum)
+  : getDefaultProvider(moonbeamChain.rpc);
+const ethConnectedWallet = useMetamask
+  ? (ethProvider as providers.Web3Provider).getSigner()
+  : wallet.connect(ethProvider);
 const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
 const avalancheConnectedWallet = wallet.connect(avalancheProvider);
 
@@ -53,14 +57,13 @@ const sourceContract = new Contract(
   avalancheConnectedWallet
 );
 
-
 const destContract = new Contract(
-  ethereumChain.messageReceiver as string,
+  moonbeamChain.messageReceiver as string,
   MessageReceiverContract.abi,
   ethConnectedWallet
 );
 const destGatewayContract = new Contract(
-  ethereumChain.gateway,
+  moonbeamChain.gateway,
   gatewayAbi,
   ethConnectedWallet
 );
@@ -69,18 +72,21 @@ export function generateRecipientAddress(): string {
   return ethers.Wallet.createRandom().address;
 }
 
-export async function sendTokenToEthereum(
+export async function sendTokenToDestChain(
   amount: string,
   recipientAddresses: string[]
 ) {
   const tokenAddress = await srcGatewayContract.tokenAddresses("aUSDC");
-  const erc20 = new Contract(tokenAddress, IERC20.abi, avalancheConnectedWallet);
+  const erc20 = new Contract(
+    tokenAddress,
+    IERC20.abi,
+    avalancheConnectedWallet
+  );
   await erc20
     .approve(sourceContract.address, ethers.utils.parseUnits(amount, 6))
     .then((tx: any) => tx.wait());
-    debugger;
   const tx = await sourceContract.sendToMany(
-    "Ethereum",
+    "Moonbeam",
     destContract.address,
     recipientAddresses,
     "aUSDC",
@@ -108,7 +114,8 @@ export function truncatedAddress(address: string): string {
 export async function getBalance(addresses: string[], isSource: boolean) {
   const contract = isSource ? srcGatewayContract : destGatewayContract;
   const connectedWallet = isSource
-    ? avalancheConnectedWallet : ethConnectedWallet;
+    ? avalancheConnectedWallet
+    : ethConnectedWallet;
   const tokenAddress = await contract.tokenAddresses("aUSDC");
   const erc20 = new Contract(tokenAddress, IERC20.abi, connectedWallet);
   const balances = await Promise.all(

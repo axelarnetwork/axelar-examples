@@ -15,7 +15,7 @@ const chains =
   process.env.NEXT_PUBLIC_ENVIRONMENT === "testnet"
     ? require("../config/testnet")
     : require("../config/chains");
-const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");
+const moonbeamChain = chains.find((chain: any) => chain.name === "Moonbeam");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 
 // load contracts
@@ -23,23 +23,26 @@ const MessageSenderContract = require("../artifacts/contracts/MessageSender.sol/
 const MessageReceiverContract = require("../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json");
 
 async function main() {
-  // deploy on ethereum
-  const ethProvider = getDefaultProvider(ethereumChain.rpc);
-  const ethConnectedWallet = wallet.connect(ethProvider);
-  const ethSender = await deployContract(
-    ethConnectedWallet,
+  // deploy on moonbeam
+  const moonbeamProvider = getDefaultProvider(moonbeamChain.rpc);
+  const moonbeamConnectedWallet = wallet.connect(moonbeamProvider);
+  const moonbeeamSender = await deployContract(
+    moonbeamConnectedWallet,
     MessageSenderContract,
-    [ethereumChain.gateway, ethereumChain.gasReceiver]
+    [moonbeamChain.gateway, moonbeamChain.gasReceiver]
   );
-  console.log("MessageSender deployed on Ethereum:", ethSender.address);
-  ethereumChain.messageSender = ethSender.address;
-  const ethReceiver = await deployContract(
-    ethConnectedWallet,
+  console.log("MessageSender deployed on Moonbeam:", moonbeeamSender.address);
+  moonbeamChain.messageSender = moonbeeamSender.address;
+  const moonbeamReceiver = await deployContract(
+    moonbeamConnectedWallet,
     MessageReceiverContract,
-    [ethereumChain.gateway, ethereumChain.gasReceiver]
+    [moonbeamChain.gateway, moonbeamChain.gasReceiver]
   );
-  console.log("MessageReceiver deployed on Ethereum:", ethReceiver.address);
-  ethereumChain.messageReceiver = ethReceiver.address;
+  console.log(
+    "MessageReceiver deployed on Moonbeam:",
+    moonbeamReceiver.address
+  );
+  moonbeamChain.messageReceiver = moonbeamReceiver.address;
 
   const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
   const avalancheConnectedWallet = wallet.connect(avalancheProvider);
@@ -62,7 +65,7 @@ async function main() {
   avalancheChain.messageReceiver = avalancheReceiver.address;
 
   // update chains
-  const updatedChains = [ethereumChain, avalancheChain];
+  const updatedChains = [moonbeamChain, avalancheChain];
   await fs.writeFile(
     "config/chains.json",
     JSON.stringify(updatedChains, null, 2)

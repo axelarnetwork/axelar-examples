@@ -9,7 +9,7 @@ const wallet = getWallet();
 // deploy network
 createAndExport({
   accountsToFund: [wallet.address],
-  chains: ["Ethereum", "Avalanche"],
+  chains: ["Moonbeam", "Avalanche"],
   chainOutputPath: "config/chains.json",
   async callback(network: Network) {
     if (network.name === "Avalanche") {

@@ -8,7 +8,7 @@ const {
 } = require("@axelar-network/axelar-local-dev");
 
 const chains = require("../config/chains");
-const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");
+const moonbeamChain = chains.find((chain: any) => chain.name === "Moonbeam");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 
 // load contracts
@@ -37,10 +37,10 @@ async function main() {
   });
 
   // call on source chain
-  const ethProvider = getDefaultProvider(ethereumChain.rpc);
+  const ethProvider = getDefaultProvider(moonbeamChain.rpc);
   const ethConnectedWallet = wallet.connect(ethProvider);
   const sourceContract = new Contract(
-    ethereumChain.messageSender,
+    moonbeamChain.messageSender,
     MessageSenderContract.abi,
     ethConnectedWallet
   );
