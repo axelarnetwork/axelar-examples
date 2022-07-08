@@ -1,9 +1,4 @@
 import { Contract, ethers, getDefaultProvider, providers } from "ethers";
-import chains from "../config/chains.json";
-import MessageSenderContract from "../artifacts/contracts/MessageSender.sol/MessageSender.json";
-import MessageReceiverContract from "../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json";
-import IERC20 from "../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json";
-import { getWallet } from "./getWallet";
 import {
   AxelarGMPRecoveryAPI,
   AxelarQueryAPI,
@@ -11,6 +6,14 @@ import {
   EvmChain,
   GasToken,
 } from "@axelar-network/axelarjs-sdk";
+
+import MessageSenderContract from "../artifacts/contracts/MessageSender.sol/MessageSender.json";
+import MessageReceiverContract from "../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json";
+import IERC20 from "../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json";
+import { getWallet } from "./getWallet";
+import { getChains } from "../config/constants";
+
+const chains = getChains();
 
 const moonbeamChain = chains.find(
   (chain: any) => chain.name === "Moonbeam"

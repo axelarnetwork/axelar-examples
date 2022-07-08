@@ -2,7 +2,7 @@ import "dotenv/config";
 import fs from "fs/promises";
 import { getDefaultProvider } from "ethers";
 import { getWallet } from "../utils/getWallet";
-import { isTestnet } from "../utils";
+import { getChains, isTestnet } from "../config/constants";
 const {
   utils: { deployContract },
 } = require("@axelar-network/axelar-local-dev");
@@ -10,9 +10,7 @@ const {
 // create wallet
 const wallet = getWallet();
 
-const chains = isTestnet
-  ? require("../config/testnet")
-  : require("../config/chains");
+const chains = getChains();
 const moonbeamChain = chains.find((chain: any) => chain.name === "Moonbeam");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 
@@ -65,7 +63,7 @@ async function main() {
   // update chains
   const updatedChains = [moonbeamChain, avalancheChain];
   await fs.writeFile(
-    "config/chains.json",
+    "config/local.json",
     JSON.stringify(updatedChains, null, 2)
   );
 }
