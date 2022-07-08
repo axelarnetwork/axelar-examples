@@ -1,11 +1,10 @@
 import { Contract, ethers, getDefaultProvider, providers } from "ethers";
-import chains from "../config/chains.json";
 import MessageSenderContract from "../artifacts/contracts/MessageSender.sol/MessageSender.json";
 import MessageReceiverContract from "../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json";
 import IERC20 from "../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json";
 import { getWallet } from "./getWallet";
+import chains from "../config/chains.json";
 import {
-  AxelarGMPRecoveryAPI,
   AxelarQueryAPI,
   Environment,
   EvmChain,
@@ -23,12 +22,12 @@ export const wallet = getWallet();
 
 const useMetamask = false; // typeof window === 'object';
 
-const ethProvider = useMetamask
+const moonbeamProvider = useMetamask
   ? new providers.Web3Provider((window as any).ethereum)
   : getDefaultProvider(moonbeamChain.rpc);
-const ethConnectedWallet = useMetamask
-  ? (ethProvider as providers.Web3Provider).getSigner()
-  : wallet.connect(ethProvider);
+const moonbeamConnectedWallet = useMetamask
+  ? (moonbeamProvider as providers.Web3Provider).getSigner()
+  : wallet.connect(moonbeamProvider);
 const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
 const avalancheConnectedWallet = wallet.connect(avalancheProvider);
 
@@ -69,12 +68,12 @@ const sourceContract = new Contract(
 const destContract = new Contract(
   moonbeamChain.messageReceiver as string,
   MessageReceiverContract.abi,
-  ethConnectedWallet
+  moonbeamConnectedWallet
 );
 const destGatewayContract = new Contract(
   moonbeamChain.gateway,
   gatewayAbi,
-  ethConnectedWallet
+  moonbeamConnectedWallet
 );
 
 export function generateRecipientAddress(): string {
@@ -144,7 +143,7 @@ export async function getBalance(addresses: string[], isSource: boolean) {
   const contract = isSource ? srcGatewayContract : destGatewayContract;
   const connectedWallet = isSource
     ? avalancheConnectedWallet
-    : ethConnectedWallet;
+    : moonbeamConnectedWallet;
   const tokenAddress = await contract.tokenAddresses("aUSDC");
   const erc20 = new Contract(tokenAddress, IERC20.abi, connectedWallet);
   const balances = await Promise.all(
