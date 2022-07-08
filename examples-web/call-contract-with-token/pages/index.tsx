@@ -56,6 +56,7 @@ const Home: NextPage = () => {
         <h1 className="text-4xl font-medium text-center">
           General Message Passing (GMP)
         </h1>
+        <h2 className="text-base text-center">Call Contract With Token</h2>
 
         <div className="grid grid-cols-2 gap-20 mt-20 justify-items-center">
           {/* AVALANCHE CARD */}

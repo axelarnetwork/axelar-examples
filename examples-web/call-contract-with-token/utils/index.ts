@@ -90,7 +90,6 @@ export async function sendTokenToDestChain(
   recipientAddresses: string[],
   onSent: (txhash: string) => void,
 ) {
-  console.log("sendTokenToDestChain");
   // Get token address from the gateway contract
   const tokenAddress = await srcGatewayContract.tokenAddresses("aUSDC");
 
@@ -114,10 +113,6 @@ export async function sendTokenToDestChain(
     GasToken.AVAX,
   );
 
-  console.log({
-    gasFee,
-  });
-
   // Send the token
   const receipt = await sourceContract
     .sendToMany(
@@ -132,6 +127,9 @@ export async function sendTokenToDestChain(
     )
     .then((tx: any) => tx.wait());
 
+  console.log({
+    txHash: receipt.transactionHash,
+  });
   onSent(receipt.transactionHash);
 
   // Wait destination contract to execute the transaction.
