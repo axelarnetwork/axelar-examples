@@ -10,9 +10,7 @@ import {
 } from "../utils";
 
 const Home: NextPage = () => {
-  const [recipientAddresses, setRecipientAddresses] = useState<string[]>([
-    wallet.address,
-  ]);
+  const [recipientAddresses, setRecipientAddresses] = useState<string[]>([]);
   const [balances, setBalances] = useState<string[]>([]);
   const [senderBalance, setSenderBalance] = useState<string>();
   const [txhash, setTxhash] = useState<string>();
