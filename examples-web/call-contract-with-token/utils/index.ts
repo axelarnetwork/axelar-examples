@@ -9,21 +9,20 @@ import {
 import MessageSenderContract from "../artifacts/contracts/MessageSender.sol/MessageSender.json";
 import MessageReceiverContract from "../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json";
 import IERC20 from "../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json";
-import { getWallet } from "./getWallet";
-import { getChains } from "../config/constants";
+import { isTestnet, wallet } from "../config/constants";
 
-const chains = getChains();
+let chains = isTestnet
+  ? require("../config/testnet.json")
+  : require("../config/local.json");
 
 const moonbeamChain = chains.find(
-  (chain: any) => chain.name === "Moonbeam"
+  (chain: any) => chain.name === "Moonbeam",
 ) as any;
 const avalancheChain = chains.find(
-  (chain: any) => chain.name === "Avalanche"
+  (chain: any) => chain.name === "Avalanche",
 ) as any;
 
 if (!moonbeamChain || !avalancheChain) process.exit(0);
-
-export const wallet = getWallet();
 
 const useMetamask = false; // typeof window === 'object';
 
@@ -61,25 +60,25 @@ const gatewayAbi = [
 const srcGatewayContract = new Contract(
   avalancheChain.gateway,
   gatewayAbi,
-  avalancheConnectedWallet
+  avalancheConnectedWallet,
 );
 
 const sourceContract = new Contract(
   avalancheChain.messageSender as string,
   MessageSenderContract.abi,
-  avalancheConnectedWallet
+  avalancheConnectedWallet,
 );
 
 const destContract = new Contract(
   moonbeamChain.messageReceiver as string,
   MessageReceiverContract.abi,
-  moonbeamConnectedWallet
+  moonbeamConnectedWallet,
 );
 
 const destGatewayContract = new Contract(
   moonbeamChain.gateway,
   gatewayAbi,
-  moonbeamConnectedWallet
+  moonbeamConnectedWallet,
 );
 
 export function generateRecipientAddress(): string {
@@ -89,15 +88,16 @@ export function generateRecipientAddress(): string {
 export async function sendTokenToDestChain(
   amount: string,
   recipientAddresses: string[],
-  onSent: (txhash: string) => void
+  onSent: (txhash: string) => void,
 ) {
+  console.log("sendTokenToDestChain");
   // Get token address from the gateway contract
   const tokenAddress = await srcGatewayContract.tokenAddresses("aUSDC");
 
   const erc20 = new Contract(
     tokenAddress,
     IERC20.abi,
-    avalancheConnectedWallet
+    avalancheConnectedWallet,
   );
 
   // Approve the token for the amount to be sent
@@ -111,8 +111,12 @@ export async function sendTokenToDestChain(
   const gasFee = await api.estimateGasFee(
     EvmChain.AVALANCHE,
     EvmChain.MOONBEAM,
-    GasToken.AVAX
+    GasToken.AVAX,
   );
+
+  console.log({
+    gasFee,
+  });
 
   // Send the token
   const receipt = await sourceContract
@@ -123,8 +127,8 @@ export async function sendTokenToDestChain(
       "aUSDC",
       ethers.utils.parseUnits(amount, 6),
       {
-        value: BigInt(gasFee),
-      }
+        value: BigInt(isTestnet ? gasFee : 3000000),
+      },
     )
     .then((tx: any) => tx.wait());
 
@@ -156,7 +160,7 @@ export async function getBalance(addresses: string[], isSource: boolean) {
     addresses.map(async (address) => {
       const balance = await erc20.balanceOf(address);
       return ethers.utils.formatUnits(balance, 6);
-    })
+    }),
   );
   return balances;
 }

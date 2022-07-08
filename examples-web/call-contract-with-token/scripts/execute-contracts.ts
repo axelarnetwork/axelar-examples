@@ -1,8 +1,7 @@
-import "dotenv/config";
-
 import { Contract, getDefaultProvider, Wallet } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
-import { getWallet } from "../utils/getWallet";
+import { wallet } from "../config/constants";
+
 const {
   utils: { deployContract },
 } = require("@axelar-network/axelar-local-dev");
@@ -15,9 +14,6 @@ const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 const MessageSenderContract = require("../artifacts/contracts/MessageSender.sol/MessageSender.json");
 const MessageReceiverContract = require("../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json");
 
-// create wallet
-const wallet = getWallet();
-
 console.log({
   address: wallet.address,
 });
@@ -29,7 +25,7 @@ async function main() {
   const destContract = new Contract(
     avalancheChain.messageReceiver,
     MessageReceiverContract.abi,
-    avalancheConnectedWallet
+    avalancheConnectedWallet,
   );
 
   console.log({
@@ -42,7 +38,7 @@ async function main() {
   const sourceContract = new Contract(
     moonbeamChain.messageSender,
     MessageSenderContract.abi,
-    ethConnectedWallet
+    ethConnectedWallet,
   );
 
   const tx = await sourceContract.sendMessage(
@@ -51,7 +47,7 @@ async function main() {
     "hello world!",
     {
       value: BigInt(3000000),
-    }
+    },
   );
   await tx.wait();
 

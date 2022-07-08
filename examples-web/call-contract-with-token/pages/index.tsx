@@ -1,13 +1,12 @@
 import cn from "classnames";
 import type { NextPage } from "next";
 import React, { useCallback, useEffect, useState } from "react";
-import { isTestnet } from "../config/constants";
+import { wallet, isTestnet } from "../config/constants";
 import {
   sendTokenToDestChain,
   getBalance,
   generateRecipientAddress,
   truncatedAddress,
-  wallet,
 } from "../utils";
 
 const Home: NextPage = () => {
@@ -30,7 +29,7 @@ const Home: NextPage = () => {
         setLoading(false);
         handleRefreshSrcBalances();
         handleRefreshDestBalances();
-      }
+      },
     );
   }
 

@@ -1,10 +1,6 @@
-import "dotenv/config";
 import { createAndExport } from "@axelar-network/axelar-local-dev";
 import { Network } from "@axelar-network/axelar-local-dev/dist/Network";
-import { getWallet } from "../utils/getWallet";
-
-// create wallet
-const wallet = getWallet();
+import { wallet } from "../config/constants";
 
 // deploy network
 createAndExport({
@@ -16,7 +12,7 @@ createAndExport({
       await network.giveToken(
         wallet.address,
         "aUSDC",
-        BigInt("100000000000000")
+        BigInt("100000000000000"),
       );
     }
 
