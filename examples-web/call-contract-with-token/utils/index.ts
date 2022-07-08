@@ -13,7 +13,7 @@ if (!ethereumChain || !avalancheChain) process.exit(0);
 
 export const wallet = getWallet();
 
-const useMetamask = typeof window === 'object';
+const useMetamask = false //typeof window === 'object';
 const ethProvider =  useMetamask ? new providers.Web3Provider((window as any).ethereum) : getDefaultProvider(ethereumChain.rpc);
 const ethConnectedWallet = useMetamask ? (ethProvider as providers.Web3Provider).getSigner() : wallet.connect(ethProvider);
 

@@ -10,7 +10,7 @@ import {
 } from "../utils";
 
 const Home: NextPage = () => {
-  const [recipientAddresses, setRecipientAddresses] = useState<string[]>([]);
+  const [recipientAddresses, setRecipientAddresses] = useState<string[]>([wallet.address]);
   const [balances, setBalances] = useState<string[]>([]);
   const [senderBalance, setSenderBalance] = useState<string>();
   const [loading, setLoading] = useState(false);
@@ -64,7 +64,7 @@ const Home: NextPage = () => {
             <div className="card-body">
               <h2 className="card-title">Ethereum (Token Sender)</h2>
 
-              <p>Sender balance: {senderBalance}</p>
+              <p>Sender ({truncatedAddress(wallet.address)}) balance: {senderBalance}</p>
               <p>Send a cross-chain token</p>
               <div className="justify-end mt-2 card-actions">
                 <form className="w-full" onSubmit={handleOnSubmit}>

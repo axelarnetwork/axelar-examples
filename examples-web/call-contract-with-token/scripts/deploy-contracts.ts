@@ -11,7 +11,7 @@ const {
 // create wallet
 const wallet = getWallet();
 
-const chains = require("../config/chains");
+const chains = process.env.NEXT_PUBLIC_ENVIRONMENT === "testnet" ? require("../config/testnet") : require("../config/chains");
 const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 
