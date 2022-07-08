@@ -1,11 +1,10 @@
 import "dotenv/config";
 import { createAndExport } from "@axelar-network/axelar-local-dev";
-import { Wallet } from "ethers";
 import { Network } from "@axelar-network/axelar-local-dev/dist/Network";
+import { getWallet } from "../utils/getWallet";
 
 // create wallet
-const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
-const wallet = Wallet.fromMnemonic(mnemonic);
+const wallet = getWallet();
 
 // deploy network
 createAndExport({

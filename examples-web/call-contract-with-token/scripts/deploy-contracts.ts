@@ -1,6 +1,7 @@
 import "dotenv/config";
 import fs from "fs/promises";
 import { getDefaultProvider, Wallet } from "ethers";
+import { getWallet } from "../utils/getWallet";
 const {
   utils: { deployContract },
 } = require("@axelar-network/axelar-local-dev");
@@ -8,8 +9,7 @@ const {
 // load env
 
 // create wallet
-const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
-const wallet = Wallet.fromMnemonic(mnemonic);
+const wallet = getWallet();
 
 const chains = require("../config/chains");
 const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");

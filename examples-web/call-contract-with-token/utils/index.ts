@@ -1,20 +1,21 @@
-import { Contract, ethers, getDefaultProvider, Wallet } from "ethers";
+import { Contract, ethers, getDefaultProvider, providers } from "ethers";
 
 import chains from "../config/chains.json";
 import MessageSenderContract from "../artifacts/contracts/MessageSender.sol/MessageSender.json";
 import MessageReceiverContract from "../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json";
 import IERC20 from "../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json";
+import { getWallet } from "./getWallet";
 
 const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 
 if (!ethereumChain || !avalancheChain) process.exit(0);
 
-const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
-export const wallet = Wallet.fromMnemonic(mnemonic);
+export const wallet = getWallet();
 
-const ethProvider = getDefaultProvider(ethereumChain.rpc);
-const ethConnectedWallet = wallet.connect(ethProvider);
+const useMetamask = typeof window === 'object';
+const ethProvider =  useMetamask ? new providers.Web3Provider((window as any).ethereum) : getDefaultProvider(ethereumChain.rpc);
+const ethConnectedWallet = useMetamask ? (ethProvider as providers.Web3Provider).getSigner() : wallet.connect(ethProvider);
 
 const gatewayAbi = [
   {

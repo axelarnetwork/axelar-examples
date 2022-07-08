@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import { Contract, getDefaultProvider, Wallet } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
+import { getWallet } from "../utils/getWallet";
 const {
   utils: { deployContract },
 } = require("@axelar-network/axelar-local-dev");
@@ -15,8 +16,7 @@ const MessageSenderContract = require("../artifacts/contracts/MessageSender.sol/
 const MessageReceiverContract = require("../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json");
 
 // create wallet
-const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
-const wallet = Wallet.fromMnemonic(mnemonic);
+const wallet = getWallet();
 
 console.log({
   address: wallet.address,
