@@ -4,6 +4,13 @@ import MessageSenderContract from "../artifacts/contracts/MessageSender.sol/Mess
 import MessageReceiverContract from "../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json";
 import IERC20 from "../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json";
 import { getWallet } from "./getWallet";
+import {
+  AxelarGMPRecoveryAPI,
+  AxelarQueryAPI,
+  Environment,
+  EvmChain,
+  GasToken,
+} from "@axelar-network/axelarjs-sdk";
 
 export const isTestnet = process.env.NEXT_PUBLIC_ENVIRONMENT === "testnet";
 
@@ -93,8 +100,17 @@ export async function sendTokenToDestChain(
     .approve(sourceContract.address, ethers.utils.parseUnits(amount, 6))
     .then((tx: any) => tx.wait());
 
+  const api = new AxelarQueryAPI({ environment: Environment.TESTNET });
+
+  // Calculate how much gas to pay to Axelar to execute the transaction at the destination chain
+  const gasFee = await api.estimateGasFee(
+    EvmChain.AVALANCHE,
+    EvmChain.MOONBEAM,
+    GasToken.AVAX
+  );
+
   // Send the token
-  const tx = await sourceContract
+  const receipt = await sourceContract
     .sendToMany(
       "Moonbeam",
       destContract.address,
@@ -102,12 +118,10 @@ export async function sendTokenToDestChain(
       "aUSDC",
       ethers.utils.parseUnits(amount, 6),
       {
-        value: BigInt(700000),
+        value: BigInt(gasFee),
       }
     )
     .then((tx: any) => tx.wait());
-
-  const receipt = await tx.wait();
 
   onSent(receipt.transactionHash);
 
