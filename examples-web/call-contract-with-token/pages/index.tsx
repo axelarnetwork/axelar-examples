@@ -1,13 +1,13 @@
 import cn from "classnames";
 import type { NextPage } from "next";
 import React, { useCallback, useEffect, useState } from "react";
+import { isTestnet } from "../config/constants";
 import {
   sendTokenToDestChain,
   getBalance,
   generateRecipientAddress,
   truncatedAddress,
   wallet,
-  isTestnet,
 } from "../utils";
 
 const Home: NextPage = () => {
