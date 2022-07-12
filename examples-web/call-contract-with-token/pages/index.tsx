@@ -59,7 +59,7 @@ const Home: NextPage = () => {
         <h2 className="text-base text-center">Call Contract With Token</h2>
 
         <div className="grid grid-cols-2 gap-20 mt-20 justify-items-center">
-          {/* AVALANCHE CARD */}
+          {/* source chain card */}
           <div className="row-span-2 shadow-xl card w-96 bg-base-100">
             <figure
               className="h-64 bg-center bg-no-repeat bg-cover image-full"
