@@ -6,6 +6,7 @@ import {
   GasToken,
 } from "@axelar-network/axelarjs-sdk";
 
+import AxelarGatewayContract from "../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json";
 import MessageSenderContract from "../artifacts/contracts/MessageSender.sol/MessageSender.json";
 import MessageReceiverContract from "../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json";
 import IERC20 from "../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json";
@@ -35,32 +36,16 @@ const moonbeamConnectedWallet = useMetamask
 const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
 const avalancheConnectedWallet = wallet.connect(avalancheProvider);
 
-const gatewayAbi = [
-  {
-    inputs: [
-      {
-        internalType: "string",
-        name: "symbol",
-        type: "string",
-      },
-    ],
-    name: "tokenAddresses",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-];
-
 const srcGatewayContract = new Contract(
   avalancheChain.gateway,
-  gatewayAbi,
+  AxelarGatewayContract.abi,
   avalancheConnectedWallet,
+);
+
+const destGatewayContract = new Contract(
+  moonbeamChain.gateway,
+  AxelarGatewayContract.abi,
+  moonbeamConnectedWallet,
 );
 
 const sourceContract = new Contract(
@@ -72,12 +57,6 @@ const sourceContract = new Contract(
 const destContract = new Contract(
   moonbeamChain.messageReceiver as string,
   MessageReceiverContract.abi,
-  moonbeamConnectedWallet,
-);
-
-const destGatewayContract = new Contract(
-  moonbeamChain.gateway,
-  gatewayAbi,
   moonbeamConnectedWallet,
 );
 
