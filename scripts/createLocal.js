@@ -3,6 +3,7 @@ const { Wallet, utils: {keccak256, defaultAbiCoder} } = require('ethers');
 
 async function createLocal (toFund = []) {
     async function callback(chain, info) {
+        await chain.deployToken('Axelar Wrapped aUSDC', 'aUSDC', 6, BigInt(1e70));
         for(const address of toFund) {
             await chain.giveToken(address, 'aUSDC', BigInt(1e18));
         }

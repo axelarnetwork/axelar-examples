@@ -7,7 +7,7 @@
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "tokenName": "Ether",
     "tokenSymbol": "ETH",
-    "executableSample": "0xF36C15dD3CBCf86D383704200eA8D1906A01A05f",
+    "executableSample": "0x2033aE7406a0dAdbe1dd256Fe2894c57cc907d6c",
     "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
     "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
   },
@@ -19,7 +19,7 @@
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "tokenName": "Avax",
     "tokenSymbol": "AVAX",
-    "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4",
+    "executableSample": "0x9372350Abb3B5c10DB1BB858e0bCf91eFa74d946",
     "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
     "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
   },
@@ -31,7 +31,7 @@
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "tokenName": "Fantom",
     "tokenSymbol": "FTM",
-    "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4",
+    "executableSample": "0x6dc319F82D4358Cdd33FF98c0b441F63Ad299bB7",
     "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
     "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
   },
@@ -43,7 +43,7 @@
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "tokenName": "Matic",
     "tokenSymbol": "MATIC",
-    "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4",
+    "executableSample": "0x49Bd72FD6f59B57418DA42521628EfFD7df9DB1B",
     "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
     "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
   },
@@ -55,7 +55,7 @@
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "tokenName": "DEV",
     "tokenSymbol": "DEV",
-    "executableSample": "0x92031E88f3beD344f3c88d17900de0E71C5A28d4",
+    "executableSample": "0x2120A291a99746726CFa3bCcd3C388da75f7e718",
     "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
     "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
   }
