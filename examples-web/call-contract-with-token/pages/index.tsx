@@ -103,7 +103,7 @@ const Home: NextPage = () => {
                   {txhash && isTestnet && (
                     <a
                       href={`https://testnet.axelarscan.io/gmp/${txhash}`}
-                      className="link link-accent mt-2"
+                      className="mt-2 link link-accent"
                       target="blank"
                     >
                       Track at axelarscan
@@ -155,12 +155,6 @@ const Home: NextPage = () => {
                   </div>
                 </div>
               </div>
-              {/* <div
-                className="justify-center mt-5 card-actions"
-                onClick={handleRefreshDestBalances}
-              >
-                <button className="btn btn-primary">Refresh Balances</button>
-              </div> */}
             </div>
           </div>
         </div>
