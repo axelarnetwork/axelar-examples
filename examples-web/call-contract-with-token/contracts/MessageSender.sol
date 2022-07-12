@@ -22,8 +22,8 @@ contract MessageSender {
         uint256 amount
     ) external payable {
         address tokenAddress = gateway.tokenAddresses(symbol);
-        IERC20(tokenAddress).approve(address(gateway), amount);
         IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
+        IERC20(tokenAddress).approve(address(gateway), amount);
         bytes memory payload = abi.encode(destinationAddresses);
         if (msg.value > 0) {
             gasReceiver.payNativeGasForContractCallWithToken{value: msg.value}(
