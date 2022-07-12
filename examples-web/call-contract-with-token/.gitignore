@@ -38,3 +38,6 @@ yarn-error.log*
 
 artifacts
 cache
+
+local.json
+testnet.json
