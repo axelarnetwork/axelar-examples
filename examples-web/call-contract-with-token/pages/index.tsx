@@ -10,6 +10,8 @@ import {
 } from "../utils";
 
 const Home: NextPage = () => {
+  const [customRecipientAddress, setCustomRecipientAddress] =
+    useState<string>("");
   const [recipientAddresses, setRecipientAddresses] = useState<string[]>([]);
   const [balances, setBalances] = useState<string[]>([]);
   const [senderBalance, setSenderBalance] = useState<string>();
@@ -46,6 +48,11 @@ const Home: NextPage = () => {
     setRecipientAddresses([...recipientAddresses, recipientAddress]);
   };
 
+  const handleOnAddRecepientAddress = () => {
+    setRecipientAddresses([...recipientAddresses, customRecipientAddress]);
+    setCustomRecipientAddress("");
+  };
+
   useEffect(() => {
     handleRefreshSrcBalances();
   }, [handleRefreshSrcBalances]);
@@ -72,33 +79,47 @@ const Home: NextPage = () => {
                 Sender ({truncatedAddress(wallet.address)}) balance:{" "}
                 {senderBalance}
               </p>
-              <p>Send a cross-chain token</p>
+
+              <label className="label">
+                <span className="label-text">Recepients</span>
+              </label>
+              {recipientAddresses.map((recipientAddress) => (
+                <span key={recipientAddress} className="mt-1">
+                  {truncatedAddress(recipientAddress)}
+                </span>
+              ))}
+
               <div className="justify-end mt-2 card-actions">
                 <form
                   className="flex flex-col w-full"
                   onSubmit={handleOnSubmit}
                 >
-                  <div className="flex">
-                    <input
-                      disabled={loading}
-                      required
-                      name="amount"
-                      type="number"
-                      placeholder="Enter amount to send"
-                      className="w-full max-w-xs input input-bordered"
-                    />
-                    <button
-                      className={cn("btn btn-primary ml-2", {
-                        loading,
-                        "opacity-30":
-                          loading || recipientAddresses.length === 0,
-                        "opacity-100":
-                          !loading && recipientAddresses.length > 0,
-                      })}
-                      type="submit"
-                    >
-                      Send
-                    </button>
+                  <div>
+                    <label className="label">
+                      <span className="label-text">Token amount</span>
+                    </label>
+                    <div className="w-full input-group">
+                      <input
+                        disabled={loading}
+                        required
+                        name="amount"
+                        type="number"
+                        placeholder="Enter amount to send"
+                        className="w-full input input-bordered"
+                      />
+                      <button
+                        className={cn("btn btn-primary", {
+                          loading,
+                          "opacity-30":
+                            loading || recipientAddresses.length === 0,
+                          "opacity-100":
+                            !loading && recipientAddresses.length > 0,
+                        })}
+                        type="submit"
+                      >
+                        Send
+                      </button>
+                    </div>
                   </div>
                   {txhash && isTestnet && (
                     <a
@@ -109,22 +130,41 @@ const Home: NextPage = () => {
                       Track at axelarscan
                     </a>
                   )}
-                  <span className="mt-2 font-bold">Recipients</span>
-                  {recipientAddresses.map((recipientAddress) => (
-                    <span key={recipientAddress} className="mt-1">
-                      {truncatedAddress(recipientAddress)}
-                    </span>
-                  ))}
 
-                  <button
-                    onClick={handleOnGenerateRecipientAddress}
-                    type="button"
-                    className={cn("btn btn-accent mt-2", {
-                      loading,
-                    })}
-                  >
-                    Add recipient
-                  </button>
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text">EVM Address</span>
+                    </label>
+                    <label className="w-full input-group">
+                      <input
+                        type="text"
+                        placeholder="Enter address"
+                        className="w-full input input-bordered"
+                        value={customRecipientAddress}
+                        onChange={(e) =>
+                          setCustomRecipientAddress(e.target.value)
+                        }
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleOnAddRecepientAddress}
+                      >
+                        Add
+                      </button>
+                    </label>
+
+                    <div className="divider">OR</div>
+                    <button
+                      onClick={handleOnGenerateRecipientAddress}
+                      type="button"
+                      className={cn("btn btn-accent mt-2", {
+                        loading,
+                      })}
+                    >
+                      Generate Random Address
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>
