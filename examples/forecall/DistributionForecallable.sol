@@ -5,7 +5,7 @@ import { IAxelarForecallable } from '@axelar-network/axelar-cgp-solidity/contrac
 import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
-import { AddressToString } from 'axelar-utils-solidity/contracts/StringAddressUtils.sol';
+import { AddressToString } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
 
 contract DistributionForecallable is IAxelarForecallable {
     using AddressToString for address;

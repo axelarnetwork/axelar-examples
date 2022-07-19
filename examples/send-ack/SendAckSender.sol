@@ -4,7 +4,7 @@ pragma solidity 0.8.9;
 
 import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
-import { StringToAddress, AddressToString } from 'axelar-utils-solidity/contracts/StringAddressUtils.sol';
+import { StringToAddress, AddressToString } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
 
 contract SendAckSender is IAxelarExecutable {
     using StringToAddress for string;

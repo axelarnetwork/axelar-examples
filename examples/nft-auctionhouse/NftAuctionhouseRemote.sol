@@ -7,7 +7,7 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
 import '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 import './NftAuctionhouse.sol';
-import { AddressToString } from 'axelar-utils-solidity/contracts/StringAddressUtils.sol';
+import { AddressToString } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
 
 contract NftAuctionhouseRemote is NftAuctionhouse, IAxelarExecutable {
     IAxelarGasService gasReceiver;

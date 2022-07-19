@@ -6,7 +6,7 @@ import { ERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/ERC20.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
-import { StringToAddress, AddressToString } from 'axelar-utils-solidity/contracts/StringAddressUtils.sol';
+import { StringToAddress, AddressToString } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
 import { IERC20CrossChain } from './IERC20CrossChain.sol';
 
 contract ERC20CrossChain is IAxelarExecutable, IERC20CrossChain, ERC20 {
