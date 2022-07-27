@@ -2,7 +2,6 @@ import { Contract, ethers, getDefaultProvider, providers } from 'ethers';
 import { AxelarAssetTransfer, AxelarQueryAPI, Environment, EvmChain, GasToken } from '@axelar-network/axelarjs-sdk';
 import { keccak256, id } from 'ethers/lib/utils';
 import { Wallet } from 'ethers';
-import http from 'http';
 
 import AxelarGatewayContract from '../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json';
 import IERC20 from '../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json';
@@ -23,12 +22,7 @@ const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
 const avalancheConnectedWallet = wallet.connect(avalancheProvider);
 
 const srcGatewayContract = new Contract(avalancheChain.gateway, AxelarGatewayContract.abi, avalancheConnectedWallet);
-
 const destGatewayContract = new Contract(moonbeamChain.gateway, AxelarGatewayContract.abi, moonbeamConnectedWallet);
-
-export function generateRecipientAddress(): string {
-    return ethers.Wallet.createRandom().address;
-}
 
 export async function depositAddressSendToken(amount: string, recipientAddress: string, onSent: (txhash: string) => void) {
     let depositAddress;
