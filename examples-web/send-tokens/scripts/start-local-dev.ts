@@ -8,7 +8,6 @@ createAndExport({
   chains: ["Moonbeam", "Avalanche"],
   chainOutputPath: "config/local.json",
   async callback(network: Network) {
-    console.log("hellooooadfkja;dfkj")
     if (network.name === "Avalanche") {
       await network.giveToken(
         wallet.address,
