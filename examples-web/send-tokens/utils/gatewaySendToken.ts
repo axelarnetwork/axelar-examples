@@ -1,8 +1,8 @@
 import { Contract, ethers, getDefaultProvider, providers } from 'ethers';
 import { AxelarAssetTransfer, AxelarQueryAPI, Environment, EvmChain, GasToken } from '@axelar-network/axelarjs-sdk';
 
-import AxelarGatewayContract from '../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json';
-import IERC20 from '../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json';
+import AxelarGatewayContract from '../abi/IAxelarGateway.sol/IAxelarGateway.json';
+import IERC20 from '../abi/IERC20.sol/IERC20.json';
 import { isTestnet, wallet } from '../config/constants';
 import { sleep } from './sleep';
 import { getTransferFee } from './getTransferFee';

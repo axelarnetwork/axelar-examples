@@ -1,6 +1,6 @@
 import { Contract, ethers, getDefaultProvider, providers } from 'ethers';
-import AxelarGatewayContract from '../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json';
-import IERC20 from '../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json';
+import AxelarGatewayContract from '../abi/IAxelarGateway.sol/IAxelarGateway.json';
+import IERC20 from '../abi/IERC20.sol/IERC20.json';
 import { isTestnet, wallet } from '../config/constants';
 import {depositAddressSendToken} from './depositAddressSendToken';
 import {gatewaySendToken} from './gatewaySendToken';
