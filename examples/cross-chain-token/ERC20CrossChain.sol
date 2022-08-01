@@ -3,13 +3,13 @@
 pragma solidity 0.8.9;
 
 import { ERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/ERC20.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
+import { AxelarExecutable } from '@axelar-network/axelar-utils-solidity/contracts/executables/AxelarExecutable.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-utils-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { StringToAddress, AddressToString } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
 import { IERC20CrossChain } from './IERC20CrossChain.sol';
 
-contract ERC20CrossChain is IAxelarExecutable, IERC20CrossChain, ERC20 {
+contract ERC20CrossChain is AxelarExecutable, IERC20CrossChain, ERC20 {
     using StringToAddress for string;
     using AddressToString for address;
 
@@ -18,17 +18,24 @@ contract ERC20CrossChain is IAxelarExecutable, IERC20CrossChain, ERC20 {
     event FalseSender(string sourceChain, string sourceAddress);
 
     IAxelarGasService public gasReceiver;
+    IAxelarGateway _gateway;
+
+
 
     constructor(
         string memory name_,
         string memory symbol_,
         uint8 decimals_
-    ) IAxelarExecutable(address(0)) ERC20(name_, symbol, decimals_) {}
+    ) ERC20(name_, symbol, decimals_) {}
 
     function init(address gateway_, address gasReceiver_) external {
-        if (address(gateway) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
+        if (address(gateway()) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
         gasReceiver = IAxelarGasService(gasReceiver_);
-        gateway = IAxelarGateway(gateway_);
+        _gateway = IAxelarGateway(gateway_);
+    }
+
+    function gateway() public view override returns (IAxelarGateway) {
+        return _gateway;
     }
 
     // This is for testing.
@@ -53,12 +60,12 @@ contract ERC20CrossChain is IAxelarExecutable, IERC20CrossChain, ERC20 {
                 msg.sender
             );
         }
-        gateway.callContract(destinationChain, stringAddress, payload);
+        gateway().callContract(destinationChain, stringAddress, payload);
     }
 
     function _execute(
-        string memory, /*sourceChain*/
-        string memory sourceAddress,
+        string calldata, /*sourceChain*/
+        string calldata sourceAddress,
         bytes calldata payload
     ) internal override {
         if (sourceAddress.toAddress() != address(this)) {
