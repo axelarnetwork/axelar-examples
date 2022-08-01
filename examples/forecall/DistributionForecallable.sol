@@ -1,22 +1,27 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import { IAxelarForecallable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarForecallable.sol';
+import { AxelarForecallable } from '@axelar-network/axelar-utils-solidity/contracts/executables/AxelarForecallable.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-utils-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { AddressToString } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
 
-contract DistributionForecallable is IAxelarForecallable {
+contract DistributionForecallable is AxelarForecallable {
     using AddressToString for address;
-    IAxelarGasService gasReceiver;
+    IAxelarGasService public gasReceiver;
+    IAxelarGateway _gateway;
 
-    constructor() IAxelarForecallable(address(0)) {}
+    constructor() {}
 
-    function init(address _gateway, address _gasReceiver) external {
-        if (address(gateway) != address(0) || address(gasReceiver) != address(0)) revert('Already Initialized.');
-        gateway = IAxelarGateway(_gateway);
-        gasReceiver = IAxelarGasService(_gasReceiver);
+    function init(address gateway_, address gasReceiver_) external {
+        if (address(_gateway) != address(0) || address(gasReceiver) != address(0)) revert('Already Initialized.');
+        _gateway = IAxelarGateway(gateway_);
+        gasReceiver = IAxelarGasService(gasReceiver_);
+    }    
+    
+    function gateway() public view override returns (IAxelarGateway) {
+        return _gateway;
     }
 
     function _sendToMany(
@@ -26,11 +31,11 @@ contract DistributionForecallable is IAxelarForecallable {
         uint256 amount,
         uint256 feePercent
     ) internal {
-        address tokenAddress = gateway.tokenAddresses(symbol);
+        address tokenAddress = gateway().tokenAddresses(symbol);
         IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
-        IERC20(tokenAddress).approve(address(gateway), amount);
+        IERC20(tokenAddress).approve(address(gateway()), amount);
         bytes memory payload = abi.encode(feePercent, destinationAddresses);
-        gateway.callContractWithToken(destinationChain, address(this).toString(), payload, symbol, amount);
+        gateway().callContractWithToken(destinationChain, address(this).toString(), payload, symbol, amount);
     }
 
     function sendToMany(
@@ -56,14 +61,14 @@ contract DistributionForecallable is IAxelarForecallable {
     }
 
     function _executeWithToken(
-        string memory,
-        string memory,
+        string calldata,
+        string calldata,
         bytes calldata payload,
-        string memory tokenSymbol,
+        string calldata tokenSymbol,
         uint256 amount
     ) internal override {
         (, address[] memory recipients) = abi.decode(payload, (uint256, address[]));
-        address tokenAddress = gateway.tokenAddresses(tokenSymbol);
+        address tokenAddress = gateway().tokenAddresses(tokenSymbol);
 
         uint256 sentAmount = amount / recipients.length;
         for (uint256 i = 0; i < recipients.length; i++) {
