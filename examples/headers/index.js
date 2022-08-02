@@ -5,7 +5,7 @@ const {
     Contract,
     constants: { AddressZero },
 } = require('ethers');
-const { deployAndInitContractConstant } = require('axelar-utils-solidity');
+const { deployAndInitContractConstant } = require('@axelar-network/axelar-utils-solidity');
 
 const Headers = require('../../artifacts/examples/headers/Headers.sol/Headers.json');
 const Gateway = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');

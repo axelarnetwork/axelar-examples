@@ -9,7 +9,7 @@ const {
 const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
-const { deployAndInitContractConstant } = require('axelar-utils-solidity');
+const { deployAndInitContractConstant } = require('@axelar-network/axelar-utils-solidity');
 
 const ERC721 = require('../../artifacts/examples/nft-linker/ERC721Demo.sol/ERC721Demo.json');
 const NftLinker = require('../../artifacts/examples/nft-linker/NftLinker.sol/NftLinker.json');

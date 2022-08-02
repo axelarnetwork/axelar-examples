@@ -2,13 +2,13 @@
 
 pragma solidity 0.8.9;
 
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
+import { AxelarExecutable } from '@axelar-network/axelar-utils-solidity/contracts/executables/AxelarExecutable.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-utils-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
-import { StringToAddress, AddressToString } from 'axelar-utils-solidity/contracts/StringAddressUtils.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { StringToAddress, AddressToString } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 
-contract Headers is IAxelarExecutable {
+contract Headers is AxelarExecutable {
     using StringToAddress for string;
     using AddressToString for address;
 
@@ -18,17 +18,21 @@ contract Headers is IAxelarExecutable {
     uint256 public n;
     mapping(string => bytes32[]) public headersMap;
     mapping(string => uint256[]) public blocksMap;
-    IAxelarGasService gasReceiver;
+    IAxelarGasService public gasReceiver;
+    IAxelarGateway _gateway;
 
-    //We need to know where the gateway is as well as where the gasReceiver is. length_ is the maximum number of headers to cache per chain.
-    constructor(uint256 length_) IAxelarExecutable(address(0)) {
+    constructor(uint256 length_) {
         length = length_;
     }
 
     function init(address gateway_, address gasReceiver_) external {
-        if (address(gateway) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
+        if (address(_gateway) != address(0) || address(gasReceiver) != address(0)) revert('Already Initialized.');
+        _gateway = IAxelarGateway(gateway_);
         gasReceiver = IAxelarGasService(gasReceiver_);
-        gateway = IAxelarGateway(gateway_);
+    }    
+  
+    function gateway() public view override returns (IAxelarGateway) {
+        return _gateway;
     }
 
     //i_ here is how old the header to fetch is. i_=0 is the lastest header we have in store.
@@ -61,13 +65,13 @@ contract Headers is IAxelarExecutable {
             IERC20(token).approve(address(gasReceiver), gases[i]);
             string memory thisAddress = address(this).toString();
             gasReceiver.payGasForContractCall(address(this), chains[i], thisAddress, payload, token, gases[i], msg.sender);
-            gateway.callContract(chains[i], thisAddress, payload);
+            gateway().callContract(chains[i], thisAddress, payload);
         }
     }
 
     function _execute(
-        string memory sourceChain,
-        string memory sourceAddress,
+        string calldata sourceChain,
+        string calldata sourceAddress,
         bytes calldata payload
     ) internal override {
         //Ensure the sender is a sibling. There are more efficient way to do this.

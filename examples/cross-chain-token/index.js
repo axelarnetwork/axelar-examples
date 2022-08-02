@@ -5,7 +5,7 @@ const {
     Contract,
     constants: { AddressZero },
 } = require('ethers');
-const { deployAndInitContractConstant } = require('axelar-utils-solidity');
+const { deployAndInitContractConstant } = require('@axelar-network/axelar-utils-solidity');
 
 const ERC20CrossChain = require('../../artifacts/examples/cross-chain-token//ERC20CrossChain.sol/ERC20CrossChain.json');
 

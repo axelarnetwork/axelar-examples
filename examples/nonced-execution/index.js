@@ -6,7 +6,7 @@ const {
     constants: { AddressZero },
     utils: { defaultAbiCoder },
 } = require('ethers');
-const { deployAndInitContractConstant, predictContractConstant } = require('axelar-utils-solidity');
+const { deployAndInitContractConstant, predictContractConstant } = require('@axelar-network/axelar-utils-solidity');
 
 const CallSender = require('../../artifacts/examples/nonced-execution/NoncedContractCallSender.sol/NoncedContractCallSender.json');
 const Executable = require('../../artifacts/examples/nonced-execution/ExecutableImplementation.sol/ExecutableImplementation.json');
