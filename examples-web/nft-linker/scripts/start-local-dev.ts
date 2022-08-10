@@ -15,7 +15,5 @@ createAndExport({
         BigInt("100000000000000"),
       );
     }
-
-    return null;
   },
 });

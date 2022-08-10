@@ -13,8 +13,7 @@
     "contracts:execute": "ts-node scripts/execute-contracts.ts"
   },
   "dependencies": {
-    "@axelar-network/axelar-local-dev": "^1.0.0",
-    "@axelar-network/axelarjs-sdk": "^0.6.11-alpha.3",
+    "@axelar-network/axelar-local-dev": "git+https://github.com/axelarnetwork/axelar-local-dev.git",
     "classnames": "^2.3.1",
     "daisyui": "^2.18.0",
     "dotenv": "^16.0.1",
