@@ -18,65 +18,50 @@ let chains = isTestnet ? require('../config/testnet.json') : require('../config/
 const moonbeamChain = chains.find((chain: any) => chain.name === 'Moonbeam');
 const avalancheChain = chains.find((chain: any) => chain.name === 'Avalanche');
 
-// deploy script
-async function main() {
-    /**
-     * DEPLOY ON MOONBEAM
-     */
-    const moonbeamProvider = getDefaultProvider(moonbeamChain.rpc);
-    const moonbeamConnectedWallet = wallet.connect(moonbeamProvider);
-    const moonbeamERC721 = await deployContract(moonbeamConnectedWallet, ERC721, ['Test', 'TEST']);
-    console.log(`ERC721Demo deployed on Avalanche ${moonbeamERC721.address}.`);
-    moonbeamChain.erc721 = moonbeamERC721.address;
-    const moonbeamSender = await deployAndInitContractConstant(
-        moonbeamChain.constAddressDeployer,
-        moonbeamConnectedWallet,
-        MessageSenderContract,
-        'nftLinkingSender',
-        [],
-        [moonbeamChain.name, moonbeamChain.gateway, moonbeamChain.gasReceiver]
-    );
-    console.log('MessageSender deployed on Moonbeam:', moonbeamSender.address);
-    moonbeamChain.messageSender = moonbeamSender.address;
-    const moonbeamReceiver = await deployAndInitContractConstant(
-        moonbeamChain.constAddressDeployer,
-        moonbeamConnectedWallet,
-        MessageReceiverContract,
-        'nftLinkingReceiver',
-        [],
-        [moonbeamChain.name, moonbeamChain.gateway]
-    );
-    console.log('MessageReceiver deployed on Moonbeam:', moonbeamReceiver.address);
-    moonbeamChain.messageReceiver = moonbeamReceiver.address;
+const nftTokenId = 0;
 
-    /**
-     * DEPLOY ON AVALANCHE
-     */
-    const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
-    const avalancheConnectedWallet = wallet.connect(avalancheProvider);
-    const AvalancheERC721 = await deployContract(avalancheConnectedWallet, ERC721, ['Test', 'TEST']);
-    console.log(`ERC721Demo deployed on Avalanche ${AvalancheERC721.address}.`);
-    moonbeamChain.erc721 = AvalancheERC721.address;
-    const avalancheSender = await deployAndInitContractConstant(
-        avalancheChain.constAddressDeployer,
-        avalancheConnectedWallet,
+// deploy script
+async function deployNFTContracts(chain: any) {
+    console.log(`\n*****${chain.name.toUpperCase()}*****`);
+    const provider = getDefaultProvider(chain.rpc);
+    const walletConnectedToProvider = wallet.connect(provider);
+
+    // deploy/mint an NFT to selected chain
+    const erc721 = await deployContract(walletConnectedToProvider, ERC721, ['Test', 'TEST']);
+    chain.erc721 = erc721.address;
+    console.log(`ERC721Demo deployed on ${chain.name} ${erc721.address}.`);
+
+    await (await erc721.mint(nftTokenId)).wait(1);
+    console.log(`Minted token ${nftTokenId} for ${chain.name}`);
+
+    // deploy Axelar sender to selected chain
+    const sender = await deployAndInitContractConstant(
+        chain.constAddressDeployer,
+        walletConnectedToProvider,
         MessageSenderContract,
         'nftLinkingSender',
         [],
-        [avalancheChain.name, avalancheChain.gateway, avalancheChain.gasReceiver]
+        [chain.name, chain.gateway, chain.gasReceiver]
     );
-    console.log('MessageSender deployed on Avalanche:', avalancheSender.address);
-    avalancheChain.messageSender = avalancheSender.address;
-    const avalancheReceiver = await deployAndInitContractConstant(
-        avalancheChain.constAddressDeployer,
-        avalancheConnectedWallet,
+    console.log(`MessageSender deployed on ${chain.name}: ${sender.address}`);
+    chain.messageSender = sender.address;
+
+    const receiver = await deployAndInitContractConstant(
+        chain.constAddressDeployer,
+        walletConnectedToProvider,
         MessageReceiverContract,
         'nftLinkingReceiver',
         [],
-        [avalancheChain.name, avalancheChain.gateway]
+        [chain.name, chain.gateway]
     );
-    console.log('MessageReceiver deployed on Avalanche:', avalancheReceiver.address);
-    avalancheChain.messageReceiver = avalancheReceiver.address;
+    console.log(`MessageReceiver deployed on ${chain.name}: ${receiver.address}\n`);
+    chain.messageReceiver = receiver.address;
+
+}
+
+async function main() {
+    await deployNFTContracts(moonbeamChain);
+    await deployNFTContracts(avalancheChain);
 
     // update chains
     const updatedChains = [moonbeamChain, avalancheChain];
