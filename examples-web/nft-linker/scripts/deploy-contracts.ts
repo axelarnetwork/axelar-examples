@@ -8,6 +8,7 @@ const {
 const { deployAndInitContractConstant } = require('@axelar-network/axelar-utils-solidity');
 
 // load contracts
+const NFTLinker = require('../artifacts/contracts/NFTLinker.sol/NFTLinker.json');
 const MessageSenderContract = require('../artifacts/contracts/NFTLinkingSender.sol/NFTLinkingSender.json');
 const MessageReceiverContract = require('../artifacts/contracts/NFTLinkingReceiver.sol/NFTLinkingReceiver.json');
 const ERC721 = require('../artifacts/contracts/ERC721demo.sol/ERC721Demo.json');
@@ -34,34 +35,24 @@ async function deployNFTContracts(chain: any) {
     await (await erc721.mint(nftTokenId)).wait(1);
     console.log(`Minted token ${nftTokenId} for ${chain.name}`);
 
-    // deploy Axelar sender to selected chain
-    const sender = await deployAndInitContractConstant(
+    const nftLinker = await deployAndInitContractConstant(
         chain.constAddressDeployer,
         walletConnectedToProvider,
-        MessageSenderContract,
-        'nftLinkingSender',
+        NFTLinker,
+        'nftLinker',
         [],
         [chain.name, chain.gateway, chain.gasReceiver]
     );
-    console.log(`MessageSender deployed on ${chain.name}: ${sender.address}`);
-    chain.messageSender = sender.address;
-
-    const receiver = await deployAndInitContractConstant(
-        chain.constAddressDeployer,
-        walletConnectedToProvider,
-        MessageReceiverContract,
-        'nftLinkingReceiver',
-        [],
-        [chain.name, chain.gateway]
-    );
-    console.log(`MessageReceiver deployed on ${chain.name}: ${receiver.address}\n`);
-    chain.messageReceiver = receiver.address;
+    console.log(`NFTLinker deployed on ${chain.name}: ${nftLinker.address}`);
+    chain.nftLinker = nftLinker.address;
 
 }
 
 async function main() {
-    await deployNFTContracts(moonbeamChain);
-    await deployNFTContracts(avalancheChain);
+
+    for await (let chain of [avalancheChain, moonbeamChain]) {
+        await deployNFTContracts(chain);
+    }
 
     // update chains
     const updatedChains = [moonbeamChain, avalancheChain];

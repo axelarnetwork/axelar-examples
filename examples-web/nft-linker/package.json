@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@axelar-network/axelar-local-dev": "git+https://github.com/axelarnetwork/axelar-local-dev.git",
+    "@axelar-network/axelarjs-sdk": "^0.7.0-alpha.2",
     "classnames": "^2.3.1",
     "daisyui": "^2.18.0",
     "dotenv": "^16.0.1",
