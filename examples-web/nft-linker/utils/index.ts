@@ -47,7 +47,6 @@ export async function sendNftToDest(onSent: (txhash: string, ownerInfo: any) => 
     while (true) {
         const owner = await ownerOf();
         if (owner.chain == moonbeamChain.name) {
-            // console.log("token URI on moonbeam",moonbeamChain.erc721.tokenURI(owner.tokenId));
             onSent(tx.transactionHash, owner);
             break;
         }
@@ -72,12 +71,11 @@ export async function sendNftBack(onSent: (txhash: string, ownerInfo: any) => vo
         })
     ).wait();
 
-    console.log("tx",tx);
+    console.log("tx back",tx);
 
     while (true) {
         const owner = await ownerOf();
         if (owner.chain == avalancheChain.name) {
-            // console.log("token URI on avalanche",avalancheChain.erc721.tokenURI(owner.tokenId));
             onSent(tx.transactionHash, owner);
             break;
         }
@@ -89,24 +87,25 @@ export async function sendNftBack(onSent: (txhash: string, ownerInfo: any) => vo
 }
 
 export function truncatedAddress(address: string): string {
-    return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+    return address.substring(0, 6) + '...' + address.substring(address.length - 10);
 }
 
 export const ownerOf = async (chain = avalancheChain) => {
     const operator = chain.erc721;
     const owner = await operator.ownerOf(tokenId);
+    const metadata = await operator.tokenURI(tokenId);
+
     if (owner != chain.contract.address) {
-        return { chain: chain.name, address: owner, tokenId: BigInt(tokenId) };
+        return { chain: chain.name, address: owner, tokenId: BigInt(tokenId), tokenURI: metadata };
     } else {
         const newTokenId = BigInt(
-            keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [chain.name, operator.address, tokenId]))
+            keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256', 'string'], [chain.name, operator.address, tokenId, metadata]))
         );
         for (let checkingChain of [avalancheChain, moonbeamChain]) {
             if (checkingChain == chain) continue;
             try {
                 const address = await checkingChain.contract.ownerOf(newTokenId);
-                console.log("found owner")
-                return { chain: checkingChain.name, address: address, tokenId: newTokenId };
+                return { chain: checkingChain.name, address: address, tokenId: newTokenId, tokenURI: metadata };
             } catch (e) {}
         }
     }

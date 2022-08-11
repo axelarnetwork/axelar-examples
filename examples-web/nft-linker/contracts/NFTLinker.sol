@@ -17,7 +17,7 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable {
 
     error AlreadyInitialized();
 
-    mapping(uint256 => bytes) public original; //abi.encode(originaChain, operator, tokenId, tokenURI);
+    mapping(uint256 => bytes) public original; //abi.encode(originaChain, operator, tokenId);
     string public chainName; //To check if we are the source chain.
     IAxelarGasService public gasReceiver;
     IAxelarGateway _gateway;

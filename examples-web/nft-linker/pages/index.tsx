@@ -2,7 +2,7 @@ import cn from 'classnames';
 import type { NextPage } from 'next';
 import React, { useEffect, useState } from 'react';
 import { isTestnet } from '../config/constants';
-import { sendNftToDest, sendNftBack, ownerOf } from '../utils';
+import { sendNftToDest, sendNftBack, ownerOf, truncatedAddress } from '../utils';
 
 const chains = isTestnet ? require('../config/testnet.json') : require('../config/local.json');
 
@@ -11,15 +11,30 @@ const Home: NextPage = () => {
     const [destTxHash, setDestTxHash] = useState<string>();
     const [loading, setLoading] = useState(false);
     const [owner, setOwner] = useState({});
+    const [img, setImg] = useState({});
 
     useEffect(() => {
-      ownerOf().then(owner => setOwner(owner))
+        ownerOf().then(async (owner) => {
+            setOwner(owner);
+            await fetchImage(owner);
+        });
     }, [setOwner]);
+
+    const fetchImage = async (owner: any) => {
+        const json = await fetch(owner.tokenURI).then((res) => res.json());
+        const res = await fetch(json.image);
+        const imageBlob = await res.blob();
+        const imageObjectURL = URL.createObjectURL(imageBlob);
+        setImg(imageObjectURL);
+    };
+
+
 
     async function handleSendSource(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
         const onSent = (txhash: string, owner: any) => {
+            setDestTxHash('');
             setTxhash(txhash);
             setOwner(owner);
             setLoading(false);
@@ -30,7 +45,8 @@ const Home: NextPage = () => {
     async function handleSendBack(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
-        const onSent = (txhash: string, owner: any) => {
+        const onSent = async (txhash: string, owner: any) => {
+            setTxhash('');
             setDestTxHash(txhash);
             setOwner(owner);
             setLoading(false);
@@ -52,7 +68,8 @@ const Home: NextPage = () => {
                         handleSendSource,
                         'Send',
                         loading,
-                        owner
+                        owner,
+                        img
                     )}
 
                     {/* Destination chain card */}
@@ -62,7 +79,8 @@ const Home: NextPage = () => {
                         handleSendBack,
                         'Send Back',
                         loading,
-                        owner
+                        owner,
+                        img
                     )}
                 </div>
             </div>
@@ -70,7 +88,7 @@ const Home: NextPage = () => {
     );
 };
 
-const generateCard = (txhash: string, chain: any, onSubmit: any, buttonTitle: string, loading: boolean, owner: any) => {
+const generateCard = (txhash: string, chain: any, onSubmit: any, buttonTitle: string, loading: boolean, owner: any, img: any) => {
     return (
         <div className="row-span-2 shadow-xl card w-96 bg-base-100">
             <figure
@@ -96,10 +114,19 @@ const generateCard = (txhash: string, chain: any, onSubmit: any, buttonTitle: st
                                 </button>
                             </div>
                         </div>
+                        <br/>
+                        {txhash && <>Tx: {truncatedAddress(txhash)}</>}
                         {txhash && isTestnet && (
                             <a href={`https://testnet.axelarscan.io/gmp/${txhash}`} className="mt-2 link link-accent" target="blank">
                                 Track at axelarscan
                             </a>
+                        )}
+                        <br />
+                        {owner.chain === chain.name && img && (
+                            <div>
+                                <div className="font-extrabold">NFT</div>
+                                <img src={img} alt="icons" />
+                            </div>
                         )}
                     </form>
                 </div>
