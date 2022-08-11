@@ -10,7 +10,7 @@
     "executableSample": "0x2120A291a99746726CFa3bCcd3C388da75f7e718",
     "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
     "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B",
-    "erc721": "0x4802D18F2a4672f53440a4288c9Bc8948fB9567f",
+    "erc721": "0x525ca67C00BEA921d41fe80B272714eeA3B14FC8",
     "nftLinker": "0x5E998D948425261FD86ea43c68223E4DF05a41a3"
   },
   {
@@ -24,7 +24,7 @@
     "executableSample": "0x9372350Abb3B5c10DB1BB858e0bCf91eFa74d946",
     "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
     "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B",
-    "erc721": "0x46E22b846630518cbC6c7A5fB044F7118E6Aa420",
+    "erc721": "0x191f2C07cA06cf192747b81A645fc9F0f818571C",
     "nftLinker": "0x5E998D948425261FD86ea43c68223E4DF05a41a3"
   }
 ]

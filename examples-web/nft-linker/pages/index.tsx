@@ -31,25 +31,29 @@ const Home: NextPage = () => {
     async function handleSendSource(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
-        const onSent = (txhash: string, owner: any) => {
+        const onSrcConfirmed = (txhash: string) => {
             setDestTxHash('');
             setTxhash(txhash);
+        }
+        const onSent = (owner: any) => {
             setOwner(owner);
             setLoading(false);
         };
-        await sendNftToDest(onSent);
+        await sendNftToDest(onSrcConfirmed, onSent);
     }
 
     async function handleSendBack(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
-        const onSent = async (txhash: string, owner: any) => {
+        const onSrcConfirmed = (txhash: string) => {
             setTxhash('');
             setDestTxHash(txhash);
+        }
+        const onSent = async (owner: any) => {
             setOwner(owner);
             setLoading(false);
         };
-        await sendNftBack(onSent);
+        await sendNftBack(onSrcConfirmed, onSent);
     }
 
     return (

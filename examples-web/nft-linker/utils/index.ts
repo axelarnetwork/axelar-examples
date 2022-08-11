@@ -23,7 +23,7 @@ export function updateContractsOnChainConfig(chain: any): void {
 updateContractsOnChainConfig(moonbeamChain);
 updateContractsOnChainConfig(avalancheChain);
 
-export async function sendNftToDest(onSent: (txhash: string, ownerInfo: any) => void) {
+export async function sendNftToDest(onSrcConfirmed: (txHash: string) => void, onSent: (ownerInfo: any) => void) {
     const owner = await ownerOf();
 
     console.log('--- Initially ---', owner);
@@ -40,10 +40,12 @@ export async function sendNftToDest(onSent: (txhash: string, ownerInfo: any) => 
 
     console.log('tx', tx);
 
+    onSrcConfirmed(tx.transactionHash);
+
     while (true) {
         const owner = await ownerOf();
         if (owner.chain == moonbeamChain.name) {
-            onSent(tx.transactionHash, owner);
+            onSent(owner);
             break;
         }
         await sleep(2000);
@@ -53,7 +55,7 @@ export async function sendNftToDest(onSent: (txhash: string, ownerInfo: any) => 
     await print();
 }
 
-export async function sendNftBack(onSent: (txhash: string, ownerInfo: any) => void) {
+export async function sendNftBack(onSrcConfirmed: (txHash: string) => void, onSent: (ownerInfo: any) => void) {
     const owner = await ownerOf();
 
     console.log('--- Initially ---', owner);
@@ -69,10 +71,12 @@ export async function sendNftBack(onSent: (txhash: string, ownerInfo: any) => vo
 
     console.log('tx back', tx);
 
+    onSrcConfirmed(tx.transactionHash);
+
     while (true) {
         const owner = await ownerOf();
         if (owner.chain == avalancheChain.name) {
-            onSent(tx.transactionHash, owner);
+            onSent(owner);
             break;
         }
         await sleep(2000);
