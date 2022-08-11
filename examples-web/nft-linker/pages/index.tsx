@@ -121,7 +121,7 @@ const generateCard = (txhash: string, chain: any, onSubmit: any, buttonTitle: st
                         {owner.chain === chain.name && img && (
                             <div>
                                 <div className="font-extrabold">NFT</div>
-                                <img src={img} alt="icons" />
+                                <img className='rounded-lg' src={img} alt="icons" />
                             </div>
                         )}
                     </form>

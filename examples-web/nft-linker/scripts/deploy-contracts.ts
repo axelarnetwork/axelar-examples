@@ -9,8 +9,6 @@ const { deployAndInitContractConstant } = require('@axelar-network/axelar-utils-
 
 // load contracts
 const NFTLinker = require('../artifacts/contracts/NFTLinker.sol/NFTLinker.json');
-const MessageSenderContract = require('../artifacts/contracts/NFTLinkingSender.sol/NFTLinkingSender.json');
-const MessageReceiverContract = require('../artifacts/contracts/NFTLinkingReceiver.sol/NFTLinkingReceiver.json');
 const ERC721 = require('../artifacts/contracts/ERC721demo.sol/ERC721Demo.json');
 
 let chains = isTestnet ? require('../config/testnet.json') : require('../config/local.json');
