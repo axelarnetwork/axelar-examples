@@ -23,7 +23,6 @@ export function updateContractsOnChainConfig(chain: any): void {
 updateContractsOnChainConfig(moonbeamChain);
 updateContractsOnChainConfig(avalancheChain);
 
-// export async function sendNftToDest(destinationChain = 'Moonbeam', recipientAddress: string, onSent: (txhash: string) => void) {
 export async function sendNftToDest(onSent: (txhash: string, ownerInfo: any) => void) {
     const owner = await ownerOf();
 
