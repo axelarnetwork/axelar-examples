@@ -1,4 +1,4 @@
-import { Contract, ethers, getDefaultProvider, providers } from 'ethers';
+import { Contract, getDefaultProvider } from 'ethers';
 import { AxelarQueryAPI, Environment, EvmChain, GasToken } from '@axelar-network/axelarjs-sdk';
 
 import ERC721 from '../artifacts/contracts/ERC721demo.sol/ERC721Demo.json';
@@ -14,23 +14,20 @@ let chains = isTestnet ? require('../config/testnet.json') : require('../config/
 const moonbeamChain = chains.find((chain: any) => chain.name === 'Moonbeam') as any;
 const avalancheChain = chains.find((chain: any) => chain.name === 'Avalanche') as any;
 
-moonbeamChain.wallet = wallet.connect(getDefaultProvider(moonbeamChain.rpc));
-moonbeamChain.contract = new Contract(moonbeamChain.nftLinker as string, NftLinker.abi, moonbeamChain.wallet);
-moonbeamChain.erc721 = new Contract(moonbeamChain.erc721 as string, ERC721.abi, moonbeamChain.wallet);
-
-avalancheChain.wallet = wallet.connect(getDefaultProvider(avalancheChain.rpc));
-avalancheChain.contract = new Contract(avalancheChain.nftLinker as string, NftLinker.abi, avalancheChain.wallet);
-avalancheChain.erc721 = new Contract(avalancheChain.erc721 as string, ERC721.abi, avalancheChain.wallet);
-
-export function generateRecipientAddress(): string {
-    return ethers.Wallet.createRandom().address;
+export function updateContractsOnChainConfig(chain: any): void {
+    chain.wallet = wallet.connect(getDefaultProvider(chain.rpc));
+    chain.contract = new Contract(chain.nftLinker as string, NftLinker.abi, chain.wallet);
+    chain.erc721 = new Contract(chain.erc721 as string, ERC721.abi, chain.wallet);
 }
+
+updateContractsOnChainConfig(moonbeamChain);
+updateContractsOnChainConfig(avalancheChain);
 
 // export async function sendNftToDest(destinationChain = 'Moonbeam', recipientAddress: string, onSent: (txhash: string) => void) {
 export async function sendNftToDest(onSent: (txhash: string, ownerInfo: any) => void) {
     const owner = await ownerOf();
 
-    console.log('--- Initially ---',owner);
+    console.log('--- Initially ---', owner);
     await print();
 
     const gasFee = getGasFee(EvmChain.AVALANCHE, EvmChain.MOONBEAM, GasToken.AVAX);
@@ -42,7 +39,7 @@ export async function sendNftToDest(onSent: (txhash: string, ownerInfo: any) => 
         })
     ).wait();
 
-    console.log("tx",tx);
+    console.log('tx', tx);
 
     while (true) {
         const owner = await ownerOf();
@@ -60,7 +57,7 @@ export async function sendNftToDest(onSent: (txhash: string, ownerInfo: any) => 
 export async function sendNftBack(onSent: (txhash: string, ownerInfo: any) => void) {
     const owner = await ownerOf();
 
-    console.log('--- Initially ---',owner);
+    console.log('--- Initially ---', owner);
     await print();
 
     const gasFee = getGasFee(EvmChain.MOONBEAM, EvmChain.AVALANCHE, GasToken.GLMR);
@@ -71,7 +68,7 @@ export async function sendNftBack(onSent: (txhash: string, ownerInfo: any) => vo
         })
     ).wait();
 
-    console.log("tx back",tx);
+    console.log('tx back', tx);
 
     while (true) {
         const owner = await ownerOf();
@@ -119,8 +116,13 @@ async function print() {
     }
 }
 
-const getGasFee = async (sourceChainName: EvmChain, destinationChainName: EvmChain, sourceChainTokenSymbol: GasToken | string, estimatedGasUsed?: number) => {
+const getGasFee = async (
+    sourceChainName: EvmChain,
+    destinationChainName: EvmChain,
+    sourceChainTokenSymbol: GasToken | string,
+    estimatedGasUsed?: number
+) => {
     const api = new AxelarQueryAPI({ environment: Environment.TESTNET });
     const gasFee = isTestnet ? await api.estimateGasFee(sourceChainName, destinationChainName, sourceChainTokenSymbol) : 3e6;
     return gasFee;
-}
+};

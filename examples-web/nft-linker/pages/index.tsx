@@ -11,7 +11,7 @@ const Home: NextPage = () => {
     const [destTxHash, setDestTxHash] = useState<string>();
     const [loading, setLoading] = useState(false);
     const [owner, setOwner] = useState({});
-    const [img, setImg] = useState({});
+    const [img, setImg] = useState("");
 
     useEffect(() => {
         ownerOf().then(async (owner) => {
@@ -27,8 +27,6 @@ const Home: NextPage = () => {
         const imageObjectURL = URL.createObjectURL(imageBlob);
         setImg(imageObjectURL);
     };
-
-
 
     async function handleSendSource(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
