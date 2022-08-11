@@ -11,7 +11,7 @@ const Home: NextPage = () => {
     const [destTxHash, setDestTxHash] = useState<string>();
     const [loading, setLoading] = useState(false);
     const [owner, setOwner] = useState({});
-    const [img, setImg] = useState("");
+    const [img, setImg] = useState('');
 
     useEffect(() => {
         ownerOf().then(async (owner) => {
@@ -54,33 +54,31 @@ const Home: NextPage = () => {
 
     return (
         <div>
-            <div>
-                <h1 className="m-10 text-4xl font-medium text-center">General Message Passing (GMP)</h1>
-                <h2 className="m-10 text-2xl font-medium text-center">Send NFTs Between Chains</h2>
+            <h1 className="m-5 text-4xl font-medium text-center">General Message Passing (GMP)</h1>
+            <h2 className="m-5 text-2xl font-medium text-center">Send NFTs Between Chains</h2>
 
-                <div className="grid grid-cols-2 gap-20 mt-20 justify-items-center">
-                    {/* source chain card */}
-                    {generateCard(
-                        txhash as string,
-                        chains.find((chain: any) => chain.name === 'Avalanche'),
-                        handleSendSource,
-                        'Send',
-                        loading,
-                        owner,
-                        img
-                    )}
+            <div className="grid grid-cols-2 gap-20 mt-10 justify-items-center">
+                {/* source chain card */}
+                {generateCard(
+                    txhash as string,
+                    chains.find((chain: any) => chain.name === 'Avalanche'),
+                    handleSendSource,
+                    'Send',
+                    loading,
+                    owner,
+                    img
+                )}
 
-                    {/* Destination chain card */}
-                    {generateCard(
-                        destTxHash as string,
-                        chains.find((chain: any) => chain.name === 'Moonbeam'),
-                        handleSendBack,
-                        'Send Back',
-                        loading,
-                        owner,
-                        img
-                    )}
-                </div>
+                {/* Destination chain card */}
+                {generateCard(
+                    destTxHash as string,
+                    chains.find((chain: any) => chain.name === 'Moonbeam'),
+                    handleSendBack,
+                    'Send Back',
+                    loading,
+                    owner,
+                    img
+                )}
             </div>
         </div>
     );
@@ -112,7 +110,7 @@ const generateCard = (txhash: string, chain: any, onSubmit: any, buttonTitle: st
                                 </button>
                             </div>
                         </div>
-                        <br/>
+                        <br />
                         {txhash && <>Tx: {truncatedAddress(txhash)}</>}
                         {txhash && isTestnet && (
                             <a href={`https://testnet.axelarscan.io/gmp/${txhash}`} className="mt-2 link link-accent" target="blank">
