@@ -47,6 +47,7 @@ export async function sendNftToDest(onSent: (txhash: string, ownerInfo: any) => 
     while (true) {
         const owner = await ownerOf();
         if (owner.chain == moonbeamChain.name) {
+            // console.log("token URI on moonbeam",moonbeamChain.erc721.tokenURI(owner.tokenId));
             onSent(tx.transactionHash, owner);
             break;
         }
@@ -76,6 +77,7 @@ export async function sendNftBack(onSent: (txhash: string, ownerInfo: any) => vo
     while (true) {
         const owner = await ownerOf();
         if (owner.chain == avalancheChain.name) {
+            // console.log("token URI on avalanche",avalancheChain.erc721.tokenURI(owner.tokenId));
             onSent(tx.transactionHash, owner);
             break;
         }

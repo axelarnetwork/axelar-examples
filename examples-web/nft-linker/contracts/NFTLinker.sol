@@ -8,14 +8,16 @@ import { IAxelarGateway } from '@axelar-network/axelar-utils-solidity/contracts/
 import { StringToAddress, AddressToString } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
 import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol';
 
-contract NftLinker is ERC721, AxelarExecutable {
+contract NftLinker is ERC721URIStorage, AxelarExecutable {
     using StringToAddress for string;
     using AddressToString for address;
 
     error AlreadyInitialized();
 
-    mapping(uint256 => bytes) public original; //abi.encode(originaChain, operator, tokenId);
+    mapping(uint256 => bytes) public original; //abi.encode(originaChain, operator, tokenId, tokenURI);
     string public chainName; //To check if we are the source chain.
     IAxelarGasService public gasReceiver;
     IAxelarGateway _gateway;
@@ -62,12 +64,12 @@ contract NftLinker is ERC721, AxelarExecutable {
     ) internal {
         _burn(tokenId);
         //Get the original information.
-        (string memory originalChain, address operator, uint256 originalTokenId) = abi.decode(
+        (string memory originalChain, address operator, uint256 originalTokenId, string memory tokenURI) = abi.decode(
             original[tokenId],
-            (string, address, uint256)
+            (string, address, uint256, string)
         );
         //Create the payload.
-        bytes memory payload = abi.encode(originalChain, operator, originalTokenId, destinationAddress);
+        bytes memory payload = abi.encode(originalChain, operator, originalTokenId, destinationAddress, tokenURI);
         string memory stringAddress = address(this).toString();
         //Pay for gas. We could also send the contract call here but then the sourceAddress will be that of the gas receiver which is a problem later.
         gasReceiver.payNativeGasForContractCall{ value: msg.value }(address(this), destinationChain, stringAddress, payload, msg.sender);
@@ -82,8 +84,9 @@ contract NftLinker is ERC721, AxelarExecutable {
         string memory destinationChain,
         address destinationAddress
     ) internal {
+        string memory tokenURI = IERC721Metadata(operator).tokenURI(tokenId);
         //Create the payload.
-        bytes memory payload = abi.encode(chainName, operator, tokenId, destinationAddress);
+        bytes memory payload = abi.encode(chainName, operator, tokenId, destinationAddress, tokenURI);
         string memory stringAddress = address(this).toString();
         //Pay for gas. We could also send the contract call here but then the sourceAddress will be that of the gas receiver which is a problem later.
         gasReceiver.payNativeGasForContractCall{ value: msg.value }(address(this), destinationChain, stringAddress, payload, msg.sender);
@@ -100,9 +103,9 @@ contract NftLinker is ERC721, AxelarExecutable {
         //Check that the sender is another token linker.
         require(sourceAddress.toAddress() == address(this), 'NOT_A_LINKER');
         //Decode the payload.
-        (string memory originalChain, address operator, uint256 tokenId, address destinationAddress) = abi.decode(
+        (string memory originalChain, address operator, uint256 tokenId, address destinationAddress, string memory tokenURI) = abi.decode(
             payload,
-            (string, address, uint256, address)
+            (string, address, uint256, address, string)
         );
         //If this is the original chain then we give the NFT locally.
         if (keccak256(bytes(originalChain)) == keccak256(bytes(chainName))) {
@@ -110,11 +113,12 @@ contract NftLinker is ERC721, AxelarExecutable {
             //Otherwise we need to mint a new one.
         } else {
             //We need to save all the relevant information.
-            bytes memory originalData = abi.encode(originalChain, operator, tokenId);
+            bytes memory originalData = abi.encode(originalChain, operator, tokenId, tokenURI);
             //Avoids tokenId collisions.
             uint256 newTokenId = uint256(keccak256(originalData));
             original[newTokenId] = originalData;
             _safeMint(destinationAddress, newTokenId);
+            _setTokenURI(newTokenId, tokenURI);
         }
     }
 }

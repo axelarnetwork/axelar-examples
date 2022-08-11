@@ -32,8 +32,14 @@ async function deployNFTContracts(chain: any) {
     chain.erc721 = erc721.address;
     console.log(`ERC721Demo deployed on ${chain.name} ${erc721.address}.`);
 
-    await (await erc721.mint(nftTokenId)).wait(1);
-    console.log(`Minted token ${nftTokenId} for ${chain.name}`);
+    if (chain.name === "Avalanche") {
+        const metadata = "https://ipfs.io/ipfs/QmPGrjwCuHKLvbvcSXHLWSgsjfUVx2faV2xsN4b9VB9ogL";
+        await (await erc721.mintWithMetadata(nftTokenId, metadata)).wait(1);
+        console.log(`Minted token ${nftTokenId} for ${chain.name} with metadata ${metadata}`);
+    } else {
+        await (await erc721.mint(nftTokenId)).wait(1);
+        console.log(`Minted token ${nftTokenId} for ${chain.name}`);
+    }
 
     const nftLinker = await deployAndInitContractConstant(
         chain.constAddressDeployer,
