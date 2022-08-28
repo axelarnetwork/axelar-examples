@@ -1,15 +1,15 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import {IAxelarExecutable} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol";
-import {IERC20} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol";
-import {IAxelarGasService} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol";
+import {IERC20} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol";
+import {IAxelarGasService} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
+import {AxelarExecutable} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarExecutable.sol";
 
-contract MessageReceiver is IAxelarExecutable {
-    IAxelarGasService gasReceiver;
+contract MessageReceiver is AxelarExecutable {
+    IAxelarGasService immutable gasReceiver;
 
     constructor(address _gateway, address _gasReceiver)
-        IAxelarExecutable(_gateway)
+        AxelarExecutable(_gateway)
     {
         gasReceiver = IAxelarGasService(_gasReceiver);
     }
@@ -17,10 +17,10 @@ contract MessageReceiver is IAxelarExecutable {
     event Executed();
 
     function _executeWithToken(
-        string memory,
-        string memory,
+        string calldata,
+        string calldata,
         bytes calldata payload,
-        string memory tokenSymbol,
+        string calldata tokenSymbol,
         uint256 amount
     ) internal override {
         address[] memory recipients = abi.decode(payload, (address[]));

@@ -2,37 +2,36 @@
 
 pragma solidity 0.8.9;
 
-import { IAxelarGateway } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
-import { IAxelarExecutable } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
-import { StringToAddress } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarExecutable.sol';
+import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradables/Upgradable.sol';
+import { StringToAddress } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/StringAddressUtils.sol';
 
-abstract contract NoncedExecutable is IAxelarExecutable {
+abstract contract NoncedExecutable is AxelarExecutable, Upgradable {
     using StringToAddress for string;
 
     error IncorrectNonce();
     error AlreadyInitialized();
-
-    event WrongSourceAddress(string sourceAddress);
+    error WrongSourceAddress(string sourceAddress);
 
     mapping(string => mapping(address => uint256)) public incomingNonces;
     address public senderContract;
 
-    constructor() IAxelarExecutable(address(0)) {}
+    constructor(address gateway_) AxelarExecutable(gateway_) {}
 
-    function init(address gateway_, address senderContract_) external virtual {
-        if (address(gateway) != address(0) || senderContract != address(0)) revert AlreadyInitialized();
+    function _setup(bytes calldata params) internal override {
+        address senderContract_ = abi.decode(params, (address));
+        if (senderContract != address(0)) revert AlreadyInitialized();
         senderContract = senderContract_;
-        gateway = IAxelarGateway(gateway_);
     }
 
     function _execute(
-        string memory sourceChain,
-        string memory sourceAddress,
+        string calldata sourceChain,
+        string calldata sourceAddress,
         bytes calldata payload
     ) internal override {
         if (sourceAddress.toAddress() != senderContract) {
-            emit WrongSourceAddress(sourceAddress);
-            return;
+            revert WrongSourceAddress(sourceAddress);
         }
         (uint256 nonce, address sender, bytes memory newPayload) = abi.decode(payload, (uint256, address, bytes));
         if (nonce != incomingNonces[sourceChain][sender]++) revert IncorrectNonce();
@@ -41,15 +40,14 @@ abstract contract NoncedExecutable is IAxelarExecutable {
     }
 
     function _executeWithToken(
-        string memory sourceChain,
-        string memory sourceAddress,
+        string calldata sourceChain,
+        string calldata sourceAddress,
         bytes calldata payload,
-        string memory tokenSymbol,
+        string calldata tokenSymbol,
         uint256 amount
     ) internal override {
         if (sourceAddress.toAddress() != senderContract) {
-            emit WrongSourceAddress(sourceAddress);
-            return;
+            revert WrongSourceAddress(sourceAddress);
         }
         (uint256 nonce, address sender, bytes memory newPayload) = abi.decode(payload, (uint256, address, bytes));
         if (nonce != incomingNonces[sourceChain][sender]++) revert IncorrectNonce();
@@ -58,18 +56,22 @@ abstract contract NoncedExecutable is IAxelarExecutable {
 
     // Override these.
     function _executeNonced(
-        string memory sourceChain,
+        string calldata sourceChain,
         address sourceAddress,
         uint256 nonce,
         bytes memory payload
     ) internal virtual {}
 
     function _executeNoncedWithToken(
-        string memory sourceChain,
+        string calldata sourceChain,
         address sourceAddress,
         uint256 nonce,
         bytes memory payload,
-        string memory tokenSymbol,
+        string calldata tokenSymbol,
         uint256 amount
     ) internal virtual {}
+
+    function contractId() external pure returns (bytes32) {
+        return keccak256('example');
+    }
 }

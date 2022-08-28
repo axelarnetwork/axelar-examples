@@ -1,13 +1,13 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import {IERC20} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol";
-import {IAxelarGateway} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol";
-import {IAxelarGasService} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol";
+import {IERC20} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol";
+import {IAxelarGateway} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
+import {IAxelarGasService} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
 
 contract MessageSender {
-    IAxelarGasService gasReceiver;
-    IAxelarGateway gateway;
+    IAxelarGasService immutable gasReceiver;
+    IAxelarGateway immutable gateway;
 
     constructor(address _gateway, address _gasReceiver) {
         gateway = IAxelarGateway(_gateway);
@@ -15,10 +15,10 @@ contract MessageSender {
     }
 
     function sendToMany(
-        string memory destinationChain,
-        string memory destinationAddress,
+        string calldata destinationChain,
+        string calldata destinationAddress,
         address[] calldata destinationAddresses,
-        string memory symbol,
+        string calldata symbol,
         uint256 amount
     ) external payable {
         address tokenAddress = gateway.tokenAddresses(symbol);

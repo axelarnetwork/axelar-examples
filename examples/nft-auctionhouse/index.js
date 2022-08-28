@@ -19,8 +19,8 @@ const resolveAuction = require('./resolveAuction');
 
 const ERC721 = require('../../artifacts/examples/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
 const NftAuctionHouse = require('../../artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
-const IAxelarGateway = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
-const IERC20 = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
+const IAxelarGateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
+const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 const tokenId = 0;
 
@@ -83,7 +83,7 @@ async function test(chains, wallet, options) {
             }
         }
     };
-    const destination = chains.find((chain) => chain.name == (args[1] || 'Avalanche'));
+    const destination = chains.find((chain) => chain.name === (args[1] || 'Avalanche'));
     const tokenId = args[2] || (await firstUnminted(destination));
     function sleep(ms) {
         return new Promise((resolve) => {
@@ -120,7 +120,7 @@ async function test(chains, wallet, options) {
     for (const chain of chains) {
         console.log(`${chain.bidder.address} from ${chain.name} is bidding.`);
         const balance = await chain.usdc.balanceOf(chain.bidder.address);
-        if (chain == destination) {
+        if (chain === destination) {
             await bid(chain, chain.bidder.privateKey, tokenId, 0);
         } else {
             await bidRemote(chain, destination, chain.bidder.privateKey, tokenId, 0);
@@ -148,7 +148,7 @@ async function test(chains, wallet, options) {
 
     await resolveAuction(destination, wallet.privateKey, tokenId);
     const winner = await ownerOf(destination, tokenId);
-    console.log(`Bidder at ${chains.find((chain) => chain.bidder.address == winner).name} (${winner}) won the auction.`);
+    console.log(`Bidder at ${chains.find((chain) => chain.bidder.address === winner).name} (${winner}) won the auction.`);
     await print();
 }
 

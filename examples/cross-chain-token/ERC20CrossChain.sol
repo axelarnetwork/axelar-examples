@@ -2,14 +2,15 @@
 
 pragma solidity 0.8.9;
 
-import { ERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/ERC20.sol';
-import { AxelarExecutable } from '@axelar-network/axelar-utils-solidity/contracts/executables/AxelarExecutable.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-utils-solidity/contracts/interfaces/IAxelarGateway.sol';
-import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
-import { StringToAddress, AddressToString } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { IERC20CrossChain } from './IERC20CrossChain.sol';
+import { ERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/ERC20.sol';
+import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarExecutable.sol';
+import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradables/Upgradable.sol';
+import { StringToAddress, AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/StringAddressUtils.sol';
 
-contract ERC20CrossChain is AxelarExecutable, IERC20CrossChain, ERC20 {
+contract ERC20CrossChain is AxelarExecutable, ERC20, Upgradable, IERC20CrossChain {
     using StringToAddress for string;
     using AddressToString for address;
 
@@ -17,25 +18,21 @@ contract ERC20CrossChain is AxelarExecutable, IERC20CrossChain, ERC20 {
 
     event FalseSender(string sourceChain, string sourceAddress);
 
-    IAxelarGasService public gasReceiver;
-    IAxelarGateway _gateway;
-
-
+    IAxelarGasService public immutable gasReceiver;
 
     constructor(
-        string memory name_,
-        string memory symbol_,
+        address gateway_,
+        address gasReceiver_,
         uint8 decimals_
-    ) ERC20(name_, symbol, decimals_) {}
-
-    function init(address gateway_, address gasReceiver_) external {
-        if (address(gateway()) != address(0) || address(gasReceiver) != address(0)) revert AlreadyInitialized();
+    ) AxelarExecutable(gateway_) ERC20('', '', decimals_) {
         gasReceiver = IAxelarGasService(gasReceiver_);
-        _gateway = IAxelarGateway(gateway_);
     }
 
-    function gateway() public view override returns (IAxelarGateway) {
-        return _gateway;
+    function _setup(bytes calldata params) internal override {
+        (string memory name_, string memory symbol_) = abi.decode(params, (string, string));
+        if (bytes(name).length != 0) revert AlreadyInitialized();
+        name = name_;
+        symbol = symbol_;
     }
 
     // This is for testing.
@@ -60,7 +57,7 @@ contract ERC20CrossChain is AxelarExecutable, IERC20CrossChain, ERC20 {
                 msg.sender
             );
         }
-        gateway().callContract(destinationChain, stringAddress, payload);
+        gateway.callContract(destinationChain, stringAddress, payload);
     }
 
     function _execute(
@@ -74,5 +71,9 @@ contract ERC20CrossChain is AxelarExecutable, IERC20CrossChain, ERC20 {
         }
         (address to, uint256 amount) = abi.decode(payload, (address, uint256));
         _mint(to, amount);
+    }
+
+    function contractId() external pure returns (bytes32) {
+        return keccak256('example');
     }
 }

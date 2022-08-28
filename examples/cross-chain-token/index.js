@@ -2,12 +2,13 @@
 
 const {
     getDefaultProvider,
-    Contract,
     constants: { AddressZero },
+    utils: { defaultAbiCoder },
 } = require('ethers');
-const { deployAndInitContractConstant } = require('@axelar-network/axelar-utils-solidity');
+const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-const ERC20CrossChain = require('../../artifacts/examples/cross-chain-token//ERC20CrossChain.sol/ERC20CrossChain.json');
+const ExampleProxy = require('../../artifacts/examples/Proxy.sol/ExampleProxy.json');
+const ERC20CrossChain = require('../../artifacts/examples/cross-chain-token/ERC20CrossChain.sol/ERC20CrossChain.json');
 
 const name = 'An Awesome Axelar Cross Chain Token';
 const symbol = 'AACCT';
@@ -15,13 +16,15 @@ const decimals = 13;
 
 async function deploy(chain, wallet) {
     console.log(`Deploying ERC20CrossChain for ${chain.name}.`);
-    const contract = await deployAndInitContractConstant(
+    const contract = await deployUpgradable(
         chain.constAddressDeployer,
         wallet,
         ERC20CrossChain,
+        ExampleProxy,
+        [chain.gateway, chain.gasReceiver, decimals],
+        [],
+        defaultAbiCoder.encode(['string', 'string'], [name, symbol]),
         'cross-chain-token',
-        [name, symbol, decimals],
-        [chain.gateway, chain.gasReceiver],
     );
     chain.crossChainToken = contract.address;
     console.log(`Deployed ERC20CrossChain for ${chain.name} at ${chain.crossChainToken}.`);
@@ -33,10 +36,19 @@ async function test(chains, wallet, options) {
     for (const chain of chains) {
         const provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(provider);
-        chain.contract = new Contract(chain.crossChainToken, ERC20CrossChain.abi, chain.wallet);
+        chain.contract = await deployUpgradable(
+            chain.constAddressDeployer,
+            chain.wallet,
+            ERC20CrossChain,
+            ExampleProxy,
+            [chain.gateway, chain.gasReceiver, decimals],
+            [],
+            defaultAbiCoder.encode(['string', 'string'], [name, symbol]),
+            'cross-chain-token',
+        );
     }
-    const source = chains.find((chain) => chain.name == (args[0] || 'Avalanche'));
-    const destination = chains.find((chain) => chain.name == (args[1] || 'Fantom'));
+    const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+    const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
     const amount = parseInt(args[2]) || 1e5;
 
     async function print() {
@@ -50,7 +62,7 @@ async function test(chains, wallet, options) {
             }, ms);
         });
     }
-    const intialBalance = await destination.contract.balanceOf(wallet.address);
+    const initialBalance = (await destination.contract.balanceOf(wallet.address)).toNumber();
     console.log('--- Initially ---');
     await print();
 
@@ -64,7 +76,8 @@ async function test(chains, wallet, options) {
     await (
         await source.contract.transferRemote(destination.name, wallet.address, amount, { value: BigInt(Math.floor(gasLimit * gasPrice)) })
     ).wait();
-    while (Number(await destination.contract.balanceOf(wallet.address)) == Number(intialBalance)) {
+
+    while ((await destination.contract.balanceOf(wallet.address)).toNumber() === initialBalance) {
         await sleep(2000);
     }
 

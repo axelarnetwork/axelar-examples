@@ -3,19 +3,11 @@
 pragma solidity 0.8.9;
 
 import { SendAckReceiver } from './SendAckReceiver.sol';
-import { AxelarExecutable } from '@axelar-network/axelar-utils-solidity/contracts/executables/AxelarExecutable.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-utils-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarExecutable.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 
 contract SendAckReceiverImplementation is SendAckReceiver {
-    IAxelarGateway immutable _gateway;
-    
-    constructor(address gateway_) {
-        _gateway = IAxelarGateway(gateway_);
-    }
-
-    function gateway() public view override returns (IAxelarGateway) {
-        return _gateway;
-    }
+    constructor(address gateway_) SendAckReceiver(gateway_) {}
 
     string[] public messages;
 

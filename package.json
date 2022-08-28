@@ -13,13 +13,14 @@
     "call-contract-with-token": "node examples/call-contract-with-token",
     "build": "rm -rf artifacts && npx hardhat compile",
     "lint": "solhint 'src/contracts/**/*.sol' && eslint 'test/**/*.js'",
-    "prettier": "prettier --write 'examples/**/*.sol' 'test/**/*.js' 'examples/**/*.js'"
+    "prettier": "prettier --write 'examples*/**/*.sol' 'test/**/*.js' 'examples*/**/*.js'"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@axelar-network/axelar-cgp-solidity": "https://github.com/axelarnetwork/axelar-cgp-solidity.git",
-    "@axelar-network/axelar-local-dev": "git+https://github.com/axelarnetwork/axelar-local-dev.git",
+    "@axelar-network/axelar-cgp-solidity": "^4.3.0",
+    "@axelar-network/axelar-gmp-sdk-solidity": "^1.2.0",
+    "@axelar-network/axelar-local-dev": "^1.1.0",
     "@axelar-network/axelarjs-sdk": "^0.5.0-alpha.12",
     "@openzeppelin/contracts": "^4.5.0",
     "axios": "^0.27.2",
@@ -27,8 +28,6 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@axelar-network/axelar-utils-solidity": "github:axelarnetwork/axelar-utils-solidity",
-    "axelar-utils-solidity": "github:axelarnetwork/axelar-utils-solidity",
     "eslint": "^8.17.0",
     "eslint-config-richardpringle": "^2.0.0",
     "hardhat": "^2.9.9",
@@ -38,7 +37,6 @@
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "solhint": "^3.3.7",
     "solidity-coverage": "^0.7.21",
-    "typescript": "^4.6.3",
-    "waffle": "^0.0.0"
+    "typescript": "^4.6.3"
   }
 }

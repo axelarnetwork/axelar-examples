@@ -2,25 +2,19 @@
 
 pragma solidity 0.8.9;
 
-import { AxelarExecutable } from '@axelar-network/axelar-utils-solidity/contracts/executables/AxelarExecutable.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-utils-solidity/contracts/interfaces/IAxelarGateway.sol';
-import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
-import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
+import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarExecutable.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
+import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 
 contract ExecutableSample is AxelarExecutable {
     string public value;
     string public sourceChain;
     string public sourceAddress;
     IAxelarGasService public immutable gasReceiver;
-    IAxelarGateway immutable _gateway;
 
-    constructor(address gateway_, address gasReceiver_){
+    constructor(address gateway_, address gasReceiver_) AxelarExecutable(gateway_) {
         gasReceiver = IAxelarGasService(gasReceiver_);
-        _gateway = IAxelarGateway(gateway_);
-    }
-
-    function gateway() public view override returns (IAxelarGateway) {
-        return _gateway;
     }
 
     // Call this function to update the value of this contract along with all its siblings'.
@@ -39,7 +33,7 @@ contract ExecutableSample is AxelarExecutable {
                 msg.sender
             );
         }
-        gateway().callContract(destinationChain, destinationAddress, payload);
+        gateway.callContract(destinationChain, destinationAddress, payload);
     }
 
     // Handles calls created by setAndSend. Updates this contract's value

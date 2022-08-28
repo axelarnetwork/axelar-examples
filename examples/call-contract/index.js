@@ -29,8 +29,8 @@ async function test(chains, wallet, options) {
         chain.contract = new Contract(chain.executableSample, ExecutableSample.abi, chain.wallet);
     }
 
-    const source = chains.find((chain) => chain.name == (args[0] || 'Avalanche'));
-    const destination = chains.find((chain) => chain.name == (args[1] || 'Fantom'));
+    const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+    const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
     const message = args[2] || `Hello ${destination.name} from ${source.name}, it is ${new Date().toLocaleTimeString()}.`;
 
     async function logValue() {
@@ -49,7 +49,7 @@ async function test(chains, wallet, options) {
     });
     await tx.wait();
 
-    while ((await destination.contract.value()) != message) {
+    while ((await destination.contract.value()) !== message) {
         await sleep(2000);
     }
 

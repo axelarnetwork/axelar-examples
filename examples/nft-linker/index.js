@@ -9,9 +9,10 @@ const {
 const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
-const { deployAndInitContractConstant } = require('@axelar-network/axelar-utils-solidity');
+const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
 const ERC721 = require('../../artifacts/examples/nft-linker/ERC721Demo.sol/ERC721Demo.json');
+const ExampleProxy = require('../../artifacts/examples/Proxy.sol/ExampleProxy.json');
 const NftLinker = require('../../artifacts/examples/nft-linker/NftLinker.sol/NftLinker.json');
 
 const tokenId = 0;
@@ -22,13 +23,16 @@ async function deploy(chain, wallet) {
     chain.erc721 = erc721.address;
     console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721}.`);
     console.log(`Deploying NftLinker for ${chain.name}.`);
-    const contract = await deployAndInitContractConstant(
+    const provider = getDefaultProvider(chain.rpc);
+    const contract = await deployUpgradable(
         chain.constAddressDeployer,
-        wallet,
+        wallet.connect(provider),
         NftLinker,
-        'nftLinkker',
+        ExampleProxy,
+        [chain.gateway, chain.gasReceiver],
         [],
-        [chain.name, chain.gateway, chain.gasReceiver],
+        defaultAbiCoder.encode(['string'], [chain.name]),
+        'nftLinker',
     );
     chain.nftLinker = contract.address;
     console.log(`Deployed NftLinker for ${chain.name} at ${chain.nftLinker}.`);
@@ -43,7 +47,16 @@ async function test(chains, wallet, options) {
     for (const chain of chains) {
         const provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(provider);
-        chain.contract = new Contract(chain.nftLinker, NftLinker.abi, chain.wallet);
+        chain.contract = await deployUpgradable(
+            chain.constAddressDeployer,
+            chain.wallet,
+            NftLinker,
+            ExampleProxy,
+            [chain.gateway, chain.gasReceiver],
+            [],
+            defaultAbiCoder.encode(['string'], [chain.name]),
+            'nftLinker',
+        );
         chain.erc721 = new Contract(chain.erc721, ERC721.abi, chain.wallet);
     }
     const destination = chains.find((chain) => chain.name == (args[1] || 'Fantom'));
@@ -52,7 +65,7 @@ async function test(chains, wallet, options) {
     const ownerOf = async (chain = originChain) => {
         const operator = chain.erc721;
         const owner = await operator.ownerOf(tokenId);
-        if (owner != chain.contract.address) {
+        if (owner !== chain.contract.address) {
             return { chain: chain.name, address: owner, tokenId: BigInt(tokenId) };
         } else {
             const newTokenId = BigInt(
@@ -84,8 +97,8 @@ async function test(chains, wallet, options) {
     }
 
     const owner = await ownerOf();
-    const source = chains.find((chain) => chain.name == owner.chain);
-    if (source == destination) throw new Error('Token is already where it should be!');
+    const source = chains.find((chain) => chain.name === owner.chain);
+    if (source === destination) throw new Error('Token is already where it should be!');
 
     console.log('--- Initially ---');
     await print();
@@ -93,12 +106,12 @@ async function test(chains, wallet, options) {
     const gasLimit = 1e6;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
 
-    if (originChain == source) {
+    if (originChain === source) {
         await (await source.erc721.approve(source.contract.address, owner.tokenId)).wait();
     }
     await (
         await source.contract.sendNFT(
-            originChain == source ? source.erc721.address : source.contract.address,
+            originChain === source ? source.erc721.address : source.contract.address,
             owner.tokenId,
             destination.name,
             wallet.address,
@@ -108,7 +121,7 @@ async function test(chains, wallet, options) {
 
     while (true) {
         const owner = await ownerOf();
-        if (owner.chain == destination.name) break;
+        if (owner.chain === destination.name) break;
         await sleep(2000);
     }
 

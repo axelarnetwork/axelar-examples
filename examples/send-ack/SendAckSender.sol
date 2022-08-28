@@ -2,10 +2,10 @@
 
 pragma solidity 0.8.9;
 
-import { AxelarExecutable } from '@axelar-network/axelar-utils-solidity/contracts/executables/AxelarExecutable.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-utils-solidity/contracts/interfaces/IAxelarGateway.sol';
-import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
-import { StringToAddress, AddressToString } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
+import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarExecutable.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
+import { StringToAddress, AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/StringAddressUtils.sol';
 
 contract SendAckSender is AxelarExecutable {
     using StringToAddress for string;
@@ -19,22 +19,16 @@ contract SendAckSender is AxelarExecutable {
     uint256 public nonce;
     mapping(uint256 => bool) public executed;
     mapping(uint256 => bytes32) public destination;
-    IAxelarGasService public gasReceiver;
-    IAxelarGateway _gateway;
+    IAxelarGasService public immutable gasReceiver;
     string public thisChain;
 
     constructor(
         address gateway_,
         address gasReceiver_,
         string memory thisChain_
-    ) {
+    ) AxelarExecutable(gateway_) {
         gasReceiver = IAxelarGasService(gasReceiver_);
-        _gateway = IAxelarGateway(gateway_);
         thisChain = thisChain_;
-    }
-
-    function gateway() public view override returns (IAxelarGateway) {
-        return _gateway;
     }
 
     function _getDestinationHash(string memory destinationChain, string memory contractAddress) internal pure returns (bytes32) {
@@ -70,7 +64,7 @@ contract SendAckSender is AxelarExecutable {
             }
         }
 
-        gateway().callContract(destinationChain, contractAddress, modifiedPayload);
+        gateway.callContract(destinationChain, contractAddress, modifiedPayload);
         emit ContractCallSent(destinationChain, contractAddress, payload, nonce_);
         destination[nonce_] = _getDestinationHash(destinationChain, contractAddress);
         nonce = nonce_ + 1;

@@ -2,24 +2,31 @@
 # yarn lockfile v1
 
 
-"@axelar-network/axelar-cgp-solidity@^4.0.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-solidity/-/axelar-cgp-solidity-4.1.0.tgz#9532bb2530e2fa1119d291aa66aee9393fa861d1"
-  integrity sha512-j9bvJ6vtA6YB7ngQzAxhqEViY1nsZG15ZzKd8GLVjrKH4+I4bhejLx07M/Rl08M7F0k4/XkUn2Sa+CEy0aw42Q==
+"@axelar-network/axelar-cgp-solidity@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-solidity/-/axelar-cgp-solidity-4.3.0.tgz#90b42b261759fe6b229932152a0911cee071a6ee"
+  integrity sha512-0cCgCFtxnipyzSplPnj/HxDx4DqqHGEr+J7M7NWKM1fXvfS4t/70aCAw/h9GYW8dZ3BmKOqKAYQCNpmP+2Oa+w==
 
-"@axelar-network/axelar-local-dev@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-local-dev/-/axelar-local-dev-1.0.1.tgz#1810aaca94d21ea59953b8acbc59e46d516cab9a"
-  integrity sha512-d9Iv7ZR0yNPgEw2cUZcjq7uY7UA1XDPAjNM9xCTyjJ/BgjsIoLAvbt258JKMQdtAD/HzAGWF4ysXNnRFwUAzKA==
+"@axelar-network/axelar-gmp-sdk-solidity@^1.1.0", "@axelar-network/axelar-gmp-sdk-solidity@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-1.2.0.tgz#082b4c548e4561441e140ae2a3fc03cae349b93a"
+  integrity sha512-xdyNy8lPj5DXFVoP9jt8QW17S9oWo/TtxeFTBVdib4rApvUK5xeC41o/nMPLy6mZbfanSCw3d6beNOGLNf2Y0g==
   dependencies:
-    "@axelar-network/axelar-cgp-solidity" "^4.0.0"
-    "@types/node" "^17.0.31"
-    axelar-utils-solidity "^1.0.0"
+    ethers "^5.5.2"
+    fs-extra "^10.1.0"
+    ganache "^7.3.2"
+
+"@axelar-network/axelar-local-dev@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-local-dev/-/axelar-local-dev-1.1.0.tgz#dfea1336d631b30f9fe15878a048f5ff05725d17"
+  integrity sha512-OJy2maa0J7K8jEyDlQGGBJrvNetkSn8a/Q/ejePVVggk5egA4dqh6lsumVvczVNL/7sMTHzXINrUfyfq33+ATw==
+  dependencies:
+    "@axelar-network/axelar-cgp-solidity" "^4.3.0"
+    "@axelar-network/axelar-gmp-sdk-solidity" "^1.1.0"
     ethers "^5.6.5"
     fs-extra "^10.1.0"
     ganache "^7.1.0"
-    typescript "^4.6.4"
-    waffle "^0.0.0"
+    lodash "^4.17.21"
 
 "@axelar-network/axelarjs-sdk@0.6.18":
   version "0.6.18"
@@ -1092,11 +1099,6 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.55.tgz#c329cbd434c42164f846b909bd6f85b5537f6240"
   integrity sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==
 
-"@types/node@^17.0.31":
-  version "17.0.45"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.45.tgz#2c0fafd78705e7a18b7906b5201a522719dc5190"
-  integrity sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==
-
 "@types/node@^8.0.0":
   version "8.10.66"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.66.tgz#dd035d409df322acc83dff62a602f12a5783bbb3"
@@ -1596,14 +1598,6 @@ axe-core@^4.4.3:
   version "4.4.3"
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.4.3.tgz#11c74d23d5013c0fa5d183796729bc3482bd2f6f"
   integrity sha512-32+ub6kkdhhWick/UjvEwRchgoetXqTK14INLqbGm5U2TzBkBNF3nQtLYm8ovxSkQWArjEQvftCKryjZaATu3w==
-
-axelar-utils-solidity@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/axelar-utils-solidity/-/axelar-utils-solidity-1.0.0.tgz#9b6cbbae8ae608b645d37d2e7080db4e0a52113e"
-  integrity sha512-fLav9w1vdoXxs7N5EoUPPFGrklLTG/DcTjXwiRuqlnh961jEtcx2khkiRB7/h29ioEEggk+jbAWDSYNumRK+Vg==
-  dependencies:
-    ethers "^5.5.2"
-    ganache "^7.3.0"
 
 axios@^0.21.2:
   version "0.21.4"
@@ -3521,10 +3515,27 @@ functions-have-names@^1.2.2:
   resolved "https://registry.yarnpkg.com/functions-have-names/-/functions-have-names-1.2.3.tgz#0404fe4ee2ba2f607f0e0ec3c80bae994133b834"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
 
-ganache@^7.1.0, ganache@^7.3.0:
+ganache@^7.1.0:
   version "7.3.2"
   resolved "https://registry.yarnpkg.com/ganache/-/ganache-7.3.2.tgz#f2cd9df8244851f3d62c19cb5a71cc0c782932eb"
   integrity sha512-X1IXfqrFQuiMqrONvb4zQqXwjf2Skg8iuofYlFrzWnCI+JZN2hJA5V5Egu/go3YgD8IRpQyLP/Jny0fZM0A5UA==
+  dependencies:
+    "@trufflesuite/bigint-buffer" "1.1.10"
+    "@types/bn.js" "^5.1.0"
+    "@types/lru-cache" "5.1.1"
+    "@types/seedrandom" "3.0.1"
+    emittery "0.10.0"
+    keccak "3.0.1"
+    leveldown "6.1.0"
+    secp256k1 "4.0.2"
+  optionalDependencies:
+    bufferutil "4.0.5"
+    utf-8-validate "5.0.7"
+
+ganache@^7.3.2:
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/ganache/-/ganache-7.4.1.tgz#5f109619067baf25dec15f92a8d919e5bfeedb4d"
+  integrity sha512-yLlfsHQpJmXRD/Ryd7JcHTzL9q0cE+BDu3fmMFmJ/0Nl8GYBDfZrtyzm/8nSRWiXoWR98ER/c3PZrhR9KDySeA==
   dependencies:
     "@trufflesuite/bigint-buffer" "1.1.10"
     "@types/bn.js" "^5.1.0"
@@ -6852,7 +6863,7 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
-typescript@4.7.4, typescript@^4.6.4:
+typescript@4.7.4:
   version "4.7.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.4.tgz#1a88596d1cf47d59507a1bcdfb5b9dfe4d488235"
   integrity sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==
@@ -7030,11 +7041,6 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
-
-waffle@^0.0.0:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/waffle/-/waffle-0.0.0.tgz#8a62494771f656bb40942aba1dd54180376b3382"
-  integrity sha512-IZu7jMfmItTQnp9sXtu7rtEzJBo98ver/eJJu5WAFHIkou6dvkhTQ59mpljtTHAuWe+S0mszrGmpiKQUCYsdVw==
 
 web3-bzz@1.7.4:
   version "1.7.4"
