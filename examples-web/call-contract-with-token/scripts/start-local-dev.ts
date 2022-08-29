@@ -8,14 +8,14 @@ createAndExport({
   chains: ["Moonbeam", "Avalanche"],
   chainOutputPath: "config/local.json",
   async callback(network: Network) {
+    await network.deployToken("USDC", "aUSDC", 6, BigInt(100_000_000e6));
+
     if (network.name === "Avalanche") {
       await network.giveToken(
         wallet.address,
         "aUSDC",
-        BigInt("100000000000000"),
+        BigInt("1000000000000"),
       );
     }
-
-    return null;
   },
 });

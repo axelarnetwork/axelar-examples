@@ -1,12 +1,12 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import {IAxelarGateway} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol";
-import {IAxelarGasService} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol";
+import {IAxelarGateway} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
+import {IAxelarGasService} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
 
 contract MessageSender {
-    IAxelarGasService gasReceiver;
-    IAxelarGateway gateway;
+    IAxelarGateway immutable gateway;
+    IAxelarGasService immutable gasReceiver;
 
     constructor(address _gateway, address _gasReceiver) {
         gateway = IAxelarGateway(_gateway);
@@ -14,8 +14,8 @@ contract MessageSender {
     }
 
     function sendMessage(
-        string memory destinationChain,
-        string memory destinationAddress,
+        string calldata destinationChain,
+        string calldata destinationAddress,
         string calldata value_
     ) external payable {
         bytes memory payload = abi.encode(value_);

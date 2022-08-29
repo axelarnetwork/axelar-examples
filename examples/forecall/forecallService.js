@@ -10,8 +10,8 @@ const {
 } = require('@axelar-network/axelar-local-dev');
 
 const DistributionForecallable = require('../../artifacts/examples/forecall/DistributionForecallable.sol/DistributionForecallable.json');
-const Gateway = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
-const IERC20 = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
+const Gateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
+const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 const { defaultAbiCoder, keccak256 } = require('ethers/lib/utils');
 
@@ -22,7 +22,7 @@ const gasForExecution = 115000;
 const wallet = new Wallet(private_key);
 
 async function getChains(env) {
-    if (env == null || (env != 'testnet' && env != 'local'))
+    if (env == null || (env !== 'testnet' && env !== 'local'))
         throw new Error('Need to specify tesntet or local as an argument to this script.');
     let temp;
     if (env == 'local') {

@@ -39,5 +39,5 @@ yarn-error.log*
 artifacts
 cache
 
-local.json
+config/local.json
 testnet.json

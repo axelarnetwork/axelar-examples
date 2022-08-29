@@ -36,8 +36,8 @@ async function test(chains, wallet, options) {
         chain.sender = new Contract(chain.sendAckSender, SendAckSender.abi, chain.wallet);
         chain.receiver = new Contract(chain.sendAckReceiver, SendAckReceiver.abi, chain.wallet);
     }
-    const source = chains.find((chain) => chain.name == (args[0] || 'Avalanche'));
-    const destination = chains.find((chain) => chain.name == (args[1] || 'Fantom'));
+    const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+    const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
     const message = args[2] || `Hello, the time is ${time}.`;
     const payload = defaultAbiCoder.encode(['string'], [message]);
 

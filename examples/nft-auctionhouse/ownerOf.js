@@ -1,15 +1,6 @@
 'use strict';
 
-const {
-    getDefaultProvider,
-    Contract,
-    constants: { AddressZero },
-    utils: { keccak256, defaultAbiCoder },
-    Wallet,
-} = require('ethers');
-const {
-    utils: { deployContract },
-} = require('@axelar-network/axelar-local-dev');
+const { getDefaultProvider, Contract } = require('ethers');
 
 const ERC721 = require('../../artifacts/examples/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
 
@@ -23,10 +14,10 @@ module.exports = ownerOf;
 
 if (require.main === module) {
     const env = process.argv[2];
-    if (env == null || (env != 'testnet' && env != 'local'))
+    if (env == null || (env !== 'testnet' && env !== 'local'))
         throw new Error('Need to specify tesntet or local as an argument to this script.');
     let temp;
-    if (env == 'local') {
+    if (env === 'local') {
         temp = require(`../../info/local.json`);
     } else {
         try {
@@ -40,7 +31,7 @@ if (require.main === module) {
 
     const chainName = args[0];
     const tokenId = BigInt(args[1]);
-    const chain = chains.find((chain) => chain.name == chainName);
+    const chain = chains.find((chain) => chain.name === chainName);
 
     ownerOf(chain, tokenId).then((owner) => console.log(owner));
 }

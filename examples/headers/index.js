@@ -5,21 +5,24 @@ const {
     Contract,
     constants: { AddressZero },
 } = require('ethers');
-const { deployAndInitContractConstant } = require('@axelar-network/axelar-utils-solidity');
+const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
+const ExampleProxy = require('../../artifacts/examples/Proxy.sol/ExampleProxy.json');
 const Headers = require('../../artifacts/examples/headers/Headers.sol/Headers.json');
-const Gateway = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
-const IERC20 = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
+const Gateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
+const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 async function deploy(chain, wallet) {
     console.log(`Deploying Headers for ${chain.name}.`);
-    const contract = await deployAndInitContractConstant(
+    const contract = await deployUpgradable(
         chain.constAddressDeployer,
         wallet,
         Headers,
+        ExampleProxy,
+        [chain.gateway, chain.gasReceiver, 10],
+        [],
+        '0x',
         'headers',
-        [10],
-        [chain.gateway, chain.gasReceiver],
     );
     chain.headers = contract.address;
     console.log(`Deployed Headers for ${chain.name} at ${chain.headers}.`);
@@ -31,13 +34,22 @@ async function test(chains, wallet, options) {
     for (const chain of chains) {
         chain.provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(chain.provider);
-        chain.contract = new Contract(chain.headers, Headers.abi, chain.wallet);
+        chain.contract = await deployUpgradable(
+            chain.constAddressDeployer,
+            chain.wallet,
+            Headers,
+            ExampleProxy,
+            [chain.gateway, chain.gasReceiver, 10],
+            [],
+            '0x',
+            'headers',
+        );
         const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
         const usdcAddress = await gateway.tokenAddresses('aUSDC');
         chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
     }
-    const source = chains.find((chain) => chain.name == (args[0] || 'Avalanche'));
-    const destination = chains.find((chain) => chain.name == (args[1] || 'Fantom'));
+    const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+    const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
 
     function sleep(ms) {
         return new Promise((resolve) => {

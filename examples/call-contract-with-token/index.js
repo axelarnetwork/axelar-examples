@@ -11,8 +11,8 @@ const {
 
 const { sleep } = require('../../utils');
 const DistributionExecutable = require('../../artifacts/examples/call-contract-with-token/DistributionExecutable.sol/DistributionExecutable.json');
-const Gateway = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
-const IERC20 = require('../../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
+const Gateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
+const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 async function deploy(chain, wallet) {
     console.log(`Deploying DistributionExecutable for ${chain.name}.`);
@@ -24,12 +24,12 @@ async function deploy(chain, wallet) {
 async function test(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
-    const source = chains.find((chain) => chain.name == (args[0] || 'Avalanche'));
-    const destination = chains.find((chain) => chain.name == (args[1] || 'Fantom'));
+    const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+    const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
     const amount = Math.floor(parseFloat(args[2])) * 1e6 || 10e6;
     const accounts = args.slice(3);
 
-    if (accounts.length == 0) accounts.push(wallet.address);
+    if (accounts.length === 0) accounts.push(wallet.address);
 
     for (const chain of [source, destination]) {
         const provider = getDefaultProvider(chain.rpc);
@@ -62,7 +62,7 @@ async function test(chains, wallet, options) {
     });
     await sendTx.wait();
 
-    while (BigInt(await destination.usdc.balanceOf(accounts[0])) == balance) {
+    while (BigInt(await destination.usdc.balanceOf(accounts[0])) === balance) {
         await sleep(2000);
     }
 

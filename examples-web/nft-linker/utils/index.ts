@@ -26,6 +26,8 @@ updateContractsOnChainConfig(avalancheChain);
 export async function sendNftToDest(onSrcConfirmed: (txHash: string) => void, onSent: (ownerInfo: any) => void) {
     const owner = await ownerOf();
 
+    console.log({owner})
+
     console.log('--- Initially ---', owner);
     await print();
 

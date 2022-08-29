@@ -2,13 +2,14 @@
 
 pragma solidity 0.8.9;
 
-import { AxelarExecutable } from '@axelar-network/axelar-utils-solidity/contracts/executables/AxelarExecutable.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-utils-solidity/contracts/interfaces/IAxelarGateway.sol';
-import { IERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol';
-import { StringToAddress, AddressToString } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
-import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
+import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarExecutable.sol';
+import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradables/Upgradable.sol';
+import { StringToAddress, AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/StringAddressUtils.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 
-contract Headers is AxelarExecutable {
+contract Headers is AxelarExecutable, Upgradable {
     using StringToAddress for string;
     using AddressToString for address;
 
@@ -18,21 +19,15 @@ contract Headers is AxelarExecutable {
     uint256 public n;
     mapping(string => bytes32[]) public headersMap;
     mapping(string => uint256[]) public blocksMap;
-    IAxelarGasService public gasReceiver;
-    IAxelarGateway _gateway;
+    IAxelarGasService public immutable gasReceiver;
 
-    constructor(uint256 length_) {
-        length = length_;
-    }
-
-    function init(address gateway_, address gasReceiver_) external {
-        if (address(_gateway) != address(0) || address(gasReceiver) != address(0)) revert('Already Initialized.');
-        _gateway = IAxelarGateway(gateway_);
+    constructor(
+        address gateway_,
+        address gasReceiver_,
+        uint256 length_
+    ) AxelarExecutable(gateway_) {
         gasReceiver = IAxelarGasService(gasReceiver_);
-    }    
-  
-    function gateway() public view override returns (IAxelarGateway) {
-        return _gateway;
+        length = length_;
     }
 
     //i_ here is how old the header to fetch is. i_=0 is the lastest header we have in store.
@@ -65,7 +60,7 @@ contract Headers is AxelarExecutable {
             IERC20(token).approve(address(gasReceiver), gases[i]);
             string memory thisAddress = address(this).toString();
             gasReceiver.payGasForContractCall(address(this), chains[i], thisAddress, payload, token, gases[i], msg.sender);
-            gateway().callContract(chains[i], thisAddress, payload);
+            gateway.callContract(chains[i], thisAddress, payload);
         }
     }
 
@@ -87,5 +82,9 @@ contract Headers is AxelarExecutable {
             blocksMap[sourceChain][n] = block_;
             headersMap[sourceChain][n] = header_;
         }
+    }
+
+    function contractId() external pure returns (bytes32) {
+        return keccak256('example');
     }
 }

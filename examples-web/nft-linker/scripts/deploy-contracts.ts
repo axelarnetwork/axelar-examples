@@ -1,13 +1,14 @@
 import fs from 'fs/promises';
-import { getDefaultProvider } from 'ethers';
+import { getDefaultProvider, utils } from 'ethers';
 import { isTestnet, wallet } from '../config/constants';
 
 const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
-const { deployAndInitContractConstant } = require('@axelar-network/axelar-utils-solidity');
+const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
 // load contracts
+const ExampleProxy = require('../artifacts/contracts/Proxy.sol/ExampleProxy.json');
 const NFTLinker = require('../artifacts/contracts/NFTLinker.sol/NFTLinker.json');
 const ERC721 = require('../artifacts/contracts/ERC721demo.sol/ERC721Demo.json');
 
@@ -40,13 +41,15 @@ async function deployNFTContracts(chain: any) {
         console.log(`Minted token ${nftTokenId} for ${chain.name}`);
     }
 
-    const nftLinker = await deployAndInitContractConstant(
+    const nftLinker = await deployUpgradable(
         chain.constAddressDeployer,
         walletConnectedToProvider,
         NFTLinker,
-        'nftLinker',
+        ExampleProxy,
+        [chain.gateway, chain.gasReceiver],
         [],
-        [chain.name, chain.gateway, chain.gasReceiver]
+        utils.defaultAbiCoder.encode(['string'], [chain.name]),
+        'nftLinker',
     );
     console.log(`NFTLinker deployed on ${chain.name}: ${nftLinker.address}`);
     chain.nftLinker = nftLinker.address;

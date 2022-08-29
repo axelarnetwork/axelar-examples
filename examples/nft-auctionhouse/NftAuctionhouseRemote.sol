@@ -4,29 +4,26 @@ pragma solidity 0.8.9;
 
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import { AxelarExecutable } from '@axelar-network/axelar-utils-solidity/contracts/executables/AxelarExecutable.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-utils-solidity/contracts/interfaces/IAxelarGateway.sol';
-import '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
+import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarExecutable.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
+import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import './NftAuctionhouse.sol';
-import { AddressToString } from '@axelar-network/axelar-utils-solidity/contracts/StringAddressUtils.sol';
+import { AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/StringAddressUtils.sol';
 
 contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutable {
     IAxelarGasService public immutable gasReceiver;
-    IAxelarGateway immutable _gateway;
     mapping(address => mapping(uint256 => address)) biddersRemote;
     mapping(address => mapping(uint256 => string)) sourceChains;
     mapping(address => mapping(uint256 => address)) refundAddresses;
 
     using AddressToString for address;
 
-
-    constructor(address gateway_, address gasReceiver_, address usdc_) NftAuctionhouse(usdc_) {
+    constructor(
+        address gateway_,
+        address gasReceiver_,
+        address usdc_
+    ) NftAuctionhouse(usdc_) AxelarExecutable(gateway_) {
         gasReceiver = IAxelarGasService(gasReceiver_);
-        _gateway = IAxelarGateway(gateway_);
-    }
-
-    function gateway() public view override returns (IAxelarGateway) {
-        return _gateway;
     }
 
     function bidRemote(
@@ -38,7 +35,7 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutable {
         uint256 amount
     ) external payable {
         usdc.transferFrom(msg.sender, address(this), amount);
-        usdc.approve(address(gateway()), amount);
+        usdc.approve(address(gateway), amount);
         bytes memory payload = abi.encode(msg.sender, bidder, operator, tokenId);
         if (msg.value > 0) {
             gasReceiver.payNativeGasForContractCallWithToken{ value: msg.value }(
@@ -51,7 +48,7 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutable {
                 msg.sender
             );
         }
-        gateway().callContractWithToken(destinationChain, destinationAuctionhouse, payload, 'aUSDC', amount);
+        gateway.callContractWithToken(destinationChain, destinationAuctionhouse, payload, 'aUSDC', amount);
     }
 
     function _executeWithToken(
@@ -67,8 +64,8 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutable {
         );
         (bool success, ) = address(this).call(abi.encodeWithSelector(this._bid.selector, address(this), operator, tokenId, amount));
         if (!success) {
-            usdc.approve(address(gateway()), amount);
-            gateway().sendToken(sourceChain, refundAddress.toString(), tokenSymbol, amount);
+            usdc.approve(address(gateway), amount);
+            gateway.sendToken(sourceChain, refundAddress.toString(), tokenSymbol, amount);
         } else {
             biddersRemote[operator][tokenId] = bidder;
             sourceChains[operator][tokenId] = sourceChain;
@@ -83,8 +80,8 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutable {
         uint256 tokenId
     ) internal override {
         if (bidder == address(this)) {
-            usdc.approve(address(gateway()), amount);
-            gateway().sendToken(sourceChains[operator][tokenId], refundAddresses[operator][tokenId].toString(), 'aUSDC', amount);
+            usdc.approve(address(gateway), amount);
+            gateway.sendToken(sourceChains[operator][tokenId], refundAddresses[operator][tokenId].toString(), 'aUSDC', amount);
         } else {
             usdc.transfer(bidder, amount);
         }

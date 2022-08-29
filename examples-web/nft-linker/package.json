@@ -13,10 +13,9 @@
     "contracts:execute": "ts-node scripts/execute-contracts.ts"
   },
   "dependencies": {
-    "@axelar-network/axelar-local-dev": "git+https://github.com/axelarnetwork/axelar-local-dev.git",
-    "@axelar-network/axelar-cgp-solidity": "^4.0.0",
+    "@axelar-network/axelar-gmp-sdk-solidity": "^1.2.0",
+    "@axelar-network/axelar-local-dev": "^1.1.0",
     "@axelar-network/axelarjs-sdk": "^0.7.0-alpha.2",
-    "@axelar-network/axelar-utils-solidity": "git+https://github.com/axelarnetwork/axelar-utils-solidity.git",
     "@openzeppelin/contracts": "^4.7.3",
     "classnames": "^2.3.1",
     "daisyui": "^2.18.0",

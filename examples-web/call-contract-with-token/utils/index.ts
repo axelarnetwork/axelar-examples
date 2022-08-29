@@ -6,10 +6,10 @@ import {
   GasToken,
 } from "@axelar-network/axelarjs-sdk";
 
-import AxelarGatewayContract from "../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json";
+import AxelarGatewayContract from "../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json";
 import MessageSenderContract from "../artifacts/contracts/MessageSender.sol/MessageSender.json";
 import MessageReceiverContract from "../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json";
-import IERC20 from "../artifacts/@axelar-network/axelar-cgp-solidity/contracts/interfaces/IERC20.sol/IERC20.json";
+import IERC20 from "../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json";
 import { isTestnet, wallet } from "../config/constants";
 
 let chains = isTestnet
