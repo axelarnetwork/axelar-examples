@@ -161,8 +161,8 @@ Balance at Fantom is 1
 
 Two different examples. Send aUSDC from source-chain to destination-chain:
 
-1. `deposit-address`: get an [Axelar deposit address](https://docs.axelar.dev/dev/tokens#get-a-deposit-address).
-2. `send-token`: call an [Axelar Gateway contract](https://docs.axelar.dev/dev/tokens#call-sendtoken).
+1. `deposit-address`: get an [Axelar deposit address](https://docs.axelar.dev/dev/axelarjs-sdk/token-transfer-dep-addr).
+2. `send-token`: call an [Axelar Gateway contract](https://docs.axelar.dev/dev/build/tokens).
 
 No smart contract to deploy for these examples.
 
