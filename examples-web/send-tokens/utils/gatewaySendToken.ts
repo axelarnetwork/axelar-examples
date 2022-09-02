@@ -29,9 +29,7 @@ export async function gatewaySendToken(
     onSent: (data: { txHash: string; transferFee: number }) => void
 ) {
     // Get token address from the gateway contract for the src chain
-    debugger;
     const srcTokenAddress = await srcGatewayContract.tokenAddresses('aUSDC');
-    debugger;
     const srcErc20 = new Contract(srcTokenAddress, IERC20.abi, avalancheConnectedWallet);
 
     // Get token address from the gateway contract for the destination chain
