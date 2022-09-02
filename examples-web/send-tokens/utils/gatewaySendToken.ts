@@ -14,12 +14,11 @@ const avalancheChain = chains.find((chain: any) => chain.name === 'Avalanche') a
 
 if (!moonbeamChain || !avalancheChain) process.exit(0);
 
-const useMetamask = false; // typeof window === 'object';
-
-const moonbeamProvider = useMetamask ? new providers.Web3Provider((window as any).ethereum) : getDefaultProvider(moonbeamChain.rpc);
-const moonbeamConnectedWallet = useMetamask ? (moonbeamProvider as providers.Web3Provider).getSigner() : wallet.connect(moonbeamProvider);
-const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
-const avalancheConnectedWallet = wallet.connect(avalancheProvider);
+const useMetamask = typeof window === 'object';
+const moonbeamProvider =getDefaultProvider(moonbeamChain.rpc);
+const moonbeamConnectedWallet = wallet.connect(moonbeamProvider);
+const avalancheProvider = useMetamask ? new providers.Web3Provider((window as any).ethereum) : getDefaultProvider(avalancheChain.rpc);
+const avalancheConnectedWallet = useMetamask ? (avalancheProvider as providers.Web3Provider).getSigner() : wallet.connect(avalancheProvider);
 
 const srcGatewayContract = new Contract(avalancheChain.gateway, AxelarGatewayContract.abi, avalancheConnectedWallet);
 const destGatewayContract = new Contract(moonbeamChain.gateway, AxelarGatewayContract.abi, moonbeamConnectedWallet);
@@ -30,7 +29,9 @@ export async function gatewaySendToken(
     onSent: (data: { txHash: string; transferFee: number }) => void
 ) {
     // Get token address from the gateway contract for the src chain
+    debugger;
     const srcTokenAddress = await srcGatewayContract.tokenAddresses('aUSDC');
+    debugger;
     const srcErc20 = new Contract(srcTokenAddress, IERC20.abi, avalancheConnectedWallet);
 
     // Get token address from the gateway contract for the destination chain
