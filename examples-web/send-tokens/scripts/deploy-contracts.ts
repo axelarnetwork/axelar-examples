@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import { getDefaultProvider } from "ethers";
-import { isTestnet, wallet } from "../config/constants";
+import { isTestnet, deployerWallet } from "../config/constants";
 
 const {
   utils: { deployContract },
@@ -20,13 +20,13 @@ async function main() {
    * DEPLOY ON MOONBEAM
    */
   const moonbeamProvider = getDefaultProvider(moonbeamChain.rpc);
-  const moonbeamConnectedWallet = wallet.connect(moonbeamProvider);
+  const moonbeamConnectedWallet = deployerWallet.connect(moonbeamProvider);
 
   /**
    * DEPLOY ON AVALANCHE
    */
   const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
-  const avalancheConnectedWallet = wallet.connect(avalancheProvider);
+  const avalancheConnectedWallet = deployerWallet.connect(avalancheProvider);
 
   // update chains
   const updatedChains = [moonbeamChain, avalancheChain];

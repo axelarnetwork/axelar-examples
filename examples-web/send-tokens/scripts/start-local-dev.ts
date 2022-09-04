@@ -1,10 +1,10 @@
 import { createAndExport } from "@axelar-network/axelar-local-dev";
 import { Network } from "@axelar-network/axelar-local-dev/dist/Network";
-import { wallet } from "../config/constants";
+import { deployerWallet } from "../config/constants";
 
 // deploy network
 createAndExport({
-  accountsToFund: [wallet.address],
+  accountsToFund: [deployerWallet.address],
   chains: ["Moonbeam", "Avalanche"],
   chainOutputPath: "config/local.json",
   async callback(network: Network) {
@@ -12,7 +12,7 @@ createAndExport({
 
     if (network.name === "Avalanche") {
       await network.giveToken(
-        wallet.address,
+        deployerWallet.address,
         "aUSDC",
         BigInt("100000000000000"),
       );

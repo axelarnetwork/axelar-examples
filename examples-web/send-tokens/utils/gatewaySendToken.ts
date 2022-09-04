@@ -3,9 +3,10 @@ import { AxelarAssetTransfer, AxelarQueryAPI, Environment, EvmChain, GasToken } 
 
 import AxelarGatewayContract from '../abi/IAxelarGateway.sol/IAxelarGateway.json';
 import IERC20 from '../abi/IERC20.sol/IERC20.json';
-import { isTestnet, wallet } from '../config/constants';
+import { isTestnet, deployerWallet } from '../config/constants';
 import { sleep } from './sleep';
 import { getTransferFee } from './getTransferFee';
+import { getMetamaskProvider, shouldUseMetamask } from './shouldUseMetamask';
 
 let chains = isTestnet ? require('../config/testnet.json') : require('../config/local.json');
 
@@ -14,11 +15,11 @@ const avalancheChain = chains.find((chain: any) => chain.name === 'Avalanche') a
 
 if (!moonbeamChain || !avalancheChain) process.exit(0);
 
-const useMetamask = typeof window === 'object';
+const useMetamask = shouldUseMetamask();
 const moonbeamProvider =getDefaultProvider(moonbeamChain.rpc);
-const moonbeamConnectedWallet = wallet.connect(moonbeamProvider);
-const avalancheProvider = useMetamask ? new providers.Web3Provider((window as any).ethereum) : getDefaultProvider(avalancheChain.rpc);
-const avalancheConnectedWallet = useMetamask ? (avalancheProvider as providers.Web3Provider).getSigner() : wallet.connect(avalancheProvider);
+const moonbeamConnectedWallet = deployerWallet.connect(moonbeamProvider);
+const avalancheProvider = useMetamask ? getMetamaskProvider() : getDefaultProvider(avalancheChain.rpc);
+const avalancheConnectedWallet = useMetamask ? (avalancheProvider as providers.Web3Provider).getSigner() : deployerWallet.connect(avalancheProvider);
 
 const srcGatewayContract = new Contract(avalancheChain.gateway, AxelarGatewayContract.abi, avalancheConnectedWallet);
 const destGatewayContract = new Contract(moonbeamChain.gateway, AxelarGatewayContract.abi, moonbeamConnectedWallet);

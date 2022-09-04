@@ -1,8 +1,13 @@
+import { JsonRpcSigner } from '@ethersproject/providers';
 import cn from 'classnames';
+import { Wallet } from 'ethers';
 import type { NextPage } from 'next';
 import React, { useCallback, useEffect, useState } from 'react';
-import { wallet, isTestnet } from '../config/constants';
+import { getSenderWallet, isTestnet } from '../config/constants';
 import { getBalance, truncatedAddress, depositAddressSendToken, gatewaySendToken } from '../utils';
+
+let chains = isTestnet ? require('../config/testnet.json') : require('../config/local.json');
+const avalancheChain = chains.find((chain: any) => chain.name === 'Avalanche') as any;
 
 const Home: NextPage = () => {
     const [customRecipientAddress, setCustomRecipientAddress] = useState<string>('');
@@ -15,6 +20,16 @@ const Home: NextPage = () => {
     const [depositAddress, setDepositAddress] = useState<string>('');
     const [transferFee, setTransferFee] = useState<number>(0);
     const [amount, setAmount] = useState<number>(0);
+    const [senderWallet, setSenderWallet] = useState<JsonRpcSigner | Wallet>();
+    const [senderAddress, setSenderAddress] = useState("");
+
+    useEffect(() => {
+        (async () => {
+            const wallet = await getSenderWallet(avalancheChain);
+            setSenderWallet(wallet);
+            setSenderAddress(await wallet.getAddress());
+        })()
+    }, []);
 
     async function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -54,9 +69,10 @@ const Home: NextPage = () => {
     }, [recipientAddress]);
 
     const handleRefreshSrcBalances = useCallback(async () => {
-        const [_balance] = await getBalance([wallet.address], true);
+        if (!senderWallet || !senderAddress) return;
+        const [_balance] = await getBalance([senderAddress], true);
         setSenderBalance(_balance);
-    }, []);
+    }, [senderAddress, senderWallet]);
 
     const handleOnAddRecepientAddress = () => {
         setRecipientAddress(customRecipientAddress);
@@ -97,7 +113,7 @@ const Home: NextPage = () => {
                     <div className="card-body">
                         <h2 className="card-title">Avalanche (Token Sender)</h2>
                         <p>
-                            Sender ({truncatedAddress(wallet.address)}) balance: {senderBalance}
+                            Sender ({truncatedAddress(senderAddress)}) balance: {senderBalance}
                         </p>
                         <div className="justify-end mt-2 card-actions">
                             <form className="flex flex-col w-full" onSubmit={handleOnSubmit}>

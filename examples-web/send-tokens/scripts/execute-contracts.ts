@@ -1,6 +1,6 @@
 import { Contract, getDefaultProvider, Wallet } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
-import { wallet } from "../config/constants";
+import { deployerWallet } from "../config/constants";
 
 const {
   utils: { deployContract },
@@ -15,13 +15,13 @@ const MessageSenderContract = require("../artifacts/contracts/MessageSender.sol/
 const MessageReceiverContract = require("../artifacts/contracts/MessageReceiver.sol/MessageReceiver.json");
 
 console.log({
-  address: wallet.address,
+  address: deployerWallet.address,
 });
 
 async function main() {
   // call on destination chain
   const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
-  const avalancheConnectedWallet = wallet.connect(avalancheProvider);
+  const avalancheConnectedWallet = deployerWallet.connect(avalancheProvider);
   const destContract = new Contract(
     avalancheChain.messageReceiver,
     MessageReceiverContract.abi,
@@ -34,7 +34,7 @@ async function main() {
 
   // call on source chain
   const ethProvider = getDefaultProvider(moonbeamChain.rpc);
-  const ethConnectedWallet = wallet.connect(ethProvider);
+  const ethConnectedWallet = deployerWallet.connect(ethProvider);
   const sourceContract = new Contract(
     moonbeamChain.messageSender,
     MessageSenderContract.abi,
