@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { createAndExport, utils: { setJSON, deployContract } } = require('@axelar-network/axelar-local-dev');
 const { Wallet, utils: {keccak256, defaultAbiCoder} } = require('ethers');
 
@@ -21,7 +22,8 @@ module.exports = {
 }
 
 if (require.main === module) {    
-    const deployer_key = keccak256(defaultAbiCoder.encode(['string'], ['this is a random string to get a random account. You need to provide the private key for a funded account here.']));
+    console.log("private key",process.env.EVM_PRIVATE_KEY);
+    const deployer_key = process.env.EVM_PRIVATE_KEY;
     const deployer_address = new Wallet(deployer_key).address;
     const toFund = [deployer_address]
 

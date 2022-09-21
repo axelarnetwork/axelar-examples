@@ -1,5 +1,6 @@
 'use strict';
 
+require("dotenv").config();
 const {
     getDefaultProvider,
     Contract,
@@ -49,13 +50,7 @@ async function getChains(env) {
 }
 
 async function fundForecaller(chains, forecaller, amount) {
-    //0x8ff26335325ad2c33d87bf8be4a53f28abaac5cf654a42080bc2b91938b1281d
-    const private_key_funded = keccak256(
-        defaultAbiCoder.encode(
-            ['string'],
-            ['this is a random string to get a random account. You need to provide the private key for a funded account here.'],
-        ),
-    );
+    const private_key_funded = process.env.EVM_PRIVATE_KEY;
     const wallet_funded = new Wallet(private_key_funded);
     console.log(`Trying to give ${amount / 1e6} aUSDC to forecaller ${forecaller} from ${wallet_funded.address}.`);
     for (const chain of chains) {
