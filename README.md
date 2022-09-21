@@ -30,6 +30,14 @@ npm ci
 npm run build
 ```
 
+## Set up deployer key
+
+```bash
+cp .env.example .env
+```
+
+Then update to your own private key.
+
 ## Deploy and test each example
 
 In order to run the examples against the local emulator, cd to `axelar-local-gmp-examples` and run

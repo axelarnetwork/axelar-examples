@@ -1,5 +1,6 @@
 'use strict';
 
+require("dotenv").config();
 const {
     utils: { defaultAbiCoder, keccak256 },
     Wallet,
@@ -29,12 +30,7 @@ const examples = [
 
 describe('examples', () => {
     setLogger((...args) => {});
-    const deployer_key = keccak256(
-        defaultAbiCoder.encode(
-            ['string'],
-            ['this is a random string to get a random account. You need to provide the private key for a funded account here.'],
-        ),
-    );
+    const deployer_key = process.env.EVM_PRIVATE_KEY;
     const deployer_address = new Wallet(deployer_key).address;
     const toFund = [deployer_address];
 
