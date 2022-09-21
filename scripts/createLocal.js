@@ -22,7 +22,6 @@ module.exports = {
 }
 
 if (require.main === module) {    
-    console.log("private key",process.env.EVM_PRIVATE_KEY);
     const deployer_key = process.env.EVM_PRIVATE_KEY;
     const deployer_address = new Wallet(deployer_key).address;
     const toFund = [deployer_address]
