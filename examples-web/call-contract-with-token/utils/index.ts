@@ -90,6 +90,8 @@ export async function sendTokenToDestChain(
     EvmChain.AVALANCHE,
     EvmChain.MOONBEAM,
     GasToken.AVAX,
+    700000,
+    2
   );
 
   // Send the token

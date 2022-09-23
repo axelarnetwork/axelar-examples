@@ -40,4 +40,3 @@ artifacts
 cache
 
 config/local.json
-testnet.json

@@ -1,10 +1,11 @@
 'use strict';
-
+require("dotenv").config();
 const { testnetInfo } = require('@axelar-network/axelar-local-dev');
-const { ethers } = require('ethers');
+const { ethers, Wallet } = require('ethers');
 
 const chains =  testnetInfo;
-const address = process.argv[2] || '0xBa86A5719722B02a5D5e388999C25f3333c7A9fb';
+const deployer_key = process.env.EVM_PRIVATE_KEY;
+const address = new Wallet(deployer_key).address;
 (async () => {
     const promises = []
     for(const chain of chains) {
