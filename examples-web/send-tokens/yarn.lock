@@ -28,26 +28,25 @@
     ganache "^7.1.0"
     lodash "^4.17.21"
 
-"@axelar-network/axelarjs-sdk@0.6.18":
-  version "0.6.18"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.6.18.tgz#132d3195c4373383eb02ab313dca45c1790b4659"
-  integrity sha512-p4VaPC9W7hTJDezlbQrYDKhMZ71GWwdQE5VdjxYC9aLD1OQ6TFVCmrZIMT+jEEY24byXGM7M4xcdCEfCnjNVXQ==
+"@axelar-network/axelarjs-sdk@0.11.4":
+  version "0.11.4"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.11.4.tgz#f1b1553a7a183df376795a839d38e2217c5f847d"
+  integrity sha512-vImsP190n5HSz5ixPApIc60LrQP7pErnJiT7NRSi2sz04Sf1M6fwo989/eGDxBnIGGXyCBz67wWGqBPNv8hKeQ==
   dependencies:
-    "@axelar-network/axelarjs-types" "^0.0.3"
+    "@axelar-network/axelarjs-types" "^0.24.0"
     "@cosmjs/stargate" "^0.28.4"
     "@types/uuid" "^8.3.1"
     bech32 "^2.0.0"
     clone-deep "^4.0.1"
     cross-fetch "^3.1.5"
-    eslint-plugin-import "^2.25.4"
     ethers "^5.4.7"
     socket.io-client "^4.2.0"
     uuid "^8.3.2"
 
-"@axelar-network/axelarjs-types@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-types/-/axelarjs-types-0.0.3.tgz#46b189f1afb9358628df49e76b3c31cb552fc258"
-  integrity sha512-Y3CgKAHOnVyU/0JFulUyZkSxeVkMEvt4eTbrXy8bx3GCAhqx7rc45fz2VJPVr1f24lFwEAGGc5VbeGrXZodssw==
+"@axelar-network/axelarjs-types@^0.24.0":
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-types/-/axelarjs-types-0.24.0.tgz#ab9cc52690206a36475a1e026aefc74d578ea229"
+  integrity sha512-L353tkWLnujTcaEc3hMK51aiqY7DzEPfBNU9mluvtZIN9WsAbW2F3Rpj3UceSDLG0F98233HDhpPxWiGjIpiFg==
   dependencies:
     long "^4.0.0"
     protobufjs "~6.11.2"
@@ -2793,7 +2792,7 @@ eslint-module-utils@^2.7.3:
     debug "^3.2.7"
     find-up "^2.1.0"
 
-eslint-plugin-import@^2.25.4, eslint-plugin-import@^2.26.0:
+eslint-plugin-import@^2.26.0:
   version "2.26.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-import/-/eslint-plugin-import-2.26.0.tgz#f812dc47be4f2b72b478a021605a59fc6fe8b88b"
   integrity sha512-hYfi3FXaM8WPLf4S1cikh/r4IxnO6zrhZbEGz2b660EJRbuxgpDS5gkCuYgGWg2xxh2rBuIr4Pvhve/7c31koA==

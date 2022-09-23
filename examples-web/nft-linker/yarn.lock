@@ -28,12 +28,12 @@
     ganache "^7.1.0"
     lodash "^4.17.21"
 
-"@axelar-network/axelarjs-sdk@^0.7.0-alpha.2":
-  version "0.7.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.7.0-alpha.2.tgz#00cbc9654aa074fe13c8ff193c38efe490326cad"
-  integrity sha512-+77WZ5m6C/ttdpzsPSkezZOQ0aoxQS/CdGOuSKUFlm8YfPZBYuijBAzGO6w6c//PIKKSoFqjbErU/cyblRojfw==
+"@axelar-network/axelarjs-sdk@0.11.4":
+  version "0.11.4"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.11.4.tgz#f1b1553a7a183df376795a839d38e2217c5f847d"
+  integrity sha512-vImsP190n5HSz5ixPApIc60LrQP7pErnJiT7NRSi2sz04Sf1M6fwo989/eGDxBnIGGXyCBz67wWGqBPNv8hKeQ==
   dependencies:
-    "@axelar-network/axelarjs-types" "0.20.0-alpha"
+    "@axelar-network/axelarjs-types" "^0.24.0"
     "@cosmjs/stargate" "^0.28.4"
     "@types/uuid" "^8.3.1"
     bech32 "^2.0.0"
@@ -43,10 +43,10 @@
     socket.io-client "^4.2.0"
     uuid "^8.3.2"
 
-"@axelar-network/axelarjs-types@0.20.0-alpha":
-  version "0.20.0-alpha"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-types/-/axelarjs-types-0.20.0-alpha.tgz#7d9d81c4543917efde2edd04d0f09b10c088ca81"
-  integrity sha512-gqD17T0tzpOS6qijcAd/P2pXPMQ9xhbjghoZJ2Es5MaxEP1f1tpOSPlUPUnxXyZwb2XcXNmyhjw4+P3QdDDqDw==
+"@axelar-network/axelarjs-types@^0.24.0":
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-types/-/axelarjs-types-0.24.0.tgz#ab9cc52690206a36475a1e026aefc74d578ea229"
+  integrity sha512-L353tkWLnujTcaEc3hMK51aiqY7DzEPfBNU9mluvtZIN9WsAbW2F3Rpj3UceSDLG0F98233HDhpPxWiGjIpiFg==
   dependencies:
     long "^4.0.0"
     protobufjs "~6.11.2"

@@ -15,6 +15,7 @@
   "dependencies": {
     "@axelar-network/axelar-gmp-sdk-solidity": "^1.2.0",
     "@axelar-network/axelar-local-dev": "^1.1.0",
+    "@axelar-network/axelarjs-sdk": "0.11.4",
     "classnames": "^2.3.1",
     "daisyui": "^2.18.0",
     "dotenv": "^16.0.1",
