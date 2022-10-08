@@ -10,3 +10,5 @@ scripts/deployConst.js
 
 .DS_Store
 .env
+
+.vscode
