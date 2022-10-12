@@ -1,10 +1,11 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarForecallable.sol';
+import '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradables/Upgradable.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 
-contract LendingSatellite is AxelarForecallable {
+contract LendingSatellite is AxelarForecallable, Upgradable {
     string public baseChain;
     string public baseContract;
 
@@ -47,5 +48,9 @@ contract LendingSatellite is AxelarForecallable {
         bytes memory payload = abi.encode('repayAndRedeem', params);
 
         gateway.callContractWithToken(baseChain, baseContract, payload, repayTokenSymbol, repayAmount);
+    }
+
+    function contractId() external pure returns (bytes32) {
+        return keccak256('example');
     }
 }
