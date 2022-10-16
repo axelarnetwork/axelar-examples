@@ -2,15 +2,22 @@
 
 const {
     forkNetwork,
-    getNetwork,
+    createNetwork,
     mainnetInfo,
+    relay,
     utils: { defaultAccounts, deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
 const LendingSatellite = require('../../artifacts/examples/cross-chain-lending/LendingSatellite.sol/LendingSatellite.json');
 const CompoundInterface = require('../../artifacts/examples/cross-chain-lending/CompoundInterface.sol/CompoundInterface.json');
 const Comptroller = require('../../artifacts/examples/cross-chain-lending/interfaces/Comptroller.sol/Comptroller.json');
-const { Contract, providers, ethers, getDefaultProvider } = require('ethers');
+const {
+    Contract,
+    providers,
+    ethers,
+    getDefaultProvider,
+    utils: { defaultAbiCoder },
+} = require('ethers');
 
 const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 const ADDRESS_COMPOUND_ADMIN = '0x6d903f6003cca6255D85CcA4D3B5E5146dC33925';
@@ -27,8 +34,6 @@ async function deployTokens(chain, axlWrapped) {
 }
 
 async function test(chains, wallet, options) {
-    const args = options.args || [];
-
     const oldAdminAddresses = [
         '0x3f5876a2b06E54949aB106651Ab6694d0289b2b4',
         '0x9256Fd872118ed3a97754B0fB42c15015d17E0CC',
@@ -67,9 +72,13 @@ async function test(chains, wallet, options) {
     ]);
     console.log(`Deployed CompoundInterface for ${baseChain.name} at ${baseChain.compoundInterface.address}`);
 
-    const satelliteChainInfo = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
-    const satelliteChain = await getNetwork(satelliteChainInfo.rpc);
+    const satelliteChain = await createNetwork({
+        name: 'Avalanche',
+        seed: '',
+        ganacheOptions: {},
+    });
 
+    baseChain.wallet = baseChain.userWallets[0];
     satelliteChain.wallet = satelliteChain.userWallets[0];
 
     await deployTokens(satelliteChain, true);
@@ -88,10 +97,26 @@ async function test(chains, wallet, options) {
     console.log('Initial user WBCT balance', (await satelliteChain.wbtc.balanceOf(satelliteChain.wallet.address)).toString());
     console.log('Initial user SUSHI balance', (await satelliteChain.sushi.balanceOf(satelliteChain.wallet.address)).toString());
 
-    await satelliteChain.wbtc.approve(satelliteChain.satellite.address, BigInt(1e20));
-    await satelliteChain.sushi.approve(satelliteChain.satellite.address, BigInt(1e20));
+    await satelliteChain.wbtc.connect(satelliteChain.wallet).approve(satelliteChain.satellite.address, BigInt(1e21));
+    await satelliteChain.sushi.connect(satelliteChain.wallet).approve(satelliteChain.satellite.address, BigInt(1e20));
 
-    // await satelliteChain.satellite.supplyAndBorrow('WBTC', BigInt(1e16), 'SUSHI', BigInt(1e8));
+    await satelliteChain.satellite.supplyAndBorrow('WBTC', BigInt(1e16), 'SUSHI', BigInt(1e8));
+
+    const params = defaultAbiCoder.encode(['string', 'uint256', 'string'], ['SUSHI', BigInt(1e8), satelliteChain.wallet.address]);
+    const payload = defaultAbiCoder.encode(['string', 'bytes'], ['supplyAndBorrow', params]);
+
+    await baseChain.wbtc.connect(baseChain.wallet).approve(baseChain.compoundInterface.address, BigInt(1e16));
+    await baseChain.compoundInterface.forecallWithToken('Avalanche', satelliteChain.satellite.address, payload, 'WBTC', BigInt(1e16));
+
+    // await relay();
+
+    // console.log('Initial user WBCT balance', (await satelliteChain.wbtc.balanceOf(satelliteChain.wallet.address)).toString());
+    // console.log('Initial user SUSHI balance', (await satelliteChain.sushi.balanceOf(satelliteChain.wallet.address)).toString());
+
+    // await relay();
+
+    // console.log('Initial user WBCT balance', (await satelliteChain.wbtc.balanceOf(satelliteChain.wallet.address)).toString());
+    // console.log('Initial user SUSHI balance', (await satelliteChain.sushi.balanceOf(satelliteChain.wallet.address)).toString());
 }
 
 module.exports = {
