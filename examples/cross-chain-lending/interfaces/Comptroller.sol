@@ -2,7 +2,5 @@
 pragma solidity 0.8.9;
 
 interface Comptroller {
-    function pauseGuardian() external view returns (address);
-
-    function _setPauseGuardian(address newPauseGuardian) external returns (uint256);
+    function _setMintPaused(address cToken, bool state) external returns (bool);
 }

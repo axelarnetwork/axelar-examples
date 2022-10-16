@@ -115,21 +115,32 @@ contract CompoundInterface is AxelarForecallable {
         (bytes memory functionName, bytes memory params) = abi.decode(payload, (bytes, bytes));
 
         bytes4 commandSelector;
-        bytes32 functionHash = keccak256(functionName);
 
-        if (functionHash == SELECTOR_SUPPLY_AND_BORROW) {
+        if (keccak256(functionName) == SELECTOR_SUPPLY_AND_BORROW) {
             commandSelector = CompoundInterface.supplyAndBorrow.selector;
-        } else if (functionHash == SELECTOR_REPAY_BORROW) {
+        } else if (keccak256(functionName) == SELECTOR_REPAY_BORROW) {
             commandSelector = CompoundInterface.repayAndRedeem.selector;
         } else {
             revert('Invalid function name');
         }
 
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, ) = address(this).call(
+        (bool success, bytes memory result) = address(this).call(
             abi.encodeWithSelector(commandSelector, sourceChain, sourceAddress, tokenSymbol, amount, params)
         );
 
-        // TODO: error handling
+        // TODO: shouln't revert or tokens will be stuck
+        if (!success) {
+            if (result.length == 0) {
+                require(success, 'Failed with no reason');
+            } else {
+                // rethrow same error
+                assembly {
+                    let start := add(result, 0x20)
+                    let end := add(result, mload(result))
+                    revert(start, end)
+                }
+            }
+        }
     }
 }
