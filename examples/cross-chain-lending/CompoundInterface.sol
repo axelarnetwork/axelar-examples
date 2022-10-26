@@ -12,6 +12,8 @@ contract CompoundInterface is AxelarForecallable {
 
     Comptroller public immutable comptroller;
 
+    mapping(string => mapping(string => uint256)) public cBalances;
+
     mapping(string => CErc20Interface) internal _cTokens;
 
     modifier onlySelf() {
@@ -45,9 +47,7 @@ contract CompoundInterface is AxelarForecallable {
     ) external onlySelf {
         (string memory borrowTokenSymbol, uint256 borrowAmount, string memory userAddress) = abi.decode(params, (string, uint256, string));
 
-        // TODO: keep track of user supplied collateral
-
-        _mint(supplyTokenSymbol, supplyAmount);
+        _mint(supplyTokenSymbol, supplyAmount, userAddress);
         _borrow(sourceChain, userAddress, borrowTokenSymbol, borrowAmount);
     }
 
@@ -60,18 +60,25 @@ contract CompoundInterface is AxelarForecallable {
     ) external onlySelf {
         (string memory redeemTokenSymbol, uint256 redeemAmount, string memory userAddress) = abi.decode(params, (string, uint256, string));
 
-        // TODO: validate amounts
-
         _repayBorrow(repayTokenSymbol, repayAmount);
         _redeem(sourceChain, userAddress, redeemTokenSymbol, redeemAmount);
     }
 
-    function _mint(string calldata tokenSymbol, uint256 amount) internal {
+    function _mint(
+        string calldata tokenSymbol,
+        uint256 amount,
+        string memory userAddress
+    ) internal {
         CErc20Interface cToken = _cTokens[tokenSymbol];
         IERC20 tokenAddress = IERC20(gateway.tokenAddresses(tokenSymbol));
 
         tokenAddress.approve(address(cToken), amount);
-        cToken.mint(amount);
+        uint256 balanceBefore = cToken.balanceOf(address(this));
+        uint256 result = cToken.mint(amount);
+        require(result == 0, 'Error minting cTokens');
+        uint256 mintedTokens = cToken.balanceOf(address(this)) - balanceBefore;
+
+        cBalances[userAddress][tokenSymbol] += mintedTokens;
     }
 
     function _borrow(
@@ -82,6 +89,8 @@ contract CompoundInterface is AxelarForecallable {
     ) internal {
         CErc20Interface cToken = _cTokens[tokenSymbol];
         IERC20 tokenAddress = IERC20(gateway.tokenAddresses(tokenSymbol));
+
+        // in production must limit borrow amount corresponding to the proportion this user supplied as collateral
         cToken.borrow(amount);
 
         tokenAddress.approve(address(gateway), amount);
@@ -105,8 +114,12 @@ contract CompoundInterface is AxelarForecallable {
         CErc20Interface cToken = _cTokens[tokenSymbol];
         IERC20 tokenAddress = IERC20(gateway.tokenAddresses(tokenSymbol));
 
+        require(cBalances[userAddress][tokenSymbol] >= amount, 'Not enough balance');
+        cBalances[userAddress][tokenSymbol] -= amount;
+
         uint256 balanceBefore = tokenAddress.balanceOf(address(this));
-        cToken.redeem(amount);
+        uint256 result = cToken.redeem(amount);
+        require(result == 0, 'Error redeeming for underlying');
         uint256 redeemedAmount = tokenAddress.balanceOf(address(this)) - balanceBefore;
 
         tokenAddress.approve(address(gateway), redeemedAmount);
@@ -137,7 +150,7 @@ contract CompoundInterface is AxelarForecallable {
             abi.encodeWithSelector(commandSelector, sourceChain, sourceAddress, tokenSymbol, amount, params)
         );
 
-        // TODO: shouln't revert or tokens will be stuck
+        // shouln't revert in production or tokens could be stuck
         if (!success) {
             if (result.length == 0) {
                 require(success, 'Failed with no reason');

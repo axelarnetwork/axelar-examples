@@ -36,7 +36,8 @@ const OLD_ADMIN_ADDRESSES = [
 
 const FUNDING_AMOUNT = BigInt(1e20);
 const SUPPLY_AMOUNT = BigInt(1e16);
-const BORROW_AMOUNT = BigInt(1e8);
+const BORROW_AMOUNT = BigInt(1e10);
+const AXELAR_FEE = BigInt(1e6);
 
 async function deployTokens(chain, axlWrapped) {
     chain.wbtc = await chain.deployToken('Wrapped BTC', 'WBTC', 8, BigInt(1e70), axlWrapped ? ADDRESS_ZERO : ADDRESS_WBTC_TOKEN);
@@ -104,7 +105,9 @@ async function configureCompoundProtocol(baseChain) {
 }
 
 async function supplyAndBorrow(satelliteChain, baseChain) {
-    await satelliteChain.satellite.supplyAndBorrow('WBTC', SUPPLY_AMOUNT, 'SUSHI', BORROW_AMOUNT);
+    const supplyAmount = SUPPLY_AMOUNT + AXELAR_FEE;
+
+    await satelliteChain.satellite.supplyAndBorrow('WBTC', supplyAmount, 'SUSHI', BORROW_AMOUNT);
 
     const params = defaultAbiCoder.encode(['string', 'uint256', 'string'], ['SUSHI', BORROW_AMOUNT, satelliteChain.wallet.address]);
     const payload = defaultAbiCoder.encode(['string', 'bytes'], ['supplyAndBorrow', params]);
@@ -116,9 +119,12 @@ async function supplyAndBorrow(satelliteChain, baseChain) {
 }
 
 async function repayAndRedeem(satelliteChain, baseChain) {
-    await satelliteChain.satellite.repayAndRedeem('SUSHI', BORROW_AMOUNT, 'WBTC', SUPPLY_AMOUNT);
+    const repayAmount = BORROW_AMOUNT + AXELAR_FEE;
+    const redeemAmount = (await baseChain.compoundInterface.cBalances(satelliteChain.wallet.address, 'WBTC')).sub(1); // for some reason can't redeem all tokens
 
-    const params = defaultAbiCoder.encode(['string', 'uint256', 'string'], ['WBTC', SUPPLY_AMOUNT, satelliteChain.wallet.address]);
+    await satelliteChain.satellite.repayAndRedeem('SUSHI', repayAmount, 'WBTC', redeemAmount);
+
+    const params = defaultAbiCoder.encode(['string', 'uint256', 'string'], ['WBTC', redeemAmount, satelliteChain.wallet.address]);
     const payload = defaultAbiCoder.encode(['string', 'bytes'], ['repayAndRedeem', params]);
 
     await baseChain.sushi.connect(baseChain.forecaller).approve(baseChain.compoundInterface.address, BORROW_AMOUNT);
@@ -128,8 +134,8 @@ async function repayAndRedeem(satelliteChain, baseChain) {
 }
 
 async function print(satelliteChain, baseChain) {
-    console.log('Initial user WBCT balance', (await satelliteChain.wbtc.balanceOf(satelliteChain.wallet.address)).toString());
-    console.log('Initial user SUSHI balance', (await satelliteChain.sushi.balanceOf(satelliteChain.wallet.address)).toString());
+    console.log('User WBCT balance', (await satelliteChain.wbtc.balanceOf(satelliteChain.wallet.address)).toString());
+    console.log('User SUSHI balance', (await satelliteChain.sushi.balanceOf(satelliteChain.wallet.address)).toString());
     console.log('CompoundInterface CWBCT balance', (await baseChain.cwbtc.balanceOf(baseChain.compoundInterface.address)).toString());
     console.log('CompoundInterface CSUSHI balance', (await baseChain.csushi.balanceOf(baseChain.compoundInterface.address)).toString());
 }
@@ -157,6 +163,7 @@ async function test(chains, wallet, options) {
     ]);
     console.log(`Deployed LendingSatellite for ${satelliteChain.name} at ${satelliteChain.satellite.address}`);
 
+    console.log('------ Initial balances');
     await print(satelliteChain, baseChain);
 
     await satelliteChain.wbtc.connect(satelliteChain.wallet).approve(satelliteChain.satellite.address, FUNDING_AMOUNT);
@@ -164,14 +171,14 @@ async function test(chains, wallet, options) {
 
     await supplyAndBorrow(satelliteChain, baseChain);
 
-    await print(satelliteChain, baseChain);
     await relay();
+    console.log('------ Balances after supply and borrow');
     await print(satelliteChain, baseChain);
 
     await repayAndRedeem(satelliteChain, baseChain);
 
-    await print(satelliteChain, baseChain);
     await relay();
+    console.log('------ Balances after repay and redeem');
     await print(satelliteChain, baseChain);
 }
 

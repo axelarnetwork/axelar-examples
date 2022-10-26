@@ -42,8 +42,10 @@ contract LendingSatellite is AxelarForecallable {
         address repayTokenAddress = gateway.tokenAddresses(repayTokenSymbol);
         IERC20(repayTokenAddress).transferFrom(msg.sender, address(this), repayAmount);
         IERC20(repayTokenAddress).approve(address(gateway), repayAmount);
+
         bytes memory params = abi.encode(redeemTokenSymbol, redeemAmount, Strings.toHexString(uint256(uint160(msg.sender)), 20));
         bytes memory payload = abi.encode('repayAndRedeem', params);
+
         gateway.callContractWithToken(baseChain, baseContract, payload, repayTokenSymbol, repayAmount);
     }
 }
