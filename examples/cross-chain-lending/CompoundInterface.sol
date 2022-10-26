@@ -4,10 +4,13 @@ pragma solidity 0.8.9;
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarForecallable.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import './interfaces/CErc20Interface.sol';
+import './interfaces/Comptroller.sol';
 
 contract CompoundInterface is AxelarForecallable {
     bytes32 internal constant SELECTOR_SUPPLY_AND_BORROW = keccak256('supplyAndBorrow');
-    bytes32 internal constant SELECTOR_REPAY_BORROW = keccak256('repayAndRedeem');
+    bytes32 internal constant SELECTOR_REPAY_AND_REDEEM = keccak256('repayAndRedeem');
+
+    Comptroller public immutable comptroller;
 
     mapping(string => CErc20Interface) internal _cTokens;
 
@@ -18,14 +21,19 @@ contract CompoundInterface is AxelarForecallable {
 
     constructor(
         address gateway_,
+        Comptroller comptroller_,
         string[] memory supportedTokens,
-        CErc20Interface[] memory cTokens
+        address[] memory cTokens
     ) AxelarForecallable(gateway_) {
         require(supportedTokens.length == cTokens.length, 'Lengths missmatch');
 
+        comptroller = comptroller_;
+
         for (uint256 i; i < supportedTokens.length; i++) {
-            _cTokens[supportedTokens[i]] = cTokens[i];
+            _cTokens[supportedTokens[i]] = CErc20Interface(cTokens[i]);
         }
+
+        comptroller.enterMarkets(cTokens);
     }
 
     function supplyAndBorrow(
@@ -118,7 +126,7 @@ contract CompoundInterface is AxelarForecallable {
 
         if (keccak256(functionName) == SELECTOR_SUPPLY_AND_BORROW) {
             commandSelector = CompoundInterface.supplyAndBorrow.selector;
-        } else if (keccak256(functionName) == SELECTOR_REPAY_BORROW) {
+        } else if (keccak256(functionName) == SELECTOR_REPAY_AND_REDEEM) {
             commandSelector = CompoundInterface.repayAndRedeem.selector;
         } else {
             revert('Invalid function name');
