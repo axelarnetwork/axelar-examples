@@ -107,6 +107,7 @@ async function configureCompoundProtocol(baseChain) {
 async function supplyAndBorrow(satelliteChain, baseChain) {
     const supplyAmount = SUPPLY_AMOUNT + AXELAR_FEE;
 
+    await satelliteChain.wbtc.connect(satelliteChain.wallet).approve(satelliteChain.satellite.address, supplyAmount);
     await satelliteChain.satellite.supplyAndBorrow('WBTC', supplyAmount, 'SUSHI', BORROW_AMOUNT);
 
     const params = defaultAbiCoder.encode(['string', 'uint256', 'string'], ['SUSHI', BORROW_AMOUNT, satelliteChain.wallet.address]);
@@ -120,8 +121,10 @@ async function supplyAndBorrow(satelliteChain, baseChain) {
 
 async function repayAndRedeem(satelliteChain, baseChain) {
     const repayAmount = BORROW_AMOUNT + AXELAR_FEE;
-    const redeemAmount = (await baseChain.compoundInterface.cBalances(satelliteChain.wallet.address, 'WBTC')).sub(1); // for some reason can't redeem all tokens
+    // substract 1, because for some reason can't redeem all tokens. Seems caused by compound's liquidity calculation and validation
+    const redeemAmount = (await baseChain.compoundInterface.cBalances(satelliteChain.wallet.address, 'WBTC')).sub(1);
 
+    await satelliteChain.sushi.connect(satelliteChain.wallet).approve(satelliteChain.satellite.address, repayAmount);
     await satelliteChain.satellite.repayAndRedeem('SUSHI', repayAmount, 'WBTC', redeemAmount);
 
     const params = defaultAbiCoder.encode(['string', 'uint256', 'string'], ['WBTC', redeemAmount, satelliteChain.wallet.address]);
@@ -165,9 +168,6 @@ async function test(chains, wallet, options) {
 
     console.log('------ Initial balances');
     await print(satelliteChain, baseChain);
-
-    await satelliteChain.wbtc.connect(satelliteChain.wallet).approve(satelliteChain.satellite.address, FUNDING_AMOUNT);
-    await satelliteChain.sushi.connect(satelliteChain.wallet).approve(satelliteChain.satellite.address, FUNDING_AMOUNT);
 
     await supplyAndBorrow(satelliteChain, baseChain);
 
