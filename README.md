@@ -357,22 +357,25 @@ SendAckReceiverImplementation at Moonbeam has 1 messages and the last one is "Re
 
 ### Cross-chain lending
 
-Supply collateral and borrow tokens from a satellite chain to a fork of Ethereum's mainnet using existing Compound Protocol. The script `scripts/createLocal` shouldn't be executed in order to run this test, the needed mainnet fork and the satellite chain are setup while running the test script.
+Supply collateral and borrow tokens from a satellite chain to a fork of Ethereum's mainnet using existing Compound Protocol
 
 Deploy:
 
-No need for prior deployment. Everything is setup while running the test.
+```bash
+node scripts/deploy examples/cross-chain-lending [local|testnet]
+```
 
 Run the test:
 
 ```bash
-node scripts/test examples/cross-chain-lending local
+node scripts/test examples/cross-chain-lending [local|testnet]
 ```
 
 #### Example
 
 ```bash
-node scripts/test examples/cross-chain-lending local
+node scripts/deploy examples/cross-chain-lending local
+node scripts/test examples/cross-chain-lending local "Fantom"
 ```
 
 Output:

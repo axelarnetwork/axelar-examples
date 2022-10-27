@@ -2,22 +2,23 @@
 
 const {
     forkNetwork,
-    createNetwork,
     mainnetInfo,
     utils: { defaultAccounts, deployContract },
     relay,
+    getNetwork,
 } = require('@axelar-network/axelar-local-dev');
 
 const LendingSatellite = require('../../artifacts/examples/cross-chain-lending/LendingSatellite.sol/LendingSatellite.json');
 const CompoundInterface = require('../../artifacts/examples/cross-chain-lending/CompoundInterface.sol/CompoundInterface.json');
 const Comptroller = require('../../artifacts/examples/cross-chain-lending/interfaces/Comptroller.sol/Comptroller.json');
 const CErc20Interface = require('../../artifacts/examples/cross-chain-lending/interfaces/CErc20Interface.sol/CErc20Interface.json');
+const IERC20 = require('../../artifacts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json');
+
 const {
     Contract,
     utils: { defaultAbiCoder },
 } = require('ethers');
 
-const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 const ADDRESS_COMPOUND_ADMIN = '0x6d903f6003cca6255D85CcA4D3B5E5146dC33925';
 const ADDRESS_WBTC_TOKEN = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
 const ADDRESS_CWBTC_TOKEN = '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4';
@@ -39,9 +40,11 @@ const SUPPLY_AMOUNT = BigInt(1e16);
 const BORROW_AMOUNT = BigInt(1e10);
 const AXELAR_FEE = BigInt(1e6);
 
-async function deployTokens(chain, axlWrapped) {
-    chain.wbtc = await chain.deployToken('Wrapped BTC', 'WBTC', 8, BigInt(1e70), axlWrapped ? ADDRESS_ZERO : ADDRESS_WBTC_TOKEN);
-    chain.sushi = await chain.deployToken('SushiToken', 'SUSHI', 18, BigInt(1e70), axlWrapped ? ADDRESS_ZERO : ADDRESS_SUSHI_TOKEN);
+async function deploy(chain, wallet) {
+    const network = await getNetwork(chain.rpc);
+
+    await network.giveToken(network.userWallets[0].address, 'WBTC', FUNDING_AMOUNT);
+    await network.giveToken(network.userWallets[0].address, 'SUSHI', FUNDING_AMOUNT);
 }
 
 async function setupBaseChain() {
@@ -60,7 +63,8 @@ async function setupBaseChain() {
     baseChain.wallet = baseChain.userWallets[0];
     baseChain.forecaller = baseChain.userWallets[1];
 
-    await deployTokens(baseChain, false);
+    baseChain.wbtc = await baseChain.deployToken('Wrapped BTC', 'WBTC', 8, BigInt(1e70), ADDRESS_WBTC_TOKEN);
+    baseChain.sushi = await baseChain.deployToken('SushiToken', 'SUSHI', 18, BigInt(1e70), ADDRESS_SUSHI_TOKEN);
 
     await baseChain.provider.send('evm_setAccountBalance', [ADDRESS_COMPOUND_ADMIN, FUNDING_AMOUNT]);
     await baseChain.provider.send('evm_setAccountBalance', [ADDRESS_WBTC_MINTER, FUNDING_AMOUNT]);
@@ -77,18 +81,15 @@ async function setupBaseChain() {
     return baseChain;
 }
 
-async function setupSatelliteChain() {
-    const satelliteChain = await createNetwork({
-        name: 'Avalanche',
-        seed: '',
-        ganacheOptions: {},
-    });
+async function setupSatelliteChain(chainInfo) {
+    const satelliteChain = await getNetwork(chainInfo.rpc);
 
     satelliteChain.wallet = satelliteChain.userWallets[0];
-    await deployTokens(satelliteChain, true);
 
-    await satelliteChain.giveToken(satelliteChain.wallet.address, 'WBTC', FUNDING_AMOUNT);
-    await satelliteChain.giveToken(satelliteChain.wallet.address, 'SUSHI', FUNDING_AMOUNT);
+    const wbtcAddress = satelliteChain.gateway.tokenAddresses('WBTC');
+    satelliteChain.wbtc = new Contract(wbtcAddress, IERC20.abi, satelliteChain.wallet);
+    const sushiAddress = satelliteChain.gateway.tokenAddresses('SUSHI');
+    satelliteChain.sushi = new Contract(sushiAddress, IERC20.abi, satelliteChain.wallet);
 
     return satelliteChain;
 }
@@ -116,7 +117,7 @@ async function supplyAndBorrow(satelliteChain, baseChain) {
     await baseChain.wbtc.connect(baseChain.forecaller).approve(baseChain.compoundInterface.address, SUPPLY_AMOUNT);
     await baseChain.compoundInterface
         .connect(baseChain.forecaller)
-        .forecallWithToken('Avalanche', satelliteChain.satellite.address, payload, 'WBTC', SUPPLY_AMOUNT);
+        .forecallWithToken(satelliteChain.name, satelliteChain.satellite.address, payload, 'WBTC', SUPPLY_AMOUNT);
 }
 
 async function repayAndRedeem(satelliteChain, baseChain) {
@@ -133,7 +134,7 @@ async function repayAndRedeem(satelliteChain, baseChain) {
     await baseChain.sushi.connect(baseChain.forecaller).approve(baseChain.compoundInterface.address, BORROW_AMOUNT);
     await baseChain.compoundInterface
         .connect(baseChain.forecaller)
-        .forecallWithToken('Avalanche', satelliteChain.satellite.address, payload, 'SUSHI', BORROW_AMOUNT);
+        .forecallWithToken(satelliteChain.name, satelliteChain.satellite.address, payload, 'SUSHI', BORROW_AMOUNT);
 }
 
 async function print(satelliteChain, baseChain) {
@@ -144,8 +145,11 @@ async function print(satelliteChain, baseChain) {
 }
 
 async function test(chains, wallet, options) {
+    const args = options.args || [];
+    const chain = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+
+    const satelliteChain = await setupSatelliteChain(chain);
     const baseChain = await setupBaseChain();
-    const satelliteChain = await setupSatelliteChain();
 
     await configureCompoundProtocol(baseChain);
 
@@ -183,5 +187,6 @@ async function test(chains, wallet, options) {
 }
 
 module.exports = {
+    deploy,
     test,
 };
