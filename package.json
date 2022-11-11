@@ -1,43 +1,42 @@
 {
-  "name": "axelar-local-dev-examples",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "engines": {
-    "node": ">=16.0.0"
-  },
-  "scripts": {
-    "test": "hardhat test",
-    "send-token": "node examples/send-token",
-    "call-contract": "node examples/call-contract",
-    "call-contract-with-token": "node examples/call-contract-with-token",
-    "build": "rm -rf artifacts && npx hardhat compile",
-    "lint": "solhint 'src/contracts/**/*.sol' && eslint 'test/**/*.js'",
-    "prettier": "prettier --write 'examples*/**/*.sol' 'test/**/*.js' 'examples*/**/*.js'"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@axelar-network/axelar-cgp-solidity": "^4.3.0",
-    "@axelar-network/axelar-gmp-sdk-solidity": "^1.2.0",
-    "@axelar-network/axelar-local-dev": "^1.1.0",
-    "@axelar-network/axelarjs-sdk": "^0.11.4",
-    "@openzeppelin/contracts": "^4.5.0",
-    "axios": "^0.27.2",
-    "dotenv": "^16.0.2",
-    "ethers": "^5.6.2",
-    "uuid": "^8.3.2"
-  },
-  "devDependencies": {
-    "eslint": "^8.17.0",
-    "eslint-config-richardpringle": "^2.0.0",
-    "hardhat": "^2.9.9",
-    "hardhat-gas-reporter": "^1.0.8",
-    "mocha": "^10.0.0",
-    "prettier": "^2.6.2",
-    "prettier-plugin-solidity": "^1.0.0-beta.19",
-    "solhint": "^3.3.7",
-    "solidity-coverage": "^0.7.21",
-    "typescript": "^4.6.3"
-  }
+    "name": "axelar-local-dev-examples",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "engines": {
+        "node": ">=16.0.0"
+    },
+    "scripts": {
+        "test": "hardhat test",
+        "send-token": "node examples/send-token",
+        "call-contract": "node examples/call-contract",
+        "call-contract-with-token": "node examples/call-contract-with-token",
+        "build": "rm -rf artifacts && npx hardhat compile",
+        "build-aptos": "./build-aptos.sh",
+        "lint": "solhint 'src/contracts/**/*.sol' && eslint 'test/**/*.js'",
+        "prettier": "prettier --write 'examples*/**/*.sol' 'test/**/*.js' 'examples*/**/*.js'"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@axelar-network/axelar-cgp-solidity": "^4.3.0",
+        "@axelar-network/axelar-gmp-sdk-solidity": "^1.2.0",
+        "@axelar-network/axelar-local-dev": "../axelar-local-dev",
+        "@axelar-network/axelarjs-sdk": "^0.11.4",
+        "@openzeppelin/contracts": "^4.5.0",
+        "axios": "^0.27.2",
+        "dotenv": "^16.0.2",
+        "ethers": "^5.6.2",
+        "uuid": "^8.3.2"
+    },
+    "devDependencies": {
+        "eslint-config-richardpringle": "^2.0.0",
+        "hardhat": "^2.9.9",
+        "hardhat-gas-reporter": "^1.0.8",
+        "mocha": "^10.0.0",
+        "prettier": "^2.6.2",
+        "prettier-plugin-solidity": "^1.0.0-beta.19",
+        "solhint": "^3.3.7",
+        "solidity-coverage": "^0.7.21"
+    }
 }
