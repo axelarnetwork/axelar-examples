@@ -1,6 +1,6 @@
 const { createNetwork, relay, createAptosNetwork, deployContract } = require('@axelar-network/axelar-local-dev');
 const { HelloWorldClient } = require('./client/helloworldClient');
-const HelloWorldArtifact = require('./artifacts/HelloWorld.json');
+const HelloWorldArtifact = require('../../artifacts/examples/aptos-call-contract/contracts/HelloWorld.sol/HelloWorld.json');
 
 async function main() {
     // Step 1: Create AptosNetwork instance and deploy Axelar modules.
