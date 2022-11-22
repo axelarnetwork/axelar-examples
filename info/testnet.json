@@ -1,9 +1,9 @@
 [
   {
     "name": "Ethereum",
-    "chainId": 3,
-    "rpc": "https://ropsten.infura.io/v3/a4812158fbab4a2aaa849e6f4a6dc605",
-    "gateway": "0xBC6fcce7c5487d43830a219CA6E7B83238B41e71",
+    "chainId": 5,
+    "rpc": "https://goerli.infura.io/v3/a4812158fbab4a2aaa849e6f4a6dc605",
+    "gateway": "0xe432150cce91c13a887f7D836923d5597adD8E31",
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "tokenName": "Ether",
     "tokenSymbol": "ETH",
