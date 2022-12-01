@@ -57,7 +57,7 @@ contract AptosTokenLinker is AxelarExecutable {
         bytes32 to,
         uint256 amount
     ) external payable {
-        amount = (amount >> ignoreDigits) << ignoreDigits;
+        amount = (amount >> (ignoreDigits * 8)) << (ignoreDigits * 8);
         _takeToken(msg.sender, amount);
 
         bytes memory payload = abi.encode(to, amount);
