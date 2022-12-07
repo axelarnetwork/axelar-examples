@@ -1,8 +1,14 @@
 require("dotenv").config();
-const { createAndExport, utils: { setJSON, deployContract } } = require('@axelar-network/axelar-local-dev');
+const { createAndExport, createAptosNetwork } = require('@axelar-network/axelar-local-dev');
 const { Wallet, utils: {keccak256, defaultAbiCoder} } = require('ethers');
 
 async function createLocal (toFund = []) {
+    try {
+        await createAptosNetwork();
+        console.log('Initialized aptos.');
+    } catch (e) {
+        console.log('Could not initialize aptos, rerun this after starting an aptos node for proper support.');
+    }
     async function callback(chain, info) {
         await chain.deployToken('Axelar Wrapped aUSDC', 'aUSDC', 6, BigInt(1e70));
         for(const address of toFund) {

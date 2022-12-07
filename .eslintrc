@@ -1,10 +1,11 @@
 {
-  "extends": "richardpringle",
-  "env": {
-    "es2020": true,
-    "mocha": true
-  },
-  "rules": {
-    "no-unused-expressions": "off"
-  }
+    "extends": "richardpringle",
+    "env": {
+        "es2020": true,
+        "mocha": true,
+        "node": true
+    },
+    "rules": {
+        "no-unused-expressions": "off"
+    }
 }

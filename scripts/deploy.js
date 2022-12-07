@@ -7,6 +7,9 @@ const { keccak256, defaultAbiCoder } = require('ethers/lib/utils');
 const { GasCostLogger } = require('./gasCosts');
 
 async function deploy(env, chains, wallet, example) {
+    if(example.preDeploy) {
+        await example.preDeploy(chains, wallet);
+    }
     const promises = [];
     for(const chain of chains) {
         const rpc = chain.rpc;

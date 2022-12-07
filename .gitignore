@@ -7,7 +7,7 @@ info/local.json
 info/localWETH.json
 scripts/deployConst.js
 
-
+aptos-artifacts
 .DS_Store
 .env
 

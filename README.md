@@ -394,3 +394,15 @@ User SUSHI balance 99999999999998000000
 CompoundInterface CWBCT balance 1
 CompoundInterface CSUSHI balance 0
 ```
+
+### Aptos
+
+You can build the aptos modules with
+
+```bash
+npm run build-aptos
+```
+
+Add more paths into `build-aptos.sh` if you are writing your own examples.
+
+The two existing aptos examples (`aptos-hello-world` and `aptos-token-linker`) can be run like any other example, as long as you have a local aptos testnet running on `http://localhost:8080` with a faucet on `http://localhost:8081` *before* running `createLocal`.
