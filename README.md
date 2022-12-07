@@ -395,51 +395,14 @@ CompoundInterface CWBCT balance 1
 CompoundInterface CSUSHI balance 0
 ```
 
-### Aptos Hello World
+### Aptos
 
-First, build Aptos modules by running the following command:
-
-```bash
-yarn build-aptos
-```
-
-Send a message from **Aptos** to **Evm**:
+You can build the aptos modules with
 
 ```bash
-node examples/aptos-call-contract/aptos-to-evm.js
+npm run build-aptos
 ```
 
-Send a message from **Evm** to **Aptos**
+Add more paths into `build-aptos.sh` if you are writing your own examples.
 
-```bash
-node examples/aptos-call-contract/evm-to-aptos.js
-```
-
-Output:
-
-```
-Deployed Axelar Framework modules: 0xb54fc25460502c798bb7e5f90bb28a10d4ff07dc4881ed6e95b5380812e2fbdc
-Creating ethereum with a chainId of 2500...
-bigint: Failed to load bindings, pure JS will be used (try npm run rebuild?)
-Deploying the ConstAddressDeployer for ethereum...
-Deployed at 0x69aeB7Dc4f2A86873Dae8D753DE89326Cf90a77a
-Deploying the Axelar Gateway for ethereum...
-Deployed at 0x21c54A49F03F3d2FbF60e53b0761A52564597af9
-Deploying the Axelar Gas Receiver for ethereum...
-Deployed at 0xA402Ece04dDb9E79702c8f8BaeEBd398c7ef88bc
-
-====================  Network Setup Completed ====================
-
-HelloWorld contract is deployed on ethereum at: 0xD62F0cF0801FAC878F66ebF316AB42DED01F25D8
-HelloWorld module is deployed on Aptos at: 0x8ac1b8ff9583ac8e661c7f0ee462698c57bb7fc454f587e3fa25a57f9406acc0
-
-====================  Deployment Completed ====================
-
-
-Sent message: 0x6f366daa2dad07b3208f87d7548c57ca4cb538d96bc566db32bcc99c7a27c525
-The transaction is relayed to ethereum successfully.
-
-HelloWorld msg value: Hello Ethereum from Aptos! (Bridged by Axelar)
-HelloWorld msg sourceChain: aptos
-HelloWorld msg sourceAddress: 0x8ac1b8ff9583ac8e661c7f0ee462698c57bb7fc454f587e3fa25a57f9406acc0
-```
+The two existing aptos examples (`aptos-hello-world` and `aptos-token-linker`) can be run like any other example, as long as you have a local aptos testnet running on `http://localhost:8080` with a faucet on `http://localhost:8081` *before* running `createLocal`.

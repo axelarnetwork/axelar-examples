@@ -57,6 +57,8 @@ contract AptosTokenLinker is AxelarExecutable {
         bytes32 to,
         uint256 amount
     ) external payable {
+        // Since aptos cannot have numbers as big as the evm, we ignore a certain number of bytes,
+        // so we round off the numbers sent. This is accounted for in the aptos token linker.
         amount = (amount >> (ignoreDigits * 8)) << (ignoreDigits * 8);
         _takeToken(msg.sender, amount);
 

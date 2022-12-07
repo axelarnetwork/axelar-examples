@@ -123,7 +123,6 @@ async function test(chains, wallet, options) {
             gasLimit * gasPrice,
         ],
     });
-    console.log(aptosTx.vm_status);
 
     await sleep(3000);
 
