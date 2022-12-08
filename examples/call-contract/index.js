@@ -40,7 +40,7 @@ async function test(chains, wallet, options) {
     console.log('--- Initially ---');
     await logValue();
 
-    //Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
+    // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
     const gasLimit = 3e5;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
 
@@ -50,7 +50,7 @@ async function test(chains, wallet, options) {
     await tx.wait();
 
     while ((await destination.contract.value()) !== message) {
-        await sleep(2000);
+        await sleep(1000);
     }
 
     console.log('--- After ---');
