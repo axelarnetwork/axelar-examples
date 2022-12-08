@@ -15,25 +15,27 @@ const NftAuctionhouse = require('../../artifacts/examples/nft-auctionhouse/NftAu
 const IAxelarGateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
 const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
-async function bidRemote(sourceChain, destinationChain, private_key, tokenId, amount, options = null) {
+async function bidRemote(sourceChain, destinationChain, privateKey, tokenId, amount, options = null) {
     const provider = getDefaultProvider(sourceChain.rpc);
-    const wallet = new Wallet(private_key, provider);
+    const wallet = new Wallet(privateKey, provider);
     const gateway = new Contract(sourceChain.gateway, IAxelarGateway.abi, wallet);
     const usdc = new Contract(await gateway.tokenAddresses('aUSDC'), IERC20.abi, wallet);
-    const auctionhouse = new Contract(sourceChain.nftAuctionhouse, NftAuctionhouse.abi, wallet);
+    const auctionhouse = new Contract(sourceChain.contract.address, NftAuctionhouse.abi, wallet);
 
     const destinationProvider = getDefaultProvider(destinationChain.rpc);
-    const destinationAuctionhouse = new Contract(destinationChain.nftAuctionhouse, NftAuctionhouse.abi, destinationProvider);
+    const destinationAuctionhouse = new Contract(destinationChain.contract.address, NftAuctionhouse.abi, destinationProvider);
     const lastBid = await destinationAuctionhouse.bids(destinationChain.erc721, tokenId);
 
-    if (amount == 0) {
+    if (amount === 0) {
         const minAmount = await destinationAuctionhouse.minAmounts(destinationChain.erc721, tokenId);
-        if (lastBid == 0) {
-            amount = BigInt(minAmount) == BigInt(await destinationAuctionhouse.NO_MIN()) ? 3e6 : minAmount;
+
+        if (lastBid === 0) {
+            amount = BigInt(minAmount) === BigInt(await destinationAuctionhouse.NO_MIN()) ? 3e6 : minAmount;
         } else {
             amount = Math.floor((lastBid * 4) / 3 + 1);
         }
     }
+
     const gasLimit = 3e5;
     const gasPrice = (await options?.getGasPrice(sourceChain, destinationChain, AddressZero)) || 1;
 
@@ -42,7 +44,7 @@ async function bidRemote(sourceChain, destinationChain, private_key, tokenId, am
     await (
         await auctionhouse.bidRemote(
             destinationChain.name,
-            destinationChain.nftAuctionhouse,
+            destinationChain.contract.address,
             destinationChain.erc721,
             tokenId,
             wallet.address,
@@ -58,9 +60,10 @@ async function bidRemote(sourceChain, destinationChain, private_key, tokenId, am
             }, ms);
         });
     }
+
     while (true) {
         const currentBid = await destinationAuctionhouse.bids(destinationChain.erc721, tokenId);
-        //console.log(`Waiting for bid... Last bid: ${lastBid}, currentBid: ${currentBid}.`);
+        // console.log(`Waiting for bid... Last bid: ${lastBid}, currentBid: ${currentBid}.`);
         if (currentBid * 3 > lastBid * 4) break;
         await sleep(1000);
     }
@@ -73,6 +76,7 @@ if (require.main === module) {
     if (env == null || (env != 'testnet' && env != 'local'))
         throw new Error('Need to specify tesntet or local as an argument to this script.');
     let temp;
+
     if (env == 'local') {
         temp = require(`../../info/local.json`);
     } else {
@@ -82,6 +86,7 @@ if (require.main === module) {
             temp = testnetInfo;
         }
     }
+
     const chains = temp;
     const args = process.argv.slice(3);
 
