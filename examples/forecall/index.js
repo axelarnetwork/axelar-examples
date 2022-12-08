@@ -14,7 +14,7 @@ async function deploy(chain, wallet) {
     console.log(`Deploying DistributionForecallable for ${chain.name}.`);
     const provider = getDefaultProvider(chain.rpc);
     chain.wallet = wallet.connect(provider);
-    const contract = await deployUpgradable(
+    chain.contract = await deployUpgradable(
         chain.constAddressDeployer,
         chain.wallet,
         DistributionForecallable,
@@ -24,7 +24,6 @@ async function deploy(chain, wallet) {
         '0x',
         'forecallable',
     );
-    chain.contract = contract;
     chain.gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
     const usdcAddress = chain.gateway.tokenAddresses('aUSDC');
     chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
@@ -70,7 +69,7 @@ async function test(chains, wallet, options) {
 
     const forecallAmount = await destination.contract.amountPostFee(amount - axelarFee, payload);
     await (await destination.usdc.approve(destination.contract.address, forecallAmount)).wait();
-    await (await destination.contract.forecallWithToken(source.name, source.contract, payload, 'aUSDC', amount - axelarFee)).wait();
+    await (await destination.contract.forecallWithToken(source.name, source.contract.address, payload, 'aUSDC', amount - axelarFee)).wait();
 
     const filter = destination.gateway.filters.ContractCallApprovedWithMint(
         null,

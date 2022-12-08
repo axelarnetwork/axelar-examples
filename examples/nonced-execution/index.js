@@ -16,6 +16,8 @@ const time = new Date().getTime();
 
 async function deploy(chain, wallet) {
     console.log(`Deploying NoncedContractCallSender for ${chain.name}.`);
+    chain.provider = getDefaultProvider(chain.rpc);
+    chain.wallet = wallet.connect(chain.provider);
     const executableAddress = await predictContractConstant(
         chain.constAddressDeployer,
         wallet,
@@ -56,12 +58,14 @@ async function deploy(chain, wallet) {
 async function test(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
+
     for (const chain of chains) {
         chain.provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(chain.provider);
         chain.sender = new Contract(chain.noncedSender, CallSender.abi, chain.wallet);
         chain.executable = new Contract(chain.noncedExecutable, Executable.abi, chain.wallet);
     }
+
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
     const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
     const message = args[2] || `Hello, the time is ${time}.`;
@@ -76,6 +80,7 @@ async function test(chains, wallet, options) {
             }" with a nonce of ${nonce}.`,
         );
     }
+
     function sleep(ms) {
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -83,6 +88,7 @@ async function test(chains, wallet, options) {
             }, ms);
         });
     }
+
     console.log('--- Initially ---');
     await print();
 

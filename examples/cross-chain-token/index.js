@@ -35,7 +35,6 @@ async function test(chains, wallet, options) {
 
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
     const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
-    console.log(destination);
     const amount = parseInt(args[2]) || 1e5;
 
     async function print() {
