@@ -1,10 +1,7 @@
 'use strict';
 
-require("dotenv").config();
-const {
-    utils: { defaultAbiCoder, keccak256 },
-    Wallet,
-} = require('ethers');
+require('dotenv').config();
+const { Wallet } = require('ethers');
 const { createLocal } = require('../scripts/createLocal.js');
 const { test } = require('../scripts/test.js');
 const { deploy } = require('../scripts/deploy.js');
@@ -28,11 +25,16 @@ const examples = [
     'send-token',
 ];
 
-describe('examples', () => {
+describe('Examples', function () {
+    this.timeout(10000);
+    // disable logging
     setLogger((...args) => {});
-    const deployer_key = process.env.EVM_PRIVATE_KEY;
-    const deployer_address = new Wallet(deployer_key).address;
-    const toFund = [deployer_address];
+
+    console.log = () => {};
+
+    const deployerKey = process.env.EVM_PRIVATE_KEY;
+    const deployerAddress = new Wallet(deployerKey).address;
+    const toFund = [deployerAddress];
 
     beforeEach(async () => {
         await createLocal(toFund);
@@ -43,11 +45,12 @@ describe('examples', () => {
     });
 
     for (const exampleName of examples) {
-        const example = require(`../examples/${exampleName}/index.js`);
         it(exampleName, async () => {
+            const example = require(`../examples/${exampleName}/index.js`);
             const chains = fs.readJsonSync('./info/local.json');
 
-            const wallet = new Wallet(deployer_key);
+            const wallet = new Wallet(deployerKey);
+
             if (example.deploy) await deploy('local', chains, wallet, example);
 
             await test('local', chains, [], wallet, example);
