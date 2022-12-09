@@ -21,11 +21,13 @@ const examples = [
     'nft-auctionhouse',
     'nft-linker',
     'nonced-execution',
-    // 'send-ack',
+    'send-ack',
     'send-token',
 ];
 
 describe('Examples', function () {
+    // marked as slow if it takes longer than 15 seconds to run each test.
+    this.slow(15000);
     this.timeout(20000);
     // disable logging
     setLogger((...args) => {});
