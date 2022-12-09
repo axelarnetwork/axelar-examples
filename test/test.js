@@ -6,7 +6,7 @@ const { createLocal } = require('../scripts/createLocal.js');
 const { test } = require('../scripts/test.js');
 const { deploy } = require('../scripts/deploy.js');
 const {
-    stopAll,
+    destroyExported,
     utils: { setLogger },
 } = require('@axelar-network/axelar-local-dev');
 const fs = require('fs-extra');
@@ -21,12 +21,12 @@ const examples = [
     'nft-auctionhouse',
     'nft-linker',
     'nonced-execution',
-    'send-ack',
+    // 'send-ack',
     'send-token',
 ];
 
 describe('Examples', function () {
-    this.timeout(10000);
+    this.timeout(20000);
     // disable logging
     setLogger((...args) => {});
 
@@ -37,15 +37,20 @@ describe('Examples', function () {
     const toFund = [deployerAddress];
 
     beforeEach(async () => {
+        // Remove local.json before each test to ensure a clean start
+        if (fs.existsSync('./info/local.json')) {
+            fs.unlinkSync('./info/local.json');
+        }
+
         await createLocal(toFund);
     });
 
     afterEach(async () => {
-        await stopAll();
+        await destroyExported();
     });
 
     for (const exampleName of examples) {
-        it(exampleName, async () => {
+        it(exampleName, async function () {
             const example = require(`../examples/${exampleName}/index.js`);
             const chains = fs.readJsonSync('./info/local.json');
 
