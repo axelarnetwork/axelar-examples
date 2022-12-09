@@ -16,26 +16,22 @@ const SendAckSender = require('../../artifacts/examples/send-ack/SendAckSender.s
 const time = new Date().getTime();
 
 async function deploy(chain, wallet) {
+    chain.provider = getDefaultProvider(chain.rpc);
+    chain.wallet = wallet.connect(chain.provider);
+
     console.log(`Deploying SendAckSender for ${chain.name}.`);
-    const sender = await deployContract(wallet, SendAckSender, [chain.gateway, chain.gasReceiver, chain.name]);
-    chain.sendAckSender = sender.address;
-    console.log(`Deployed SendAckSender for ${chain.name} at ${chain.sendAckSender}.`);
+    chain.sender = await deployContract(wallet, SendAckSender, [chain.gateway, chain.gasReceiver, chain.name]);
+    console.log(`Deployed SendAckSender for ${chain.name} at ${chain.sender.address}.`);
 
     console.log(`Deploying SendAckReceiverImplementation for ${chain.name}.`);
-    const receiver = await deployContract(wallet, SendAckReceiver, [chain.gateway]);
-    chain.sendAckReceiver = receiver.address;
-    console.log(`Deployed SendAckReceiverImplementation for ${chain.name} at ${chain.sendAckReceiver}.`);
+    chain.receiver = await deployContract(wallet, SendAckReceiver, [chain.gateway]);
+    console.log(`Deployed SendAckReceiverImplementation for ${chain.name} at ${chain.receiver.address}.`);
 }
 
 async function test(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
-    for (const chain of chains) {
-        chain.provider = getDefaultProvider(chain.rpc);
-        chain.wallet = wallet.connect(chain.provider);
-        chain.sender = new Contract(chain.sendAckSender, SendAckSender.abi, chain.wallet);
-        chain.receiver = new Contract(chain.sendAckReceiver, SendAckReceiver.abi, chain.wallet);
-    }
+
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
     const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
     const message = args[2] || `Hello, the time is ${time}.`;
@@ -49,6 +45,7 @@ async function test(chains, wallet, options) {
             }".`,
         );
     }
+
     function sleep(ms) {
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -56,6 +53,7 @@ async function test(chains, wallet, options) {
             }, ms);
         });
     }
+
     console.log('--- Initially ---');
     await print();
 
@@ -71,10 +69,12 @@ async function test(chains, wallet, options) {
             value: gasAmountRemote + gasAmountSource,
         })
     ).wait();
-    const event = tx.events.find((event) => event.event == 'ContractCallSent');
+    const event = tx.events.find((event) => event.event === 'ContractCallSent');
     const nonce = event.args.nonce;
 
     while (!(await source.sender.executed(nonce))) {
+        console.log('MessageLength', await destination.receiver.messagesLength());
+        console.log('Test', await source.sender.executed(nonce));
         await sleep(2000);
     }
 
