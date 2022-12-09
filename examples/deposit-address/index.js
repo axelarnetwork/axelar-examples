@@ -40,7 +40,6 @@ async function test(chains, wallet, options = {}) {
     await print();
 
     const depositAddress = await getDepositAddress(source.name, destination.name, destinationAddress, symbol);
-    console.log(depositAddress);
     await (await source.token.transfer(depositAddress, amount)).wait();
 
     while (true) {
