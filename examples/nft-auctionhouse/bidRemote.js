@@ -4,12 +4,9 @@ const {
     getDefaultProvider,
     Contract,
     constants: { AddressZero },
-    utils: { keccak256, defaultAbiCoder },
     Wallet,
 } = require('ethers');
-const {
-    utils: { deployContract },
-} = require('@axelar-network/axelar-local-dev');
+const {} = require('@axelar-network/axelar-local-dev');
 
 const NftAuctionhouse = require('../../artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
 const IAxelarGateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');

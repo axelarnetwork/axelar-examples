@@ -29,32 +29,32 @@ async function auction(chain, privateKey, tokenId, deadline, min) {
 
 module.exports = auction;
 
-// if (require.main === module) {
-//     const env = process.argv[2];
-//     if (env == null || (env !== 'testnet' && env !== 'local'))
-//         throw new Error('Need to specify tesntet or local as an argument to this script.');
-//     let temp;
+if (require.main === module) {
+    const env = process.argv[2];
+    if (env == null || (env !== 'testnet' && env !== 'local'))
+        throw new Error('Need to specify tesntet or local as an argument to this script.');
+    let temp;
 
-//     if (env == 'local') {
-//         temp = require(`../../info/local.json`);
-//     } else {
-//         try {
-//             temp = require(`../../info/testnet.json`);
-//         } catch {
-//             temp = testnetInfo;
-//         }
-//     }
+    if (env == 'local') {
+        temp = require(`../../info/local.json`);
+    } else {
+        try {
+            temp = require(`../../info/testnet.json`);
+        } catch {
+            temp = testnetInfo;
+        }
+    }
 
-//     const chains = temp;
-//     const args = process.argv.slice(3);
+    const chains = temp;
+    const args = process.argv.slice(3);
 
-//     const chainName = args[0];
-//     const privateKey = args[1];
-//     const tokenId = BigInt(args[2]);
+    const chainName = args[0];
+    const privateKey = args[1];
+    const tokenId = BigInt(args[2]);
 
-//     const chain = chains.find((chain) => chain.name == chainName);
-//     const deadline = BigInt(args[3] || Math.floor(new Date().getTime() / 1000 + 60));
-//     const min = BigInt(args[4] || 0);
+    const chain = chains.find((chain) => chain.name == chainName);
+    const deadline = BigInt(args[3] || Math.floor(new Date().getTime() / 1000 + 60));
+    const min = BigInt(args[4] || 0);
 
-//     auction(chain, privateKey, tokenId, deadline, min);
-// }
+    auction(chain, privateKey, tokenId, deadline, min);
+}

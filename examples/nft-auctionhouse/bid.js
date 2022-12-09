@@ -38,30 +38,30 @@ async function bid(chain, privateKey, tokenId, amount) {
 
 module.exports = bid;
 
-// if (require.main === module) {
-//     const env = process.argv[2];
-//     if (env == null || (env != 'testnet' && env != 'local'))
-//         throw new Error('Need to specify tesntet or local as an argument to this script.');
-//     let temp;
+if (require.main === module) {
+    const env = process.argv[2];
+    if (env == null || (env != 'testnet' && env != 'local'))
+        throw new Error('Need to specify tesntet or local as an argument to this script.');
+    let temp;
 
-//     if (env == 'local') {
-//         temp = require(`../../info/local.json`);
-//     } else {
-//         try {
-//             temp = require(`../../info/testnet.json`);
-//         } catch {
-//             temp = testnetInfo;
-//         }
-//     }
+    if (env == 'local') {
+        temp = require(`../../info/local.json`);
+    } else {
+        try {
+            temp = require(`../../info/testnet.json`);
+        } catch {
+            temp = testnetInfo;
+        }
+    }
 
-//     const chains = temp;
-//     const args = process.argv.slice(3);
+    const chains = temp;
+    const args = process.argv.slice(3);
 
-//     const chainName = args[0];
-//     const private_key = args[1];
-//     const tokenId = BigInt(args[2]);
-//     const amount = BigInt(args[3] || 0);
-//     const chain = chains.find((chain) => chain.name == chainName);
+    const chainName = args[0];
+    const private_key = args[1];
+    const tokenId = BigInt(args[2]);
+    const amount = BigInt(args[3] || 0);
+    const chain = chains.find((chain) => chain.name == chainName);
 
-//     bid(chain, private_key, tokenId, amount);
-// }
+    bid(chain, private_key, tokenId, amount);
+}
