@@ -4,7 +4,6 @@ const {
     getDefaultProvider,
     Contract,
     Wallet,
-    constants: { AddressZero },
     utils: { keccak256, defaultAbiCoder },
 } = require('ethers');
 const {
