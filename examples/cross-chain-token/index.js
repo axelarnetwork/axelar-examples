@@ -34,11 +34,12 @@ async function test(chains, wallet, options) {
 
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
     const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
+    console.log(destination);
     const amount = parseInt(args[2]) || 1e5;
 
     async function print() {
-        console.log(`Balance at ${source.name} is ${await source.contract.balanceOf(wallet.address)}`);
-        console.log(`Balance at ${destination.name} is ${await destination.contract.balanceOf(wallet.address)}`);
+        console.log(`Balance at ${source.name} is ${await source.crossChainToken.balanceOf(wallet.address)}`);
+        console.log(`Balance at ${destination.name} is ${await destination.crossChainToken.balanceOf(wallet.address)}`);
     }
 
     function sleep(ms) {
@@ -56,7 +57,7 @@ async function test(chains, wallet, options) {
     // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price (this is constant and always 1).
     const gasLimit = 3e5;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
-    await (await source.contract.giveMe(amount)).wait();
+    await (await source.crossChainToken.giveMe(amount)).wait();
     console.log('--- After getting some token on the source chain ---');
     await print();
 

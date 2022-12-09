@@ -6,7 +6,7 @@ async function createLocal(toFund = []) {
     try {
         await createAptosNetwork();
         console.log('Initialized aptos.');
-    } catch (e) {
+    } catch {
         console.log('Could not initialize aptos, rerun this after starting an aptos node for proper support.');
     }
 
