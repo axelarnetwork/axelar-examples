@@ -19,12 +19,12 @@ const tokenId = 0;
 
 async function deploy(chain, wallet) {
     console.log(`Deploying ERC721Demo for ${chain.name}.`);
-    const erc721 = await deployContract(wallet, ERC721, ['Test', 'TEST']);
-    chain.erc721 = erc721.address;
+    chain.erc721 = await deployContract(wallet, ERC721, ['Test', 'TEST']);
     console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721}.`);
     console.log(`Deploying NftLinker for ${chain.name}.`);
     const provider = getDefaultProvider(chain.rpc);
-    const contract = await deployUpgradable(
+    chain.wallet = wallet.connect(provider);
+    chain.contract = await deployUpgradable(
         chain.constAddressDeployer,
         wallet.connect(provider),
         NftLinker,
@@ -34,51 +34,40 @@ async function deploy(chain, wallet) {
         defaultAbiCoder.encode(['string'], [chain.name]),
         'nftLinker',
     );
-    chain.nftLinker = contract.address;
-    console.log(`Deployed NftLinker for ${chain.name} at ${chain.nftLinker}.`);
+    console.log(`Deployed NftLinker for ${chain.name} at ${chain.contract.address}.`);
     console.log(`Minting token ${tokenId} for ${chain.name}`);
-    await (await erc721.mint(tokenId)).wait();
+    await (await chain.erc721.mint(tokenId)).wait();
     console.log(`Minted token ${tokenId} for ${chain.name}`);
 }
 
 async function test(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
-    for (const chain of chains) {
-        const provider = getDefaultProvider(chain.rpc);
-        chain.wallet = wallet.connect(provider);
-        chain.contract = await deployUpgradable(
-            chain.constAddressDeployer,
-            chain.wallet,
-            NftLinker,
-            ExampleProxy,
-            [chain.gateway, chain.gasReceiver],
-            [],
-            defaultAbiCoder.encode(['string'], [chain.name]),
-            'nftLinker',
-        );
-        chain.erc721 = new Contract(chain.erc721, ERC721.abi, chain.wallet);
-    }
-    const destination = chains.find((chain) => chain.name == (args[1] || 'Fantom'));
-    const originChain = chains.find((chain) => chain.name == (args[0] || 'Avalanche'));
+
+    const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
+    const originChain = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
 
     const ownerOf = async (chain = originChain) => {
         const operator = chain.erc721;
         const owner = await operator.ownerOf(tokenId);
+
         if (owner !== chain.contract.address) {
             return { chain: chain.name, address: owner, tokenId: BigInt(tokenId) };
-        } else {
-            const newTokenId = BigInt(
-                keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [chain.name, operator.address, tokenId])),
-            );
-            for (let checkingChain of chains) {
-                if (checkingChain == chain) continue;
-                try {
-                    const address = await checkingChain.contract.ownerOf(newTokenId);
-                    return { chain: checkingChain.name, address: address, tokenId: newTokenId };
-                } catch (e) {}
-            }
         }
+
+        const newTokenId = BigInt(
+            keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [chain.name, operator.address, tokenId])),
+        );
+
+        for (const checkingChain of chains) {
+            if (checkingChain === chain) continue;
+
+            try {
+                const address = await checkingChain.contract.ownerOf(newTokenId);
+                return { chain: checkingChain.name, address, tokenId: newTokenId };
+            } catch (e) {}
+        }
+
         return { chain: '' };
     };
 
@@ -88,6 +77,7 @@ async function test(chains, wallet, options) {
             console.log(`Token that was originally minted at ${chain.name} is at ${owner.chain}.`);
         }
     }
+
     function sleep(ms) {
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -109,6 +99,7 @@ async function test(chains, wallet, options) {
     if (originChain === source) {
         await (await source.erc721.approve(source.contract.address, owner.tokenId)).wait();
     }
+
     await (
         await source.contract.sendNFT(
             originChain === source ? source.erc721.address : source.contract.address,

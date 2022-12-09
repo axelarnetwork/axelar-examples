@@ -16,7 +16,9 @@ const decimals = 13;
 
 async function deploy(chain, wallet) {
     console.log(`Deploying ERC20CrossChain for ${chain.name}.`);
-    const contract = await deployUpgradable(
+    const provider = getDefaultProvider(chain.rpc);
+    chain.wallet = wallet.connect(provider);
+    chain.contract = await deployUpgradable(
         chain.constAddressDeployer,
         wallet,
         ERC20CrossChain,
@@ -26,27 +28,13 @@ async function deploy(chain, wallet) {
         defaultAbiCoder.encode(['string', 'string'], [name, symbol]),
         'cross-chain-token',
     );
-    chain.crossChainToken = contract.address;
-    console.log(`Deployed ERC20CrossChain for ${chain.name} at ${chain.crossChainToken}.`);
+    console.log(`Deployed ERC20CrossChain for ${chain.name} at ${chain.contract.address}.`);
 }
 
 async function test(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
-    for (const chain of chains) {
-        const provider = getDefaultProvider(chain.rpc);
-        chain.wallet = wallet.connect(provider);
-        chain.contract = await deployUpgradable(
-            chain.constAddressDeployer,
-            chain.wallet,
-            ERC20CrossChain,
-            ExampleProxy,
-            [chain.gateway, chain.gasReceiver, decimals],
-            [],
-            defaultAbiCoder.encode(['string', 'string'], [name, symbol]),
-            'cross-chain-token',
-        );
-    }
+
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
     const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
     const amount = parseInt(args[2]) || 1e5;
@@ -55,6 +43,7 @@ async function test(chains, wallet, options) {
         console.log(`Balance at ${source.name} is ${await source.contract.balanceOf(wallet.address)}`);
         console.log(`Balance at ${destination.name} is ${await destination.contract.balanceOf(wallet.address)}`);
     }
+
     function sleep(ms) {
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -62,7 +51,8 @@ async function test(chains, wallet, options) {
             }, ms);
         });
     }
-    const initialBalance = (await destination.contract.balanceOf(wallet.address)).toNumber();
+
+    const initialBalance = await destination.contract.balanceOf(wallet.address);
     console.log('--- Initially ---');
     await print();
 
@@ -74,10 +64,14 @@ async function test(chains, wallet, options) {
     await print();
 
     await (
-        await source.contract.transferRemote(destination.name, wallet.address, amount, { value: BigInt(Math.floor(gasLimit * gasPrice)) })
+        await source.contract.transferRemote(destination.name, wallet.address, amount, {
+            value: BigInt(Math.floor(gasLimit * gasPrice)),
+        })
     ).wait();
 
-    while ((await destination.contract.balanceOf(wallet.address)).toNumber() === initialBalance) {
+    while (true) {
+        const updatedBalance = await destination.contract.balanceOf(wallet.address);
+        if (updatedBalance.gt(initialBalance)) break;
         await sleep(2000);
     }
 

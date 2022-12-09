@@ -1,15 +1,12 @@
 'use strict';
 
-require("dotenv").config();
-const {
-    utils: { defaultAbiCoder, keccak256 },
-    Wallet,
-} = require('ethers');
+require('dotenv').config();
+const { Wallet } = require('ethers');
 const { createLocal } = require('../scripts/createLocal.js');
 const { test } = require('../scripts/test.js');
 const { deploy } = require('../scripts/deploy.js');
 const {
-    stopAll,
+    destroyExported,
     utils: { setLogger },
 } = require('@axelar-network/axelar-local-dev');
 const fs = require('fs-extra');
@@ -28,26 +25,39 @@ const examples = [
     'send-token',
 ];
 
-describe('examples', () => {
+describe('Examples', function () {
+    // marked as slow if it takes longer than 15 seconds to run each test.
+    this.slow(15000);
+    this.timeout(20000);
+    // disable logging
     setLogger((...args) => {});
-    const deployer_key = process.env.EVM_PRIVATE_KEY;
-    const deployer_address = new Wallet(deployer_key).address;
-    const toFund = [deployer_address];
+
+    console.log = () => {};
+
+    const deployerKey = process.env.EVM_PRIVATE_KEY;
+    const deployerAddress = new Wallet(deployerKey).address;
+    const toFund = [deployerAddress];
 
     beforeEach(async () => {
+        // Remove local.json before each test to ensure a clean start
+        if (fs.existsSync('./info/local.json')) {
+            fs.unlinkSync('./info/local.json');
+        }
+
         await createLocal(toFund);
     });
 
     afterEach(async () => {
-        await stopAll();
+        await destroyExported();
     });
 
     for (const exampleName of examples) {
-        const example = require(`../examples/${exampleName}/index.js`);
-        it(exampleName, async () => {
+        it(exampleName, async function () {
+            const example = require(`../examples/${exampleName}/index.js`);
             const chains = fs.readJsonSync('./info/local.json');
 
-            const wallet = new Wallet(deployer_key);
+            const wallet = new Wallet(deployerKey);
+
             if (example.deploy) await deploy('local', chains, wallet, example);
 
             await test('local', chains, [], wallet, example);
