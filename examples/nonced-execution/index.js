@@ -18,6 +18,7 @@ async function deploy(chain, wallet) {
     console.log(`Deploying NoncedContractCallSender for ${chain.name}.`);
     chain.provider = getDefaultProvider(chain.rpc);
     chain.wallet = wallet.connect(chain.provider);
+
     const executableAddress = await predictContractConstant(
         chain.constAddressDeployer,
         wallet,
@@ -26,7 +27,7 @@ async function deploy(chain, wallet) {
         [],
     );
 
-    const sender = await deployAndInitContractConstant(
+    chain.sender = await deployAndInitContractConstant(
         chain.constAddressDeployer,
         wallet,
         CallSender,
@@ -34,49 +35,40 @@ async function deploy(chain, wallet) {
         [],
         [chain.gateway, chain.gasReceiver, executableAddress],
     );
-    chain.noncedSender = sender.address;
-    console.log(`Deployed NoncedContractCallSender for ${chain.name} at ${chain.noncedSender}.`);
+    console.log(`Deployed NoncedContractCallSender for ${chain.name} at ${chain.sender.address}.`);
 
     console.log(`Deploying ExecutableImplementation for ${chain.name}.`);
-    const executable = await deployUpgradable(
+    chain.contract = await deployUpgradable(
         chain.constAddressDeployer,
         wallet,
         Executable,
         ExampleProxy,
         [chain.gateway],
         [],
-        defaultAbiCoder.encode(['address'], [sender.address]),
+        defaultAbiCoder.encode(['address'], [chain.sender.address]),
         'call-executable-' + time,
     );
-    if (executable.address.toLowerCase() !== executableAddress.toLowerCase())
-        throw new Error(`Not deployed as expected! ${executable.address} was supposed to be ${executableAddress}`);
+    if (chain.contract.address.toLowerCase() !== executableAddress.toLowerCase())
+        throw new Error(`Not deployed as expected! ${chain.contract.address} was supposed to be ${executableAddress}`);
 
-    chain.noncedExecutable = executable.address;
-    console.log(`Deployed ExecutableImplementation for ${chain.name} at ${chain.noncedExecutable}.`);
+    console.log(`Deployed ExecutableImplementation for ${chain.name} at ${chain.contract.address}.`);
 }
 
 async function test(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
 
-    for (const chain of chains) {
-        chain.provider = getDefaultProvider(chain.rpc);
-        chain.wallet = wallet.connect(chain.provider);
-        chain.sender = new Contract(chain.noncedSender, CallSender.abi, chain.wallet);
-        chain.executable = new Contract(chain.noncedExecutable, Executable.abi, chain.wallet);
-    }
-
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
     const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
     const message = args[2] || `Hello, the time is ${time}.`;
     const payload = defaultAbiCoder.encode(['string'], [message]);
-    const expectedNonce = await destination.executable.incomingNonces(source.name, wallet.address);
+    const expectedNonce = await destination.contract.incomingNonces(source.name, wallet.address);
 
     async function print() {
-        const nonce = await destination.executable.incomingNonces(source.name, wallet.address);
+        const nonce = await destination.contract.incomingNonces(source.name, wallet.address);
         console.log(
             `Last message sent from ${source.name} @ ${wallet.address} to ${destination.name} was "${
-                nonce >= 0 ? await destination.executable.messages(source.name, wallet.address, nonce) : ''
+                nonce >= 0 ? await destination.contract.messages(source.name, wallet.address, nonce) : ''
             }" with a nonce of ${nonce}.`,
         );
     }
@@ -97,7 +89,7 @@ async function test(chains, wallet, options) {
 
     await (await source.sender.sendContractCall(destination.name, payload, { value: BigInt(Math.floor(gasLimit * gasPrice)) })).wait();
 
-    while ((await destination.executable.messages(source.name, wallet.address, expectedNonce)) !== message) {
+    while ((await destination.contract.messages(source.name, wallet.address, expectedNonce)) !== message) {
         await sleep(2000);
     }
 
