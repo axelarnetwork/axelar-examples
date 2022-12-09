@@ -15,7 +15,7 @@ const decimals = 13;
 
 async function deploy(chain, wallet) {
     console.log(`Deploying ERC20CrossChain for ${chain.name}.`);
-    const contract = await deployUpgradable(
+    chain.contract = await deployUpgradable(
         chain.constAddressDeployer,
         wallet,
         ERC20CrossChain,
@@ -25,8 +25,7 @@ async function deploy(chain, wallet) {
         defaultAbiCoder.encode(['string', 'string'], [name, symbol]),
         'cross-chain-token',
     );
-    chain.crossChainToken = contract;
-    console.log(`Deployed ERC20CrossChain for ${chain.name} at ${chain.crossChainToken.address}.`);
+    console.log(`Deployed ERC20CrossChain for ${chain.name} at ${chain.contract.address}.`);
 }
 
 async function test(chains, wallet, options) {
@@ -38,8 +37,8 @@ async function test(chains, wallet, options) {
     const amount = parseInt(args[2]) || 1e5;
 
     async function print() {
-        console.log(`Balance at ${source.name} is ${await source.crossChainToken.balanceOf(wallet.address)}`);
-        console.log(`Balance at ${destination.name} is ${await destination.crossChainToken.balanceOf(wallet.address)}`);
+        console.log(`Balance at ${source.name} is ${await source.contract.balanceOf(wallet.address)}`);
+        console.log(`Balance at ${destination.name} is ${await destination.contract.balanceOf(wallet.address)}`);
     }
 
     function sleep(ms) {
@@ -50,24 +49,26 @@ async function test(chains, wallet, options) {
         });
     }
 
-    const initialBalance = (await destination.crossChainToken.balanceOf(wallet.address)).toNumber();
+    const initialBalance = await destination.contract.balanceOf(wallet.address);
     console.log('--- Initially ---');
     await print();
 
     // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price (this is constant and always 1).
     const gasLimit = 3e5;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
-    await (await source.crossChainToken.giveMe(amount)).wait();
+    await (await source.contract.giveMe(amount)).wait();
     console.log('--- After getting some token on the source chain ---');
     await print();
 
     await (
-        await source.crossChainToken.transferRemote(destination.name, wallet.address, amount, {
+        await source.contract.transferRemote(destination.name, wallet.address, amount, {
             value: BigInt(Math.floor(gasLimit * gasPrice)),
         })
     ).wait();
 
-    while ((await destination.crossChainToken.balanceOf(wallet.address)).toNumber() === initialBalance) {
+    while (true) {
+        const updatedBalance = await destination.contract.balanceOf(wallet.address);
+        if (updatedBalance.gt(initialBalance)) break;
         await sleep(2000);
     }
 
