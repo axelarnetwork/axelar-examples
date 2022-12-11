@@ -7,7 +7,7 @@
         "node": ">=16.0.0"
     },
     "scripts": {
-        "test": "hardhat test",
+        "test": "mocha test",
         "send-token": "node examples/send-token",
         "call-contract": "node examples/call-contract",
         "call-contract-with-token": "node examples/call-contract-with-token",
@@ -21,7 +21,7 @@
     "dependencies": {
         "@axelar-network/axelar-cgp-solidity": "^4.3.0",
         "@axelar-network/axelar-gmp-sdk-solidity": "^1.2.0",
-        "@axelar-network/axelar-local-dev": "git+https://github.com/axelarnetwork/axelar-local-dev.git",
+        "@axelar-network/axelar-local-dev": "^1.2.1",
         "@axelar-network/axelarjs-sdk": "^0.11.4",
         "@openzeppelin/contracts": "^4.5.0",
         "axios": "^0.27.2",
