@@ -25,9 +25,15 @@ jobs:
           chmod +x aptos
           cp aptos /usr/local/bin
 
-      - name: Build and test
+      - name: Install
         run: |
-          rm -rf package-lock.json 
+          rm -rf package-lock.json yarn.lock
           npm install
+
+      - name: Build
+        run: |
           npm run build
+
+      - name: Test
+        run: |
           npm run test
