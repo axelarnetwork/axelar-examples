@@ -21,7 +21,7 @@ jobs:
       - name: Prerequisites
         run: |
           git clone https://github.com/aptos-labs/aptos-core.git
-          cd scripts
+          cd aptos-core/scripts
           chmod +x dev_setup.sh
           ./dev_setup.sh
 
