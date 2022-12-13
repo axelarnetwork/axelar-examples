@@ -24,14 +24,9 @@ jobs:
           unzip aptos-cli-1.0.1-Ubuntu-22.04-x86_64.zip
           chmod +x aptos
           cp aptos /usr/local/bin
-
+          
       - name: Build and test
         run: |
-          npm audit fix --force
           npm install
-          npm run build 
+          npm run build
           npm run test
-
-
-
-
