@@ -20,6 +20,7 @@ jobs:
 
       - name: Build
         run: |
+          npm install npm@latest -g
           npm install --save-dev hardhat
           yarn build
 
