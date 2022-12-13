@@ -20,7 +20,8 @@ jobs:
 
       - name: Prerequisites
         run: |
-          wget --no-check-certificate https://github.com/aptos-labs/aptos-core/blob/main/scripts/dev_setup.sh
+          git clone https://github.com/aptos-labs/aptos-core.git
+          cd scripts
           chmod +x dev_setup.sh
           ./dev_setup.sh
 
