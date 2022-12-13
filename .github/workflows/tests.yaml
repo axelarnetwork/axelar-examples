@@ -23,7 +23,7 @@ jobs:
           git clone https://github.com/aptos-labs/aptos-core.git
           cd aptos-core/scripts
           chmod +x dev_setup.sh
-          ./dev_setup.sh
+          yes | ./dev_setup.sh
 
       - name: Build
         run: |
