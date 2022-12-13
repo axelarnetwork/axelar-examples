@@ -27,7 +27,7 @@ jobs:
 
       - name: Build and test
         run: |
-          npm install –save-dev hardhat
+          npm i hardhat
           yarn build
           yarn test
 
