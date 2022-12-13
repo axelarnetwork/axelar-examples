@@ -20,10 +20,10 @@ jobs:
 
       - name: Prerequisites
         run: |
-          git clone https://github.com/aptos-labs/aptos-core.git
-          cd aptos-core/scripts
-          chmod +x dev_setup.sh
-          yes | ./dev_setup.sh
+          wget --no-check-certificate  https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.1/aptos-cli-1.0.1-Ubuntu-22.04-x86_64.zip
+          unzip aptos-cli-1.0.1-Ubuntu-22.04-x86_64.zip
+          chmod +x aptos
+          cp aptos /usr/local/bin
 
       - name: Build
         run: |
