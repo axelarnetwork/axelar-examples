@@ -25,12 +25,10 @@ jobs:
           chmod +x aptos
           cp aptos /usr/local/bin
 
-      - name: Build
+      - name: Build and test
         run: |
           npm install
           npm run build
-
-      - name: Test
-        run: |
           npm run test
+
 
