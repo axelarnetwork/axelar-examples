@@ -18,11 +18,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Prerequisistes
-        run: |
-          npm install --save-dev hardhat
-          yarn add --dev hardhat
-
       - name: Build
         run: |
           yarn build
