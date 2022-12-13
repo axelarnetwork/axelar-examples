@@ -27,9 +27,11 @@ jobs:
 
       - name: Build and test
         run: |
+          npm audit fix
           npm install
           npm run build 
           npm run test
+
 
 
 
