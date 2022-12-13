@@ -28,6 +28,7 @@ jobs:
       - name: Install
         run: |
           rm -rf package-lock.json yarn.lock
+          npm cache clear --force
           npm install
 
       - name: Build
