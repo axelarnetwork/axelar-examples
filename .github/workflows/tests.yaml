@@ -20,9 +20,10 @@ jobs:
 
       - name: Build
         run: |
-          yarn build 
+          npm install
+          npm build
 
       - name: test
         run: |
-          yarn test
+          npm test
 
