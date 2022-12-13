@@ -3,7 +3,7 @@ name: Run tests gmp examples
 on:
   push:
     branches:    
-      - run-tests 
+      - feat/run-tests 
 
 jobs:
   release-binaries:
