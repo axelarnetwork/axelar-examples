@@ -1,0 +1,28 @@
+name: Run tests gmp examples
+
+on:
+  push:
+    branches:    
+      - run-tests 
+
+jobs:
+  release-binaries:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04]
+        arch: [amd64]
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: |
+          yarn build 
+
+      - name: test
+        run: |
+          yarn test
+
