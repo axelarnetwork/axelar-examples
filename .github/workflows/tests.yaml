@@ -1,9 +1,7 @@
 name: Run tests gmp examples
 
 on:
-  push:
-    branches:    
-      - feat/run-tests 
+  pull_request:
 
 jobs:
   release-binaries:
