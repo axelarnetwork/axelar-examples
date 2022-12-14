@@ -1,0 +1,43 @@
+name: Run GMP Example Tests
+
+on: pull_request
+
+jobs:
+    release-binaries:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-22.04]
+                arch: [amd64]
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            # - name: Prerequisites
+            #   run: |
+            #       wget --no-check-certificate  https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.1/aptos-cli-1.0.1-Ubuntu-22.04-x86_64.zip
+            #       unzip aptos-cli-1.0.1-Ubuntu-22.04-x86_64.zip
+            #       chmod +x aptos
+            #       cp aptos /usr/local/bin
+
+            - name: Create .env file
+              run: |
+                  echo "EVM_PRIVATE_KEY=0xeff6997bddf3dc96294e32123e29d2479c782744c2f0d753b266afa30102c1a5
+                  APTOS_URL=http://localhost:8080
+                  APTOS_ADDRESS=0x8ac1b8ff9583ac8e661c7f0ee462698c57bb7fc454f587e3fa25a57f9406acc0
+                  APTOS_TOKEN_LINKER_ADDRESS=0x1641cde81bb0ffd52cce178f6ab4f1fc86fe451de189ffc71298aaf2e74a7a15" > .env
+
+            - name: Install
+              run: |
+                  sudo npm i -g n
+                  sudo n v16.15.0
+                  npm install
+
+            - name: Build
+              run: |
+                  npm run build
+
+            - name: Test
+              run: |
+                  npm run test
