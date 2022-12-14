@@ -30,7 +30,6 @@ jobs:
 
             - name: Install
               run: |
-                  command -v aptos
                   sudo npm i -g n
                   sudo n v16.15.0
                   npm install
