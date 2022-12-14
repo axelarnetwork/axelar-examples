@@ -3,7 +3,7 @@ name: Run GMP Example Tests
 on: pull_request
 
 jobs:
-    release-binaries:
+    test:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
