@@ -1,7 +1,6 @@
 name: Run tests gmp examples
 
-on:
-  pull_request:
+on: pull_request
 
 jobs:
   release-binaries:
