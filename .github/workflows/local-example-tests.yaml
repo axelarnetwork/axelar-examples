@@ -13,7 +13,9 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
-
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 16
             # - name: Prerequisites
             #   run: |
             #       wget --no-check-certificate  https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.1/aptos-cli-1.0.1-Ubuntu-22.04-x86_64.zip
@@ -30,9 +32,7 @@ jobs:
 
             - name: Install
               run: |
-                  sudo npm i -g n
-                  sudo n v16.15.0
-                  npm install
+                  npm ci
 
             - name: Build
               run: |
