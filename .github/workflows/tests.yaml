@@ -25,12 +25,12 @@ jobs:
           chmod +x aptos
           cp aptos /usr/local/bin
 
-      - name: Create .env.example file
+      - name: Create .env file
         run: |
           echo "EVM_PRIVATE_KEY=PRIVATE_KEY
           APTOS_URL=http://localhost:8080
           APTOS_ADDRESS=0x8ac1b8ff9583ac8e661c7f0ee462698c57bb7fc454f587e3fa25a57f9406acc0
-          APTOS_TOKEN_LINKER_ADDRESS=0x1641cde81bb0ffd52cce178f6ab4f1fc86fe451de189ffc71298aaf2e74a7a15" > .env.example
+          APTOS_TOKEN_LINKER_ADDRESS=0x1641cde81bb0ffd52cce178f6ab4f1fc86fe451de189ffc71298aaf2e74a7a15" > .env
 
       - name: Install
         run: |
