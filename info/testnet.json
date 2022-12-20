@@ -33,7 +33,7 @@
     "tokenName": "Avax",
     "tokenSymbol": "AVAX",
     "executableSample": "0x9372350Abb3B5c10DB1BB858e0bCf91eFa74d946",
-    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
+    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B",
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "AxelarGasService": {
       "salt": "AxelarGasService",
@@ -60,7 +60,7 @@
     "tokenName": "Fantom",
     "tokenSymbol": "FTM",
     "executableSample": "0x6dc319F82D4358Cdd33FF98c0b441F63Ad299bB7",
-    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
+    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B",
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "AxelarGasService": {
       "salt": "AxelarGasService",
@@ -87,7 +87,7 @@
     "tokenName": "Matic",
     "tokenSymbol": "MATIC",
     "executableSample": "0x49Bd72FD6f59B57418DA42521628EfFD7df9DB1B",
-    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
+    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B",
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "AxelarGasService": {
       "salt": "AxelarGasService",
@@ -114,7 +114,7 @@
     "tokenName": "DEV",
     "tokenSymbol": "DEV",
     "executableSample": "0x2120A291a99746726CFa3bCcd3C388da75f7e718",
-    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B"
+    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B",
     "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "AxelarGasService": {
       "salt": "AxelarGasService",
