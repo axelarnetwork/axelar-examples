@@ -29,7 +29,7 @@ async function deploy(chain, wallet) {
         wallet.connect(provider),
         NftLinker,
         ExampleProxy,
-        [chain.gateway.address, chain.gasReceiver],
+        [chain.gateway, chain.gasReceiver],
         [],
         defaultAbiCoder.encode(['string'], [chain.name]),
         'nftLinker',
