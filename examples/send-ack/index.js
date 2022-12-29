@@ -20,11 +20,11 @@ async function deploy(chain, wallet) {
     chain.wallet = wallet.connect(chain.provider);
 
     console.log(`Deploying SendAckSender for ${chain.name}.`);
-    chain.sender = await deployContract(wallet, SendAckSender, [chain.gateway.address, chain.gasReceiver, chain.name]);
+    chain.sender = await deployContract(wallet, SendAckSender, [chain.gateway, chain.gasReceiver, chain.name]);
     console.log(`Deployed SendAckSender for ${chain.name} at ${chain.sender.address}.`);
 
     console.log(`Deploying SendAckReceiverImplementation for ${chain.name}.`);
-    chain.receiver = await deployContract(wallet, SendAckReceiver, [chain.gateway.address]);
+    chain.receiver = await deployContract(wallet, SendAckReceiver, [chain.gateway]);
     console.log(`Deployed SendAckReceiverImplementation for ${chain.name} at ${chain.receiver.address}.`);
 }
 
@@ -64,16 +64,17 @@ async function test(chains, wallet, options) {
     const gasAmountRemote = BigInt(Math.floor(gasLimitRemote * gasPriceRemote));
     const gasAmountSource = BigInt(Math.floor(gasLimitSource * gasPriceSource));
 
-    const tx = await (
-        await source.sender.sendContractCall(destination.name, destination.receiver.address, payload, gasAmountRemote, {
-            value: gasAmountRemote + gasAmountSource,
-        })
-    ).wait();
-    const event = tx.events.find((event) => event.event === 'ContractCallSent');
-    const nonce = event.args.nonce;
 
-    while (!(await source.sender.executed(nonce))) {
-        console.log('MessageLength', await destination.receiver.messagesLength());
+    const tx = await (
+      await source.sender.sendContractCall(destination.name, destination.receiver.address, payload, gasAmountRemote, {
+        value: gasAmountRemote + gasAmountSource,
+      })
+      ).wait();
+      const event = tx.events.find((event) => event.event === 'ContractCallSent');
+      const nonce = event.args.nonce;
+
+      while (!(await source.sender.executed(nonce))) {
+        console.log('MessageLength', await destination.receiver.messagesLength().then(val => val.toString()));
         console.log('Test', await source.sender.executed(nonce));
         await sleep(2000);
     }

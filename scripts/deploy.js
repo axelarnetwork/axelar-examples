@@ -39,7 +39,7 @@ async function deploy(env, chains, wallet, example) {
 
         if(chain[key].interface) {
           const contract = chain[key];
-          const abi = contract.interface.format(FormatTypes.minimal);
+          const abi = contract.interface.format(FormatTypes.full);
           chain[key] = {
             abi,
             address: contract.address,
