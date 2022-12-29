@@ -42,8 +42,6 @@ async function test(chains, wallet, options = {}) {
     console.log('--- Initially ---');
     await print();
 
-    console.log(source.token)
-
     await (await source.token.approve(source.gateway.address, amount)).wait();
 
     await (await source.contract.sendToken(destination.name, destinationAddress, symbol, amount)).wait();
