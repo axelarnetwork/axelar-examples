@@ -36,6 +36,7 @@ async function deploy(env, chains, wallet, example) {
 
     for(const chain of chains) {
       for(const key of Object.keys(chain)) {
+
         if(chain[key].interface) {
           const contract = chain[key];
           const abi = contract.interface.format(FormatTypes.minimal);
@@ -46,7 +47,7 @@ async function deploy(env, chains, wallet, example) {
         }
       }
 
-      delete chain.wallet
+      // delete chain.wallet
     }
 
     setJSON(chains, `./info/${env}.json`);

@@ -20,7 +20,7 @@ async function test(chains, wallet, options = {}) {
     for (const chain of [source, destination]) {
         const provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(provider);
-        chain.contract = new Contract(chain.gateway, Gateway.abi, chain.wallet);
+        chain.contract = new Contract(chain.gateway.address, Gateway.abi, chain.wallet);
         const tokenAddress = await chain.contract.tokenAddresses(symbol);
         chain.token = new Contract(tokenAddress, IERC20.abi, chain.wallet);
     }
@@ -29,6 +29,7 @@ async function test(chains, wallet, options = {}) {
         console.log(`Balance of ${wallet.address} at ${source.name} is ${await source.token.balanceOf(wallet.address)}`);
         console.log(`Balance of ${destinationAddress} at ${destination.name} is ${await destination.token.balanceOf(destinationAddress)}`);
     }
+
     function sleep(ms) {
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -36,6 +37,7 @@ async function test(chains, wallet, options = {}) {
             }, ms);
         });
     }
+
     const balance = await destination.token.balanceOf(destinationAddress);
     console.log('--- Initially ---');
     await print();
@@ -43,6 +45,7 @@ async function test(chains, wallet, options = {}) {
     await (await source.token.approve(source.gateway, amount)).wait();
 
     await (await source.contract.sendToken(destination.name, destinationAddress, symbol, amount)).wait();
+
     while (true) {
         const newBalance = await destination.token.balanceOf(destinationAddress);
         if (BigInt(balance) != BigInt(newBalance)) break;

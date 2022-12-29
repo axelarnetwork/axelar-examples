@@ -1,10 +1,11 @@
 'use strict';
 require('dotenv').config();
 
+const AxelarGatewayContract = require('../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
+const AxelarGasServiceContract = require('../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol/IAxelarGasService.json');
 const { testnetInfo } = require('@axelar-network/axelar-local-dev');
 const { Wallet, Contract, getDefaultProvider } = require('ethers');
 const { getGasPrice, getDepositAddress } = require('./utils.js');
-const { Interface } = require('ethers/lib/utils.js');
 
 async function test(env, chains, args, wallet, example) {
 
@@ -27,6 +28,8 @@ async function test(env, chains, args, wallet, example) {
       }
 
       chain.provider = provider;
+      chain.gateway = new Contract(chain.gateway, AxelarGatewayContract.abi, wallet.connect(provider));
+      chain.gasReceiver = new Contract(chain.gasReceiver, AxelarGasServiceContract.abi, wallet.connect(provider));
     }
 
     await example.test(chains, wallet, {
