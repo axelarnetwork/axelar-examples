@@ -33,7 +33,7 @@ async function deploy(chain, wallet) {
         CallSender,
         'call-sender-' + time,
         [],
-        [chain.gateway.address, chain.gasReceiver, executableAddress],
+        [chain.gateway, chain.gasReceiver, executableAddress],
     );
     console.log(`Deployed NoncedContractCallSender for ${chain.name} at ${chain.sender.address}.`);
 
@@ -43,7 +43,7 @@ async function deploy(chain, wallet) {
         wallet,
         Executable,
         ExampleProxy,
-        [chain.gateway.address],
+        [chain.gateway],
         [],
         defaultAbiCoder.encode(['address'], [chain.sender.address]),
         'call-executable-' + time,
