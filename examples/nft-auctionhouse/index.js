@@ -4,6 +4,7 @@ const {
     getDefaultProvider,
     Contract,
     Wallet,
+    constants: { AddressZero },
     utils: { keccak256, defaultAbiCoder },
 } = require('ethers');
 const {
@@ -21,41 +22,57 @@ const NftAuctionHouse = require('../../artifacts/examples/nft-auctionhouse/NftAu
 const IAxelarGateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
 const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
+const tokenId = 0;
+
 async function deploy(chain, wallet) {
     console.log(`Deploying ERC721Demo for ${chain.name}.`);
-    chain.provider = getDefaultProvider(chain.rpc);
-    chain.wallet = wallet.connect(chain.provider);
-    const erc721 = await deployContract(chain.wallet, ERC721, ['Test', 'TEST']);
+    const erc721 = await deployContract(wallet, ERC721, ['Test', 'TEST']);
     chain.erc721 = erc721.address;
     console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721}.`);
     console.log(`Deploying NftAuctionhouse for ${chain.name}.`);
     const gateway = new Contract(chain.gateway, IAxelarGateway.abi, wallet);
-    chain.contract = await deployContract(wallet, NftAuctionHouse, [
+    const contract = await deployContract(wallet, NftAuctionHouse, [
         gateway.address,
         chain.gasReceiver,
         await gateway.tokenAddresses('aUSDC'),
     ]);
+    chain.nftAuctionhouse = contract.address;
+    console.log(`Deployed NftAuctionhouse for ${chain.name} at ${chain.nftAuctionhouse}.`);
+}
 
-    chain.auctionhouse = new Contract(chain.contract.address, NftAuctionHouse.abi, chain.wallet);
-    chain.erc721contract = new Contract(chain.erc721, ERC721.abi, chain.wallet);
-    console.log(`Deployed NftAuctionhouse for ${chain.name} at ${chain.contract.address}.`);
-
-    chain.usdc = new Contract(await gateway.tokenAddresses('aUSDC'), IERC20.abi, chain.wallet);
-    chain.bidder = new Wallet(keccak256(defaultAbiCoder.encode(['string'], ['bidder-' + chain.name])), chain.provider);
-
-    console.log(`Funding Bidder ${chain.bidder.address}`);
-    await (
-        await chain.wallet.sendTransaction({
-            to: chain.bidder.address,
-            value: BigInt(1e18),
-        })
-    ).wait();
-    const deficit = 11e6 - (await chain.usdc.balanceOf(chain.bidder.address));
-    if (deficit > 0) await (await chain.usdc.transfer(chain.bidder.address, deficit)).wait();
+async function postDeploy(chain, chains, wallet) {
+    /*const contract = new Contract(chain.nftLinker, NftLinker.abi, wallet);
+    for(const otherChain of chains) {
+        if(chain == otherChain) continue;
+        console.log(`Linking ${chain.name} -> ${otherChain.name}.`);
+        await (await contract.addLinker(otherChain.name, otherChain.nftLinker)).wait();
+        console.log(`Linked ${chain.name} -> ${otherChain.name}.`);
+    }*/
 }
 
 async function test(chains, wallet, options) {
     const args = options.args || [];
+    for (const chain of chains) {
+        chain.provider = getDefaultProvider(chain.rpc);
+        chain.wallet = wallet.connect(chain.provider);
+        chain.auctionhouse = new Contract(chain.nftAuctionhouse, NftAuctionHouse.abi, chain.wallet);
+        chain.erc721contract = new Contract(chain.erc721, ERC721.abi, chain.wallet);
+
+        const gateway = new Contract(chain.gateway, IAxelarGateway.abi, chain.wallet);
+        chain.usdc = new Contract(await gateway.tokenAddresses('aUSDC'), IERC20.abi, chain.wallet);
+
+        chain.bidder = new Wallet(keccak256(defaultAbiCoder.encode(['string'], ['bidder-' + chain.name])), chain.provider);
+
+        console.log(`Funding Bidder ${chain.bidder.address}`);
+        await (
+            await chain.wallet.sendTransaction({
+                to: chain.bidder.address,
+                value: BigInt(1e18),
+            })
+        ).wait();
+        const deficit = 11e6 - (await chain.usdc.balanceOf(chain.bidder.address));
+        if (deficit > 0) await (await chain.usdc.transfer(chain.bidder.address, deficit)).wait();
+    }
 
     const firstUnminted = async (chain) => {
         for (let i = 0; true; i++) {
@@ -66,10 +83,8 @@ async function test(chains, wallet, options) {
             }
         }
     };
-
     const destination = chains.find((chain) => chain.name === (args[1] || 'Avalanche'));
     const tokenId = args[2] || (await firstUnminted(destination));
-
     function sleep(ms) {
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -77,7 +92,6 @@ async function test(chains, wallet, options) {
             }, ms);
         });
     }
-
     const auctioneer = new Wallet(keccak256(defaultAbiCoder.encode(['string'], ['auctioneer'])), destination.provider);
 
     console.log(`Funding Auctioneer ${auctioneer.address}`);
@@ -90,7 +104,6 @@ async function test(chains, wallet, options) {
 
     async function print() {
         console.log(`Auctioneer has ${await destination.usdc.balanceOf(auctioneer.address)}.`);
-
         for (const chain of chains) {
             const bidder = chain.bidder;
             console.log(`Bidder at ${chain.name} has ${await chain.usdc.balanceOf(bidder.address)}.`);
@@ -107,17 +120,14 @@ async function test(chains, wallet, options) {
     for (const chain of chains) {
         console.log(`${chain.bidder.address} from ${chain.name} is bidding.`);
         const balance = await chain.usdc.balanceOf(chain.bidder.address);
-
         if (chain === destination) {
             await bid(chain, chain.bidder.privateKey, tokenId, 0);
         } else {
             await bidRemote(chain, destination, chain.bidder.privateKey, tokenId, 0);
         }
-
         const spent = balance - (await chain.usdc.balanceOf(chain.bidder.address));
         console.log(`Bid ${spent}.`);
     }
-
     while (await destination.auctionhouse.isAuctionRunning(destination.erc721contract.address, tokenId)) {
         console.log('waiting for auction end.');
         await sleep(1000);
@@ -128,7 +138,6 @@ async function test(chains, wallet, options) {
             })
         ).wait();
     }
-
     await sleep(1000);
     await (
         await destination.wallet.sendTransaction({
@@ -146,5 +155,5 @@ async function test(chains, wallet, options) {
 module.exports = {
     deploy,
     test,
-    // postDeploy,
+    postDeploy,
 };

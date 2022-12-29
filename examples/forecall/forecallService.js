@@ -1,6 +1,6 @@
 'use strict';
 
-require('dotenv').config();
+require("dotenv").config();
 const {
     getDefaultProvider,
     Contract,
@@ -26,7 +26,6 @@ async function getChains(env) {
     if (env == null || (env !== 'testnet' && env !== 'local'))
         throw new Error('Need to specify tesntet or local as an argument to this script.');
     let temp;
-
     if (env == 'local') {
         temp = require(`../info/local.json`);
     } else {
@@ -36,7 +35,6 @@ async function getChains(env) {
             temp = testnetInfo;
         }
     }
-
     const chains = temp;
 
     for (const chain of [source, destination]) {
@@ -48,7 +46,6 @@ async function getChains(env) {
         chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
         chain.lastBlock = await chain.provider.getBlockNumber();
     }
-
     return chains;
 }
 
@@ -56,7 +53,6 @@ async function fundForecaller(chains, forecaller, amount) {
     const private_key_funded = process.env.EVM_PRIVATE_KEY;
     const wallet_funded = new Wallet(private_key_funded);
     console.log(`Trying to give ${amount / 1e6} aUSDC to forecaller ${forecaller} from ${wallet_funded.address}.`);
-
     for (const chain of chains) {
         const balance_funded = await chain.usdc.balanceOf(wallet_funded.address);
         const balance_forecaller = await chain.usdc.balanceOf(forecaller);
@@ -74,7 +70,6 @@ async function update(chains) {
         const filter = chain.gateway.CallContractWithToken(chain.contract.address);
         const outgoing = await chain.gateway.queryFilter(filter, chain.lastBlock, N - 1);
         chain.lastBlock = N;
-
         for (const event of outgoing) {
             console.log(`${chain.name}, ${event.args.payload}.`);
         }

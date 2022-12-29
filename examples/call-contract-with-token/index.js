@@ -16,13 +16,9 @@ const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/
 
 async function deploy(chain, wallet) {
     console.log(`Deploying DistributionExecutable for ${chain.name}.`);
-    const provider = getDefaultProvider(chain.rpc);
-    chain.wallet = wallet.connect(provider);
-    chain.contract = await deployContract(wallet, DistributionExecutable, [chain.gateway, chain.gasReceiver]);
-    chain.gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
-    const usdcAddress = chain.gateway.tokenAddresses('aUSDC');
-    chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
-    console.log(`Deployed DistributionExecutable for ${chain.name} at ${chain.contract.address}.`);
+    const contract = await deployContract(wallet, DistributionExecutable, [chain.gateway, chain.gasReceiver]);
+    chain.distributionExecutable = contract.address;
+    console.log(`Deployed DistributionExecutable for ${chain.name} at ${chain.distributionExecutable}.`);
 }
 
 async function test(chains, wallet, options) {
@@ -34,6 +30,15 @@ async function test(chains, wallet, options) {
     const accounts = args.slice(3);
 
     if (accounts.length === 0) accounts.push(wallet.address);
+
+    for (const chain of [source, destination]) {
+        const provider = getDefaultProvider(chain.rpc);
+        chain.wallet = wallet.connect(provider);
+        chain.contract = new Contract(chain.distributionExecutable, DistributionExecutable.abi, chain.wallet);
+        chain.gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
+        const usdcAddress = chain.gateway.tokenAddresses('aUSDC');
+        chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
+    }
 
     async function logAccountBalances() {
         for (const account of accounts) {
@@ -47,21 +52,18 @@ async function test(chains, wallet, options) {
     const gasLimit = 3e6;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
 
-    const balance = await destination.usdc.balanceOf(accounts[0]);
+    const balance = BigInt(await destination.usdc.balanceOf(accounts[0]));
 
     const approveTx = await source.usdc.approve(source.contract.address, amount);
     await approveTx.wait();
 
-    const sendTx = await source.contract.sendToMany(destination.name, destination.contract.address, accounts, 'aUSDC', amount, {
+    const sendTx = await source.contract.sendToMany(destination.name, destination.distributionExecutable, accounts, 'aUSDC', amount, {
         value: BigInt(Math.floor(gasLimit * gasPrice)),
     });
     await sendTx.wait();
 
-    while (true) {
-        const updatedBalance = await destination.usdc.balanceOf(accounts[0]);
-        console.log(updatedBalance.toString(), balance.toString());
-        if (updatedBalance.gt(balance)) break;
-        await sleep(1000);
+    while (BigInt(await destination.usdc.balanceOf(accounts[0])) === balance) {
+        await sleep(2000);
     }
 
     console.log('--- After ---');

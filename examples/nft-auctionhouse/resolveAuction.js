@@ -1,15 +1,26 @@
 'use strict';
 
-const { getDefaultProvider, Contract, Wallet } = require('ethers');
+const {
+    getDefaultProvider,
+    Contract,
+    constants: { AddressZero },
+    utils: { keccak256, defaultAbiCoder },
+    Wallet,
+} = require('ethers');
+const {
+    utils: { deployContract },
+} = require('@axelar-network/axelar-local-dev');
 
+const ERC721 = require('../../artifacts/examples/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
 const NftAuctionhouse = require('../../artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
 
-async function resolveAuction(chain, privateKey, tokenId) {
+async function resolveAuction(chain, private_key, tokenId) {
     const provider = getDefaultProvider(chain.rpc);
-    const wallet = new Wallet(privateKey, provider);
-    const auctionhouse = new Contract(chain.contract.address, NftAuctionhouse.abi, wallet);
+    const wallet = new Wallet(private_key, provider);
+    const erc721 = new Contract(chain.erc721, ERC721.abi, wallet);
+    const auctionhouse = new Contract(chain.nftAuctionhouse, NftAuctionhouse.abi, wallet);
 
-    await (await auctionhouse.resolveAuction(chain.erc721, tokenId)).wait();
+    await await auctionhouse.resolveAuction(chain.erc721, tokenId);
 }
 
 module.exports = resolveAuction;
@@ -19,7 +30,6 @@ if (require.main === module) {
     if (env == null || (env != 'testnet' && env != 'local'))
         throw new Error('Need to specify tesntet or local as an argument to this script.');
     let temp;
-
     if (env == 'local') {
         temp = require(`../../info/local.json`);
     } else {
@@ -29,7 +39,6 @@ if (require.main === module) {
             temp = testnetInfo;
         }
     }
-
     const chains = temp;
     const args = process.argv.slice(3);
 

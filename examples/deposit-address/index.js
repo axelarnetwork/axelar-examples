@@ -1,6 +1,10 @@
 'use strict';
 
-const { getDefaultProvider, Contract } = require('ethers');
+const {
+    getDefaultProvider,
+    Contract,
+    constants: { AddressZero },
+} = require('ethers');
 
 const Gateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
 const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
@@ -26,7 +30,6 @@ async function test(chains, wallet, options = {}) {
         console.log(`Balance at ${source.name} is ${await source.token.balanceOf(wallet.address)}`);
         console.log(`Balance at ${destination.name} is ${await destination.token.balanceOf(destinationAddress)}`);
     }
-
     function sleep(ms) {
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -34,18 +37,18 @@ async function test(chains, wallet, options = {}) {
             }, ms);
         });
     }
-
     const balance = await destination.token.balanceOf(destinationAddress);
     console.log('--- Initially ---');
     await print();
 
     const depositAddress = await getDepositAddress(source.name, destination.name, destinationAddress, symbol);
+    console.log(depositAddress);
     await (await source.token.transfer(depositAddress, amount)).wait();
 
     while (true) {
         const newBalance = await destination.token.balanceOf(destinationAddress);
         if (Number(balance) !== Number(newBalance)) break;
-        await sleep(1000);
+        await sleep(2000);
     }
 
     console.log('--- After ---');
