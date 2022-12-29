@@ -16,9 +16,9 @@ const bidRemote = require('./bidRemote');
 const auction = require('./auction');
 const resolveAuction = require('./resolveAuction');
 
+const Gateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
 const ERC721 = require('../../artifacts/examples/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
 const NftAuctionHouse = require('../../artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
-const IAxelarGateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
 const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 async function deploy(chain, wallet) {
@@ -29,18 +29,20 @@ async function deploy(chain, wallet) {
     chain.erc721 = erc721.address;
     console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721}.`);
     console.log(`Deploying NftAuctionhouse for ${chain.name}.`);
-    const gateway = new Contract(chain.gateway, IAxelarGateway.abi, wallet);
+    const gateway = new Contract(chain.gateway, Gateway.abi, wallet);
+    const tokenAddress = await gateway.tokenAddresses('aUSDC');
+    console.log(tokenAddress)
     chain.contract = await deployContract(wallet, NftAuctionHouse, [
-        gateway.address,
+        chain.gateway,
         chain.gasReceiver,
-        await gateway.tokenAddresses('aUSDC'),
+        tokenAddress,
     ]);
 
     chain.auctionhouse = new Contract(chain.contract.address, NftAuctionHouse.abi, chain.wallet);
     chain.erc721contract = new Contract(chain.erc721, ERC721.abi, chain.wallet);
     console.log(`Deployed NftAuctionhouse for ${chain.name} at ${chain.contract.address}.`);
 
-    chain.usdc = new Contract(await gateway.tokenAddresses('aUSDC'), IERC20.abi, chain.wallet);
+    chain.usdc = new Contract(tokenAddress, IERC20.abi, chain.wallet);
     chain.bidder = new Wallet(keccak256(defaultAbiCoder.encode(['string'], ['bidder-' + chain.name])), chain.provider);
 
     console.log(`Funding Bidder ${chain.bidder.address}`);

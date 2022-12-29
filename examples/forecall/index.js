@@ -24,7 +24,8 @@ async function deploy(chain, wallet) {
         '0x',
         'forecallable',
     );
-    const usdcAddress = chain.gateway.tokenAddresses('aUSDC');
+    const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet)
+    const usdcAddress = gateway.tokenAddresses('aUSDC');
     chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
     console.log(`Deployed DistributionForecallable for ${chain.name} at ${chain.contract.address}.`);
 }

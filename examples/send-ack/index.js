@@ -20,11 +20,11 @@ async function deploy(chain, wallet) {
     chain.wallet = wallet.connect(chain.provider);
 
     console.log(`Deploying SendAckSender for ${chain.name}.`);
-    chain.sender = await deployContract(wallet, SendAckSender, [chain.gateway, chain.gasReceiver, chain.name]);
+    chain.sender = await deployContract(wallet, SendAckSender, [chain.gateway.address, chain.gasReceiver, chain.name]);
     console.log(`Deployed SendAckSender for ${chain.name} at ${chain.sender.address}.`);
 
     console.log(`Deploying SendAckReceiverImplementation for ${chain.name}.`);
-    chain.receiver = await deployContract(wallet, SendAckReceiver, [chain.gateway]);
+    chain.receiver = await deployContract(wallet, SendAckReceiver, [chain.gateway.address]);
     console.log(`Deployed SendAckReceiverImplementation for ${chain.name} at ${chain.receiver.address}.`);
 }
 
