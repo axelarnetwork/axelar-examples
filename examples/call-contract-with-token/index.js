@@ -20,7 +20,7 @@ async function deploy(chain, wallet) {
     chain.wallet = wallet.connect(provider);
     chain.contract = await deployContract(wallet, DistributionExecutable, [chain.gateway, chain.gasReceiver]);
     chain.gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
-    const usdcAddress = chain.gateway.tokenAddresses('aUSDC');
+    const usdcAddress = await chain.gateway.tokenAddresses('aUSDC');
     chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
     console.log(`Deployed DistributionExecutable for ${chain.name} at ${chain.contract.address}.`);
 }
@@ -48,6 +48,7 @@ async function test(chains, wallet, options) {
     const gasPrice = await getGasPrice(source, destination, AddressZero);
 
     const balance = await destination.usdc.balanceOf(accounts[0]);
+
 
     const approveTx = await source.usdc.approve(source.contract.address, amount);
     await approveTx.wait();
