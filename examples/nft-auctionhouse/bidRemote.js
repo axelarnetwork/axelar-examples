@@ -6,21 +6,15 @@ const {
     constants: { AddressZero },
     Wallet,
 } = require('ethers');
-const {} = require('@axelar-network/axelar-local-dev');
-
-const NftAuctionhouse = require('../../artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
-const IAxelarGateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
-const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 async function bidRemote(sourceChain, destinationChain, privateKey, tokenId, amount, options = null) {
     const provider = getDefaultProvider(sourceChain.rpc);
     const wallet = new Wallet(privateKey, provider);
-    const gateway = new Contract(sourceChain.gateway, IAxelarGateway.abi, wallet);
-    const usdc = new Contract(await gateway.tokenAddresses('aUSDC'), IERC20.abi, wallet);
-    const auctionhouse = new Contract(sourceChain.contract.address, NftAuctionhouse.abi, wallet);
+    const usdc = sourceChain.usdc
+    const auctionhouse = sourceChain.contract
 
-    const destinationProvider = getDefaultProvider(destinationChain.rpc);
-    const destinationAuctionhouse = new Contract(destinationChain.contract.address, NftAuctionhouse.abi, destinationProvider);
+    const destinationAuctionhouse = destinationChain.contract
+    console.log(destinationChain.erc721)
     const lastBid = await destinationAuctionhouse.bids(destinationChain.erc721, tokenId);
 
     if (amount === 0) {

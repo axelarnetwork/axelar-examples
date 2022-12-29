@@ -5,8 +5,6 @@ const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
 const ExampleProxy = require('../../artifacts/examples/Proxy.sol/ExampleProxy.json');
 const Headers = require('../../artifacts/examples/headers/Headers.sol/Headers.json');
-const Gateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
-const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 async function deploy(chain, wallet) {
     console.log(`Deploying Headers for ${chain.name}.`);
@@ -22,9 +20,6 @@ async function deploy(chain, wallet) {
         '0x',
         'headers',
     );
-    const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
-    const usdcAddress = await gateway.tokenAddresses('aUSDC');
-    chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
     console.log(`Deployed Headers for ${chain.name} at ${chain.contract.address}.`);
 }
 

@@ -5,9 +5,11 @@ const {
     utils: { setJSON },
     testnetInfo,
 } = require('@axelar-network/axelar-local-dev');
-const { Wallet, getDefaultProvider } = require('ethers');
+const { Wallet, getDefaultProvider, utils, ContractFactory } = require('ethers');
+const { FormatTypes } = require('ethers/lib/utils');
 
 async function deploy(env, chains, wallet, example) {
+
     if (example.preDeploy) {
         await example.preDeploy(chains, wallet);
     }
@@ -30,6 +32,22 @@ async function deploy(env, chains, wallet, example) {
         }
 
         await Promise.all(promises);
+    }
+
+    for(const chain of chains) {
+      for(const key of Object.keys(chain)) {
+
+        if(chain[key].interface) {
+          const contract = chain[key];
+          const abi = contract.interface.format(FormatTypes.full);
+          chain[key] = {
+            abi,
+            address: contract.address,
+          }
+        }
+      }
+
+      // delete chain.wallet
     }
 
     setJSON(chains, `./info/${env}.json`);
