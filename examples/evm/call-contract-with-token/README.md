@@ -11,8 +11,14 @@ node scripts/deploy examples/call-contract-with-token [local|testnet]
 Run the test:
 
 ```bash
-node scripts/test examples/call-contract-with-token [local|testnet] ${"source-chain"} ${"destination-chain"} ${amount} ${account} ${account2} ...
+node scripts/test examples/call-contract-with-token [local|testnet] ${srcChain} ${destChain} ${amount} ${account} ${account2} ...
 ```
+
+**Default Values**:
+
+-   `srcChain` is `Avalanche`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
+-   `destChain` is `Fantom`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
+-   `amount` is `10`
 
 #### Example
 

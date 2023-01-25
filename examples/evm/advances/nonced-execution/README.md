@@ -11,8 +11,14 @@ node scripts/deploy examples/nonced-execution [local|testnet]
 Run the test:
 
 ```bash
-node scripts/test examples/nonced-execution [local|testnet] ${"source-chain"} ${"destination-chain"} ${'message'}
+node scripts/test examples/nonced-execution [local|testnet] ${srcChain} ${destChain} ${message}
 ```
+
+**Default Values**:
+
+-   `srcChain` is `Avalanche`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
+-   `destChain` is `Fantom`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
+-   `message` is `Hello World`
 
 #### Example
 

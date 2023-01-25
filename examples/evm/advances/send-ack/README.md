@@ -2,7 +2,7 @@
 
 Send a message from source-chain to destination-chain.
 
-Deploy:
+**Deploy**
 
 ```bash
 node scripts/deploy examples/send-ack [local|testnet]
@@ -11,8 +11,14 @@ node scripts/deploy examples/send-ack [local|testnet]
 Run the test:
 
 ```bash
-node scripts/test examples/send-ack [local|testnet] ${"source-chain"} ${"destination-chain"} ${'message'}
+node scripts/test examples/send-ack [local|testnet] ${srcChain} ${destChain} ${message}
 ```
+
+**Default Values**:
+
+-   `srcChain` is `Avalanche`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
+-   `destChain` is `Fantom`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
+-   `message` is `Hello World`
 
 #### Example
 
@@ -21,7 +27,7 @@ node scripts/deploy examples/send-ack local
 node scripts/test examples/send-ack local "Fantom" "Moonbeam" 'Received'
 ```
 
-Output:
+**Output:**
 
 ```
 --- Initially ---

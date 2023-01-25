@@ -11,8 +11,14 @@ node scripts/deploy examples/cross-chain-token [local|testnet]
 Run the test:
 
 ```bash
-node scripts/test examples/cross-chain-token [local|testnet] ${"source-chain"} ${"destination-chain"} ${amount}
+node scripts/test examples/cross-chain-token [local|testnet] ${srcChain} ${destChain} ${amount}
 ```
+
+**Default Values**:
+
+-   `srcChain` is `Avalanche`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
+-   `destChain` is `Fantom`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
+-   `amount` is `10`
 
 #### Example
 

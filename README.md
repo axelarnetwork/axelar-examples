@@ -48,22 +48,6 @@ node scripts/createLocal
 
 Leave this node running on a separate terminal before deploying and testing the dApps.
 
-Each example has several arguments as described below:
-
-| Variable                                  | Valid Values                                       | Default                                                                                    | Example                                    | Notes                                                   |
-| ----------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------- |
-| network                                   | local, testnet                                     | no default                                                                                 | local                                      |                                                         |
-| source-chain                              | Moonbeam, Avalanche, Fantom, Ethereum, and Polygon | `Avalanche`                                                                                | "Moonbeam" or 'Moonbeam'                   | case-sensitive                                          |
-| destination-chain                         | Moonbeam, Avalanche, Fantom, Ethereum, and Polygon | `Fantom`                                                                                   | "Avalanche" or 'Avalanche'                 | case-sensitive                                          |
-| message for call-contract                 | any string                                         | `Hello ${destination.name} from ${source.name}, it is ${new Date().toLocaleTimeString()}.` | 'Hello World'                              |                                                         |
-| message for nonced-execution and send-ack | any string                                         | `Hello, the time is ${time}.`                                                              | 'Hello World'                              |                                                         |
-| amount                                    | integer or float                                   | `10`                                                                                       | 53                                         | Any non-integer is rounded down to the nearest integer. |
-| account                                   | any wallet address                                 | no default                                                                                 | 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb | case-sensitive.                                         |
-
-Run the deploy and test code specific to each example described below.
-
-To use defaults, substitute `${}` for any or all of the variables.
-
 ### EVM Examples
 
 #### Simple
@@ -85,7 +69,7 @@ To use defaults, substitute `${}` for any or all of the variables.
 -   [cross-chain-token](/examples/evm/advances/cross-chain-token)
 -   [cross-chain-lending](/examples/evm/advances/cross-chain-lending)
 
-### Aptos
+### Aptos Examples
 
 You can build the aptos modules with
 

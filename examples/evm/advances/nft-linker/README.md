@@ -13,8 +13,16 @@ A single NFT is minted to the deployer (`0xBa86A5719722B02a5D5e388999C25f3333c7A
 Run the test:
 
 ```bash
-node scripts/test examples/nft-linker [local|testnet] ${"source-chain"} ${"destination-chain"}
+node scripts/test examples/nft-linker [local|testnet] ${srcChain} ${destChain}
 ```
+
+**Default Values**:
+
+-   `srcChain` is `Avalanche`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
+-   `destChain` is `Fantom`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
+-   `amount` is `10`
+
+**Note**:
 
 It's not possible to send a duplicate NFT to a chain. The dApp fails when the NFT is already at the destination-chain.
 
