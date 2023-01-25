@@ -64,6 +64,27 @@ Run the deploy and test code specific to each example described below.
 
 To use defaults, substitute `${}` for any or all of the variables.
 
+### EVM Examples
+
+#### Simple
+
+-   [call-contract](/examples/evm/call-contract)
+-   [call-contract-with-token](/examples/evm/call-contract-with-token)
+-   [send-token](/examples/send-token)
+-   [deposit-address](/examples/deposit-address)
+
+#### Advances
+
+-   [forecall](/examples/evm/advances/forecall)
+-   [headers](/examples/evm/advances/headers)
+-   [deposit-address](/examples/evm/advances/deposit-address)
+-   [nft-linker](/examples/evm/advances/nft-linker)
+-   [nft-auctionhouse](/examples/evm/advances/nft-auctionhouse)
+-   [nonced-execution](/examples/evm/advances/nonced-execution)
+-   [send-ack](/examples/evm/advances/send-ack)
+-   [cross-chain-token](/examples/evm/advances/cross-chain-token)
+-   [cross-chain-lending](/examples/evm/advances/cross-chain-lending)
+
 ### Aptos
 
 You can build the aptos modules with
