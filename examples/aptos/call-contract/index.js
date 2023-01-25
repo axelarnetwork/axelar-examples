@@ -7,11 +7,12 @@ const {
     constants: { AddressZero },
 } = require('ethers');
 const {
-    utils: { deployContract }, AptosNetwork,
+    utils: { deployContract },
+    AptosNetwork,
 } = require('@axelar-network/axelar-local-dev');
 
-const { sleep } = require('../../utils');
-const HelloWorld = require('../../artifacts/examples/aptos-call-contract/contracts/HelloWorld.sol/HelloWorld.json');
+const { sleep } = require('../../../utils');
+const HelloWorld = require('../../../artifacts/examples/aptos-call-contract/contracts/HelloWorld.sol/HelloWorld.json');
 const { defaultAbiCoder } = require('ethers/lib/utils');
 
 async function preDeploy() {
@@ -65,12 +66,7 @@ async function test(chains, wallet, options) {
     await client.submitTransactionAndWait(client.owner.address(), {
         function: `${client.owner.address()}::hello_world::call`,
         type_arguments: [],
-        arguments: [
-            evm.name,
-            evm.helloWorld,
-            payload,
-            gasLimit*gasPrice,
-        ],
+        arguments: [evm.name, evm.helloWorld, payload, gasLimit * gasPrice],
     });
 
     await sleep(3000);
