@@ -9,6 +9,9 @@ const { Wallet, Contract, getDefaultProvider } = require('ethers');
 const { getGasPrice, getDepositAddress } = require('./utils.js');
 const path = require('path');
 
+const rootPath = path.resolve(__dirname, '..');
+global.rootRequire = (name) => require(`${rootPath}/${name}`);
+
 async function test(env, chains, args, wallet, example) {
     function wrappedGetGasPrice(source, destination, tokenAddress) {
         return getGasPrice(env, source, destination, tokenAddress);

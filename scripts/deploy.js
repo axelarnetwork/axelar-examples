@@ -9,6 +9,9 @@ const { Wallet, getDefaultProvider, utils, ContractFactory } = require('ethers')
 const { FormatTypes } = require('ethers/lib/utils');
 const path = require('path');
 
+const rootPath = path.resolve(__dirname, '..');
+global.rootRequire = (name) => require(`${rootPath}/${name}`);
+
 async function deploy(env, chains, wallet, example) {
     if (example.preDeploy) {
         await example.preDeploy(chains, wallet);
