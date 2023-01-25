@@ -14,11 +14,12 @@ node scripts/test examples/send-token [local|testnet] ${srcChain} ${destChain} $
 -   `destChain` is `Fantom`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
 -   `amount` is `10`
 
-> Note: No smart contract to deploy for these examples.
->
-> If running on `testnet` then ensure that `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` is funded with aUSDC.
->
-> We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. It's funded by default in the `local` environment when you run `createLocal`. To make sure that it's funded on all five supported testnets, run `node/printBalances`.
+**Note:**
+No smart contract to deploy for these examples.
+
+If running on `testnet` then ensure that `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` is funded with aUSDC.
+
+We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. It's funded by default in the `local` environment when you run `createLocal`. To make sure that it's funded on all five supported testnets, run `node/printBalances`.
 
 ## Example
 
@@ -26,7 +27,7 @@ node scripts/test examples/send-token [local|testnet] ${srcChain} ${destChain} $
 node scripts/test examples/send-token local
 ```
 
-Output:
+### Output:
 
 ```
 --- Initially ---
