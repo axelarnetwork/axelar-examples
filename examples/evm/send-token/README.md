@@ -1,4 +1,4 @@
-### Send Token
+# Send Token
 
 > Note: No smart contract to deploy for these examples.
 > If running on `testnet` then ensure that `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` is funded with aUSDC.
@@ -7,10 +7,16 @@
 Run the `send-token` test:
 
 ```bash
-node scripts/test examples/send-token [local|testnet] ${"source-chain"} ${"destination-chain"} ${amount}
+node scripts/test examples/send-token [local|testnet] ${srcChain} ${destChain} ${amount}
 ```
 
-#### Example
+**Default Values**:
+
+-   `srcChain` is `Avalanche`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
+-   `destChain` is `Fantom`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
+-   `amount` is `10`
+
+## Example
 
 ```bash
 node scripts/test examples/send-token local
