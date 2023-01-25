@@ -7,11 +7,12 @@ const {
     constants: { AddressZero },
 } = require('ethers');
 const {
-    utils: { deployContract }, AptosNetwork,
+    utils: { deployContract },
+    AptosNetwork,
 } = require('@axelar-network/axelar-local-dev');
 
-const { sleep } = require('../../utils');
-const TokenLinker = require('../../artifacts/examples/aptos-token-linker/contracts/AptosTokenLinker.sol/AptosTokenLinker.json');
+const { sleep } = rootRequire('./utils');
+const TokenLinker = rootRequire('./artifacts/examples/aptos-token-linker/contracts/AptosTokenLinker.sol/AptosTokenLinker.json');
 const Token = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json');
 
 const aptosTokenLinkerAddress = process.env.APTOS_TOKEN_LINKER_ADDRESS;
@@ -26,18 +27,14 @@ async function preDeploy() {
 
 async function deploy(chain, wallet) {
     console.log(`Deploying Aptos Linked Token for ${chain.name}.`);
-    const token = await deployContract(wallet, Token, [
-        'Aptos Linked Token', 
-        'ALT', 
-        18,
-    ]);
+    const token = await deployContract(wallet, Token, ['Aptos Linked Token', 'ALT', 18]);
     chain.aptosLinkedToken = token.address;
     console.log(`Deployed Aptos Linked Token for ${chain.name} at ${chain.aptosLinkedToken}.`);
 
     console.log(`Deploying AptosTokenLinker for ${chain.name}.`);
     const contract = await deployContract(wallet, TokenLinker, [
-        chain.gateway, 
-        chain.gasReceiver, 
+        chain.gateway,
+        chain.gasReceiver,
         chain.aptosLinkedToken,
         aptosTokenLinkerAddress,
         ignoreDigits,
@@ -60,12 +57,12 @@ async function test(chains, wallet, options) {
 
     const evm = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
     const amount1 = args[1] || BigInt(1e18);
-    const amount2 = args[2] || BigInt(Math.floor(5e17/256**ignoreDigits));
+    const amount2 = args[2] || BigInt(Math.floor(5e17 / 256 ** ignoreDigits));
 
     async function logBalances() {
-        console.log(`Balance at ${evm.name} is ${await evm.token.balanceOf(wallet.address)/1e18} ALT`);
-        const balance = await coins.checkBalance(client.owner, {coinType:`${aptosTokenLinkerAddress}::token_linker::Token`});
-        console.log(`Balance at aptos is ${Number(balance) * 256**ignoreDigits / 1e18} ALT`);
+        console.log(`Balance at ${evm.name} is ${(await evm.token.balanceOf(wallet.address)) / 1e18} ALT`);
+        const balance = await coins.checkBalance(client.owner, { coinType: `${aptosTokenLinkerAddress}::token_linker::Token` });
+        console.log(`Balance at aptos is ${(Number(balance) * 256 ** ignoreDigits) / 1e18} ALT`);
     }
 
     console.log('Initializing token storage.');
@@ -80,10 +77,7 @@ async function test(chains, wallet, options) {
     await client.submitTransactionAndWait(client.owner.address(), {
         function: `${aptosTokenLinkerAddress}::token_linker::set_params`,
         type_arguments: [],
-        arguments: [
-            evm.name,
-            evm.aptosTokenLinker,
-        ],
+        arguments: [evm.name, evm.aptosTokenLinker],
     });
 
     console.log('--- Initially ---');
@@ -93,7 +87,7 @@ async function test(chains, wallet, options) {
     const gasLimit = 3e5;
     const gasPrice = await getGasPrice(evm, 'aptos', AddressZero);
 
-    console.log(`Minting and Approving ${Number(amount1)/1e18} ALT`);
+    console.log(`Minting and Approving ${Number(amount1) / 1e18} ALT`);
 
     await (await evm.token.mint(wallet.address, amount1)).wait();
     await (await evm.token.approve(evm.aptosTokenLinker, amount1)).wait();
@@ -113,15 +107,10 @@ async function test(chains, wallet, options) {
     console.log('--- After Send to Aptos ---');
     await logBalances();
 
-
     const aptosTx = await client.submitTransactionAndWait(client.owner.address(), {
         function: `${aptosTokenLinkerAddress}::token_linker::send_token`,
         type_arguments: [],
-        arguments: [
-            new HexString(wallet.address).toUint8Array(), 
-            amount2,
-            gasLimit * gasPrice,
-        ],
+        arguments: [new HexString(wallet.address).toUint8Array(), amount2, gasLimit * gasPrice],
     });
 
     await sleep(3000);

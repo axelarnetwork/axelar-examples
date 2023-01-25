@@ -11,8 +11,8 @@ const {
     AptosNetwork,
 } = require('@axelar-network/axelar-local-dev');
 
-const { sleep } = require('../../../utils');
-const HelloWorld = require('../../../artifacts/examples/aptos-call-contract/contracts/HelloWorld.sol/HelloWorld.json');
+const { sleep } = rootRequire('./utils');
+const HelloWorld = rootRequire('./artifacts/examples/aptos-call-contract/contracts/HelloWorld.sol/HelloWorld.json');
 const { defaultAbiCoder } = require('ethers/lib/utils');
 
 async function preDeploy() {

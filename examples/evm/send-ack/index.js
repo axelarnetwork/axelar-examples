@@ -10,8 +10,8 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const SendAckReceiver = require('../../artifacts/examples/send-ack/SendAckReceiverImplementation.sol/SendAckReceiverImplementation.json');
-const SendAckSender = require('../../artifacts/examples/send-ack/SendAckSender.sol/SendAckSender.json');
+const SendAckReceiver = rootRequire('./artifacts/examples/send-ack/SendAckReceiverImplementation.sol/SendAckReceiverImplementation.json');
+const SendAckSender = rootRequire('./artifacts/examples/send-ack/SendAckSender.sol/SendAckSender.json');
 
 const time = new Date().getTime();
 
@@ -64,17 +64,16 @@ async function test(chains, wallet, options) {
     const gasAmountRemote = BigInt(Math.floor(gasLimitRemote * gasPriceRemote));
     const gasAmountSource = BigInt(Math.floor(gasLimitSource * gasPriceSource));
 
-
     const tx = await (
-      await source.sender.sendContractCall(destination.name, destination.receiver.address, payload, gasAmountRemote, {
-        value: gasAmountRemote + gasAmountSource,
-      })
-      ).wait();
-      const event = tx.events.find((event) => event.event === 'ContractCallSent');
-      const nonce = event.args.nonce;
+        await source.sender.sendContractCall(destination.name, destination.receiver.address, payload, gasAmountRemote, {
+            value: gasAmountRemote + gasAmountSource,
+        })
+    ).wait();
+    const event = tx.events.find((event) => event.event === 'ContractCallSent');
+    const nonce = event.args.nonce;
 
-      while (!(await source.sender.executed(nonce))) {
-        console.log('MessageLength', await destination.receiver.messagesLength().then(val => val.toString()));
+    while (!(await source.sender.executed(nonce))) {
+        console.log('MessageLength', await destination.receiver.messagesLength().then((val) => val.toString()));
         console.log('Test', await source.sender.executed(nonce));
         await sleep(2000);
     }

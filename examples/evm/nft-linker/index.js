@@ -11,9 +11,9 @@ const {
 } = require('@axelar-network/axelar-local-dev');
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-const ERC721 = require('../../artifacts/examples/nft-linker/ERC721Demo.sol/ERC721Demo.json');
-const ExampleProxy = require('../../artifacts/examples/Proxy.sol/ExampleProxy.json');
-const NftLinker = require('../../artifacts/examples/nft-linker/NftLinker.sol/NftLinker.json');
+const ERC721 = rootRequire('./artifacts/examples/nft-linker/ERC721Demo.sol/ERC721Demo.json');
+const ExampleProxy = rootRequire('./artifacts/examples/Proxy.sol/ExampleProxy.json');
+const NftLinker = rootRequire('./artifacts/examples/nft-linker/NftLinker.sol/NftLinker.json');
 
 const tokenId = 0;
 

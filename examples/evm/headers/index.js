@@ -3,8 +3,8 @@
 const { getDefaultProvider, Contract } = require('ethers');
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-const ExampleProxy = require('../../artifacts/examples/Proxy.sol/ExampleProxy.json');
-const Headers = require('../../artifacts/examples/headers/Headers.sol/Headers.json');
+const ExampleProxy = rootRequire('./artifacts/examples/Proxy.sol/ExampleProxy.json');
+const Headers = rootRequire('./artifacts/examples/headers/Headers.sol/Headers.json');
 
 async function deploy(chain, wallet) {
     console.log(`Deploying Headers for ${chain.name}.`);

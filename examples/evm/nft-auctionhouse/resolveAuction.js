@@ -2,7 +2,7 @@
 
 const { getDefaultProvider, Contract, Wallet } = require('ethers');
 
-const NftAuctionhouse = require('../../artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
+const NftAuctionhouse = rootRequire('./artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
 
 async function resolveAuction(chain, privateKey, tokenId) {
     const provider = getDefaultProvider(chain.rpc);

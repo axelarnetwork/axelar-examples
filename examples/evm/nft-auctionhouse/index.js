@@ -16,10 +16,12 @@ const bidRemote = require('./bidRemote');
 const auction = require('./auction');
 const resolveAuction = require('./resolveAuction');
 
-const Gateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
-const ERC721 = require('../../artifacts/examples/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
-const NftAuctionHouse = require('../../artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
-const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
+const Gateway = rootRequire(
+    './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
+);
+const ERC721 = rootRequire('./artifacts/examples/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
+const NftAuctionHouse = rootRequire('./artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
+const IERC20 = rootRequire('./artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 async function deploy(chain, wallet) {
     console.log(`Deploying ERC721Demo for ${chain.name}.`);
@@ -31,12 +33,8 @@ async function deploy(chain, wallet) {
     console.log(`Deploying NftAuctionhouse for ${chain.name}.`);
     const gateway = new Contract(chain.gateway, Gateway.abi, wallet);
     const tokenAddress = await gateway.tokenAddresses('aUSDC');
-    console.log(tokenAddress)
-    chain.contract = await deployContract(wallet, NftAuctionHouse, [
-        chain.gateway,
-        chain.gasReceiver,
-        tokenAddress,
-    ]);
+    console.log(tokenAddress);
+    chain.contract = await deployContract(wallet, NftAuctionHouse, [chain.gateway, chain.gasReceiver, tokenAddress]);
 
     chain.auctionhouse = new Contract(chain.contract.address, NftAuctionHouse.abi, chain.wallet);
     chain.erc721contract = new Contract(chain.erc721, ERC721.abi, chain.wallet);

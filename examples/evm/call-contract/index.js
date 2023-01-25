@@ -9,8 +9,8 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const { sleep } = require('../../../utils');
-const ExecutableSample = require('../../../artifacts/examples/call-contract/ExecutableSample.sol/ExecutableSample.json');
+const { sleep } = rootRequire('./utils');
+const ExecutableSample = rootRequire('./artifacts/examples/call-contract/ExecutableSample.sol/ExecutableSample.json');
 
 async function deploy(chain, wallet) {
     console.log(`Deploying ExecutableSample for ${chain.name}.`);

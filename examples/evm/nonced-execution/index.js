@@ -8,9 +8,9 @@ const {
 } = require('ethers');
 const { deployUpgradable, deployAndInitContractConstant, predictContractConstant } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-const ExampleProxy = require('../../artifacts/examples/Proxy.sol/ExampleProxy.json');
-const CallSender = require('../../artifacts/examples/nonced-execution/NoncedContractCallSender.sol/NoncedContractCallSender.json');
-const Executable = require('../../artifacts/examples/nonced-execution/ExecutableImplementation.sol/ExecutableImplementation.json');
+const ExampleProxy = rootRequire('./artifacts/examples/Proxy.sol/ExampleProxy.json');
+const CallSender = rootRequire('./artifacts/examples/nonced-execution/NoncedContractCallSender.sol/NoncedContractCallSender.json');
+const Executable = rootRequire('./artifacts/examples/nonced-execution/ExecutableImplementation.sol/ExecutableImplementation.json');
 
 const time = new Date().getTime();
 

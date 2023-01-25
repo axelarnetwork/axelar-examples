@@ -18,12 +18,12 @@ npm run build
 
 ## Advance
 
--   [forecall](advance/forecall)
--   [headers](advance/headers)
--   [deposit-address](advance/deposit-address)
--   [nft-linker](advance/nft-linker)
--   [nft-auctionhouse](advance/nft-auctionhouse)
--   [nonced-execution](advance/nonced-execution)
--   [send-ack](advance/send-ack)
--   [cross-chain-token](advance/cross-chain-token)
--   [cross-chain-lending](advance/cross-chain-lending)
+-   [forecall](forecall)
+-   [headers](headers)
+-   [deposit-address](deposit-address)
+-   [nft-linker](nft-linker)
+-   [nft-auctionhouse](nft-auctionhouse)
+-   [nonced-execution](nonced-execution)
+-   [send-ack](send-ack)
+-   [cross-chain-token](cross-chain-token)
+-   [cross-chain-lending](cross-chain-lending)

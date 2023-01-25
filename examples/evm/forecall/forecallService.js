@@ -10,9 +10,11 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const DistributionForecallable = require('../../artifacts/examples/forecall/DistributionForecallable.sol/DistributionForecallable.json');
-const Gateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
-const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
+const DistributionForecallable = rootRequire('./artifacts/examples/forecall/DistributionForecallable.sol/DistributionForecallable.json');
+const Gateway = rootRequire(
+    './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
+);
+const IERC20 = rootRequire('./artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 const { defaultAbiCoder, keccak256 } = require('ethers/lib/utils');
 

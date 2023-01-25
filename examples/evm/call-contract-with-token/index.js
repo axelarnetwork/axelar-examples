@@ -9,10 +9,14 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const { sleep } = require('../../../utils');
-const DistributionExecutable = require('../../../artifacts/examples/call-contract-with-token/DistributionExecutable.sol/DistributionExecutable.json');
-const Gateway = require('../../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
-const IERC20 = require('../../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
+const { sleep } = rootRequire('./utils');
+const DistributionExecutable = rootRequire(
+    './artifacts/examples/call-contract-with-token/DistributionExecutable.sol/DistributionExecutable.json',
+);
+const Gateway = rootRequire(
+    './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
+);
+const IERC20 = rootRequire('./artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 async function deploy(chain, wallet) {
     console.log(`Deploying DistributionExecutable for ${chain.name}.`);

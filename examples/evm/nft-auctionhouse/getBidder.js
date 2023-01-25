@@ -11,7 +11,7 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const NftAuctionhouse = require('../../artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
+const NftAuctionhouse = rootRequire('./artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
 
 async function getBidder(chain, tokenId) {
     const provider = getDefaultProvider(chain.rpc);

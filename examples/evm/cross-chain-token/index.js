@@ -7,8 +7,8 @@ const {
 } = require('ethers');
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-const ExampleProxy = require('../../artifacts/examples/Proxy.sol/ExampleProxy.json');
-const ERC20CrossChain = require('../../artifacts/examples/cross-chain-token/ERC20CrossChain.sol/ERC20CrossChain.json');
+const ExampleProxy = rootRequire('./artifacts/examples/Proxy.sol/ExampleProxy.json');
+const ERC20CrossChain = rootRequire('./artifacts/examples/cross-chain-token/ERC20CrossChain.sol/ERC20CrossChain.json');
 
 const name = 'An Awesome Axelar Cross Chain Token';
 const symbol = 'AACCT';

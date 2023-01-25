@@ -3,10 +3,12 @@
 const { Contract, getDefaultProvider } = require('ethers');
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-const ExampleProxy = require('../../artifacts/examples/Proxy.sol/ExampleProxy.json');
-const DistributionForecallable = require('../../artifacts/examples/forecall/DistributionForecallable.sol/DistributionForecallable.json');
-const Gateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
-const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
+const ExampleProxy = rootRequire('./artifacts/examples/Proxy.sol/ExampleProxy.json');
+const DistributionForecallable = rootRequire('./artifacts/examples/forecall/DistributionForecallable.sol/DistributionForecallable.json');
+const Gateway = rootRequire(
+    './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
+);
+const IERC20 = rootRequire('./artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 const { defaultAbiCoder, keccak256 } = require('ethers/lib/utils');
 
@@ -24,7 +26,7 @@ async function deploy(chain, wallet) {
         '0x',
         'forecallable',
     );
-    const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet)
+    const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
     const usdcAddress = gateway.tokenAddresses('aUSDC');
     chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
     console.log(`Deployed DistributionForecallable for ${chain.name} at ${chain.contract.address}.`);

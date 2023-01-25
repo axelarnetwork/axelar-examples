@@ -1,19 +1,15 @@
 'use strict';
 
-const {
-    getDefaultProvider,
-    Contract,
-    Wallet,
-} = require('ethers');
+const { getDefaultProvider, Contract, Wallet } = require('ethers');
 
-const ERC721 = require('../../artifacts/examples/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
+const ERC721 = rootRequire('./artifacts/examples/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
 
 async function bid(chain, privateKey, tokenId, amount) {
     const provider = getDefaultProvider(chain.rpc);
     const wallet = new Wallet(privateKey, provider);
     const erc721 = new Contract(chain.erc721, ERC721.abi, wallet);
-    const usdc = chain.usdc
-    const auctionhouse = chain.contract
+    const usdc = chain.usdc;
+    const auctionhouse = chain.contract;
 
     if (amount === 0) {
         const bid = await auctionhouse.bids(erc721.address, tokenId);
@@ -26,8 +22,8 @@ async function bid(chain, privateKey, tokenId, amount) {
         }
     }
 
-    await (await usdc.approve(auctionhouse.address, amount).then(tx => tx.wait()));
-    await (await auctionhouse.bid(erc721.address, tokenId, amount).then(tx => tx.wait()));
+    await await usdc.approve(auctionhouse.address, amount).then((tx) => tx.wait());
+    await await auctionhouse.bid(erc721.address, tokenId, amount).then((tx) => tx.wait());
 }
 
 module.exports = bid;

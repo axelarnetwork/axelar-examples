@@ -1,16 +1,26 @@
 'use strict';
 
-const { getDefaultProvider, Contract } = require('ethers');
+const {
+    getDefaultProvider,
+    Contract,
+    constants: { AddressZero },
+    utils: { keccak256, defaultAbiCoder },
+    Wallet,
+} = require('ethers');
+const {
+    utils: { deployContract },
+} = require('@axelar-network/axelar-local-dev');
 
-const ERC721 = require('../../artifacts/examples/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
+const ERC721 = rootRequire('./artifacts/examples/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
 
-async function ownerOf(chain, tokenId) {
+async function mint(chain, private_key, tokenId) {
     const provider = getDefaultProvider(chain.rpc);
-    const contract = new Contract(chain.erc721, ERC721.abi, provider);
-    return await contract.ownerOf(tokenId);
+    const wallet = new Wallet(private_key, provider);
+    const contract = new Contract(chain.erc721, ERC721.abi, wallet);
+    await await contract.mint(tokenId);
 }
 
-module.exports = ownerOf;
+module.exports = mint;
 
 if (require.main === module) {
     const env = process.argv[2];
@@ -30,8 +40,9 @@ if (require.main === module) {
     const args = process.argv.slice(3);
 
     const chainName = args[0];
-    const tokenId = BigInt(args[1]);
+    const private_key = args[1];
+    const tokenId = BigInt(args[2]);
     const chain = chains.find((chain) => chain.name === chainName);
 
-    ownerOf(chain, tokenId).then((owner) => console.log(owner));
+    mint(chain, private_key, tokenId);
 }
