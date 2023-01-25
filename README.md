@@ -23,13 +23,6 @@ Clone this repo:
 git clone https://github.com/axelarnetwork/axelar-local-gmp-examples.git
 ```
 
-Build contracts and tests:
-
-```bash
-npm ci
-npm run build
-```
-
 ## Set up deployer key
 
 ```bash
@@ -49,6 +42,15 @@ node scripts/createLocal
 Leave this node running on a separate terminal before deploying and testing the dApps.
 
 ### EVM Examples
+
+#### Prerequisites
+
+Build contracts and tests:
+
+```bash
+npm ci
+npm run build
+```
 
 #### Basic
 
@@ -71,19 +73,27 @@ Leave this node running on a separate terminal before deploying and testing the 
 
 ### Aptos Examples
 
-You can build the aptos modules with
+### Prerequisite
+
+1. Build the Aptos modules
 
 ```bash
+npm ci
 npm run build-aptos
 ```
+
+2. Run the local aptos testnet with faucet
+
+```bash
+npm scripts/createLocal
+```
+
+Note: `aptos` cli needs to be installed in your local machine (https://aptos.dev/cli-tools/aptos-cli-tool/)
 
 #### Basic
 
 -   [call-contract](/examples/aptos/call-contract/)
--   [token-linker](/examples/aptos/token-linker/)
 
 #### Advance
 
-Add more paths into `build-aptos.sh` if you are writing your own examples.
-
-The two existing aptos examples (`aptos-hello-world` and `aptos-token-linker`) can be run like any other example, as long as you have a local aptos testnet running on `http://localhost:8080` with a faucet on `http://localhost:8081` _before_ running `createLocal`.
+-   [token-linker](/examples/aptos/token-linker/)
