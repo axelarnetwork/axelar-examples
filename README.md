@@ -50,24 +50,24 @@ Leave this node running on a separate terminal before deploying and testing the 
 
 ### EVM Examples
 
-#### Simple
+#### Basic
 
 -   [call-contract](/examples/evm/call-contract)
 -   [call-contract-with-token](/examples/evm/call-contract-with-token)
 -   [send-token](/examples/send-token)
 -   [deposit-address](/examples/deposit-address)
 
-#### Advances
+#### Advance
 
--   [forecall](/examples/evm/advances/forecall)
--   [headers](/examples/evm/advances/headers)
--   [deposit-address](/examples/evm/advances/deposit-address)
--   [nft-linker](/examples/evm/advances/nft-linker)
--   [nft-auctionhouse](/examples/evm/advances/nft-auctionhouse)
--   [nonced-execution](/examples/evm/advances/nonced-execution)
--   [send-ack](/examples/evm/advances/send-ack)
--   [cross-chain-token](/examples/evm/advances/cross-chain-token)
--   [cross-chain-lending](/examples/evm/advances/cross-chain-lending)
+-   [forecall](/examples/evm/advance/forecall)
+-   [headers](/examples/evm/advance/headers)
+-   [deposit-address](/examples/evm/advance/deposit-address)
+-   [nft-linker](/examples/evm/advance/nft-linker)
+-   [nft-auctionhouse](/examples/evm/advance/nft-auctionhouse)
+-   [nonced-execution](/examples/evm/advance/nonced-execution)
+-   [send-ack](/examples/evm/advance/send-ack)
+-   [cross-chain-token](/examples/evm/advance/cross-chain-token)
+-   [cross-chain-lending](/examples/evm/advance/cross-chain-lending)
 
 ### Aptos Examples
 
@@ -76,6 +76,13 @@ You can build the aptos modules with
 ```bash
 npm run build-aptos
 ```
+
+#### Basic
+
+-   [call-contract](/examples/aptos/call-contract/)
+-   [token-linker](/examples/aptos/token-linker/)
+
+#### Advance
 
 Add more paths into `build-aptos.sh` if you are writing your own examples.
 

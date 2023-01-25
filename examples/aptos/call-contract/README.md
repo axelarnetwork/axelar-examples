@@ -1,4 +1,4 @@
-# Call Contract Example
+# Call Contract
 
 Relay a message from source-chain to destination-chain.
 
@@ -24,7 +24,7 @@ node scripts/test examples/call-contract [local|testnet] ${srcChain} ${destChain
 
 ```bash
 node scripts/deploy examples/call-contract local
-node scripts/test examples/call-contract local "Moonbeam" "Avalanche" 'Hello World'
+node scripts/test examples/call-contract local "Aptos" "Avalanche" 'Hello World'
 ```
 
 Output:
