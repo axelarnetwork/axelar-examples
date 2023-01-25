@@ -7,9 +7,9 @@ const {
 } = require('@axelar-network/axelar-local-dev');
 const { Wallet, getDefaultProvider, utils, ContractFactory } = require('ethers');
 const { FormatTypes } = require('ethers/lib/utils');
+const path = require('path');
 
 async function deploy(env, chains, wallet, example) {
-
     if (example.preDeploy) {
         await example.preDeploy(chains, wallet);
     }
@@ -34,20 +34,19 @@ async function deploy(env, chains, wallet, example) {
         await Promise.all(promises);
     }
 
-    for(const chain of chains) {
-      for(const key of Object.keys(chain)) {
-
-        if(chain[key].interface) {
-          const contract = chain[key];
-          const abi = contract.interface.format(FormatTypes.full);
-          chain[key] = {
-            abi,
-            address: contract.address,
-          }
+    for (const chain of chains) {
+        for (const key of Object.keys(chain)) {
+            if (chain[key].interface) {
+                const contract = chain[key];
+                const abi = contract.interface.format(FormatTypes.full);
+                chain[key] = {
+                    abi,
+                    address: contract.address,
+                };
+            }
         }
-      }
 
-      // delete chain.wallet
+        // delete chain.wallet
     }
 
     setJSON(chains, `./info/${env}.json`);
@@ -58,7 +57,9 @@ module.exports = {
 };
 
 if (require.main === module) {
-    const example = require(`../${process.argv[2]}/index.js`);
+    const destDir = path.resolve(__dirname, '..', `examples/${process.argv[2]}/index.js`);
+    const pathname = path.relative(__dirname, destDir);
+    const example = require(pathname);
 
     const env = process.argv[3];
     if (env == null || (env !== 'testnet' && env !== 'local'))

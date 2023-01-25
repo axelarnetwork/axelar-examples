@@ -43,5 +43,5 @@ Leave this node running on a separate terminal before deploying and testing the 
 
 # Examples
 
--   [EVM Examples](/examples/evm/)
+-   [Evm Examples](/examples/evm/)
 -   [Aptos Examples](/examples/aptos/)
