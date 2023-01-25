@@ -5,7 +5,7 @@ Send the NFT that was originally minted at source-chain to destination-chain.
 Deploy:
 
 ```bash
-node scripts/deploy examples/nft-linker [local|testnet]
+npm run deploy evm/nft-linker [local|testnet]
 ```
 
 A single NFT is minted to the deployer (`0xBa86A5719722B02a5D5e388999C25f3333c7A9fb`) on each chain.
@@ -13,7 +13,7 @@ A single NFT is minted to the deployer (`0xBa86A5719722B02a5D5e388999C25f3333c7A
 Run the test:
 
 ```bash
-node scripts/test examples/nft-linker [local|testnet] ${srcChain} ${destChain}
+npm run execute evm/nft-linker [local|testnet] ${srcChain} ${destChain}
 ```
 
 **Default Values**:
@@ -29,8 +29,8 @@ It's not possible to send a duplicate NFT to a chain. The dApp fails when the NF
 #### Example
 
 ```bash
-node scripts/deploy examples/nft-linker local
-node scripts/test examples/nft-linker local "Avalanche" "Polygon"
+npm run deploy evm/nft-linker local
+npm run execute evm/nft-linker local "Avalanche" "Polygon"
 ```
 
 Output:

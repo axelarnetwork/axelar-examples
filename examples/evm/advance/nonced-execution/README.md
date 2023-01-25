@@ -5,13 +5,13 @@ Send a message from source-chain to destination-chain.
 Deploy:
 
 ```bash
-node scripts/deploy examples/nonced-execution [local|testnet]
+npm run deploy evm/nonced-execution [local|testnet]
 ```
 
 Run the test:
 
 ```bash
-node scripts/test examples/nonced-execution [local|testnet] ${srcChain} ${destChain} ${message}
+npm run execute evm/nonced-execution [local|testnet] ${srcChain} ${destChain} ${message}
 ```
 
 **Default Values**:
@@ -23,8 +23,8 @@ node scripts/test examples/nonced-execution [local|testnet] ${srcChain} ${destCh
 #### Example
 
 ```bash
-node scripts/deploy examples/nonced-execution local
-node scripts/test examples/nonced-execution local ${} ${} ${}
+npm run deploy evm/nonced-execution local
+npm run execute evm/nonced-execution local ${} ${} ${}
 ```
 
 Output:

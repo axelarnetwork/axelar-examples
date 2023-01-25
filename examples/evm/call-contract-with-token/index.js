@@ -9,10 +9,10 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const { sleep } = require('../../utils');
-const DistributionExecutable = require('../../artifacts/examples/call-contract-with-token/DistributionExecutable.sol/DistributionExecutable.json');
-const Gateway = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
-const IERC20 = require('../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
+const { sleep } = require('../../../utils');
+const DistributionExecutable = require('../../../artifacts/examples/call-contract-with-token/DistributionExecutable.sol/DistributionExecutable.json');
+const Gateway = require('../../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
+const IERC20 = require('../../../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 async function deploy(chain, wallet) {
     console.log(`Deploying DistributionExecutable for ${chain.name}.`);
@@ -48,7 +48,6 @@ async function test(chains, wallet, options) {
     const gasPrice = await getGasPrice(source, destination, AddressZero);
 
     const balance = await destination.usdc.balanceOf(accounts[0]);
-
 
     const approveTx = await source.usdc.approve(source.contract.address, amount);
     await approveTx.wait();

@@ -5,13 +5,13 @@ Send aUSDC from source-chain to destination-chain and distribute it equally amon
 Deploy:
 
 ```bash
-node scripts/deploy examples/call-contract-with-token [local|testnet]
+npm run deploy evm/call-contract-with-token [local|testnet]
 ```
 
 Run the test:
 
 ```bash
-node scripts/test examples/call-contract-with-token [local|testnet] ${srcChain} ${destChain} ${amount} ${account} ${account2} ...
+npm run execute evm/call-contract-with-token [local|testnet] ${srcChain} ${destChain} ${amount} ${account} ${account2} ...
 ```
 
 **Default Values**:
@@ -23,8 +23,8 @@ node scripts/test examples/call-contract-with-token [local|testnet] ${srcChain} 
 #### Example
 
 ```bash
-node scripts/deploy examples/call-contract-with-token local
-node scripts/test examples/call-contract-with-token local "Moonbeam" "Ethereum" 100 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
+npm run deploy evm/call-contract-with-token local
+npm run execute evm/call-contract-with-token local "Moonbeam" "Ethereum" 100 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
 ```
 
 Output:

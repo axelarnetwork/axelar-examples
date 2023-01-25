@@ -6,7 +6,7 @@ Run the `deposit-address` test:
 > We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. It's funded by default in the `local` environment when you run `createLocal`. To make sure that it's funded on all five supported testnets, run `node/printBalances`.
 
 ```bash
-node scripts/test examples/deposit-address [local|testnet] ${srcChain} ${destChain} ${amount}
+npm run execute evm/deposit-address [local|testnet] ${srcChain} ${destChain} ${amount}
 ```
 
 **Default Values**:
@@ -18,7 +18,7 @@ node scripts/test examples/deposit-address [local|testnet] ${srcChain} ${destCha
 #### Example
 
 ```bash
-node scripts/test examples/deposit-address local
+npm run execute evm/deposit-address local
 ```
 
 Output:

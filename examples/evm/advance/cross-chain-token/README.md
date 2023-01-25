@@ -5,13 +5,13 @@ Mints some token at source-chain and send it to destination-chain.
 Deploy:
 
 ```bash
-node scripts/deploy examples/cross-chain-token [local|testnet]
+npm run deploy evm/cross-chain-token [local|testnet]
 ```
 
 Run the test:
 
 ```bash
-node scripts/test examples/cross-chain-token [local|testnet] ${srcChain} ${destChain} ${amount}
+npm run execute evm/cross-chain-token [local|testnet] ${srcChain} ${destChain} ${amount}
 ```
 
 **Default Values**:
@@ -23,8 +23,8 @@ node scripts/test examples/cross-chain-token [local|testnet] ${srcChain} ${destC
 #### Example
 
 ```bash
-node scripts/deploy examples/cross-chain-token local
-node scripts/test examples/cross-chain-token local "Ethereum" "Fantom" 1
+npm run deploy evm/cross-chain-token local
+npm run execute evm/cross-chain-token local "Ethereum" "Fantom" 1
 ```
 
 Output:

@@ -5,13 +5,13 @@ Send a message from source-chain to destination-chain.
 **Deploy**
 
 ```bash
-node scripts/deploy examples/send-ack [local|testnet]
+npm run deploy evm/send-ack [local|testnet]
 ```
 
 Run the test:
 
 ```bash
-node scripts/test examples/send-ack [local|testnet] ${srcChain} ${destChain} ${message}
+npm run execute evm/send-ack [local|testnet] ${srcChain} ${destChain} ${message}
 ```
 
 **Default Values**:
@@ -23,8 +23,8 @@ node scripts/test examples/send-ack [local|testnet] ${srcChain} ${destChain} ${m
 #### Example
 
 ```bash
-node scripts/deploy examples/send-ack local
-node scripts/test examples/send-ack local "Fantom" "Moonbeam" 'Received'
+npm run deploy evm/send-ack local
+npm run execute evm/send-ack local "Fantom" "Moonbeam" 'Received'
 ```
 
 **Output:**

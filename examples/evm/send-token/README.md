@@ -5,7 +5,7 @@ Send a supported erc-20 token from source chain to the destination chain.
 Run the `send-token` test:
 
 ```bash
-node scripts/test examples/send-token [local|testnet] ${srcChain} ${destChain} ${amount}
+npm run execute evm/send-token [local|testnet] ${srcChain} ${destChain} ${amount}
 ```
 
 **Default Values**:
@@ -25,7 +25,7 @@ We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examp
 ## Example
 
 ```bash
-node scripts/test examples/send-token local
+npm run execute evm/send-token local
 ```
 
 ### Output:

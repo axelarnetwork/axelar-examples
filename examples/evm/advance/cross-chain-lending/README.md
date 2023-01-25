@@ -5,7 +5,7 @@ Supply collateral and borrow tokens from a satellite chain to a fork of Ethereum
 #### Example
 
 ```bash
-node scripts/test examples/cross-chain-lending local
+npm run execute evm/cross-chain-lending local
 ```
 
 Output:

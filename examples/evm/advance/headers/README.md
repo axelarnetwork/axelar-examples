@@ -5,13 +5,13 @@ Informs destination-chain of the last header of source-chain.
 Deploy:
 
 ```bash
-node scripts/deploy examples/headers [local|testnet]
+npm run deploy evm/headers [local|testnet]
 ```
 
 Run the test:
 
 ```bash
-node scripts/test examples/headers [local|testnet] ${srcChain} ${destChain}
+npm run execute evm/headers [local|testnet] ${srcChain} ${destChain}
 ```
 
 **Default Values**:
@@ -22,8 +22,8 @@ node scripts/test examples/headers [local|testnet] ${srcChain} ${destChain}
 #### Example
 
 ```bash
-node scripts/deploy examples/headers local
-node scripts/test examples/headers local "Fantom" "Moonbeam"
+npm run deploy evm/headers local
+npm run execute evm/headers local "Fantom" "Moonbeam"
 ```
 
 Output:

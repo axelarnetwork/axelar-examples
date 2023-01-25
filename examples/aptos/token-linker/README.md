@@ -5,13 +5,13 @@ Status: WIP
 Deploy:
 
 ```bash
-node scripts/deploy examples/token-linker [local|testnet]
+npm run deploy aptos/token-linker [local|testnet]
 ```
 
 Run the test:
 
 ```bash
-node scripts/test examples/token-linker [local|testnet] ${destChain} ${amount1} ${amount2}
+npm run execute aptos/token-linker [local|testnet] ${destChain} ${amount1} ${amount2}
 ```
 
 **Default Values**:
@@ -23,8 +23,8 @@ node scripts/test examples/token-linker [local|testnet] ${destChain} ${amount1} 
 ## Example
 
 ```bash
-node scripts/deploy examples/token-linker local
-node scripts/test examples/token-linker local "Avalanche" 10000000000 5000000000
+npm run deploy aptos/token-linker local
+npm run execute aptos/token-linker local "Avalanche" 10000000000 5000000000
 ```
 
 Output:
