@@ -5,13 +5,13 @@ Relay a message from source-chain to destination-chain.
 Deploy:
 
 ```bash
-node scripts/deploy examples/call-contract [local|testnet]
+npm run deploy evm/call-contract [local|testnet]
 ```
 
 Run the test:
 
 ```bash
-node scripts/test examples/call-contract [local|testnet] ${srcChain} ${destChain} ${message}
+npm run execute evm/call-contract [local|testnet] ${srcChain} ${destChain} ${message}
 ```
 
 **Default Values**:
@@ -23,8 +23,8 @@ node scripts/test examples/call-contract [local|testnet] ${srcChain} ${destChain
 ## Example
 
 ```bash
-node scripts/deploy examples/call-contract local
-node scripts/test examples/call-contract local "Moonbeam" "Avalanche" 'Hello World'
+npm run deploy evm/call-contract local
+npm run execute evm/call-contract local "Moonbeam" "Avalanche" "Hello World"
 ```
 
 Output:
