@@ -4,6 +4,7 @@ artifacts
 cache
 yarn-error.log
 local.json
+gasLogs.json
 scripts/deployConst.js
 
 aptos-artifacts
