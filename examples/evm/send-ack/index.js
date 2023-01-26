@@ -28,7 +28,7 @@ async function deploy(chain, wallet) {
     console.log(`Deployed SendAckReceiverImplementation for ${chain.name} at ${chain.receiver.address}.`);
 }
 
-async function test(chains, wallet, options) {
+async function execute(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
 
@@ -84,5 +84,5 @@ async function test(chains, wallet, options) {
 
 module.exports = {
     deploy,
-    test,
+    execute,
 };

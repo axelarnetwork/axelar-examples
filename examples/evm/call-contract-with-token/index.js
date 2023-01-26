@@ -29,7 +29,7 @@ async function deploy(chain, wallet) {
     console.log(`Deployed DistributionExecutable for ${chain.name} at ${chain.contract.address}.`);
 }
 
-async function test(chains, wallet, options) {
+async function execute(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
@@ -74,5 +74,5 @@ async function test(chains, wallet, options) {
 
 module.exports = {
     deploy,
-    test,
+    execute,
 };

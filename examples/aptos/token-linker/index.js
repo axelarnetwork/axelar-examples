@@ -43,7 +43,7 @@ async function deploy(chain, wallet) {
     console.log(`Deployed AptosTokenLinker for ${chain.name} at ${chain.aptosTokenLinker}.`);
 }
 
-async function test(chains, wallet, options) {
+async function execute(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
     const client = new AptosNetwork(process.env.APTOS_URL);
@@ -122,5 +122,5 @@ async function test(chains, wallet, options) {
 module.exports = {
     preDeploy,
     deploy,
-    test,
+    execute,
 };

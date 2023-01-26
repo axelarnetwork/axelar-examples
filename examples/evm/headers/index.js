@@ -23,7 +23,7 @@ async function deploy(chain, wallet) {
     console.log(`Deployed Headers for ${chain.name} at ${chain.contract.address}.`);
 }
 
-async function test(chains, wallet, options) {
+async function execute(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
 
@@ -59,5 +59,5 @@ async function test(chains, wallet, options) {
 
 module.exports = {
     deploy,
-    test,
+    execute,
 };

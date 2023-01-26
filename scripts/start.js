@@ -2,7 +2,7 @@ require('dotenv').config();
 const { createAndExport, createAptosNetwork } = require('@axelar-network/axelar-local-dev');
 const { Wallet } = require('ethers');
 
-async function createLocal(toFund = []) {
+async function start(toFund = []) {
     try {
         await createAptosNetwork();
         console.log('Initialized aptos.');
@@ -26,7 +26,7 @@ async function createLocal(toFund = []) {
 }
 
 module.exports = {
-    createLocal,
+    start,
 };
 
 if (require.main === module) {
@@ -38,5 +38,5 @@ if (require.main === module) {
         toFund.push(process.argv[j]);
     }
 
-    createLocal(toFund);
+    start(toFund);
 }

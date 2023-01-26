@@ -54,7 +54,7 @@ async function deploy(chain, wallet) {
     if (deficit > 0) await (await chain.usdc.transfer(chain.bidder.address, deficit)).wait();
 }
 
-async function test(chains, wallet, options) {
+async function execute(chains, wallet, options) {
     const args = options.args || [];
 
     const firstUnminted = async (chain) => {
@@ -145,6 +145,6 @@ async function test(chains, wallet, options) {
 
 module.exports = {
     deploy,
-    test,
+    execute,
     // postDeploy,
 };

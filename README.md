@@ -36,7 +36,7 @@ Then update to your own private key.
 In order to run the examples against the local emulator, cd to `axelar-local-gmp-examples` and run
 
 ```bash
-node scripts/createLocal
+node scripts/start
 ```
 
 Leave this node running on a separate terminal before deploying and testing the dApps.

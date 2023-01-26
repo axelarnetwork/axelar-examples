@@ -143,7 +143,7 @@ async function print(satelliteChain, baseChain) {
     console.log('CompoundInterface CSUSHI balance', (await baseChain.csushi.balanceOf(baseChain.compoundInterface.address)).toString());
 }
 
-async function test(chains, wallet, options) {
+async function execute(chains, wallet, options) {
     const baseChain = await setupBaseChain();
     const satelliteChain = await setupSatelliteChain();
 
@@ -183,5 +183,5 @@ async function test(chains, wallet, options) {
 }
 
 module.exports = {
-    test,
+    execute,
 };
