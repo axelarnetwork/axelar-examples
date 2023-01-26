@@ -52,7 +52,7 @@ async function deploy(env, chains, wallet, example) {
         // delete chain.wallet
     }
 
-    setJSON(chains, `./info/${env}.json`);
+    setJSON(chains, `./examples/.chain-config/${env}.json`);
 }
 
 module.exports = {
@@ -73,7 +73,7 @@ if (require.main === module) {
         temp = require(`../examples/.chain-config/local.json`);
     } else {
         try {
-            temp = require(`../info/testnet.json`);
+            temp = require(`../examples/.chain-config/testnet.json`);
         } catch (e) {
             temp = testnetInfo;
         }
