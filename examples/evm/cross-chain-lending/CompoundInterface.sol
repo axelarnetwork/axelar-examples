@@ -1,12 +1,12 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarForecallable.sol';
+import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import './interfaces/CErc20Interface.sol';
 import './interfaces/Comptroller.sol';
 
-contract CompoundInterface is AxelarForecallable {
+contract CompoundInterface is AxelarExecutable {
     bytes32 internal constant SELECTOR_SUPPLY_AND_BORROW = keccak256('supplyAndBorrow');
     bytes32 internal constant SELECTOR_REPAY_AND_REDEEM = keccak256('repayAndRedeem');
 
@@ -26,7 +26,7 @@ contract CompoundInterface is AxelarForecallable {
         Comptroller comptroller_,
         string[] memory supportedTokens,
         address[] memory cTokens
-    ) AxelarForecallable(gateway_) {
+    ) AxelarExecutable(gateway_) {
         require(supportedTokens.length == cTokens.length, 'Lengths missmatch');
 
         comptroller = comptroller_;

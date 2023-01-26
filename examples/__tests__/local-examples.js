@@ -13,7 +13,7 @@ const {
 const fs = require('fs-extra');
 const path = require('path');
 
-const dir = path.resolve(__dirname, '..', '..');
+const dir = path.resolve(__dirname, '..');
 const infoPath = path.join(dir, 'info/local.json');
 
 const examples = [
@@ -37,6 +37,7 @@ describe('Examples', function () {
 
     // disable logging
     setLogger((...args) => {});
+
     console.log = () => {};
 
     const deployerKey = process.env.EVM_PRIVATE_KEY;

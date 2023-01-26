@@ -11,9 +11,9 @@ const {
 } = require('@axelar-network/axelar-local-dev');
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-const ERC721 = rootRequire('./artifacts/examples/nft-linker/ERC721Demo.sol/ERC721Demo.json');
-const ExampleProxy = rootRequire('./artifacts/examples/Proxy.sol/ExampleProxy.json');
-const NftLinker = rootRequire('./artifacts/examples/nft-linker/NftLinker.sol/NftLinker.json');
+const ERC721 = rootRequire('./artifacts/examples/evm/nft-linker/ERC721Demo.sol/ERC721Demo.json');
+const ExampleProxy = rootRequire('./artifacts/examples/evm/Proxy.sol/ExampleProxy.json');
+const NftLinker = rootRequire('./artifacts/examples/evm/nft-linker/NftLinker.sol/NftLinker.json');
 
 const tokenId = 0;
 
@@ -78,13 +78,7 @@ async function execute(chains, wallet, options) {
         }
     }
 
-    function sleep(ms) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
-    }
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const owner = await ownerOf();
     const source = chains.find((chain) => chain.name === owner.chain);

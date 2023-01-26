@@ -5,7 +5,7 @@ const {
     utils: { setJSON },
     testnetInfo,
 } = require('@axelar-network/axelar-local-dev');
-const { Wallet, getDefaultProvider, utils, ContractFactory } = require('ethers');
+const { Wallet, getDefaultProvider } = require('ethers');
 const { FormatTypes } = require('ethers/lib/utils');
 const path = require('path');
 
@@ -70,7 +70,7 @@ if (require.main === module) {
     let temp;
 
     if (env === 'local') {
-        temp = require(`../info/local.json`);
+        temp = require(`../local.json`);
     } else {
         try {
             temp = require(`../info/testnet.json`);

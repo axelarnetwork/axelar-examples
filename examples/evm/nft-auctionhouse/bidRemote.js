@@ -10,11 +10,11 @@ const {
 async function bidRemote(sourceChain, destinationChain, privateKey, tokenId, amount, options = null) {
     const provider = getDefaultProvider(sourceChain.rpc);
     const wallet = new Wallet(privateKey, provider);
-    const usdc = sourceChain.usdc
-    const auctionhouse = sourceChain.contract
+    const usdc = sourceChain.usdc;
+    const auctionhouse = sourceChain.contract;
 
-    const destinationAuctionhouse = destinationChain.contract
-    console.log(destinationChain.erc721)
+    const destinationAuctionhouse = destinationChain.contract;
+    console.log(destinationChain.erc721);
     const lastBid = await destinationAuctionhouse.bids(destinationChain.erc721, tokenId);
 
     if (amount === 0) {
@@ -44,13 +44,7 @@ async function bidRemote(sourceChain, destinationChain, privateKey, tokenId, amo
         )
     ).wait();
 
-    function sleep(ms) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
-    }
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     while (true) {
         const currentBid = await destinationAuctionhouse.bids(destinationChain.erc721, tokenId);
@@ -69,7 +63,7 @@ if (require.main === module) {
     let temp;
 
     if (env == 'local') {
-        temp = require(`../../info/local.json`);
+        temp = require(`../../local.json`);
     } else {
         try {
             temp = require(`../../info/testnet.json`);

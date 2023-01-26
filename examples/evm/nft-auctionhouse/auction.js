@@ -11,8 +11,8 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const ERC721 = rootRequire('./artifacts/examples/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
-const NftAuctionhouse = rootRequire('./artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
+const ERC721 = rootRequire('./artifacts/examples/evm/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
+const NftAuctionhouse = rootRequire('./artifacts/examples/evm/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
 
 async function auction(chain, privateKey, tokenId, deadline, min) {
     deadline = deadline || Math.floor(new Date().getTime() / 1000 + 60);
@@ -36,7 +36,7 @@ if (require.main === module) {
     let temp;
 
     if (env == 'local') {
-        temp = require(`../../info/local.json`);
+        temp = require(`../../local.json`);
     } else {
         try {
             temp = require(`../../info/testnet.json`);

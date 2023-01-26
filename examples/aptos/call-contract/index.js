@@ -11,7 +11,6 @@ const {
     AptosNetwork,
 } = require('@axelar-network/axelar-local-dev');
 
-const { sleep } = rootRequire('./utils');
 const HelloWorld = rootRequire('./artifacts/examples/aptos-call-contract/contracts/HelloWorld.sol/HelloWorld.json');
 const { defaultAbiCoder } = require('ethers/lib/utils');
 
@@ -33,6 +32,7 @@ async function execute(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
     const client = new AptosNetwork(process.env.APTOS_URL);
+
     for (const chain of chains) {
         const provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(provider);
@@ -54,7 +54,7 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await logValue();
 
-    //Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
+    // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
     const gasLimit = 3e5;
     const gasPrice = await getGasPrice(evm, 'aptos', AddressZero);
 
@@ -68,6 +68,8 @@ async function execute(chains, wallet, options) {
         type_arguments: [],
         arguments: [evm.name, evm.helloWorld, payload, gasLimit * gasPrice],
     });
+
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     await sleep(3000);
 

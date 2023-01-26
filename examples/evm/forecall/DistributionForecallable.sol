@@ -4,15 +4,15 @@ pragma solidity 0.8.9;
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
-import { AxelarForecallable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarForecallable.sol';
-import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradables/Upgradable.sol';
-import { AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/StringAddressUtils.sol';
+import { ExpressExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/express/ExpressExecutable.sol';
+import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol';
+import { AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
 
-contract DistributionForecallable is AxelarForecallable, Upgradable {
+contract DistributionForecallable is ExpressExecutable, Upgradable {
     using AddressToString for address;
     IAxelarGasService public immutable gasReceiver;
 
-    constructor(address gateway_, address gasReceiver_) AxelarForecallable(gateway_) {
+    constructor(address gateway_, address gasReceiver_) ExpressExecutable(gateway_) {
         gasReceiver = IAxelarGasService(gasReceiver_);
     }
 
@@ -68,7 +68,7 @@ contract DistributionForecallable is AxelarForecallable, Upgradable {
         }
     }
 
-    function amountPostFee(uint256 amount, bytes calldata payload) public pure override returns (uint256) {
+    function amountPostFee(uint256 amount, bytes calldata payload) public pure returns (uint256) {
         uint256 feePercent = abi.decode(payload, (uint256));
         uint64 num = uint64(feePercent);
         uint64 denom = uint64(feePercent >> 64);

@@ -29,6 +29,7 @@ module.exports = {
         },
     },
     paths: {
-        sources: "./examples",
-    }
+        sources: './examples',
+        artifacts: './artifacts',
+    },
 };

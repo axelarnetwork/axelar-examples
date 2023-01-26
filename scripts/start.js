@@ -19,7 +19,7 @@ async function start(toFund = []) {
     }
 
     await createAndExport({
-        chainOutputPath: './info/local.json',
+        chainOutputPath: './local.json',
         accountsToFund: toFund,
         callback,
     });

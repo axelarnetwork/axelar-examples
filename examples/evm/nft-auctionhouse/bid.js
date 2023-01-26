@@ -2,7 +2,7 @@
 
 const { getDefaultProvider, Contract, Wallet } = require('ethers');
 
-const ERC721 = rootRequire('./artifacts/examples/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
+const ERC721 = rootRequire('./artifacts/examples/evm/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
 
 async function bid(chain, privateKey, tokenId, amount) {
     const provider = getDefaultProvider(chain.rpc);
@@ -35,7 +35,7 @@ if (require.main === module) {
     let temp;
 
     if (env == 'local') {
-        temp = require(`../../info/local.json`);
+        temp = require(`../../local.json`);
     } else {
         try {
             temp = require(`../../info/testnet.json`);

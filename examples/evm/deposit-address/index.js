@@ -29,13 +29,7 @@ async function execute(chains, wallet, options = {}) {
         console.log(`Balance at ${destination.name} is ${await destination.token.balanceOf(destinationAddress)}`);
     }
 
-    function sleep(ms) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
-    }
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const balance = await destination.token.balanceOf(destinationAddress);
     console.log('--- Initially ---');

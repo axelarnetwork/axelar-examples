@@ -9,8 +9,7 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const { sleep } = rootRequire('./utils');
-const ExecutableSample = rootRequire('./artifacts/examples/call-contract/ExecutableSample.sol/ExecutableSample.json');
+const ExecutableSample = rootRequire('./artifacts/examples/evm/call-contract/ExecutableSample.sol/ExecutableSample.json');
 
 async function deploy(chain, wallet) {
     console.log(`Deploying ExecutableSample for ${chain.name}.`);
@@ -43,6 +42,8 @@ async function execute(chains, wallet, options) {
         value: BigInt(Math.floor(gasLimit * gasPrice)),
     });
     await tx.wait();
+
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     while ((await destination.contract.value()) !== message) {
         await sleep(1000);

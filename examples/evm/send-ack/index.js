@@ -2,7 +2,6 @@
 
 const {
     getDefaultProvider,
-    Contract,
     constants: { AddressZero },
     utils: { defaultAbiCoder },
 } = require('ethers');
@@ -10,8 +9,10 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const SendAckReceiver = rootRequire('./artifacts/examples/send-ack/SendAckReceiverImplementation.sol/SendAckReceiverImplementation.json');
-const SendAckSender = rootRequire('./artifacts/examples/send-ack/SendAckSender.sol/SendAckSender.json');
+const SendAckReceiver = rootRequire(
+    './artifacts/examples/evm/send-ack/SendAckReceiverImplementation.sol/SendAckReceiverImplementation.json',
+);
+const SendAckSender = rootRequire('./artifacts/examples/evm/send-ack/SendAckSender.sol/SendAckSender.json');
 
 const time = new Date().getTime();
 
@@ -46,13 +47,7 @@ async function execute(chains, wallet, options) {
         );
     }
 
-    function sleep(ms) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
-    }
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     console.log('--- Initially ---');
     await print();

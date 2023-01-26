@@ -11,7 +11,6 @@ const {
     AptosNetwork,
 } = require('@axelar-network/axelar-local-dev');
 
-const { sleep } = rootRequire('./utils');
 const TokenLinker = rootRequire('./artifacts/examples/aptos-token-linker/contracts/AptosTokenLinker.sol/AptosTokenLinker.json');
 const Token = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json');
 
@@ -48,6 +47,7 @@ async function execute(chains, wallet, options) {
     const getGasPrice = options.getGasPrice;
     const client = new AptosNetwork(process.env.APTOS_URL);
     const coins = new CoinClient(client);
+
     for (const chain of chains) {
         const provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(provider);
@@ -83,7 +83,7 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await logBalances();
 
-    //Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
+    // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
     const gasLimit = 3e5;
     const gasPrice = await getGasPrice(evm, 'aptos', AddressZero);
 
@@ -102,6 +102,7 @@ async function execute(chains, wallet, options) {
     });
     await tx.wait();
 
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await sleep(3000);
 
     console.log('--- After Send to Aptos ---');

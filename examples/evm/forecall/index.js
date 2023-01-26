@@ -3,8 +3,10 @@
 const { Contract, getDefaultProvider } = require('ethers');
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-const ExampleProxy = rootRequire('./artifacts/examples/Proxy.sol/ExampleProxy.json');
-const DistributionForecallable = rootRequire('./artifacts/examples/forecall/DistributionForecallable.sol/DistributionForecallable.json');
+const ExampleProxy = rootRequire('./artifacts/examples/evm/Proxy.sol/ExampleProxy.json');
+const DistributionForecallable = rootRequire(
+    './artifacts/examples/evm/forecall/DistributionForecallable.sol/DistributionForecallable.json',
+);
 const Gateway = rootRequire(
     './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
 );
@@ -48,13 +50,7 @@ async function execute(chains, wallet, options) {
         }
     }
 
-    function sleep(ms) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
-    }
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     console.log('--- Initially ---');
     await print();
