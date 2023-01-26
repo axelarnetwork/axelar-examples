@@ -70,11 +70,11 @@ if (require.main === module) {
     let temp;
 
     if (env === 'local') {
-        temp = require(`../local.json`);
+        temp = require(`../examples/.chain-config/local.json`);
     } else {
         try {
             temp = require(`../info/testnet.json`);
-        } catch {
+        } catch (e) {
             temp = testnetInfo;
         }
     }

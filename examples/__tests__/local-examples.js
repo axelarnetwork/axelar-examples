@@ -14,7 +14,7 @@ const fs = require('fs-extra');
 const path = require('path');
 
 const dir = path.resolve(__dirname, '..');
-const infoPath = path.join(dir, 'info/local.json');
+const infoPath = path.join(dir, '.chain-config/local.json');
 
 const examples = [
     'call-contract',
@@ -50,7 +50,7 @@ describe('Examples', function () {
             fs.unlinkSync(infoPath);
         }
 
-        await start(toFund);
+        await start(toFund, ['Avalanche', 'Fantom']);
     });
 
     afterEach(async () => {
