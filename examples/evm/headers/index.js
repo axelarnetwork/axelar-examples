@@ -3,8 +3,8 @@
 const { getDefaultProvider, Contract } = require('ethers');
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-const ExampleProxy = rootRequire('./artifacts/examples/Proxy.sol/ExampleProxy.json');
-const Headers = rootRequire('./artifacts/examples/headers/Headers.sol/Headers.json');
+const ExampleProxy = rootRequire('./artifacts/examples/evm/Proxy.sol/ExampleProxy.json');
+const Headers = rootRequire('./artifacts/examples/evm/headers/Headers.sol/Headers.json');
 
 async function deploy(chain, wallet) {
     console.log(`Deploying Headers for ${chain.name}.`);
@@ -23,20 +23,14 @@ async function deploy(chain, wallet) {
     console.log(`Deployed Headers for ${chain.name} at ${chain.contract.address}.`);
 }
 
-async function test(chains, wallet, options) {
+async function execute(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
 
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
     const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
 
-    function sleep(ms) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
-    }
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const gasLimit = 3e5;
     const gasPrice = await getGasPrice(source, destination, source.usdc.address);
@@ -59,5 +53,5 @@ async function test(chains, wallet, options) {
 
 module.exports = {
     deploy,
-    test,
+    execute,
 };

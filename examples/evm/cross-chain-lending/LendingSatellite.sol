@@ -1,11 +1,11 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarForecallable.sol';
+import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 
-contract LendingSatellite is AxelarForecallable {
+contract LendingSatellite is AxelarExecutable {
     string public baseChain;
     string public baseContract;
 
@@ -13,7 +13,7 @@ contract LendingSatellite is AxelarForecallable {
         address gateway_,
         string memory baseChain_,
         string memory baseContract_
-    ) AxelarForecallable(gateway_) {
+    ) AxelarExecutable(gateway_) {
         baseChain = baseChain_;
         baseContract = baseContract_;
     }

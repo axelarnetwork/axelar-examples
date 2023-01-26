@@ -1,17 +1,12 @@
 'use strict';
 
-const {
-    getDefaultProvider,
-    Contract,
-    constants: { AddressZero },
-} = require('ethers');
-
+const { getDefaultProvider, Contract } = require('ethers');
 const Gateway = rootRequire(
     './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
 );
 const IERC20 = rootRequire('./artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
-async function test(chains, wallet, options = {}) {
+async function execute(chains, wallet, options = {}) {
     const args = options.args || [];
     const source = chains.find((chain) => chain.name == (args[0] || 'Avalanche'));
     const destination = chains.find((chain) => chain.name == (args[1] || 'Fantom'));
@@ -32,13 +27,7 @@ async function test(chains, wallet, options = {}) {
         console.log(`Balance of ${destinationAddress} at ${destination.name} is ${await destination.token.balanceOf(destinationAddress)}`);
     }
 
-    function sleep(ms) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
-    }
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const balance = await destination.token.balanceOf(destinationAddress);
     console.log('--- Initially ---');
@@ -59,5 +48,5 @@ async function test(chains, wallet, options = {}) {
 }
 
 module.exports = {
-    test,
+    execute,
 };

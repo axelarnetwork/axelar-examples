@@ -2,7 +2,7 @@
 
 const { getDefaultProvider, Contract, Wallet } = require('ethers');
 
-const NftAuctionhouse = rootRequire('./artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
+const NftAuctionhouse = rootRequire('./artifacts/examples/evm/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
 
 async function resolveAuction(chain, privateKey, tokenId) {
     const provider = getDefaultProvider(chain.rpc);
@@ -21,10 +21,10 @@ if (require.main === module) {
     let temp;
 
     if (env == 'local') {
-        temp = require(`../../info/local.json`);
+        temp = require(`../../../.chain-config/local.json`);
     } else {
         try {
-            temp = require(`../../info/testnet.json`);
+            temp = require(`../../.chain-config/testnet.json`);
         } catch {
             temp = testnetInfo;
         }

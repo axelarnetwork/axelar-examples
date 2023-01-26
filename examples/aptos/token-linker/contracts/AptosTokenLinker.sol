@@ -3,8 +3,8 @@
 pragma solidity 0.8.9;
 
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
-import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarExecutable.sol';
-import { StringToAddress, AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/StringAddressUtils.sol';
+import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
+import { StringToAddress, AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 
@@ -29,9 +29,9 @@ contract AptosTokenLinker is AxelarExecutable {
     string public aptosAddress;
 
     constructor(
-        address gatewayAddress_, 
-        address gasServiceAddress_, 
-        address tokenAddress_, 
+        address gatewayAddress_,
+        address gasServiceAddress_,
+        address tokenAddress_,
         string memory aptosAddress_,
         uint256 ignoreDigits_
     ) AxelarExecutable(gatewayAddress_) {
@@ -47,7 +47,7 @@ contract AptosTokenLinker is AxelarExecutable {
         for(uint256 i=0; i< suffix.length; i++) {
             addressWithSuffix[i + length] = suffix[i];
         }
-        
+
         aptosAddress = string(addressWithSuffix);
         aptosAddressHash = keccak256(bytes(aptosAddress_));
         ignoreDigits = ignoreDigits_;

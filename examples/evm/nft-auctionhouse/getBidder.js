@@ -11,7 +11,7 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const NftAuctionhouse = rootRequire('./artifacts/examples/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
+const NftAuctionhouse = rootRequire('./artifacts/examples/evm/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
 
 async function getBidder(chain, tokenId) {
     const provider = getDefaultProvider(chain.rpc);
@@ -27,10 +27,10 @@ if (require.main === module) {
         throw new Error('Need to specify tesntet or local as an argument to this script.');
     let temp;
     if (env == 'local') {
-        temp = require(`../../info/local.json`);
+        temp = require(`../../../.chain-config/local.json`);
     } else {
         try {
-            temp = require(`../../info/testnet.json`);
+            temp = require(`../../.chain-config/testnet.json`);
         } catch {
             temp = testnetInfo;
         }

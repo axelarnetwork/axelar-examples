@@ -8,9 +8,9 @@ const {
 } = require('ethers');
 const { deployUpgradable, deployAndInitContractConstant, predictContractConstant } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-const ExampleProxy = rootRequire('./artifacts/examples/Proxy.sol/ExampleProxy.json');
-const CallSender = rootRequire('./artifacts/examples/nonced-execution/NoncedContractCallSender.sol/NoncedContractCallSender.json');
-const Executable = rootRequire('./artifacts/examples/nonced-execution/ExecutableImplementation.sol/ExecutableImplementation.json');
+const ExampleProxy = rootRequire('./artifacts/examples/evm/Proxy.sol/ExampleProxy.json');
+const CallSender = rootRequire('./artifacts/examples/evm/nonced-execution/NoncedContractCallSender.sol/NoncedContractCallSender.json');
+const Executable = rootRequire('./artifacts/examples/evm/nonced-execution/ExecutableImplementation.sol/ExecutableImplementation.json');
 
 const time = new Date().getTime();
 
@@ -54,7 +54,7 @@ async function deploy(chain, wallet) {
     console.log(`Deployed ExecutableImplementation for ${chain.name} at ${chain.contract.address}.`);
 }
 
-async function test(chains, wallet, options) {
+async function execute(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
 
@@ -73,13 +73,7 @@ async function test(chains, wallet, options) {
         );
     }
 
-    function sleep(ms) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
-    }
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     console.log('--- Initially ---');
     await print();
@@ -99,5 +93,5 @@ async function test(chains, wallet, options) {
 
 module.exports = {
     deploy,
-    test,
+    execute,
 };

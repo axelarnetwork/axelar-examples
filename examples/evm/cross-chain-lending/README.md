@@ -1,6 +1,6 @@
 # Cross-chain lending platform
 
-Supply collateral and borrow tokens from a satellite chain to a fork of Ethereum's mainnet using existing Compound Protocol. Unlike the other examples in this repository, executing this one doesn't require the execution of the script `scripts/createLocal` or `scripts/deploy` in order to run this test, the needed mainnet fork and the satellite chain are setup while running the test script itself.
+Supply collateral and borrow tokens from a satellite chain to a fork of Ethereum's mainnet using existing Compound Protocol. Unlike the other examples in this repository, executing this one doesn't require the execution of the script `scripts/start` or `scripts/deploy` in order to run this test, the needed mainnet fork and the satellite chain are setup while running the test script itself.
 
 #### Example
 

@@ -8,10 +8,10 @@ const {
     relay,
 } = require('@axelar-network/axelar-local-dev');
 
-const LendingSatellite = rootRequire('./artifacts/examples/cross-chain-lending/LendingSatellite.sol/LendingSatellite.json');
-const CompoundInterface = rootRequire('./artifacts/examples/cross-chain-lending/CompoundInterface.sol/CompoundInterface.json');
-const Comptroller = rootRequire('./artifacts/examples/cross-chain-lending/interfaces/Comptroller.sol/Comptroller.json');
-const CErc20Interface = rootRequire('./artifacts/examples/cross-chain-lending/interfaces/CErc20Interface.sol/CErc20Interface.json');
+const LendingSatellite = rootRequire('./artifacts/examples/evm/cross-chain-lending/LendingSatellite.sol/LendingSatellite.json');
+const CompoundInterface = rootRequire('./artifacts/examples/evm/cross-chain-lending/CompoundInterface.sol/CompoundInterface.json');
+const Comptroller = rootRequire('./artifacts/examples/evm/cross-chain-lending/interfaces/Comptroller.sol/Comptroller.json');
+const CErc20Interface = rootRequire('./artifacts/examples/evm/cross-chain-lending/interfaces/CErc20Interface.sol/CErc20Interface.json');
 const {
     Contract,
     utils: { defaultAbiCoder },
@@ -143,7 +143,7 @@ async function print(satelliteChain, baseChain) {
     console.log('CompoundInterface CSUSHI balance', (await baseChain.csushi.balanceOf(baseChain.compoundInterface.address)).toString());
 }
 
-async function test(chains, wallet, options) {
+async function execute(chains, wallet, options) {
     const baseChain = await setupBaseChain();
     const satelliteChain = await setupSatelliteChain();
 
@@ -183,5 +183,5 @@ async function test(chains, wallet, options) {
 }
 
 module.exports = {
-    test,
+    execute,
 };

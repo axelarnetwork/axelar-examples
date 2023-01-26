@@ -12,7 +12,7 @@ npm run build-aptos
 2. Run the local aptos testnet with faucet
 
 ```bash
-npm scripts/createLocal
+npm scripts/start
 ```
 
 Note: `aptos` cli needs to be installed in your local machine (https://aptos.dev/cli-tools/aptos-cli-tool/)

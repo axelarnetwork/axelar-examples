@@ -9,9 +9,8 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const { sleep } = rootRequire('./utils');
 const DistributionExecutable = rootRequire(
-    './artifacts/examples/call-contract-with-token/DistributionExecutable.sol/DistributionExecutable.json',
+    './artifacts/examples/evm/call-contract-with-token/DistributionExecutable.sol/DistributionExecutable.json',
 );
 const Gateway = rootRequire(
     './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
@@ -29,7 +28,7 @@ async function deploy(chain, wallet) {
     console.log(`Deployed DistributionExecutable for ${chain.name} at ${chain.contract.address}.`);
 }
 
-async function test(chains, wallet, options) {
+async function execute(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
@@ -44,6 +43,8 @@ async function test(chains, wallet, options) {
             console.log(`${account} has ${(await destination.usdc.balanceOf(account)) / 1e6} aUSDC`);
         }
     }
+
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     console.log('--- Initially ---');
     await logAccountBalances();
@@ -74,5 +75,5 @@ async function test(chains, wallet, options) {
 
 module.exports = {
     deploy,
-    test,
+    execute,
 };

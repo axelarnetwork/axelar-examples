@@ -5,7 +5,7 @@ const {
     utils: { setJSON },
     testnetInfo,
 } = require('@axelar-network/axelar-local-dev');
-const { Wallet, getDefaultProvider, utils, ContractFactory } = require('ethers');
+const { Wallet, getDefaultProvider } = require('ethers');
 const { FormatTypes } = require('ethers/lib/utils');
 const path = require('path');
 
@@ -52,7 +52,7 @@ async function deploy(env, chains, wallet, example) {
         // delete chain.wallet
     }
 
-    setJSON(chains, `./info/${env}.json`);
+    setJSON(chains, `./examples/.chain-config/${env}.json`);
 }
 
 module.exports = {
@@ -70,11 +70,11 @@ if (require.main === module) {
     let temp;
 
     if (env === 'local') {
-        temp = require(`../info/local.json`);
+        temp = require(`../examples/.chain-config/local.json`);
     } else {
         try {
-            temp = require(`../info/testnet.json`);
-        } catch {
+            temp = require(`../examples/.chain-config/testnet.json`);
+        } catch (e) {
             temp = testnetInfo;
         }
     }

@@ -12,7 +12,7 @@ const path = require('path');
 const rootPath = path.resolve(__dirname, '..');
 global.rootRequire = (name) => require(`${rootPath}/${name}`);
 
-async function test(env, chains, args, wallet, example) {
+async function execute(env, chains, args, wallet, example) {
     function wrappedGetGasPrice(source, destination, tokenAddress) {
         return getGasPrice(env, source, destination, tokenAddress);
     }
@@ -38,7 +38,7 @@ async function test(env, chains, args, wallet, example) {
         chain.usdc = new Contract(tokenAddress, IERC20.abi, wallet.connect(provider));
     }
 
-    await example.test(chains, wallet, {
+    await example.execute(chains, wallet, {
         getGasPrice: wrappedGetGasPrice,
         getDepositAddress: wrappedGetDepositAddress,
         args,
@@ -46,16 +46,16 @@ async function test(env, chains, args, wallet, example) {
 }
 
 module.exports = {
-    test,
+    execute,
 };
 
 function getChains(env) {
     if (env === 'local') {
-        return require(`../info/local.json`);
+        return require(`../examples/.chain-config/local.json`);
     }
 
     try {
-        return require(`../info/testnet.json`);
+        return require(`../examples/.chain-config/testnet.json`);
     } catch {
         return testnetInfo;
     }
@@ -76,5 +76,5 @@ if (require.main === module) {
 
     const args = process.argv.slice(4);
 
-    test(env, chains, args, wallet, example);
+    execute(env, chains, args, wallet, example);
 }

@@ -1,8 +1,8 @@
 require('dotenv').config();
 const { createAndExport, createAptosNetwork } = require('@axelar-network/axelar-local-dev');
 const { Wallet } = require('ethers');
-
-async function createLocal(toFund = []) {
+const path = require('path');
+async function start(toFund = [], chains = null) {
     try {
         await createAptosNetwork();
         console.log('Initialized aptos.');
@@ -18,15 +18,17 @@ async function createLocal(toFund = []) {
         }
     }
 
+    const pathname = path.resolve(__dirname, '..', 'examples', '.chain-config', 'local.json');
     await createAndExport({
-        chainOutputPath: './info/local.json',
+        chainOutputPath: pathname,
         accountsToFund: toFund,
         callback,
+        chains,
     });
 }
 
 module.exports = {
-    createLocal,
+    start,
 };
 
 if (require.main === module) {
@@ -38,5 +40,5 @@ if (require.main === module) {
         toFund.push(process.argv[j]);
     }
 
-    createLocal(toFund);
+    start(toFund);
 }

@@ -2,25 +2,22 @@
     "name": "axelar-local-dev-examples",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
     "engines": {
         "node": ">=16.0.0"
     },
     "scripts": {
-        "test": "mocha test",
-        "start": "node scripts/createLocal",
+        "test": "mocha examples/__tests__",
+        "start": "node scripts/start",
         "deploy": "node scripts/deploy",
-        "execute": "node scripts/test",
+        "execute": "node scripts/execute",
         "build": "rm -rf artifacts && npx hardhat compile",
-        "build-aptos": "./build-aptos.sh",
-        "lint": "solhint 'src/contracts/**/*.sol' && eslint 'test/**/*.js'",
-        "prettier": "prettier --write 'examples*/**/*.sol' 'test/**/*.js' 'examples*/**/*.js'"
+        "build-aptos": "./build-aptos.sh"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
         "@axelar-network/axelar-cgp-solidity": "^4.3.0",
-        "@axelar-network/axelar-gmp-sdk-solidity": "^1.2.0",
+        "@axelar-network/axelar-gmp-sdk-solidity": "^3.0.0",
         "@axelar-network/axelar-local-dev": "^1.2.4",
         "@axelar-network/axelarjs-sdk": "^0.11.4",
         "@openzeppelin/contracts": "^4.5.0",

@@ -7,8 +7,8 @@ const {
 } = require('ethers');
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-const ExampleProxy = rootRequire('./artifacts/examples/Proxy.sol/ExampleProxy.json');
-const ERC20CrossChain = rootRequire('./artifacts/examples/cross-chain-token/ERC20CrossChain.sol/ERC20CrossChain.json');
+const ExampleProxy = rootRequire('./artifacts/examples/evm/Proxy.sol/ExampleProxy.json');
+const ERC20CrossChain = rootRequire('./artifacts/examples/evm/cross-chain-token/ERC20CrossChain.sol/ERC20CrossChain.json');
 
 const name = 'An Awesome Axelar Cross Chain Token';
 const symbol = 'AACCT';
@@ -31,7 +31,7 @@ async function deploy(chain, wallet) {
     console.log(`Deployed ERC20CrossChain for ${chain.name} at ${chain.contract.address}.`);
 }
 
-async function test(chains, wallet, options) {
+async function execute(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
 
@@ -44,13 +44,7 @@ async function test(chains, wallet, options) {
         console.log(`Balance at ${destination.name} is ${await destination.contract.balanceOf(wallet.address)}`);
     }
 
-    function sleep(ms) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
-    }
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const initialBalance = await destination.contract.balanceOf(wallet.address);
     console.log('--- Initially ---');
@@ -81,5 +75,5 @@ async function test(chains, wallet, options) {
 
 module.exports = {
     deploy,
-    test,
+    execute,
 };

@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.9;
 
-import {Proxy} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Proxy.sol";
+import {Proxy} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Proxy.sol';
 
 contract ExampleProxy is Proxy {
     function contractId()
@@ -11,6 +11,6 @@ contract ExampleProxy is Proxy {
         override
         returns (bytes32)
     {
-        return keccak256("example");
+        return keccak256('example');
     }
 }

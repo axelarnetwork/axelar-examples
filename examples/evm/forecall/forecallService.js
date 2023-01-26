@@ -10,7 +10,9 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const DistributionForecallable = rootRequire('./artifacts/examples/forecall/DistributionForecallable.sol/DistributionForecallable.json');
+const DistributionForecallable = rootRequire(
+    './artifacts/examples/evm/forecall/DistributionForecallable.sol/DistributionForecallable.json',
+);
 const Gateway = rootRequire(
     './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
 );
@@ -30,10 +32,10 @@ async function getChains(env) {
     let temp;
 
     if (env == 'local') {
-        temp = require(`../info/local.json`);
+        temp = require(`../../.chain-config/local.json`);
     } else {
         try {
-            temp = require(`../info/testnet.json`);
+            temp = require(`../../.chain-config/testnet.json`);
         } catch {
             temp = testnetInfo;
         }

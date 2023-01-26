@@ -2,7 +2,6 @@
 
 const {
     getDefaultProvider,
-    Contract,
     constants: { AddressZero },
     utils: { defaultAbiCoder },
 } = require('ethers');
@@ -10,8 +9,10 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const SendAckReceiver = rootRequire('./artifacts/examples/send-ack/SendAckReceiverImplementation.sol/SendAckReceiverImplementation.json');
-const SendAckSender = rootRequire('./artifacts/examples/send-ack/SendAckSender.sol/SendAckSender.json');
+const SendAckReceiver = rootRequire(
+    './artifacts/examples/evm/send-ack/SendAckReceiverImplementation.sol/SendAckReceiverImplementation.json',
+);
+const SendAckSender = rootRequire('./artifacts/examples/evm/send-ack/SendAckSender.sol/SendAckSender.json');
 
 const time = new Date().getTime();
 
@@ -28,7 +29,7 @@ async function deploy(chain, wallet) {
     console.log(`Deployed SendAckReceiverImplementation for ${chain.name} at ${chain.receiver.address}.`);
 }
 
-async function test(chains, wallet, options) {
+async function execute(chains, wallet, options) {
     const args = options.args || [];
     const getGasPrice = options.getGasPrice;
 
@@ -46,13 +47,7 @@ async function test(chains, wallet, options) {
         );
     }
 
-    function sleep(ms) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
-    }
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     console.log('--- Initially ---');
     await print();
@@ -84,5 +79,5 @@ async function test(chains, wallet, options) {
 
 module.exports = {
     deploy,
-    test,
+    execute,
 };
