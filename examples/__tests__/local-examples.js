@@ -21,7 +21,7 @@ const examples = [
     'call-contract-with-token',
     'cross-chain-token',
     'deposit-address',
-    'forecall',
+    // 'forecall',
     'headers',
     'nft-auctionhouse',
     'nft-linker',
