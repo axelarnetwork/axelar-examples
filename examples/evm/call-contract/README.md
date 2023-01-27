@@ -2,11 +2,15 @@
 
 This example demonstrates how to relay a message from a source-chain to a destination-chain.
 
+### Deployment
+
 To deploy the contract, use the following command:
 
 ```bash
 npm run deploy evm/call-contract [local|testnet]
 ```
+
+### Execution
 
 To execute the example, use the following command:
 
@@ -14,11 +18,11 @@ To execute the example, use the following command:
 npm run execute evm/call-contract [local|testnet] ${srcChain} ${destChain} ${message}
 ```
 
-**Default Values**:
+### Parameters
 
--   The default value for `srcChain` is `Avalanche`. Acceptable values include "Moonbeam", "Avalanche", "Fantom", "Ethereum", and "Polygon"
--   The default value for `destChain` is `Fantom`. Acceptable values include "Moonbeam", "Avalanche", "Fantom", "Ethereum", and "Polygon"
--   The default value for `message` is `Hello World`
+-   `srcChain`: The blockchain network from which the message will be relayed. Acceptable values include "Moonbeam", "Avalanche", "Fantom", "Ethereum", and "Polygon". Default value is Avalanche.
+-   `destChain`: The blockchain network to which the message will be relayed. Acceptable values include "Moonbeam", "Avalanche", "Fantom", "Ethereum", and "Polygon". Default value is Fantom.
+-   `message`: The message to be relayed between the chains. Default value is "Hello World".
 
 ## Example
 
