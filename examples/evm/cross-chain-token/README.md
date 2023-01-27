@@ -1,14 +1,18 @@
-### Cross-chain token
+# Cross-chain Token Transfer
 
-Mints some token at source-chain and send it to destination-chain.
+This example demonstrates how to mint tokens on a source-chain and transfer them to a destination-chain.
 
-Deploy:
+### Deployment
+
+To deploy the contract, use the following command:
 
 ```bash
 npm run deploy evm/cross-chain-token [local|testnet]
 ```
 
-Run the test:
+### Execution
+
+To execute the example, use the following command:
 
 ```bash
 npm run execute evm/cross-chain-token [local|testnet] ${srcChain} ${destChain} ${amount}
@@ -20,14 +24,16 @@ npm run execute evm/cross-chain-token [local|testnet] ${srcChain} ${destChain} $
 -   `destChain` is `Fantom`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
 -   `amount` is `10`
 
-#### Example
+## Example
+
+This example deploys the contract on a local network, mints 1 token on the Ethereum chain and transfers it to the Fantom chain.
 
 ```bash
 npm run deploy evm/cross-chain-token local
 npm run execute evm/cross-chain-token local "Ethereum" "Fantom" 1
 ```
 
-Output:
+The output will be:
 
 ```
 --- Initially ---
