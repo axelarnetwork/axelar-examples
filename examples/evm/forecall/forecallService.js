@@ -32,10 +32,10 @@ async function getChains(env) {
     let temp;
 
     if (env == 'local') {
-        temp = require(`../../.chain-config/local.json`);
+        temp = require(`../../../chain-config/local.json`);
     } else {
         try {
-            temp = require(`../../.chain-config/testnet.json`);
+            temp = require(`../../../chain-config/testnet.json`);
         } catch {
             temp = testnetInfo;
         }

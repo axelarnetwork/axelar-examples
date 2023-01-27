@@ -18,10 +18,10 @@ if (require.main === module) {
         throw new Error('Need to specify tesntet or local as an argument to this script.');
     let temp;
     if (env === 'local') {
-        temp = require(`../../../.chain-config/local.json`);
+        temp = require(`../../../chain-config/local.json`);
     } else {
         try {
-            temp = require(`../../.chain-config/testnet.json`);
+            temp = require(`../../../chain-config/testnet.json`);
         } catch {
             temp = testnetInfo;
         }

@@ -13,8 +13,8 @@ const {
 const fs = require('fs-extra');
 const path = require('path');
 
-const dir = path.resolve(__dirname, '..');
-const infoPath = path.join(dir, '.chain-config/local.json');
+const dir = path.resolve(__dirname, '..', '..');
+const infoPath = path.join(dir, 'chain-config/local.json');
 
 const examples = [
     'call-contract',

@@ -51,11 +51,11 @@ module.exports = {
 
 function getChains(env) {
     if (env === 'local') {
-        return require(`../examples/.chain-config/local.json`);
+        return require(`../chain-config/local.json`);
     }
 
     try {
-        return require(`../examples/.chain-config/testnet.json`);
+        return require(`../chain-config/testnet.json`);
     } catch {
         return testnetInfo;
     }

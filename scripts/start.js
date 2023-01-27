@@ -18,7 +18,7 @@ async function start(toFund = [], chains = null) {
         }
     }
 
-    const pathname = path.resolve(__dirname, '..', 'examples', '.chain-config', 'local.json');
+    const pathname = path.resolve(__dirname, '..', 'chain-config', 'local.json');
     await createAndExport({
         chainOutputPath: pathname,
         accountsToFund: toFund,
