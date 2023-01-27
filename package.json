@@ -6,7 +6,7 @@
         "node": ">=16.0.0"
     },
     "scripts": {
-        "test": "mocha examples/__tests__",
+        "test": "mocha examples/tests",
         "start": "node scripts/start",
         "deploy": "node scripts/deploy",
         "execute": "node scripts/execute",
