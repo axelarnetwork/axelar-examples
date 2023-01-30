@@ -2,7 +2,7 @@
 
 Send a supported erc-20 token from source chain to the destination chain.
 
-Run the `send-token` test:
+### Execution
 
 ```bash
 npm run execute evm/send-token [local|testnet] ${srcChain} ${destChain} ${amount}
@@ -16,11 +16,9 @@ npm run execute evm/send-token [local|testnet] ${srcChain} ${destChain} ${amount
 
 **Note**:
 
-No smart contract to deploy for these examples.
-
-If running on `testnet` then ensure that `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` is funded with aUSDC.
-
-We use `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` to deploy and test all examples. It's funded by default in the `local` environment when you run `start`. To make sure that it's funded on all five supported testnets, run `node/printBalances`.
+-   No smart contract to deploy for these examples.
+-   If you run this script on `testnet`, make sure that the address `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` is funded with aUSDC.
+-   `0xBa86A5719722B02a5D5e388999C25f3333c7A9fb` is used to deploy and test all examples. It's funded by default in the local environment when you run start. To ensure that it's funded on all five supported testnets, run node/printBalances.
 
 ## Example
 

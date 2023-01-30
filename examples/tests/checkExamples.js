@@ -25,7 +25,6 @@ const examples = [
     'headers',
     'nft-auctionhouse',
     'nft-linker',
-    'nonced-execution',
     'send-ack',
     'send-token',
 ];
