@@ -11,13 +11,13 @@ const {
     AptosNetwork,
 } = require('@axelar-network/axelar-local-dev');
 
-const HelloWorld = rootRequire('./artifacts/examples/aptos-call-contract/contracts/HelloWorld.sol/HelloWorld.json');
+const HelloWorld = rootRequire('./artifacts/examples/aptos/call-contract/contracts/HelloWorld.sol/HelloWorld.json');
 const { defaultAbiCoder } = require('ethers/lib/utils');
 
 async function preDeploy() {
     console.log(`Deploying HelloWorld for aptos.`);
     const client = new AptosNetwork(process.env.APTOS_URL);
-    await client.deploy('examples/aptos-call-contract/modules/build/hello_world', ['hello_world.mv']);
+    await client.deploy('examples/aptos/call-contract/modules/build/hello_world', ['hello_world.mv']);
     console.log(`Deployed HelloWorld for aptos.`);
 }
 

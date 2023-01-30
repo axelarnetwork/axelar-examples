@@ -16,7 +16,7 @@ npm run build
 -   [send-token](send-token)
 -   [deposit-address](deposit-address)
 
-## Advance
+## Advanced
 
 -   [forecall](forecall)
 -   [headers](headers)
