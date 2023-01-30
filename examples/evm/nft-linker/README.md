@@ -1,8 +1,10 @@
-### NFT linker
+# NFT linker
 
-Send the NFT that was originally minted at source-chain to destination-chain.
+This example sends the NFT that was originally minted at source-chain to destination-chain.
 
-Deploy:
+### Deployment
+
+To deploy the NFT Linker, run the following command:
 
 ```bash
 npm run deploy evm/nft-linker [local|testnet]
@@ -10,7 +12,9 @@ npm run deploy evm/nft-linker [local|testnet]
 
 A single NFT is minted to the deployer (`0xBa86A5719722B02a5D5e388999C25f3333c7A9fb`) on each chain.
 
-Run the test:
+## Execution
+
+To execute the NFT Linker example, use the following command:
 
 ```bash
 npm run execute evm/nft-linker [local|testnet] ${srcChain} ${destChain}
@@ -24,9 +28,11 @@ npm run execute evm/nft-linker [local|testnet] ${srcChain} ${destChain}
 
 **Note**:
 
-It's not possible to send a duplicate NFT to a chain. The dApp fails when the NFT is already at the destination-chain.
+It will fail if an attempt is made to send a duplicate NFT to a chain.
 
-#### Example
+## Example
+
+To deploy the NFT Linker locally and send the NFT originally minted on Avalanche to Polygon:
 
 ```bash
 npm run deploy evm/nft-linker local
