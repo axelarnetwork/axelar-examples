@@ -22,7 +22,6 @@ const examples = [
     'cross-chain-token',
     'deposit-address',
     // 'forecall',
-    'headers',
     'nft-auctionhouse',
     'nft-linker',
     'send-ack',
