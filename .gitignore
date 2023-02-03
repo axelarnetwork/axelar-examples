@@ -3,8 +3,8 @@ build
 artifacts
 cache
 yarn-error.log
-info/local.json
-info/localWETH.json
+local.json
+gasLogs.json
 scripts/deployConst.js
 
 aptos-artifacts

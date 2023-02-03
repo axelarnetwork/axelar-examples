@@ -15,10 +15,19 @@
   "resolved" "https://registry.npmjs.org/@axelar-network/axelar-cgp-solidity/-/axelar-cgp-solidity-4.3.1.tgz"
   "version" "4.3.1"
 
-"@axelar-network/axelar-gmp-sdk-solidity@^1.1.0", "@axelar-network/axelar-gmp-sdk-solidity@^1.2.0":
+"@axelar-network/axelar-gmp-sdk-solidity@^1.1.0":
   "integrity" "sha512-pghO6YsYIYHdKz3VhcPpRroN6icBghCgwnIvzDnyEg9vsIQumN8F1uvHYutAlk6lzvuKxcv/UeBYASFAv9VZRQ=="
   "resolved" "https://registry.npmjs.org/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-1.3.0.tgz"
   "version" "1.3.0"
+  dependencies:
+    "ethers" "^5.5.2"
+    "fs-extra" "^10.1.0"
+    "ganache" "^7.3.2"
+
+"@axelar-network/axelar-gmp-sdk-solidity@^3.0.0":
+  "integrity" "sha512-jgUHze/7G/sOc0k2VpJcSxAjmHk4iea1mGxOo6xVmVOCROQIN5o1a2odBicAZ5zUNS70E5cvdrJhbM+o2IZZjA=="
+  "resolved" "https://registry.npmjs.org/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-3.0.0.tgz"
+  "version" "3.0.0"
   dependencies:
     "ethers" "^5.5.2"
     "fs-extra" "^10.1.0"
