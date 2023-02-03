@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "",
     "engines": {
-        "node": ">=16.0.0"
+        "node": "^16.0.0 || ^18.0.0"
     },
     "scripts": {
         "test": "mocha examples/tests",
@@ -16,7 +16,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@axelar-network/axelar-cgp-solidity": "^4.3.0",
+        "@axelar-network/axelar-cgp-solidity": "github:axelarnetwork/axelar-cgp-solidity#chore/update-node-version",
         "@axelar-network/axelar-gmp-sdk-solidity": "^3.0.0",
         "@axelar-network/axelar-local-dev": "^1.2.4",
         "@axelar-network/axelarjs-sdk": "^0.11.4",
