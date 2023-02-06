@@ -46,7 +46,7 @@ async function deployNFTContracts(chain: any) {
         walletConnectedToProvider,
         NFTLinker,
         ExampleProxy,
-        [chain.gateway, chain.gasReceiver],
+        [chain.gateway, chain.gasService],
         [],
         utils.defaultAbiCoder.encode(['string'], [chain.name]),
         'nftLinker',

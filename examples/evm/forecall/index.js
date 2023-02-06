@@ -23,7 +23,7 @@ async function deploy(chain, wallet) {
         chain.wallet,
         DistributionForecallable,
         ExampleProxy,
-        [chain.gateway, chain.gasReceiver],
+        [chain.gateway, chain.gasService],
         [],
         '0x',
         'forecallable',

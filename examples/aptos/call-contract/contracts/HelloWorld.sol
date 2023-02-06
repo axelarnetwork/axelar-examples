@@ -9,12 +9,12 @@ contract HelloWorld is IAxelarExecutable {
     string public value;
     string public sourceChain;
     string public sourceAddress;
-    IAxelarGasService gasReceiver;
+    IAxelarGasService gasService;
 
     constructor(address _gateway, address _gasReceiver)
         IAxelarExecutable(_gateway)
     {
-        gasReceiver = IAxelarGasService(_gasReceiver);
+        gasService = IAxelarGasService(_gasReceiver);
     }
 
     event Executed();
@@ -27,7 +27,7 @@ contract HelloWorld is IAxelarExecutable {
     ) external payable {
         bytes memory payload = abi.encodePacked(message);
         if (msg.value > 0) {
-            gasReceiver.payNativeGasForContractCall{value: msg.value}(
+            gasService.payNativeGasForContractCall{value: msg.value}(
                 address(this),
                 destinationChain,
                 destinationAddress,

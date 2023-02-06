@@ -34,7 +34,7 @@ async function deploy(chain, wallet) {
     const gateway = new Contract(chain.gateway, Gateway.abi, wallet);
     const tokenAddress = await gateway.tokenAddresses('aUSDC');
     console.log(tokenAddress);
-    chain.contract = await deployContract(wallet, NftAuctionHouse, [chain.gateway, chain.gasReceiver, tokenAddress]);
+    chain.contract = await deployContract(wallet, NftAuctionHouse, [chain.gateway, chain.gasService, tokenAddress]);
 
     chain.auctionhouse = new Contract(chain.contract.address, NftAuctionHouse.abi, chain.wallet);
     chain.erc721contract = new Contract(chain.erc721, ERC721.abi, chain.wallet);

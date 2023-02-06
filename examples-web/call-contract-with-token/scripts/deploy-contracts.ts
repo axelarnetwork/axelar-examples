@@ -28,14 +28,14 @@ async function main() {
   const moonbeeamSender = await deployContract(
     moonbeamConnectedWallet,
     MessageSenderContract,
-    [moonbeamChain.gateway, moonbeamChain.gasReceiver],
+    [moonbeamChain.gateway, moonbeamChain.gasService],
   );
   console.log("MessageSender deployed on Moonbeam:", moonbeeamSender.address);
   moonbeamChain.messageSender = moonbeeamSender.address;
   const moonbeamReceiver = await deployContract(
     moonbeamConnectedWallet,
     MessageReceiverContract,
-    [moonbeamChain.gateway, moonbeamChain.gasReceiver],
+    [moonbeamChain.gateway, moonbeamChain.gasService],
   );
   console.log(
     "MessageReceiver deployed on Moonbeam:",
@@ -51,14 +51,14 @@ async function main() {
   const avalancheSender = await deployContract(
     avalancheConnectedWallet,
     MessageSenderContract,
-    [avalancheChain.gateway, avalancheChain.gasReceiver],
+    [avalancheChain.gateway, avalancheChain.gasService],
   );
   console.log("MessageSender deployed on Avalanche:", avalancheSender.address);
   avalancheChain.messageSender = avalancheSender.address;
   const avalancheReceiver = await deployContract(
     avalancheConnectedWallet,
     MessageReceiverContract,
-    [avalancheChain.gateway, avalancheChain.gasReceiver],
+    [avalancheChain.gateway, avalancheChain.gasService],
   );
   console.log(
     "MessageReceiver deployed on Avalanche:",

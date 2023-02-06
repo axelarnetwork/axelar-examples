@@ -4,7 +4,6 @@ require('dotenv').config();
 const AxelarGatewayContract = require('../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
 const AxelarGasServiceContract = require('../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol/IAxelarGasService.json');
 const IERC20 = require('../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
-const { testnetInfo } = require('@axelar-network/axelar-local-dev');
 const { Wallet, Contract, getDefaultProvider } = require('ethers');
 const { getGasPrice, getDepositAddress } = require('./utils.js');
 const path = require('path');
@@ -33,7 +32,7 @@ async function execute(env, chains, args, wallet, example) {
 
         chain.provider = provider;
         chain.gateway = new Contract(chain.gateway, AxelarGatewayContract.abi, wallet.connect(provider));
-        chain.gasReceiver = new Contract(chain.gasReceiver, AxelarGasServiceContract.abi, wallet.connect(provider));
+        chain.gasService = new Contract(chain.gasService, AxelarGasServiceContract.abi, wallet.connect(provider));
         const tokenAddress = await chain.gateway.tokenAddresses('aUSDC');
         chain.usdc = new Contract(tokenAddress, IERC20.abi, wallet.connect(provider));
     }

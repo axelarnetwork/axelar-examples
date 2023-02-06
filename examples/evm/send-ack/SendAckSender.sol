@@ -19,7 +19,7 @@ contract SendAckSender is AxelarExecutable {
     uint256 public nonce;
     mapping(uint256 => bool) public executed;
     mapping(uint256 => bytes32) public destination;
-    IAxelarGasService public immutable gasReceiver;
+    IAxelarGasService public immutable gasService;
     string public thisChain;
 
     constructor(
@@ -27,7 +27,7 @@ contract SendAckSender is AxelarExecutable {
         address gasReceiver_,
         string memory thisChain_
     ) AxelarExecutable(gateway_) {
-        gasReceiver = IAxelarGasService(gasReceiver_);
+        gasService = IAxelarGasService(gasReceiver_);
         thisChain = thisChain_;
     }
 
@@ -46,7 +46,7 @@ contract SendAckSender is AxelarExecutable {
 
         if (gasForRemote > 0) {
             if (gasForRemote > msg.value) revert NotEnoughValueForGas();
-            gasReceiver.payNativeGasForContractCall{ value: gasForRemote }(
+            gasService.payNativeGasForContractCall{ value: gasForRemote }(
                 address(this),
                 destinationChain,
                 contractAddress,
@@ -54,7 +54,7 @@ contract SendAckSender is AxelarExecutable {
                 msg.sender
             );
             if (msg.value > gasForRemote) {
-                gasReceiver.payNativeGasForContractCall{ value: msg.value - gasForRemote }(
+                gasService.payNativeGasForContractCall{ value: msg.value - gasForRemote }(
                     contractAddress.toAddress(),
                     thisChain,
                     address(this).toString(),

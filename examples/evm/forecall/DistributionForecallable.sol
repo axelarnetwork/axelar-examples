@@ -10,10 +10,10 @@ import { AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contrac
 
 contract DistributionForecallable is ExpressExecutable, Upgradable {
     using AddressToString for address;
-    IAxelarGasService public immutable gasReceiver;
+    IAxelarGasService public immutable gasService;
 
     constructor(address gateway_, address gasReceiver_) ExpressExecutable(gateway_) {
-        gasReceiver = IAxelarGasService(gasReceiver_);
+        gasService = IAxelarGasService(gasReceiver_);
     }
 
     function _sendToMany(

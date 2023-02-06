@@ -18,14 +18,14 @@ contract ERC20CrossChain is AxelarExecutable, ERC20, Upgradable, IERC20CrossChai
 
     event FalseSender(string sourceChain, string sourceAddress);
 
-    IAxelarGasService public immutable gasReceiver;
+    IAxelarGasService public immutable gasService;
 
     constructor(
         address gateway_,
         address gasReceiver_,
         uint8 decimals_
     ) AxelarExecutable(gateway_) ERC20('', '', decimals_) {
-        gasReceiver = IAxelarGasService(gasReceiver_);
+        gasService = IAxelarGasService(gasReceiver_);
     }
 
     function _setup(bytes calldata params) internal override {
@@ -49,7 +49,7 @@ contract ERC20CrossChain is AxelarExecutable, ERC20, Upgradable, IERC20CrossChai
         bytes memory payload = abi.encode(destinationAddress, amount);
         string memory stringAddress = address(this).toString();
         if (msg.value > 0) {
-            gasReceiver.payNativeGasForContractCall{ value: msg.value }(
+            gasService.payNativeGasForContractCall{ value: msg.value }(
                 address(this),
                 destinationChain,
                 stringAddress,

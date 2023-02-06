@@ -21,7 +21,7 @@ async function deploy(chain, wallet) {
     console.log(`Deploying DistributionExecutable for ${chain.name}.`);
     const provider = getDefaultProvider(chain.rpc);
     chain.wallet = wallet.connect(provider);
-    chain.contract = await deployContract(wallet, DistributionExecutable, [chain.gateway, chain.gasReceiver]);
+    chain.contract = await deployContract(wallet, DistributionExecutable, [chain.gateway, chain.gasService]);
     const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
     const usdcAddress = await gateway.tokenAddresses('aUSDC');
     chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);

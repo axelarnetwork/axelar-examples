@@ -27,7 +27,7 @@ async function main() {
   const ethContract = await deployContract(
     ethConnectedWallet,
     MessageSenderContract,
-    [ethereumChain.gateway, ethereumChain.gasReceiver]
+    [ethereumChain.gateway, ethereumChain.gasService]
   );
 
   ethereumChain.messageSender = ethContract.address;
@@ -37,7 +37,7 @@ async function main() {
   const avalancheContract = await deployContract(
     avalancheConnectedWallet,
     MessageReceiverContract,
-    [avalancheChain.gateway, avalancheChain.gasReceiver]
+    [avalancheChain.gateway, avalancheChain.gasService]
   );
 
   avalancheChain.messageReceiver = avalancheContract.address;
