@@ -23,11 +23,7 @@ if (require.main === module) {
     if (env == 'local') {
         temp = require(`../../../chain-config/local.json`);
     } else {
-        try {
-            temp = require(`../../../chain-config/testnet.json`);
-        } catch {
-            temp = testnetInfo;
-        }
+        temp = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
     }
 
     const chains = temp;

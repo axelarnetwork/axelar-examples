@@ -35,7 +35,7 @@ async function getChains(env) {
         temp = require(`../../../chain-config/local.json`);
     } else {
         try {
-            temp = require(`../../../chain-config/testnet.json`);
+            temp = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
         } catch {
             temp = testnetInfo;
         }

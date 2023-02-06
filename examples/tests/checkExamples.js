@@ -43,7 +43,7 @@ describe('Check Examples', function () {
     const toFund = [deployerAddress];
 
     beforeEach(async () => {
-        // Remove local.json before each test to ensure a clean start
+        // // Remove local.json before each test to ensure a clean start
         if (fs.existsSync(infoPath)) {
             fs.unlinkSync(infoPath);
         }

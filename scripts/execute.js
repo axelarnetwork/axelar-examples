@@ -54,11 +54,7 @@ function getChains(env) {
         return require(`../chain-config/local.json`);
     }
 
-    try {
-        return require(`../chain-config/testnet.json`);
-    } catch {
-        return testnetInfo;
-    }
+    return require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
 }
 
 if (require.main === module) {
