@@ -9,7 +9,8 @@ const path = require('path');
 
 
 if (!fs.existsSync('.env')) {
-    const contents = fs.readFileSync(__dirname + '/../.env.example');
+    const envExamplePath = path.join(__dirname, '..', '.env.example');
+    const contents = fs.readFileSync(envExamplePath);
     console.log('Generating new random key.');
     // Generate mnemonic
     const mnemonic = bip39.generateMnemonic();
@@ -18,8 +19,9 @@ if (!fs.existsSync('.env')) {
 
     // Write to .env in the root of the project
     console.log('Creating .env file in ', path.dirname(__dirname));
-    const newEnvFile = contents.toString().replace('YOUR_PRIVATE_KEY_HERE',`${wallet.privateKey}\nMNEMONIC=${mnemonic}`);
-    fs.writeFileSync(__dirname + '/../.env',newEnvFile);
+    const newEnvFile = contents.toString().replace('YOUR_PRIVATE_KEY_HERE',`${wallet.privateKey}\nEVM_MNEMONIC="${mnemonic}"`);
+    const envPath = path.join(__dirname, '..', '.env');
+    fs.writeFileSync(envPath, newEnvFile);
 } else {
     console.log('A .env file already exist in '+ path.dirname(__dirname) + ', not modifying it.');
 }

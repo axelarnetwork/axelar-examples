@@ -10,6 +10,7 @@
         "start": "node scripts/start",
         "deploy": "node scripts/deploy",
         "execute": "node scripts/execute",
+        "create-private-key": "node scripts/createPrivateKey",
         "build": "rm -rf artifacts && npx hardhat compile",
         "build-aptos": "./build-aptos.sh"
     },
