@@ -3,7 +3,6 @@
 require('dotenv').config();
 const {
     utils: { setJSON },
-    testnetInfo,
 } = require('@axelar-network/axelar-local-dev');
 const { Wallet, getDefaultProvider } = require('ethers');
 const { FormatTypes } = require('ethers/lib/utils');
