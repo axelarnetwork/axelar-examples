@@ -53,7 +53,7 @@ function getChains(env) {
         return require(`../chain-config/local.json`);
     }
 
-    return require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
+    return require(`../chain-config/testnet.json`);
 }
 
 if (require.main === module) {
@@ -65,7 +65,7 @@ if (require.main === module) {
     const example = require(pathname);
     const env = process.argv[3];
     if (env == null || (env !== 'testnet' && env !== 'local'))
-        throw new Error('Need to specify tesntet or local as an argument to this script.');
+        throw new Error('Need to specify testnet or local as an argument to this script.');
 
     const chains = getChains(env);
 

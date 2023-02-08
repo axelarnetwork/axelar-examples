@@ -1,0 +1,258 @@
+[
+  {
+    "name": "Avalanche",
+    "chainId": 43113,
+    "rpc": "https://api.avax-test.network/ext/bc/C/rpc",
+    "gateway": "0xC249632c2D40b9001FE907806902f63038B737Ab",
+    "constAddressDeployer": "0x98b2920d53612483f91f12ed7754e51b4a77919e",
+    "tokenName": "Avax",
+    "tokenSymbol": "AVAX",
+    "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
+    "AxelarGasService": {
+      "salt": "AxelarGasService",
+      "address": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
+      "implementation": "0xdAD9eF6B912c3aC0Fbb09Ec7BBADa01732e9C890",
+      "deployer": "0xB8Cd93C83A974649D76B1c19f311f639e62272BC",
+      "collector": "0xB8Cd93C83A974649D76B1c19f311f639e62272BC"
+    },
+    "AxelarDepositService": {
+      "salt": "AxelarDepositService",
+      "address": "0xc1DCb196BA862B337Aa23eDA1Cb9503C0801b955",
+      "implementation": "0xb6241272C569767072e0587098415DF6BA0aaEe9",
+      "deployer": "0xd55cd98cdE61c3CcE1286F9aF50cDbF16f5dba5b",
+      "wrappedSymbol": "WAVAX",
+      "refundIssuer": "0x4f671f34d2d23fec3eE3087E3A0221f8D314D9dF"
+    },
+    "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
+    "wallet": {
+      "_isSigner": true,
+      "address": "0xa411977dd24F1547065C6630E468a43275cB4d7f",
+      "provider": {
+        "_isProvider": true,
+        "_events": [],
+        "_emitted": {
+          "block": -2
+        },
+        "disableCcipRead": false,
+        "formatter": {
+          "formats": {
+            "transaction": {},
+            "transactionRequest": {},
+            "receiptLog": {},
+            "receipt": {},
+            "block": {},
+            "blockWithTransactions": {},
+            "filter": {},
+            "filterLog": {}
+          }
+        },
+        "anyNetwork": false,
+        "_networkPromise": {},
+        "_maxInternalBlockNumber": 18755005,
+        "_lastBlockNumber": -2,
+        "_maxFilterBlockRange": 10,
+        "_pollingInterval": 4000,
+        "_fastQueryDate": 1675861668330,
+        "connection": {
+          "url": "https://api.avax-test.network/ext/bc/C/rpc"
+        },
+        "_nextId": 58,
+        "_eventLoopCache": {
+          "detectNetwork": null,
+          "eth_chainId": null,
+          "eth_blockNumber": null
+        },
+        "_network": {
+          "chainId": 43113,
+          "name": "unknown"
+        },
+        "_internalBlockNumber": {},
+        "_fastBlockNumber": 18755005,
+        "_fastBlockNumberPromise": {}
+      }
+    },
+    "contract": {
+      "abi": [
+        "constructor(address gateway_, address gasReceiver_)",
+        "error InvalidAddress()",
+        "error NotApprovedByGateway()",
+        "error NotSelf()",
+        "function contractId() pure returns (bytes32)",
+        "function execute(bytes32, string sourceChain, string sourceAddress, bytes payload)",
+        "function executeWithToken(bytes32, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
+        "function gasService() view returns (address)",
+        "function gateway() view returns (address)",
+        "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable"
+      ],
+      "address": "0x64aC5fFa5bA182114600896D89B2340Ac82296A4"
+    },
+    "usdc": {
+      "abi": [
+        "error InvalidAccount()",
+        "event Approval(address indexed owner, address indexed spender, uint256 value)",
+        "event Transfer(address indexed from, address indexed to, uint256 value)",
+        "function allowance(address owner, address spender) view returns (uint256)",
+        "function approve(address spender, uint256 amount) returns (bool)",
+        "function balanceOf(address account) view returns (uint256)",
+        "function totalSupply() view returns (uint256)",
+        "function transfer(address recipient, uint256 amount) returns (bool)",
+        "function transferFrom(address sender, address recipient, uint256 amount) returns (bool)"
+      ],
+      "address": "0x57F1c63497AEe0bE305B8852b354CEc793da43bB"
+    },
+    "proxy": {
+      "abi": [
+        "constructor(address gateway_, address gmpExpressService_)",
+        "error AlreadyInitialized()",
+        "error EtherNotAccepted()",
+        "error InvalidAddress()",
+        "error InvalidImplementation()",
+        "error InvalidTokenSymbol()",
+        "error NotApprovedByGateway()",
+        "error NotExpressRegistry()",
+        "error NotOwner()",
+        "error SetupFailed()",
+        "error TokenTransferFailed()",
+        "function completeExecuteWithToken(address expressCaller, bytes32 commandId, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
+        "function deployRegistry()",
+        "function execute(bytes32 commandId, string sourceChain, string sourceAddress, bytes payload)",
+        "function executeWithToken(bytes32 commandId, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
+        "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
+        "function gateway() view returns (address)",
+        "function implementation() view returns (address implementation_)",
+        "function init(address implementationAddress, address newOwner, bytes params)",
+        "function registry() view returns (address)",
+        "function setup(bytes data)"
+      ],
+      "address": "0x64aC5fFa5bA182114600896D89B2340Ac82296A4"
+    }
+  },
+  {
+    "name": "Fantom",
+    "chainId": 4002,
+    "gateway": "0x97837985Ec0494E7b9C71f5D3f9250188477ae14",
+    "rpc": "https://xapi.testnet.fantom.network/lachesis",
+    "constAddressDeployer": "0x98b2920d53612483f91f12ed7754e51b4a77919e",
+    "tokenName": "Fantom",
+    "tokenSymbol": "FTM",
+    "gasReceiver": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
+    "AxelarGasService": {
+      "salt": "AxelarGasService",
+      "address": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
+      "implementation": "0xD55a35D937548656a1a4d70890E87409Df1152B1",
+      "deployer": "0xB8Cd93C83A974649D76B1c19f311f639e62272BC",
+      "collector": "0xB8Cd93C83A974649D76B1c19f311f639e62272BC"
+    },
+    "AxelarDepositService": {
+      "salt": "AxelarDepositService",
+      "address": "0xc1DCb196BA862B337Aa23eDA1Cb9503C0801b955",
+      "implementation": "0xb6241272C569767072e0587098415DF6BA0aaEe9",
+      "deployer": "0xd55cd98cdE61c3CcE1286F9aF50cDbF16f5dba5b",
+      "wrappedSymbol": "WFTM",
+      "refundIssuer": "0x4f671f34d2d23fec3eE3087E3A0221f8D314D9dF"
+    },
+    "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
+    "wallet": {
+      "_isSigner": true,
+      "address": "0xa411977dd24F1547065C6630E468a43275cB4d7f",
+      "provider": {
+        "_isProvider": true,
+        "_events": [],
+        "_emitted": {
+          "block": -2
+        },
+        "disableCcipRead": false,
+        "formatter": {
+          "formats": {
+            "transaction": {},
+            "transactionRequest": {},
+            "receiptLog": {},
+            "receipt": {},
+            "block": {},
+            "blockWithTransactions": {},
+            "filter": {},
+            "filterLog": {}
+          }
+        },
+        "anyNetwork": false,
+        "_networkPromise": {},
+        "_maxInternalBlockNumber": 13795571,
+        "_lastBlockNumber": -2,
+        "_maxFilterBlockRange": 10,
+        "_pollingInterval": 4000,
+        "_fastQueryDate": 1675861667827,
+        "connection": {
+          "url": "https://xapi.testnet.fantom.network/lachesis"
+        },
+        "_nextId": 58,
+        "_eventLoopCache": {
+          "detectNetwork": null,
+          "eth_chainId": null,
+          "eth_blockNumber": null
+        },
+        "_network": {
+          "chainId": 4002,
+          "name": "unknown"
+        },
+        "_internalBlockNumber": {},
+        "_fastBlockNumber": 13795571,
+        "_fastBlockNumberPromise": {}
+      }
+    },
+    "contract": {
+      "abi": [
+        "constructor(address gateway_, address gasReceiver_)",
+        "error InvalidAddress()",
+        "error NotApprovedByGateway()",
+        "error NotSelf()",
+        "function contractId() pure returns (bytes32)",
+        "function execute(bytes32, string sourceChain, string sourceAddress, bytes payload)",
+        "function executeWithToken(bytes32, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
+        "function gasService() view returns (address)",
+        "function gateway() view returns (address)",
+        "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable"
+      ],
+      "address": "0x19b14B7bF7f4530AeEAc888c6627f3f7cfB62221"
+    },
+    "usdc": {
+      "abi": [
+        "error InvalidAccount()",
+        "event Approval(address indexed owner, address indexed spender, uint256 value)",
+        "event Transfer(address indexed from, address indexed to, uint256 value)",
+        "function allowance(address owner, address spender) view returns (uint256)",
+        "function approve(address spender, uint256 amount) returns (bool)",
+        "function balanceOf(address account) view returns (uint256)",
+        "function totalSupply() view returns (uint256)",
+        "function transfer(address recipient, uint256 amount) returns (bool)",
+        "function transferFrom(address sender, address recipient, uint256 amount) returns (bool)"
+      ],
+      "address": "0x75Cc4fDf1ee3E781C1A3Ee9151D5c6Ce34Cf5C61"
+    },
+    "proxy": {
+      "abi": [
+        "constructor(address gateway_, address gmpExpressService_)",
+        "error AlreadyInitialized()",
+        "error EtherNotAccepted()",
+        "error InvalidAddress()",
+        "error InvalidImplementation()",
+        "error InvalidTokenSymbol()",
+        "error NotApprovedByGateway()",
+        "error NotExpressRegistry()",
+        "error NotOwner()",
+        "error SetupFailed()",
+        "error TokenTransferFailed()",
+        "function completeExecuteWithToken(address expressCaller, bytes32 commandId, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
+        "function deployRegistry()",
+        "function execute(bytes32 commandId, string sourceChain, string sourceAddress, bytes payload)",
+        "function executeWithToken(bytes32 commandId, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
+        "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
+        "function gateway() view returns (address)",
+        "function implementation() view returns (address implementation_)",
+        "function init(address implementationAddress, address newOwner, bytes params)",
+        "function registry() view returns (address)",
+        "function setup(bytes data)"
+      ],
+      "address": "0x19b14B7bF7f4530AeEAc888c6627f3f7cfB62221"
+    }
+  }
+]

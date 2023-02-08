@@ -48,7 +48,7 @@ async function deploy(env, chains, wallet, example) {
             }
         }
 
-        // delete chain.wallet
+        delete chain.wallet;
     }
 
     setJSON(chains, `./chain-config/${env}.json`);
@@ -71,7 +71,11 @@ if (require.main === module) {
     if (env === 'local') {
         temp = require(`../chain-config/local.json`);
     } else {
-        temp = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
+        temp = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`).slice(1, 3);
+        temp = temp.map((chain) => ({
+            ...chain,
+            gasService: chain.AxelarGasService.address,
+        }));
     }
 
     const chains = temp;
