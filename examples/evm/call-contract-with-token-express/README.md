@@ -15,7 +15,7 @@ npm run deploy evm/call-contract-with-token-express [local|testnet]
 To execute the example, use the following command:
 
 ```bash
-npm run execute evm/call-contract-with-token [local|testnet] ${srcChain} ${destChain} ${amount} ${account} ${account2} ...
+npm run execute evm/call-contract-with-token-express  [local|testnet] ${srcChain} ${destChain} ${amount} ${account} ${account2} ...
 ```
 
 ### Parameters
@@ -29,8 +29,8 @@ npm run execute evm/call-contract-with-token [local|testnet] ${srcChain} ${destC
 ## Example
 
 ```bash
-npm run deploy evm/call-contract-with-token local
-npm run execute evm/call-contract-with-token local "Moonbeam" "Ethereum" 100 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
+npm run deploy evm/call-contract-with-token-express local
+npm run execute evm/call-contract-with-token-express local "Moonbeam" "Ethereum" 100 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
 ```
 
 ### Output:
