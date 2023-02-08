@@ -8,7 +8,7 @@ import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interf
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol';
 
-contract DistributionExpressExecutable is ExpressExecutable, Upgradable {
+contract DistributionExpressExecutable is ExpressExecutable {
     IAxelarGasService public immutable gasService;
 
     constructor(address gateway_, address gasReceiver_) ExpressExecutable(gateway_) {
@@ -27,7 +27,7 @@ contract DistributionExpressExecutable is ExpressExecutable, Upgradable {
         IERC20(tokenAddress).approve(address(gateway), amount);
         bytes memory payload = abi.encode(destinationAddresses);
         if (msg.value > 0) {
-            gasService.payNativeGasForContractCallWithToken{ value: msg.value }(
+            gasService.payNativeGasForExpressCallWithToken{ value: msg.value }(
                 address(this),
                 destinationChain,
                 destinationAddress,

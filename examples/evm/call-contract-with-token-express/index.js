@@ -4,11 +4,8 @@ const {
     getDefaultProvider,
     Contract,
     constants: { AddressZero },
-    utils: { defaultAbiCoder },
+    ethers,
 } = require('ethers');
-const {
-    utils: { deployContract },
-} = require('@axelar-network/axelar-local-dev');
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 const DistributionExecutable = rootRequire(
     './artifacts/examples/evm/call-contract-with-token-express/DistributionExpressExecutable.sol/DistributionExpressExecutable.json',
@@ -39,6 +36,9 @@ async function deploy(chain, wallet) {
     const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
     const usdcAddress = await gateway.tokenAddresses('aUSDC');
     chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
+    chain.proxy = new Contract(chain.contract.address, DistributionProxy.abi, chain.wallet);
+    await chain.proxy.deployRegistry();
+    console.log(`Deployed Registry for ${chain.name} at ${await chain.proxy.registry()}.`);
 }
 
 async function execute(chains, wallet, options) {
@@ -65,8 +65,6 @@ async function execute(chains, wallet, options) {
     const gasLimit = 3e6;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
 
-    const balance = await destination.usdc.balanceOf(accounts[0]);
-
     const approveTx = await source.usdc.approve(source.contract.address, amount);
     await approveTx.wait();
 
@@ -74,13 +72,14 @@ async function execute(chains, wallet, options) {
         value: BigInt(Math.floor(gasLimit * gasPrice)),
     });
     await sendTx.wait();
+    console.log('Sent tokens to distribution contract.', sendTx.hash);
 
-    while (true) {
-        const updatedBalance = await destination.usdc.balanceOf(accounts[0]);
-        console.log(updatedBalance.toString(), balance.toString());
-        if (updatedBalance.gt(balance)) break;
-        await sleep(1000);
-    }
+    // express call
+    const payload = ethers.utils.defaultAbiCoder.encode(['address[]'], [accounts]);
+
+    const approveDestTx = await destination.usdc.approve(destination.contract.address, amount);
+    await approveDestTx.wait();
+    await destination.proxy.expressExecuteWithToken(source.name, source.contract.address, payload, 'aUSDC', amount);
 
     console.log('--- After ---');
     await logAccountBalances();
