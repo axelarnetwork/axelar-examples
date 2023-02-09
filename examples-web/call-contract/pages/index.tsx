@@ -19,8 +19,8 @@ const Home: NextPage = () => {
     setLoading(true);
     await sendMessageToAvalanche(formData.get("message") as string).finally(
       () => {
-        setLoading(false);
-      }
+        setLoading(false)
+      },
     );
   }
 
