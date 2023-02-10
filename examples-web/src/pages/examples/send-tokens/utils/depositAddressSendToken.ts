@@ -11,7 +11,7 @@ import {
   destConnectedWallet,
 } from "config/constants";
 import { getDepositAddressLocal } from "./getDepositAddressLocal";
-import { sleep } from "./sleep";
+import { sleep } from ".";
 import { getTransferFee } from "./getTransferFee";
 
 const srcGatewayContract = IAxelarGateway.connect(
