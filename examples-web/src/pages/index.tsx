@@ -2,7 +2,6 @@ import type { NextPage } from "next";
 import Link from 'next/link';
 import React, { useState } from "react";
 
-
 const Home: NextPage = () => {
 
   return (
