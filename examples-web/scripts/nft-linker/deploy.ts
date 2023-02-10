@@ -4,11 +4,6 @@ import { ERC721Demo__factory as ERC721Demo } from '../../src/types/contracts/fac
 import { NftLinker__factory as NFTLinker} from '../../src/types/contracts/factories/contracts/nft-linker/NFTLinker.sol/'
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-// load contracts
-// const ExampleProxy = require('../artifacts/contracts/Proxy.sol/ExampleProxy.json');
-// const NFTLinker = require('../artifacts/contracts/NFTLinker.sol/NFTLinker.json');
-// const ERC721 = require('../artifacts/contracts/ERC721demo.sol/ERC721Demo.json');
-
 const nftTokenId = 0;
 
 export async function deploy(wallet: Wallet, chainA: any, chainB: any) {

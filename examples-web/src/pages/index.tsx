@@ -13,7 +13,6 @@ const Home: NextPage = () => {
         </h1>
         <li><Link href="/examples/call-contract">call-contract</Link></li>
         <li><Link href="/examples/call-contract-with-token">call-contract-with-token</Link></li>
-        <li><Link href="/examples/crosschain-swap">crosschain-swap</Link></li>
         <li><Link href="/examples/nft-linker">nft-linker</Link></li>
         <li><Link href="/examples/send-tokens">send-tokens</Link></li>
       </div>

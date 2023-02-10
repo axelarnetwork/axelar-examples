@@ -1,7 +1,7 @@
 import cn from "classnames";
 import type { NextPage } from "next";
 import React, { useCallback, useEffect, useState } from "react";
-import { wallet, isTestnet } from "./config/constants";
+import { wallet, isTestnet } from "../../../config/constants";
 import {
   sendTokenToDestChain,
   getBalance,
