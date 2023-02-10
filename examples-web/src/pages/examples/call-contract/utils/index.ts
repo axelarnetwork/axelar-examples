@@ -1,4 +1,4 @@
-import { Contract, getDefaultProvider, Wallet } from "ethers";
+import { getDefaultProvider, Wallet } from "ethers";
 
 import chains from "../../../../../public/chains.json"
 import {MessageSender__factory as MessageSenderFactory } from 'types/contracts/factories/MessageSender__factory'
@@ -12,16 +12,16 @@ const wallet = Wallet.fromMnemonic(mnemonic);
 
 const ethProvider = getDefaultProvider(ethereumChain.rpc);
 const ethConnectedWallet = wallet.connect(ethProvider);
-const sourceContract = MessageSenderFactory.connect(ethereumChain?.messageSender, ethConnectedWallet)
+const sourceContract = MessageSenderFactory.connect(ethereumChain?.callContract, ethConnectedWallet)
 
 const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
 const avalancheConnectedWallet = wallet.connect(avalancheProvider);
-const destContract = MessageReceiverFactory.connect(avalancheChain.messageReceiver, avalancheConnectedWallet)
+const destContract = MessageReceiverFactory.connect(avalancheChain.callContract, avalancheConnectedWallet)
 
 export async function sendMessageToAvalanche(message: string) {
   const tx = await sourceContract.sendMessage(
     "Avalanche",
-    avalancheChain.messageReceiver,
+    avalancheChain.callContract,
     message,
     {
       value: BigInt(3000000),

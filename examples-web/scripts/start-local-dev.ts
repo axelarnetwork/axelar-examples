@@ -11,4 +11,10 @@ createAndExport({
   accountsToFund: [wallet.address],
   chains: ["Ethereum", "Avalanche"],
   chainOutputPath: "config/chains.json",
+  callback,
 });
+
+async function callback(chain: any) {
+  await chain.deployToken('Axelar Wrapped aUSDC', 'aUSDC', 6, BigInt(1e70));
+  await chain.giveToken(wallet.address, 'aUSDC', 1e12);
+}

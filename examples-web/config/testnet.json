@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Moonbeam",
+    "chainId": 1287,
+    "gateway": "0x5769D84DD62a6fD969856c75c7D321b84d455929",
+    "rpc": "https://moonbeam-alpha.api.onfinality.io/public",
+    "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
+    "tokenName": "DEV",
+    "tokenSymbol": "DEV",
+    "executableSample": "0x2120A291a99746726CFa3bCcd3C388da75f7e718",
+    "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
+    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B",
+    "tokens": {
+      "aUSDC": "aUSDC"
+    },
+    "messageSender": "0x1eF3650025E8C02eC704a131c59367fc28130a31",
+    "messageReceiver": "0x8eb0B05f874506ba5b416492DFB455bc1155156F"
+  },
+  {
+    "name": "Avalanche",
+    "chainId": 43113,
+    "rpc": "https://api.avax-test.network/ext/bc/C/rpc",
+    "gateway": "0xC249632c2D40b9001FE907806902f63038B737Ab",
+    "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
+    "tokenName": "Avax",
+    "tokenSymbol": "AVAX",
+    "executableSample": "0x9372350Abb3B5c10DB1BB858e0bCf91eFa74d946",
+    "constAddressDeployer": "0xd5bf7311032fe5dde956de6f2916f135a140e7dd",
+    "crossChainToken": "0xb5ADB662B1DebDCc96c4d7c406aDF20F310aEe0B",
+    "tokens": {
+      "aUSDC": "aUSDC"
+    },
+    "messageSender": "0x1eF3650025E8C02eC704a131c59367fc28130a31",
+    "messageReceiver": "0x8eb0B05f874506ba5b416492DFB455bc1155156F"
+  }
+]

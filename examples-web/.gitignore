@@ -40,3 +40,4 @@ artifacts
 cache
 
 chains.json
+src/types

@@ -11,7 +11,7 @@
     "contracts:build": "hardhat compile",
     "contracts:deploy": "ts-node scripts/deploy-contracts.ts",
     "contracts:execute": "ts-node scripts/execute-contracts.ts",
-    "contracts:generate": "typechain --target ethers-v5 --out-dir src/types/contracts artifacts/contracts/**/*[!dbg].json"
+    "contracts:generate": "typechain --target ethers-v5 --out-dir src/types/contracts artifacts/*[!build-info]/**/*[!dbg].json"
   },
   "dependencies": {
     "@axelar-network/axelar-gmp-sdk-solidity": "^3.0.0",
