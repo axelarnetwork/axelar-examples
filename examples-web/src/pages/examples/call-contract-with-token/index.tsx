@@ -7,7 +7,7 @@ import {
   getBalance,
   generateRecipientAddress,
   truncatedAddress,
-} from "./utils";
+} from "helpers";
 
 const CallContractWithToken: NextPage = () => {
   const [customRecipientAddress, setCustomRecipientAddress] =

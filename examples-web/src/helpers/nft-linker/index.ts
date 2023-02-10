@@ -102,12 +102,6 @@ export async function sendNftBack(
   await print();
 }
 
-export function truncatedAddress(address: string): string {
-  return (
-    address.substring(0, 6) + "..." + address.substring(address.length - 10)
-  );
-}
-
 export const ownerOf = async (chain = srcChain) => {
   const operator = chain.name === srcChain.name ? srcErc721 : destErc721;
   const nftLinker = chain.name === srcChain.name ? srcNftLinker : destNftLinker;

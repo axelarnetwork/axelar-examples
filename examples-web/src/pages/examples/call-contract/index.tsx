@@ -5,7 +5,7 @@ import {
   sendMessageToAvalanche,
   getAvalancheMessage,
   getAvalancheSourceChain,
-} from "./utils";
+} from "helpers";
 
 const CallContract: NextPage = () => {
   const [msg, setMsg] = useState<string>("");

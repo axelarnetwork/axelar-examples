@@ -2,7 +2,7 @@ import cn from "classnames";
 import type { NextPage } from "next";
 import React, { useEffect, useState } from "react";
 import { isTestnet } from "config/constants";
-import { sendNftToDest, sendNftBack, ownerOf, truncatedAddress } from "./utils";
+import { sendNftToDest, sendNftBack, ownerOf, truncatedAddress } from "helpers";
 
 const NFTLinker: NextPage = () => {
   const [txhash, setTxhash] = useState<string>();

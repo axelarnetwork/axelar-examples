@@ -9,7 +9,7 @@ import {
   destChain,
   destConnectedWallet,
 } from "config/constants";
-import { sleep } from ".";
+import { sleep } from "helpers";
 import { getTransferFee } from "./getTransferFee";
 
 const srcGatewayContract = IAxelarGateway.connect(
