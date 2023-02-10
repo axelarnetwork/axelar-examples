@@ -1,8 +1,7 @@
 import { getDefaultProvider, Wallet } from "ethers";
 
 import chains from "../../../../../public/chains.json"
-import {MessageSender__factory as MessageSenderFactory } from 'types/contracts/factories/MessageSender__factory'
-import {MessageReceiver__factory as MessageReceiverFactory } from 'types/contracts/factories/MessageReceiver__factory'
+import {MessageSender__factory as MessageSenderFactory, MessageReceiver__factory as MessageReceiverFactory  } from 'types/contracts/factories/contracts/call-contract'
 
 const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum") || chains[0] as any;
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche") || chains [1] as any;

@@ -3,8 +3,8 @@ import fs from "fs/promises";
 import path from 'path'
 import { getDefaultProvider, Wallet } from "ethers";
 import chains from "../config/chains.json";
-import {MessageSender__factory as CallContractSenderFactory, MessageReceiver__factory as CallContractReceiverFactory} from '../src/types/contracts/factories/call-contract'
-import {MessageSender__factory as CallContractWithTokenSenderFactory, MessageReceiver__factory as CallContractWithTokenReceiverFactory} from '../src/types/contracts/factories/call-contract-with-token/contracts'
+import {MessageSender__factory as CallContractSenderFactory, MessageReceiver__factory as CallContractReceiverFactory} from '../src/types/contracts/factories/contracts/call-contract'
+import {MessageSender__factory as CallContractWithTokenSenderFactory, MessageReceiver__factory as CallContractWithTokenReceiverFactory} from '../src/types/contracts/factories/contracts/call-contract-with-token/contracts'
 
 // create wallet
 const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
