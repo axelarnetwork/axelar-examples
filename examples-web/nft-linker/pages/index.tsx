@@ -45,10 +45,12 @@ const Home: NextPage = () => {
     async function handleSendBack(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
+
         const onSrcConfirmed = (txhash: string) => {
             setTxhash('');
             setDestTxHash(txhash);
         }
+
         const onSent = async (owner: any) => {
             setOwner(owner);
             setLoading(false);
