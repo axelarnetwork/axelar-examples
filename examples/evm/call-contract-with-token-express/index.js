@@ -10,9 +10,7 @@ const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 const DistributionExecutable = rootRequire(
     './artifacts/examples/evm/call-contract-with-token-express/DistributionExpressExecutable.sol/DistributionExpressExecutable.json',
 );
-const DistributionProxy = rootRequire(
-    './artifacts/examples/evm/call-contract-with-token-express/DistributionProxy.sol/DistributionProxy.json',
-);
+const ExpressProxy = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/express/ExpressProxy.sol/ExpressProxy.json');
 const Gateway = rootRequire(
     './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
 );
@@ -27,7 +25,7 @@ async function deploy(chain, wallet) {
         chain.constAddressDeployer,
         wallet,
         DistributionExecutable,
-        DistributionProxy,
+        ExpressProxy,
         [chain.gateway, chain.gasService],
         [chain.gateway, '0xfb72239394647e97894585D0D93Ca91f6C3852a4'],
         '0x',
@@ -36,7 +34,7 @@ async function deploy(chain, wallet) {
     const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
     const usdcAddress = await gateway.tokenAddresses('aUSDC');
     chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
-    chain.proxy = new Contract(chain.contract.address, DistributionProxy.abi, chain.wallet);
+    chain.proxy = new Contract(chain.contract.address, ExpressProxy.abi, chain.wallet);
     await chain.proxy.deployRegistry();
     console.log(`Deployed Registry for ${chain.name} at ${await chain.proxy.registry()}.`);
 }
