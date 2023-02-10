@@ -1,8 +1,4 @@
 import "dotenv/config";
-const {
-  utils: { deployContract },
-} = require("@axelar-network/axelar-local-dev");
-
 import fs from "fs/promises";
 import { getDefaultProvider, Wallet } from "ethers";
 
@@ -12,12 +8,13 @@ import { getDefaultProvider, Wallet } from "ethers";
 const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
 const wallet = Wallet.fromMnemonic(mnemonic);
 
-const chains = require("../config/chains");
-const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");
-const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
+import chains from "../config/chains.json";
+import path from 'path'
+const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum") || chains[0] as any;
+const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche") || chains[1] as any;
 
 // load contracts
-import {MessageSender__factory as MessageSenderFactory, MessageReceiver__factory as MessageReceiverFactory} from '../types/contracts/factories'
+import {MessageSender__factory as MessageSenderFactory, MessageReceiver__factory as MessageReceiverFactory} from '../src/types/contracts/factories'
 
 async function main() {
   // deploy on ethereum
@@ -37,8 +34,14 @@ async function main() {
 
   // update chains
   const updatedChains = [ethereumChain, avalancheChain];
+  const _path = path.resolve(__dirname, '../config/chains.json')
+  const publicPath = path.resolve(__dirname, '../src/public/chains.json')
   await fs.writeFile(
-    "src/config/chains.json",
+    _path,
+    JSON.stringify(updatedChains, null, 2)
+  );
+  await fs.writeFile(
+    publicPath,
     JSON.stringify(updatedChains, null, 2)
   );
 }

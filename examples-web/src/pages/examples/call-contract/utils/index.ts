@@ -1,18 +1,18 @@
 import { Contract, getDefaultProvider, Wallet } from "ethers";
 
-import chains from "config/chains.json"
+import chains from "../../../../../public/chains.json"
 import {MessageSender__factory as MessageSenderFactory } from 'types/contracts/factories/MessageSender__factory'
 import {MessageReceiver__factory as MessageReceiverFactory } from 'types/contracts/factories/MessageReceiver__factory'
 
-const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum") || chains[0];
-const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche") || chains [1];
+const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum") || chains[0] as any;
+const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche") || chains [1] as any;
 
 const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
 const wallet = Wallet.fromMnemonic(mnemonic);
 
 const ethProvider = getDefaultProvider(ethereumChain.rpc);
 const ethConnectedWallet = wallet.connect(ethProvider);
-const sourceContract = MessageSenderFactory.connect(ethereumChain.messageSender, ethConnectedWallet)
+const sourceContract = MessageSenderFactory.connect(ethereumChain?.messageSender, ethConnectedWallet)
 
 const avalancheProvider = getDefaultProvider(avalancheChain.rpc);
 const avalancheConnectedWallet = wallet.connect(avalancheProvider);
@@ -29,10 +29,10 @@ export async function sendMessageToAvalanche(message: string) {
   );
   await tx.wait();
 
-  return new Promise((reject, resolve) => {
+  return new Promise((resolve, reject) => {
     destContract.on("Executed", (from, value) => {
       if (value === message) destContract.removeAllListeners("Executed");
-      resolve();
+      resolve(true);
     });
   });
 }

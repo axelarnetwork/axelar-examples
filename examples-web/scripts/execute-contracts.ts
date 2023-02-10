@@ -1,10 +1,7 @@
 import "dotenv/config";
-const {
-  utils: { deployContract },
-} = require("@axelar-network/axelar-local-dev");
+
 
 import { Contract, getDefaultProvider, Wallet } from "ethers";
-import { defaultAbiCoder } from "ethers/lib/utils";
 
 const chains = require("../config/chains");
 const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum");
