@@ -24,53 +24,6 @@
       "refundIssuer": "0x4f671f34d2d23fec3eE3087E3A0221f8D314D9dF"
     },
     "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
-    "wallet": {
-      "_isSigner": true,
-      "address": "0xa411977dd24F1547065C6630E468a43275cB4d7f",
-      "provider": {
-        "_isProvider": true,
-        "_events": [],
-        "_emitted": {
-          "block": -2
-        },
-        "disableCcipRead": false,
-        "formatter": {
-          "formats": {
-            "transaction": {},
-            "transactionRequest": {},
-            "receiptLog": {},
-            "receipt": {},
-            "block": {},
-            "blockWithTransactions": {},
-            "filter": {},
-            "filterLog": {}
-          }
-        },
-        "anyNetwork": false,
-        "_networkPromise": {},
-        "_maxInternalBlockNumber": 18755005,
-        "_lastBlockNumber": -2,
-        "_maxFilterBlockRange": 10,
-        "_pollingInterval": 4000,
-        "_fastQueryDate": 1675861668330,
-        "connection": {
-          "url": "https://api.avax-test.network/ext/bc/C/rpc"
-        },
-        "_nextId": 58,
-        "_eventLoopCache": {
-          "detectNetwork": null,
-          "eth_chainId": null,
-          "eth_blockNumber": null
-        },
-        "_network": {
-          "chainId": 43113,
-          "name": "unknown"
-        },
-        "_internalBlockNumber": {},
-        "_fastBlockNumber": 18755005,
-        "_fastBlockNumberPromise": {}
-      }
-    },
     "contract": {
       "abi": [
         "constructor(address gateway_, address gasReceiver_)",
@@ -84,7 +37,7 @@
         "function gateway() view returns (address)",
         "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable"
       ],
-      "address": "0x64aC5fFa5bA182114600896D89B2340Ac82296A4"
+      "address": "0x705B7E5fFEc156e92eE2da7153872714d13C8075"
     },
     "usdc": {
       "abi": [
@@ -124,7 +77,7 @@
         "function registry() view returns (address)",
         "function setup(bytes data)"
       ],
-      "address": "0x64aC5fFa5bA182114600896D89B2340Ac82296A4"
+      "address": "0x705B7E5fFEc156e92eE2da7153872714d13C8075"
     }
   },
   {
@@ -152,53 +105,6 @@
       "refundIssuer": "0x4f671f34d2d23fec3eE3087E3A0221f8D314D9dF"
     },
     "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
-    "wallet": {
-      "_isSigner": true,
-      "address": "0xa411977dd24F1547065C6630E468a43275cB4d7f",
-      "provider": {
-        "_isProvider": true,
-        "_events": [],
-        "_emitted": {
-          "block": -2
-        },
-        "disableCcipRead": false,
-        "formatter": {
-          "formats": {
-            "transaction": {},
-            "transactionRequest": {},
-            "receiptLog": {},
-            "receipt": {},
-            "block": {},
-            "blockWithTransactions": {},
-            "filter": {},
-            "filterLog": {}
-          }
-        },
-        "anyNetwork": false,
-        "_networkPromise": {},
-        "_maxInternalBlockNumber": 13795571,
-        "_lastBlockNumber": -2,
-        "_maxFilterBlockRange": 10,
-        "_pollingInterval": 4000,
-        "_fastQueryDate": 1675861667827,
-        "connection": {
-          "url": "https://xapi.testnet.fantom.network/lachesis"
-        },
-        "_nextId": 58,
-        "_eventLoopCache": {
-          "detectNetwork": null,
-          "eth_chainId": null,
-          "eth_blockNumber": null
-        },
-        "_network": {
-          "chainId": 4002,
-          "name": "unknown"
-        },
-        "_internalBlockNumber": {},
-        "_fastBlockNumber": 13795571,
-        "_fastBlockNumberPromise": {}
-      }
-    },
     "contract": {
       "abi": [
         "constructor(address gateway_, address gasReceiver_)",
@@ -212,7 +118,7 @@
         "function gateway() view returns (address)",
         "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable"
       ],
-      "address": "0x19b14B7bF7f4530AeEAc888c6627f3f7cfB62221"
+      "address": "0x12b1347EA0ef1E6646B5d7dFfFf329d8F28A99DC"
     },
     "usdc": {
       "abi": [
@@ -252,7 +158,7 @@
         "function registry() view returns (address)",
         "function setup(bytes data)"
       ],
-      "address": "0x19b14B7bF7f4530AeEAc888c6627f3f7cfB62221"
+      "address": "0x12b1347EA0ef1E6646B5d7dFfFf329d8F28A99DC"
     }
   }
 ]
