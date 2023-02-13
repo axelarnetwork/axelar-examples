@@ -12,7 +12,7 @@ async function main() {
   if(!evmPrivateKey || !evmMnemonic) throw new Error('EVM_PRIVATE_KEY or EVM_MNEMONIC not found in root .env file')
 
   const examplesWebEnvPath = path.resolve(__dirname, '../.env')
-  const examplesWebEnv = `NEXT_PUBLIC_EVM_PRIVATE_KEY=${evmPrivateKey}+\nNEXT_PUBLIC_EVM_MNEMONIC=${evmMnemonic}`;
+  const examplesWebEnv = `NEXT_PUBLIC_EVM_PRIVATE_KEY=${evmPrivateKey}\nNEXT_PUBLIC_EVM_MNEMONIC=${evmMnemonic}`;
   await fs.writeFile(examplesWebEnvPath, examplesWebEnv);
 }
 
