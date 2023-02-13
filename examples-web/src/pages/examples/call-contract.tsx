@@ -52,7 +52,7 @@ const CallContract: NextPage = () => {
               <h2 className="card-title">Ethereum (Message Sender)</h2>
               <p>Send a cross-chain message</p>
               <div className="justify-end mt-10 card-actions">
-                <form className="flex w-full" onSubmit={handleOnSubmitMessage}>
+                <form className="flex w-full" autoComplete="off" onSubmit={handleOnSubmitMessage}>
                   <input
                     disabled={loading}
                     required

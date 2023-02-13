@@ -91,6 +91,7 @@ const CallContractWithToken: NextPage = () => {
               <div className="justify-end mt-2 card-actions">
                 <form
                   className="flex flex-col w-full"
+                  autoComplete="off"
                   onSubmit={handleOnSubmit}
                 >
                   <div>

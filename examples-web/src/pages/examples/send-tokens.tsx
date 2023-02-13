@@ -100,7 +100,7 @@ const SendToken: NextPage = () => {
                             Sender ({truncatedAddress(wallet.address)}) balance: {senderBalance}
                         </p>
                         <div className="justify-end mt-2 card-actions">
-                            <form className="flex flex-col w-full" onSubmit={handleOnSubmit}>
+                            <form className="flex flex-col w-full" autoComplete="off" onSubmit={handleOnSubmit}>
                                 <div className="form-control">
                                     <label className="label">
                                         <span className="label-text">Moonbeam Recipient Address</span>
