@@ -70,10 +70,10 @@ const NFTLinker: NextPage = () => {
   return (
     <div>
       <h1 className="m-5 text-4xl font-medium text-center">
-        General Message Passing (GMP)
+        Send NFTs Between Chains
       </h1>
       <h2 className="m-5 text-2xl font-medium text-center">
-        Send NFTs Between Chains
+
       </h2>
 
       <div className="grid grid-cols-2 gap-20 mt-10 justify-items-center">

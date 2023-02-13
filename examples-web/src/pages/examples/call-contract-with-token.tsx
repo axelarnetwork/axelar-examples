@@ -62,10 +62,8 @@ const CallContractWithToken: NextPage = () => {
     <div>
       <div>
         <h1 className="text-4xl font-medium text-center">
-          General Message Passing (GMP)
+          Send token with custom logic to another chain
         </h1>
-        <h2 className="text-base text-center">Call Contract With Token</h2>
-
         <div className="grid grid-cols-2 gap-20 mt-20 justify-items-center">
           {/* source chain card */}
           <div className="row-span-2 shadow-xl card w-96 bg-base-100">

@@ -70,7 +70,7 @@ const SendToken: NextPage = () => {
 
     return (
         <div>
-            <h1 className="text-3xl font-medium text-center">{sendMethod === 'sendToken' ? 'Send Token' : 'Deposit Address'} Demo</h1>
+            <h1 className="text-3xl font-medium text-center">{sendMethod === 'sendToken' ? 'Send Token' : 'Deposit Address'}</h1>
             <br />
             <div className="flex justify-center">
                 <button
