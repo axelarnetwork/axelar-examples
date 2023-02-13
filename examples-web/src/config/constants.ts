@@ -1,6 +1,6 @@
-import { ethers, getDefaultProvider, providers, Wallet } from "ethers";
-import testnet from '../../config/testnet.json'
-import local from '../../config/chains.json'
+import { getDefaultProvider, providers, Wallet } from "ethers";
+import testnet from '@axelar-network/axelar-cgp-solidity/info/testnet.json'
+import local from '../../../chain-config/local.json'
 
 if (typeof window === "undefined") {
   require("dotenv").config();
