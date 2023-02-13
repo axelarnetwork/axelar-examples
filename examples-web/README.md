@@ -15,4 +15,4 @@ The `examples-web` section has a collection of end-to-end examples. All examples
 4. Visit http://localhost:3000 in your web browser to play with examples demo.
 
 You should see the website looks like image below.
-![examples-web](/docs/examples-web.png)
+![examples-web](./docs/examples-web.png)
