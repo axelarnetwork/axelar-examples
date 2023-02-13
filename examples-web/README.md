@@ -1,6 +1,6 @@
-# Example Web
+# Web Examples
 
-The `examples-web` section has a collection of end-to-end examples. All examples are bundled in the same package so it's easy to setup and run all examples.
+Discover a comprehensive collection of end-to-end examples in the `examples-web` section. Conveniently, all of the examples have been packaged together, making it simple to set up and run them all in one place.
 
 ## Prerequisite
 
