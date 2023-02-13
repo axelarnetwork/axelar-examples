@@ -16,9 +16,9 @@ export const Card: React.FC<CardProps> = (props) => {
         <p className='text-ellipsis'>{props.description}</p>
         <div className="card-actions justify-end">
           <Link href={props.url}>
-            <button className="btn btn-primary">
+            <a className="btn btn-primary">
               View
-            </button>
+            </a>
           </Link>
         </div>
       </div>

@@ -1,12 +1,14 @@
 import React from 'react';
 import Link from 'next/link'
 import Image from 'next/image'
+import { ThemeToggle } from 'components/ThemeToggle';
 
 export const Navbar = () => {
+    const [logo, setLogo] = React.useState('/assets/axelar_logo.svg');
     return (
-        <header className="navbar bg-base-100 shadow-sm">
-          <Image width={128} height={32} src="/assets/axelar_logo.png" alt="axelar" />
-          <nav className="menu menu-horizontal ml-4">
+        <header className="navbar bg-base-200 shadow-sm px-16">
+          <Image width={128} height={32} src={logo} alt="axelar" />
+          <nav className="menu menu-horizontal ml-4 flex-1">
             <ul>
               <li>
                 <Link href="/">
@@ -15,6 +17,13 @@ export const Navbar = () => {
               </li>
             </ul>
           </nav>
+          <ThemeToggle onThemeChange={(theme: string) => {
+            if (theme === 'business') {
+              setLogo('/assets/axelar_logo_white.svg');
+            } else {
+              setLogo('/assets/axelar_logo.svg');
+            }
+          }} />
         </header>
     );
 };
