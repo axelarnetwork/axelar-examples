@@ -113,6 +113,7 @@ const generateCard = (
   img: any,
 ) => {
   if(!chain) return;
+  const disabled = loading || owner.chain !== chain.name;
 
   return (
     <div className="row-span-2 shadow-xl card w-96 bg-base-100">
@@ -128,11 +129,8 @@ const generateCard = (
             <div>
               <div className="w-full input-group">
                 <button
-                  className={cn("btn btn-primary", {
-                    loading,
-                    "opacity-30": loading || owner.chain !== chain.name,
-                    "opacity-100": !loading && owner.chain === chain.name,
-                  })}
+                  className={cn("btn btn-primary")}
+                  disabled={disabled}
                   type="submit"
                 >
                   {buttonTitle}
