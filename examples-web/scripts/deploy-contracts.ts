@@ -8,8 +8,8 @@ import {deploy as deployCallContractWithToken} from './call-contract-with-token'
 import { deploy as deployNftLinker } from "./nft-linker";
 
 // create wallet
-const mnemonic = process.env.NEXT_PUBLIC_EVM_MNEMONIC as string;
-const wallet = Wallet.fromMnemonic(mnemonic);
+const privateKey = process.env.NEXT_PUBLIC_EVM_PRIVATE_KEY as string;
+const wallet = new Wallet(privateKey);
 
 const ethereumChain = chains.find((chain: any) => chain.name === "Ethereum") || chains[0] as any;
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche") || chains[1] as any;
