@@ -5,6 +5,8 @@ const {
     Contract,
     constants: { AddressZero },
     ethers,
+    utils,
+    ContractFactory,
 } = require('ethers');
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 const DistributionExecutable = rootRequire(
@@ -15,8 +17,9 @@ const Gateway = rootRequire(
     './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
 );
 const IERC20 = rootRequire('./artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
+const IGMPExpressService = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/interfaces/IGMPExpressService.sol/IGMPExpressService.json');
 
-async function deploy(chain, wallet) {
+async function deployOld(chain, wallet) {
     console.log(`Deploying DistributionExecutable for ${chain.name}.`);
     const provider = getDefaultProvider(chain.rpc);
     chain.wallet = wallet.connect(provider);
@@ -37,6 +40,26 @@ async function deploy(chain, wallet) {
     chain.proxy = new Contract(chain.contract.address, ExpressProxy.abi, chain.wallet);
     await chain.proxy.deployRegistry();
     console.log(`Deployed Registry for ${chain.name} at ${await chain.proxy.registry()}.`);
+}
+
+async function deploy(chain, wallet) {
+    console.log(`Deploying DistributionExecutable for ${chain.name}.`);
+    const provider = getDefaultProvider(chain.rpc);
+    chain.wallet = wallet.connect(provider);
+    console.log(`Deploying DistributionProxy for ${chain.name}.`);
+    const gmpExpressServiceDeployedAddress = chain.GMPExpressService.address;
+    const gmpExpressService = new Contract(gmpExpressServiceDeployedAddress, IGMPExpressService.abi, chain.wallet);
+    const salt = utils.keccak256('0x04');
+    const factory = new ContractFactory(DistributionExecutable.abi, DistributionExecutable.bytecode);
+    const args = [chain.gateway, chain.gasService];
+    const bytecode = factory.getDeployTransaction(...args).data;
+    const owner = chain.wallet.address;
+    const setupParams = '0x';
+    const tx = await gmpExpressService.deployExpressExecutable(salt, bytecode, owner, setupParams);
+    await tx.wait(1);
+    const deployedAddress = await gmpExpressService.deployedProxyAddress(salt, owner);
+    console.log('Deployed proxy for DistributionExecutable at', deployedAddress);
+    chain.contract = new Contract(deployedAddress, DistributionExecutable.abi, chain.wallet);
 }
 
 async function execute(chains, wallet, options) {
