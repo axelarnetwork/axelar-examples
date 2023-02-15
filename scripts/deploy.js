@@ -7,6 +7,7 @@ const {
 const { Wallet, getDefaultProvider } = require('ethers');
 const { FormatTypes } = require('ethers/lib/utils');
 const path = require('path');
+const {getWallet} = require('./utils')
 
 const rootPath = path.resolve(__dirname, '..');
 global.rootRequire = (name) => require(`${rootPath}/${name}`);
@@ -48,7 +49,7 @@ async function deploy(env, chains, wallet, example) {
             }
         }
 
-        // delete chain.wallet
+        delete chain.wallet
     }
 
     setJSON(chains, `./chain-config/${env}.json`);
@@ -64,20 +65,21 @@ if (require.main === module) {
     const example = require(pathname);
 
     const env = process.argv[3];
-    if (env == null || (env !== 'testnet' && env !== 'local'))
+    if (env == null || (env !== 'testnet' && env !== 'local' && env !== 'sandbox'))
         throw new Error('Need to specify testnet or local as an argument to this script.');
     let temp;
 
     if (env === 'local') {
         temp = require(`../chain-config/local.json`);
-    } else {
+    } else if(env === 'sandbox') {
+        temp = require("../chain-config/sandbox.json")
+    }else {
         temp = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
     }
 
     const chains = temp;
 
-    const privateKey = process.env.EVM_PRIVATE_KEY;
-    const wallet = new Wallet(privateKey);
+    const wallet = getWallet()
 
     deploy(env, chains, wallet, example);
 }

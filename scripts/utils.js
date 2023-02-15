@@ -1,10 +1,16 @@
 const {
     constants: { AddressZero },
+    Wallet
 } = require('ethers');
 const axios = require('axios');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
 
 const { AxelarAssetTransfer } = require('@axelar-network/axelarjs-sdk');
+
+function getWallet() {
+  const privateKey = process.env.EVM_PRIVATE_KEY;
+  return privateKey ? new Wallet(privateKey) : Wallet.fromMnemonic(process.env.EVM_MNEMONIC);
+}
 
 function getDepositAddress(env, source, destination, destinationAddress, symbol) {
     if (env === 'testnet') {
@@ -23,7 +29,7 @@ function getDepositAddress(env, source, destination, destinationAddress, symbol)
 
 async function getGasPrice(env, source, destination, tokenAddress) {
     if (env === 'local') return 1;
-    if (env !== 'testnet') throw Error('env needs to be "local" or "testnet".');
+    if (env !== 'testnet' && env !== 'sandbox') throw Error('env needs to be "local" or "testnet".');
     const apiUrl = 'https://devnet.api.gmp.axelarscan.io';
 
     const requester = axios.create({ baseURL: apiUrl });
@@ -51,6 +57,7 @@ async function getGasPrice(env, source, destination, tokenAddress) {
 }
 
 module.exports = {
+    getWallet,
     getGasPrice,
     getDepositAddress,
 };

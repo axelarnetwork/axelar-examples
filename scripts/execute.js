@@ -4,8 +4,8 @@ require('dotenv').config();
 const AxelarGatewayContract = require('../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json');
 const AxelarGasServiceContract = require('../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol/IAxelarGasService.json');
 const IERC20 = require('../artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
-const { Wallet, Contract, getDefaultProvider } = require('ethers');
-const { getGasPrice, getDepositAddress } = require('./utils.js');
+const { Contract, getDefaultProvider } = require('ethers');
+const { getWallet, getGasPrice, getDepositAddress } = require('./utils.js');
 const path = require('path');
 
 const rootPath = path.resolve(__dirname, '..');
@@ -51,20 +51,20 @@ module.exports = {
 function getChains(env) {
     if (env === 'local') {
         return require(`../chain-config/local.json`);
+    } else if(env === 'sandbox') {
+        return require(`../chain-config/sandbox.json`);
     }
 
     return require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
 }
 
 if (require.main === module) {
-    const privateKey = process.env.EVM_PRIVATE_KEY;
-    const wallet = new Wallet(privateKey);
-
+    const wallet = getWallet()
     const destPath = path.resolve(__dirname, '..', `examples/${process.argv[2]}/index.js`);
     const pathname = path.relative(__dirname, destPath);
     const example = require(pathname);
     const env = process.argv[3];
-    if (env == null || (env !== 'testnet' && env !== 'local'))
+    if (env == null || (env !== 'testnet' && env !== 'local' && env !== 'sandbox'))
         throw new Error('Need to specify tesntet or local as an argument to this script.');
 
     const chains = getChains(env);
