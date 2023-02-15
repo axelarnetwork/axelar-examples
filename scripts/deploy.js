@@ -71,7 +71,10 @@ if (require.main === module) {
     if (env === 'local') {
         temp = require(`../chain-config/local.json`);
     } else {
-        temp = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`).slice(1, 3);
+        // const chains = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
+        const testnet = require(`../chain-config/testnet.json`);
+        const chainsWanted = ['avalanche', 'polygon'];
+        temp = testnet.filter((ch) => chainsWanted.includes(ch.name.toLowerCase()));
         temp = temp.map((chain) => ({
             ...chain,
             gasService: chain.AxelarGasService.address,
