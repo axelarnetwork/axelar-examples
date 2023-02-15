@@ -62,12 +62,13 @@ async function deploy(chain, wallet) {
     await tx.wait(1);
     console.log(`Deploying DistributionProxy for ${chain.name}.`);
     const deployedAddress = await gmpExpressService.deployedProxyAddress(salt, owner);
-    console.log('Deployed proxy for DistributionExecutable at', deployedAddress);
+    console.log(`Deployed DistributionProxy for ${chain.name} at`, deployedAddress);
     chain.contract = new Contract(
         deployedAddress,
         [
             ...DistributionExecutable.abi,
-            'function expressExecuteWithToken(string sourceChain,address sourceAddress,bytes payload,string symbol,uint256 amount)',
+            'function expressExecuteWithToken(string calldata sourceChain,string calldata sourceAddress,bytes calldata payload,string calldata symbol,uint256 amount)',
+            'function registry() external view returns (address)',
         ],
         chain.wallet,
     );
@@ -83,6 +84,9 @@ async function execute(chains, wallet, options) {
     const accounts = args.slice(3);
 
     if (accounts.length === 0) accounts.push(wallet.address);
+
+    // console.log(await destination.contract.registry())
+    // return;
 
     async function logAccountBalances() {
         for (const account of accounts) {

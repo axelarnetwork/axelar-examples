@@ -44,9 +44,10 @@
         "function gasService() view returns (address)",
         "function gateway() view returns (address)",
         "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable",
-        "function expressExecuteWithToken(string sourceChain, address sourceAddress, bytes payload, string symbol, uint256 amount)"
+        "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string symbol, uint256 amount)",
+        "function registry() view returns (address)"
       ],
-      "address": "0xCB8040A923F5C7Ed0260bFb3C911E4fE317Cce7E"
+      "address": "0xBb36fdADEB4D52eE76D49Fef5508F5A5D8C03fCC"
     }
   },
   {
@@ -94,9 +95,10 @@
         "function gasService() view returns (address)",
         "function gateway() view returns (address)",
         "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable",
-        "function expressExecuteWithToken(string sourceChain, address sourceAddress, bytes payload, string symbol, uint256 amount)"
+        "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string symbol, uint256 amount)",
+        "function registry() view returns (address)"
       ],
-      "address": "0x136c54Ada3473d5e39FA12C074658e07b8f6780c"
+      "address": "0xa665835c9881bbFDc1740aB962B5c7CFFb9DdF8C"
     }
   },
   {
@@ -144,9 +146,10 @@
         "function gasService() view returns (address)",
         "function gateway() view returns (address)",
         "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable",
-        "function expressExecuteWithToken(string sourceChain, address sourceAddress, bytes payload, string symbol, uint256 amount)"
+        "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string symbol, uint256 amount)",
+        "function registry() view returns (address)"
       ],
-      "address": "0xCD273a177Fc5645b43D9F84a19b5e0f8972A0720"
+      "address": "0xecD036D8265A3Ace22926c18e2aFC30de2B7dcf5"
     }
   }
 ]
