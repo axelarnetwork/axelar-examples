@@ -43,64 +43,11 @@
         "function executeWithToken(bytes32, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
         "function gasService() view returns (address)",
         "function gateway() view returns (address)",
-        "function nonce() view returns (uint256)",
         "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable",
         "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string symbol, uint256 amount)",
         "function registry() view returns (address)"
       ],
-      "address": "0xbB28243c740b14D5E34029d9227936Bc72FB2edF"
-    }
-  },
-  {
-    "name": "Fantom",
-    "chainId": 4002,
-    "gateway": "0x97837985Ec0494E7b9C71f5D3f9250188477ae14",
-    "rpc": "https://rpc.ankr.com/fantom_testnet",
-    "constAddressDeployer": "0x98b2920d53612483f91f12ed7754e51b4a77919e",
-    "tokenName": "Fantom",
-    "tokenSymbol": "FTM",
-    "wrappedSymbol": "WFTM",
-    "AxelarGasService": {
-      "salt": "AxelarGasService",
-      "address": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
-      "implementation": "0xE622B1D44F5061DB10ABa2594F1A8eb2DC1fC1d4",
-      "deployer": "0x6f24A47Fc8AE5441Eb47EFfC3665e70e69Ac3F05",
-      "collector": "0xB8Cd93C83A974649D76B1c19f311f639e62272BC"
-    },
-    "AxelarDepositService": {
-      "salt": "AxelarDepositService",
-      "address": "0xc1DCb196BA862B337Aa23eDA1Cb9503C0801b955",
-      "implementation": "0xd883C8bA523253c93d97b6C7a5087a7B5ff23d79",
-      "deployer": "0xd55cd98cdE61c3CcE1286F9aF50cDbF16f5dba5b",
-      "wrappedSymbol": "WFTM",
-      "refundIssuer": "0xB8Cd93C83A974649D76B1c19f311f639e62272BC"
-    },
-    "GMPExpressService": {
-      "expressOperator": "0xB8Cd93C83A974649D76B1c19f311f639e62272BC",
-      "proxyDeployer": "0xBD3e8d41874bC123fB6913a2a6c6C8984c71876c",
-      "salt": "GMPExpressService",
-      "address": "0xfb72239394647e97894585D0D93Ca91f6C3852a4",
-      "implementation": "0xEA85BA9643F504155CD0eFbDB890c5e37e0F6E5C",
-      "deployer": "0xA57ADCE1d2fE72949E4308867D894CD7E7DE0ef2"
-    },
-    "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
-    "contract": {
-      "abi": [
-        "constructor(address gateway_, address gasReceiver_)",
-        "error InvalidAddress()",
-        "error NotApprovedByGateway()",
-        "function contractId() pure returns (bytes32)",
-        "function enableExpressCallWithToken() returns (bool)",
-        "function execute(bytes32, string sourceChain, string sourceAddress, bytes payload)",
-        "function executeWithToken(bytes32, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
-        "function gasService() view returns (address)",
-        "function gateway() view returns (address)",
-        "function nonce() view returns (uint256)",
-        "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable",
-        "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string symbol, uint256 amount)",
-        "function registry() view returns (address)"
-      ],
-      "address": "0x04E83762Abc7a16b8B2Bed3E39B332E80b51Ea10"
+      "address": "0x5A3cbec1ffcC694674313A5390D7A61A79Ce0de4"
     }
   },
   {
@@ -147,12 +94,11 @@
         "function executeWithToken(bytes32, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
         "function gasService() view returns (address)",
         "function gateway() view returns (address)",
-        "function nonce() view returns (uint256)",
         "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable",
         "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string symbol, uint256 amount)",
         "function registry() view returns (address)"
       ],
-      "address": "0x104959Fb26D2b25fF78Bd4C2536927D4810eAdcD"
+      "address": "0xE99134e01d6b924dfE979396405A3A932875Bf7E"
     }
   }
 ]
