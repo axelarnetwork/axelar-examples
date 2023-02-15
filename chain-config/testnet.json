@@ -10,7 +10,7 @@
     "wrappedSymbol": "WAVAX",
     "AxelarGasService": {
       "salt": "AxelarGasService",
-      "address": "0x2d5d7d31F671F86C782533cc367F14109a082712",
+      "address": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
       "implementation": "0xE622B1D44F5061DB10ABa2594F1A8eb2DC1fC1d4",
       "deployer": "0x6f24A47Fc8AE5441Eb47EFfC3665e70e69Ac3F05",
       "collector": "0xB8Cd93C83A974649D76B1c19f311f639e62272BC"
@@ -31,7 +31,7 @@
       "deployer": "0xA57ADCE1d2fE72949E4308867D894CD7E7DE0ef2",
       "proxyDeployer": "0x7d317581fe19e63A6Dbea833B1902c487f40Aa2c"
     },
-    "gasService": "0x2d5d7d31F671F86C782533cc367F14109a082712",
+    "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "contract": {
       "abi": [
         "constructor(address gateway_, address gasReceiver_)",
@@ -43,9 +43,10 @@
         "function executeWithToken(bytes32, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
         "function gasService() view returns (address)",
         "function gateway() view returns (address)",
-        "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable"
+        "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable",
+        "function expressExecuteWithToken(string sourceChain, address sourceAddress, bytes payload, string symbol, uint256 amount)"
       ],
-      "address": "0x39A165233B8d1fc6b0FF48cE5aFf2F5170E11cF1"
+      "address": "0xCB8040A923F5C7Ed0260bFb3C911E4fE317Cce7E"
     }
   },
   {
@@ -59,7 +60,7 @@
     "wrappedSymbol": "WFTM",
     "AxelarGasService": {
       "salt": "AxelarGasService",
-      "address": "0x2d5d7d31F671F86C782533cc367F14109a082712",
+      "address": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
       "implementation": "0xE622B1D44F5061DB10ABa2594F1A8eb2DC1fC1d4",
       "deployer": "0x6f24A47Fc8AE5441Eb47EFfC3665e70e69Ac3F05",
       "collector": "0xB8Cd93C83A974649D76B1c19f311f639e62272BC"
@@ -80,7 +81,7 @@
       "implementation": "0xEA85BA9643F504155CD0eFbDB890c5e37e0F6E5C",
       "deployer": "0xA57ADCE1d2fE72949E4308867D894CD7E7DE0ef2"
     },
-    "gasService": "0x2d5d7d31F671F86C782533cc367F14109a082712",
+    "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "contract": {
       "abi": [
         "constructor(address gateway_, address gasReceiver_)",
@@ -92,9 +93,10 @@
         "function executeWithToken(bytes32, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
         "function gasService() view returns (address)",
         "function gateway() view returns (address)",
-        "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable"
+        "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable",
+        "function expressExecuteWithToken(string sourceChain, address sourceAddress, bytes payload, string symbol, uint256 amount)"
       ],
-      "address": "0x39A165233B8d1fc6b0FF48cE5aFf2F5170E11cF1"
+      "address": "0x136c54Ada3473d5e39FA12C074658e07b8f6780c"
     }
   },
   {
@@ -108,7 +110,7 @@
     "wrappedSymbol": "WMATIC",
     "AxelarGasService": {
       "salt": "AxelarGasService",
-      "address": "0x2d5d7d31F671F86C782533cc367F14109a082712",
+      "address": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
       "implementation": "0xE622B1D44F5061DB10ABa2594F1A8eb2DC1fC1d4",
       "deployer": "0x6f24A47Fc8AE5441Eb47EFfC3665e70e69Ac3F05",
       "collector": "0xB8Cd93C83A974649D76B1c19f311f639e62272BC"
@@ -129,7 +131,7 @@
       "implementation": "0xa2b215328017039db7847559302D1CF7b068Aa5a",
       "deployer": "0xA57ADCE1d2fE72949E4308867D894CD7E7DE0ef2"
     },
-    "gasService": "0x2d5d7d31F671F86C782533cc367F14109a082712",
+    "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     "contract": {
       "abi": [
         "constructor(address gateway_, address gasReceiver_)",
@@ -141,9 +143,10 @@
         "function executeWithToken(bytes32, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
         "function gasService() view returns (address)",
         "function gateway() view returns (address)",
-        "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable"
+        "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable",
+        "function expressExecuteWithToken(string sourceChain, address sourceAddress, bytes payload, string symbol, uint256 amount)"
       ],
-      "address": "0x39A165233B8d1fc6b0FF48cE5aFf2F5170E11cF1"
+      "address": "0xCD273a177Fc5645b43D9F84a19b5e0f8972A0720"
     }
   }
 ]
