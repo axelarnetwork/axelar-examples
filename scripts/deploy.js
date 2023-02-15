@@ -73,7 +73,7 @@ if (require.main === module) {
     } else {
         // const chains = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
         const testnet = require(`../chain-config/testnet.json`);
-        const chainsWanted = ['avalanche', 'fantom', 'polygon'];
+        const chainsWanted = ['avalanche', 'polygon'];
         temp = testnet.filter((ch) => chainsWanted.includes(ch.name.toLowerCase()));
         temp = temp.map((chain) => ({
             ...chain,

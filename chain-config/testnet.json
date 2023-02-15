@@ -37,17 +37,18 @@
         "constructor(address gateway_, address gasReceiver_)",
         "error InvalidAddress()",
         "error NotApprovedByGateway()",
-        "error NotSelf()",
         "function contractId() pure returns (bytes32)",
+        "function enableExpressCallWithToken() returns (bool)",
         "function execute(bytes32, string sourceChain, string sourceAddress, bytes payload)",
         "function executeWithToken(bytes32, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
         "function gasService() view returns (address)",
         "function gateway() view returns (address)",
+        "function nonce() view returns (uint256)",
         "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable",
         "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string symbol, uint256 amount)",
         "function registry() view returns (address)"
       ],
-      "address": "0xBb36fdADEB4D52eE76D49Fef5508F5A5D8C03fCC"
+      "address": "0xbB28243c740b14D5E34029d9227936Bc72FB2edF"
     }
   },
   {
@@ -88,17 +89,18 @@
         "constructor(address gateway_, address gasReceiver_)",
         "error InvalidAddress()",
         "error NotApprovedByGateway()",
-        "error NotSelf()",
         "function contractId() pure returns (bytes32)",
+        "function enableExpressCallWithToken() returns (bool)",
         "function execute(bytes32, string sourceChain, string sourceAddress, bytes payload)",
         "function executeWithToken(bytes32, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
         "function gasService() view returns (address)",
         "function gateway() view returns (address)",
+        "function nonce() view returns (uint256)",
         "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable",
         "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string symbol, uint256 amount)",
         "function registry() view returns (address)"
       ],
-      "address": "0xa665835c9881bbFDc1740aB962B5c7CFFb9DdF8C"
+      "address": "0x04E83762Abc7a16b8B2Bed3E39B332E80b51Ea10"
     }
   },
   {
@@ -139,17 +141,18 @@
         "constructor(address gateway_, address gasReceiver_)",
         "error InvalidAddress()",
         "error NotApprovedByGateway()",
-        "error NotSelf()",
         "function contractId() pure returns (bytes32)",
+        "function enableExpressCallWithToken() returns (bool)",
         "function execute(bytes32, string sourceChain, string sourceAddress, bytes payload)",
         "function executeWithToken(bytes32, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount)",
         "function gasService() view returns (address)",
         "function gateway() view returns (address)",
+        "function nonce() view returns (uint256)",
         "function sendToMany(string destinationChain, string destinationAddress, address[] destinationAddresses, string symbol, uint256 amount) payable",
         "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string symbol, uint256 amount)",
         "function registry() view returns (address)"
       ],
-      "address": "0xecD036D8265A3Ace22926c18e2aFC30de2B7dcf5"
+      "address": "0x104959Fb26D2b25fF78Bd4C2536927D4810eAdcD"
     }
   }
 ]

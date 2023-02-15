@@ -113,14 +113,14 @@ async function execute(chains, wallet, options) {
     console.log('Sent tokens to distribution contract.', sendTx.hash);
 
     // // express call
-    const payload = ethers.utils.defaultAbiCoder.encode(['address[]'], [accounts]);
-
+    const payload = ethers.utils.defaultAbiCoder.encode(['uint256', 'address[]'], [await source.contract.nonce(), accounts]);
     const approveDestTx = await destination.usdc.approve(destination.contract.address, amount);
     await approveDestTx.wait();
-    console.log('expressExecuteWithToken...');
-    await destination.contract.expressExecuteWithToken(source.name, source.contract.address, payload, 'aUSDC', amount);
+    const expressTx = await destination.contract.expressExecuteWithToken(source.name, source.contract.address, payload, 'aUSDC', amount).then(tx => tx.wait());
+    console.log('Call expressExecuteWithToken.', expressTx.transactionHash);
 
     console.log('--- After ---');
+    // await sleep(3000);
     await logAccountBalances();
 }
 
