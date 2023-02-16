@@ -16,5 +16,5 @@ const chains = getChains(env);
 // Get the wallet.
 const wallet = getWallet();
 
-// Deploy the contracts.
+// This will execute an example script. The example script must have a `deploy` function.
 deploy(env, chains, wallet, example);

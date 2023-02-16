@@ -1,3 +1,4 @@
+require('./rootRequire');
 const {
     constants: { AddressZero },
     Wallet,
@@ -6,9 +7,6 @@ const {
 const axios = require('axios');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
 const { AxelarAssetTransfer } = require('@axelar-network/axelarjs-sdk');
-
-const rootPath = path.resolve(__dirname, '../..');
-global.rootRequire = (name) => require(`${rootPath}/${name}`);
 
 /**
  * Get the wallet from the environment variables. If the EVM_PRIVATE_KEY environment variable is set, use that. Otherwise, use the EVM_MNEMONIC environment variable.
@@ -133,5 +131,5 @@ module.exports = {
     getBalances,
     getChains,
     checkEnv,
-    getExamplePath
+    getExamplePath,
 };
