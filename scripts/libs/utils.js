@@ -1,10 +1,5 @@
 require('./rootRequire');
-const {
-    constants: { AddressZero },
-    Wallet,
-    ethers,
-} = require('ethers');
-const axios = require('axios');
+const { Wallet, ethers } = require('ethers');
 const path = require('path');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
 const { AxelarAssetTransfer, AxelarQueryAPI } = require('@axelar-network/axelarjs-sdk');
