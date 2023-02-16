@@ -24,7 +24,7 @@ npm run execute evm/send-ack [local|testnet] ${srcChain} ${destChain} ${message}
 
 ```bash
 npm run deploy evm/send-ack local
-npm run execute evm/send-ack local "Fantom" "Moonbeam" 'Received'
+npm run execute evm/send-ack local "Avalanche" "Fantom" 'Received'
 ```
 
 **Output:**

@@ -30,7 +30,7 @@ npm run execute evm/call-contract-with-token [local|testnet] ${srcChain} ${destC
 
 ```bash
 npm run deploy evm/call-contract-with-token local
-npm run execute evm/call-contract-with-token local "Moonbeam" "Ethereum" 100 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
+npm run execute evm/call-contract-with-token local "Avalanche" "Fantom" 100 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
 ```
 
 ### Output:

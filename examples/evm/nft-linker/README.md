@@ -36,7 +36,7 @@ To deploy the NFT Linker locally and send the NFT originally minted on Avalanche
 
 ```bash
 npm run deploy evm/nft-linker local
-npm run execute evm/nft-linker local "Avalanche" "Polygon"
+npm run execute evm/nft-linker local "Avalanche" "Fantom"
 ```
 
 Output:
