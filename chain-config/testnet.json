@@ -47,7 +47,7 @@
         "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string symbol, uint256 amount)",
         "function registry() view returns (address)"
       ],
-      "address": "0x5A3cbec1ffcC694674313A5390D7A61A79Ce0de4"
+      "address": "0x4E3b6C3d284361Eb4fA9aDE5831eEfF85578b72c"
     }
   },
   {
@@ -98,7 +98,7 @@
         "function expressExecuteWithToken(string sourceChain, string sourceAddress, bytes payload, string symbol, uint256 amount)",
         "function registry() view returns (address)"
       ],
-      "address": "0xE99134e01d6b924dfE979396405A3A932875Bf7E"
+      "address": "0xAb6dAb12aCCAe665A44E69d44bcfC6219A30Dd32"
     }
   }
 ]
