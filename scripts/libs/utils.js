@@ -132,6 +132,16 @@ function getExamplePath(exampleName) {
     return path.relative(__dirname, destDir);
 }
 
+function sanitizeEventArgs(event) {
+    return Object.keys(event.args).reduce((acc, key) => {
+        if (isNaN(parseInt(key))) {
+            acc[key] = event.args[key];
+        }
+
+        return acc;
+    }, {});
+}
+
 module.exports = {
     getWallet,
     getDepositAddress,
@@ -140,4 +150,5 @@ module.exports = {
     checkEnv,
     calculateBridgeFee,
     getExamplePath,
+    sanitizeEventArgs
 };
