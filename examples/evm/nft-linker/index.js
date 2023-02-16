@@ -20,7 +20,7 @@ const tokenId = 0;
 async function deploy(chain, wallet) {
     console.log(`Deploying ERC721Demo for ${chain.name}.`);
     chain.erc721 = await deployContract(wallet, ERC721, ['Test', 'TEST']);
-    console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721}.`);
+    console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721.address}.`);
     console.log(`Deploying NftLinker for ${chain.name}.`);
     const provider = getDefaultProvider(chain.rpc);
     chain.wallet = wallet.connect(provider);
