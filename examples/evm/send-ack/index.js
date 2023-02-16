@@ -15,15 +15,13 @@ const SendAckReceiver = rootRequire(
 );
 const SendAckSender = rootRequire('./artifacts/examples/evm/send-ack/SendAckSender.sol/SendAckSender.json');
 
-const time = new Date().getTime();
-
 async function deploy(chain, wallet) {
     chain.provider = getDefaultProvider(chain.rpc);
     chain.wallet = wallet.connect(chain.provider);
 
     console.log(`Deploying SendAckSender for ${chain.name}.`);
-    chain.sender = await deployContract(wallet, SendAckSender, [chain.gateway, chain.gasService, chain.name]);
-    console.log(`Deployed SendAckSender for ${chain.name} at ${chain.sender.address}.`);
+    chain.contract = await deployContract(wallet, SendAckSender, [chain.gateway, chain.gasService, chain.name]);
+    console.log(`Deployed SendAckSender for ${chain.name} at ${chain.contract.address}.`);
 
     console.log(`Deploying SendAckReceiverImplementation for ${chain.name}.`);
     chain.receiver = await deployContract(wallet, SendAckReceiver, [chain.gateway]);
@@ -32,7 +30,7 @@ async function deploy(chain, wallet) {
 
 async function execute(chains, wallet, options) {
     const { source, destination, calculateBridgeFee, args } = options;
-    const message = args[2] || `Hello, the time is ${time}.`;
+    const message = args[2] || `Received message that written at ${new Date().toLocaleTimeString()}.`;
     const payload = defaultAbiCoder.encode(['string'], [message]);
 
     async function print() {
@@ -52,17 +50,15 @@ async function execute(chains, wallet, options) {
     const feeRemote = await calculateBridgeFee(source, destination);
     const feeSource = await calculateBridgeFee(source, source);
 
-    const tx = await (
-        await source.sender.sendContractCall(destination.name, destination.receiver.address, payload, gasAmountRemote, {
+    const tx = await source.contract
+        .sendContractCall(destination.name, destination.receiver.address, payload, feeRemote, {
             value: BigNumber.from(feeRemote).add(feeSource),
         })
-    ).wait();
+        .then((tx) => tx.wait());
     const event = tx.events.find((event) => event.event === 'ContractCallSent');
     const nonce = event.args.nonce;
 
-    while (!(await source.sender.executed(nonce))) {
-        console.log('MessageLength', await destination.receiver.messagesLength().then((val) => val.toString()));
-        console.log('Test', await source.sender.executed(nonce));
+    while (!(await source.contract.executed(nonce))) {
         await sleep(2000);
     }
 
