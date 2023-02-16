@@ -20,6 +20,18 @@ function getWallet() {
 }
 
 /**
+ * Get testnet chains config from local if it exists, otherwise from axelar-cgp-solidity.
+ */
+function getTestnetConfig() {
+    // check if the testnet config file exists
+    try {
+        return rootRequire('chain-config/testnet.json');
+    } catch (e) {
+        return require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
+    }
+}
+
+/**
  * Get the chain objects from the chain-config file.
  * @param {*} env - The environment to get the chain objects for. Available options are 'local' and 'testnet'.
  * @param {*} testnetChains - The list of chains to get the chain objects for if the environment is 'testnet'.
@@ -34,9 +46,7 @@ function getChains(env, testnetChains = ['Avalanche', 'Fantom']) {
         return rootRequire('chain-config/local.json');
     }
 
-    const testnet = rootRequire('chain-config/testnet.json') || require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
-
-    return testnet
+    return getTestnetConfig()
         .filter((chain) => {
             return testnetChains.includes(chain.name);
         })
