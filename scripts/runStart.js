@@ -1,9 +1,13 @@
 const { start } = require('./libs/start');
 const { getWallet } = require('./libs/utils');
 
+// Get the wallet from the environment variables.
 const wallet = getWallet();
+
+// Fund the given addresses with aUSDC.
 const fundAddresses = [wallet.address];
 
+// Add additional addresses to fund here.
 for (let j = 2; j < process.argv.length; j++) {
     fundAddresses.push(process.argv[j]);
 }
@@ -12,4 +16,5 @@ for (let j = 2; j < process.argv.length; j++) {
 // 'Avalanche', 'Moonbeam', 'Polygon', 'Fantom', 'Ethereum'
 const chains = [];
 
+// Start the chains.
 start(fundAddresses, chains);
