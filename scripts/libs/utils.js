@@ -82,7 +82,7 @@ async function getBalances(chains, address) {
 function getDepositAddress(env, source, destination, destinationAddress, symbol) {
     if (env === 'testnet') {
         const listing = {
-            aUSDC: 'uusdc',
+            aUSDC: env === 'local' ? 'uusdc' : 'uausdc',
         };
         const sdk = new AxelarAssetTransfer({
             environment: 'testnet',
