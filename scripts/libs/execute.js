@@ -4,7 +4,6 @@ require('dotenv').config();
 require('./rootRequire');
 const { Contract, getDefaultProvider } = require('ethers');
 const { calculateBridgeFee, getDepositAddress, sanitizeEventArgs } = require('./utils.js');
-
 const AxelarGatewayContract = rootRequire(
     'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
 );

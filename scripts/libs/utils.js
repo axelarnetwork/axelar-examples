@@ -114,24 +114,41 @@ async function calculateBridgeFee(source, destination, options = {}) {
     return api.estimateGasFee(source.name, destination.name, symbol || source.tokenSymbol, gasLimit, gasMultiplier || 1.5);
 }
 
-// Check if the wallet is set. If not, throw an error.
+/**
+ * Check if the wallet is set. If not, throw an error.
+ */
 function checkWallet() {
     if (process.env.EVM_PRIVATE_KEY == null && process.env.EVM_MNEMONIC == null) {
         throw new Error('Need to set EVM_PRIVATE_KEY or EVM_MNEMONIC environment variable.');
     }
 }
 
+/**
+ * Check if the environment is set. If not, throw an error.
+ * @param {*} env - The environment to check. Available options are 'local' and 'testnet'.
+ */
 function checkEnv(env) {
     if (env == null || (env !== 'testnet' && env !== 'local')) {
         throw new Error('Need to specify testnet or local as an argument to this script.');
     }
 }
 
+/**
+ * Get the path to an example.
+ * @param {*} exampleName - The name of the example to get the path for.
+ * @returns {string} - The path to the example.
+ */
 function getExamplePath(exampleName) {
     const destDir = path.resolve(__dirname, '..', `examples/${exampleName}/index.js`);
     return path.relative(__dirname, destDir);
 }
 
+/**
+ * Sanitize the event arguments.
+ * This is needed because ethers.js returns the event arguments as an object with the keys being the argument names and the values being the argument values.
+ * @param {*} event - The event to sanitize.
+ * @returns {Object} - The sanitized event arguments.
+ */
 function sanitizeEventArgs(event) {
     return Object.keys(event.args).reduce((acc, key) => {
         if (isNaN(parseInt(key))) {
@@ -150,5 +167,5 @@ module.exports = {
     checkEnv,
     calculateBridgeFee,
     getExamplePath,
-    sanitizeEventArgs
+    sanitizeEventArgs,
 };
