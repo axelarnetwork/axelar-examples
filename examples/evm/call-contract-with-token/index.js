@@ -1,10 +1,6 @@
 'use strict';
 
-const {
-    getDefaultProvider,
-    Contract,
-    constants: { AddressZero },
-} = require('ethers');
+const { getDefaultProvider, Contract } = require('ethers');
 const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');

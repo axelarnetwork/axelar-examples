@@ -37,7 +37,7 @@ async function execute(env, chains, args, wallet, example) {
     }
 
     await example.execute(chains, wallet, {
-        calculateBridgeFee: (source, destination, tokenAddress) => calculateBridgeFee(env, source, destination, tokenAddress),
+        calculateBridgeFee,
         getDepositAddress: (source, destination, destinationAddress, symbol) =>
             getDepositAddress(env, source, destination, destinationAddress, symbol),
         args,
@@ -47,7 +47,6 @@ async function execute(env, chains, args, wallet, example) {
 function deserializeContract(chain, wallet) {
     // Loop through every keys in the chain object.
     for (const key of Object.keys(chain)) {
-
         // If the object has an abi, it is a contract.
         if (chain[key].abi) {
             // Get the contract object.

@@ -108,10 +108,10 @@ function getDepositAddress(env, source, destination, destinationAddress, symbol)
  * @param {*} options - The options to pass to the estimateGasFee function. Available options are gasLimit and gasMultiplier.
  * @returns {number} - The gas amount.
  */
-async function calculateBridgeFee(source, destination, symbol = source.tokenSymbol, options = {}) {
+async function calculateBridgeFee(source, destination, options = {}) {
     const api = new AxelarQueryAPI({ environment: 'testnet' });
-    const { gasLimit, gasMultiplier } = options;
-    return api.estimateGasFee(source.name, destination.name, symbol, gasLimit, gasMultiplier || 1.5);
+    const { gasLimit, gasMultiplier, symbol } = options;
+    return api.estimateGasFee(source.name, destination.name, symbol || source.tokenSymbol, gasLimit, gasMultiplier || 1.5);
 }
 
 // Check if the wallet is set. If not, throw an error.
