@@ -2,10 +2,9 @@
 
 require('dotenv').config();
 const rootRequire = (path) => require(`../../${path}`);
+
 const { Wallet } = require('ethers');
-const { start } = rootRequire('scripts/start.js');
-const { execute } = rootRequire('scripts/execute.js');
-const { deploy } = rootRequire('scripts/deploy.js');
+const { start, deploy, execute } = rootRequire('scripts/libs');
 const {
     destroyExported,
     utils: { setLogger },
@@ -43,7 +42,7 @@ describe('Check Examples', function () {
     const toFund = [deployerAddress];
 
     beforeEach(async () => {
-        // // Remove local.json before each test to ensure a clean start
+        // Remove local.json before each test to ensure a clean start
         if (fs.existsSync(infoPath)) {
             fs.unlinkSync(infoPath);
         }
