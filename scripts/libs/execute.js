@@ -23,8 +23,8 @@ const IERC20 = rootRequire('artifacts/@axelar-network/axelar-gmp-sdk-solidity/co
  */
 async function execute(env, chains, args, wallet, example) {
     for (const chain of chains) {
-        const provider = getDefaultProvider(chain.rpc);
-        const connectedWallet = wallet.connect(provider);
+        chain.provider = getDefaultProvider(chain.rpc);
+        const connectedWallet = wallet.connect(chain.provider);
 
         // Initialize contracts to chain object.
         deserializeContract(chain, connectedWallet);
