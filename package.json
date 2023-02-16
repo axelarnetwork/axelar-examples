@@ -7,9 +7,9 @@
     },
     "scripts": {
         "test": "mocha examples/tests",
-        "start": "node scripts/start",
+        "start": "node scripts/runStart",
         "deploy": "node scripts/runDeploy",
-        "execute": "node scripts/execute",
+        "execute": "node scripts/runExecute",
         "build": "rm -rf artifacts && npx hardhat compile",
         "build-aptos": "./build-aptos.sh"
     },
