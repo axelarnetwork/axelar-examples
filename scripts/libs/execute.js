@@ -13,6 +13,14 @@ const AxelarGasServiceContract = rootRequire(
 );
 const IERC20 = rootRequire('artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
+/**
+ * Execute an example script. The example script must have an `execute` function.
+ * @param {*} env - The environment to execute on.
+ * @param {*} chains - The chain objects to execute on.
+ * @param {*} args - The arguments to pass to the example script.
+ * @param {*} wallet - The wallet to use for execution.
+ * @param {*} example - The example to execute.
+ */
 async function execute(env, chains, args, wallet, example) {
     for (const chain of chains) {
         const provider = getDefaultProvider(chain.rpc);
