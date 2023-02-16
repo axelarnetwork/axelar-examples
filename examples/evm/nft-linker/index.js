@@ -41,11 +41,7 @@ async function deploy(chain, wallet) {
 }
 
 async function execute(chains, wallet, options) {
-    const args = options.args || [];
-    const calculateBridgeFee = options.calculateBridgeFee;
-
-    const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
-    const originChain = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+    const { source: originChain, destination, calculateBridgeFee } = options;
 
     const ownerOf = async (chain = originChain) => {
         const operator = chain.erc721;

@@ -30,7 +30,6 @@ async function deploy(chain, wallet) {
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const calculateBridgeFee = options.calculateBridgeFee;
     const client = new AptosNetwork(process.env.APTOS_URL);
 
     for (const chain of chains) {
@@ -39,7 +38,7 @@ async function execute(chains, wallet, options) {
         chain.contract = new Contract(chain.helloWorld, HelloWorld.abi, chain.wallet);
     }
 
-    const evm = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+    const evm = options.source
     const messageEvmToAptos = args[1] || `Hello aptos from ${evm.name}, it is ${new Date().toLocaleTimeString()}.`;
     const messageAptosToEvm = args[2] || `Hello ${evm.name} from aptos, it is ${new Date().toLocaleTimeString()}.`;
 
