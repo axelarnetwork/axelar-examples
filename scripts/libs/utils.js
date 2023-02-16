@@ -22,16 +22,26 @@ function getWallet() {
 /**
  * Get the chain objects from the chain-config file.
  * @param {*} env - The environment to get the chain objects for. Available options are 'local' and 'testnet'.
+ * @param {*} testnetChains - The list of chains to get the chain objects for if the environment is 'testnet'.
+ * Checks the following file for available chain names https://github.com/axelarnetwork/axelar-cgp-solidity/blob/main/info/testnet.json
+ * The default list of chains is ['Avalanche', 'Fantom']
  * @returns {Chain[]} - The chain objects.
  */
-function getChains(env) {
+function getChains(env, testnetChains = ['Avalanche', 'Fantom']) {
     checkEnv(env);
 
     if (env === 'local') {
         return rootRequire('chain-config/local.json');
     }
 
-    return require("@axelar-network/axelar-cgp-solidity/info/testnet.json");
+    return require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`)
+        .filter((chain) => {
+            return testnetChains.includes(chain.name);
+        })
+        .map((chain) => ({
+            ...chain,
+            gasService: chain.AxelarGasService.address,
+        }));
 }
 
 /**
