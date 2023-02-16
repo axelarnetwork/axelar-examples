@@ -37,7 +37,6 @@ async function execute(chains, wallet, options) {
     const gasLimit = 3e5;
     const gasPrice = await getGasPrice(source, destination, AddressZero);
 
-    console.log(`Sending message "${message}" from ${source.name} to ${destination.name}.`, BigInt(Math.floor(gasLimit * gasPrice)))
     const tx = await source.contract.setRemoteValue(destination.name, destination.contract.address, message, {
         value: BigInt(Math.floor(gasLimit * gasPrice)),
     });
