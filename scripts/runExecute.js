@@ -1,6 +1,6 @@
 'use strict';
 require('dotenv').config();
-const { getExamplePath, checkEnv } = require('./libs/utils');
+const { checkEnv, getExamplePath, getWallet, getChains } = require('./libs/utils');
 const { execute } = require('./libs/execute');
 
 const exampleName = process.argv[2];

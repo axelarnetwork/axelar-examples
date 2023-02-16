@@ -6,10 +6,7 @@ require('./rootRequire');
 const {
     utils: { setJSON },
 } = require('@axelar-network/axelar-local-dev');
-const path = require('path');
 const { getDefaultProvider, utils } = require('ethers');
-const rootPath = path.resolve(__dirname, '..');
-global.rootRequire = (name) => require(`${rootPath}/${name}`);
 
 /**
  * Deploy a contract to a list of chains.

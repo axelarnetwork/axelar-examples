@@ -5,6 +5,7 @@ const {
     ethers,
 } = require('ethers');
 const axios = require('axios');
+const path = require('path');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
 const { AxelarAssetTransfer } = require('@axelar-network/axelarjs-sdk');
 
@@ -24,7 +25,7 @@ function getWallet() {
  * @returns {Chain[]} - The chain objects.
  */
 function getChains(env) {
-    checkEnv();
+    checkEnv(env);
 
     if (env === 'local') {
         return rootRequire('chain-config/local.json');
@@ -120,7 +121,7 @@ function checkEnv(env) {
 }
 
 function getExamplePath(exampleName) {
-    const destDir = path.resolve(__dirname, '..', '..', `examples/${exampleName}/index.js`);
+    const destDir = path.resolve(__dirname, '..', `examples/${exampleName}/index.js`);
     return path.relative(__dirname, destDir);
 }
 

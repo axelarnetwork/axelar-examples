@@ -17,8 +17,8 @@ async function start(fundAddresses = [], chains = []) {
     await createAndExport({
         chainOutputPath: pathname,
         accountsToFund: fundAddresses,
-        callback: (chain, _info) => deployAndFundUsdc(chain, toFund),
-        chains,
+        callback: (chain, _info) => deployAndFundUsdc(chain, fundAddresses),
+        chains: chains.length !== 0 ? chains : null,
     });
 }
 

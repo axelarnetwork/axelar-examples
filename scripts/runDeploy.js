@@ -1,5 +1,5 @@
-import { deploy } from './libs/deploy.js';
-import { checkEnv, getChains, getExamplePath } from './libs/utils.js';
+const { deploy } = require('./libs/deploy.js');
+const { checkEnv, getChains, getExamplePath, getWallet } = require('./libs/utils.js');
 
 const exampleName = process.argv[2];
 const env = process.argv[3];

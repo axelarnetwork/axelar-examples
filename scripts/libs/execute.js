@@ -36,7 +36,7 @@ async function execute(env, chains, args, wallet, example) {
         chain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);
     }
 
-    await example.execute(chains, connectedWallet, {
+    await example.execute(chains, wallet, {
         getGasPrice: (source, destination, tokenAddress) => getGasPrice(env, source, destination, tokenAddress),
         getDepositAddress: (source, destination, destinationAddress, symbol) =>
             getDepositAddress(env, source, destination, destinationAddress, symbol),
