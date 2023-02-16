@@ -20,11 +20,16 @@ const examples = [
     'call-contract-with-token',
     'cross-chain-token',
     'deposit-address',
-    // 'forecall',
+    // 'forecall', // forecall is deprecated, so ignore this example until migrating to GMP Express.
     'nft-auctionhouse',
     'nft-linker',
     'send-ack',
     'send-token',
+];
+
+// These examples fork the mainnet, so they take a long time to run.
+const forkExamples = [
+    // 'cross-chain-lending', // cross-chain lending uses forecall which is deprecated, so ignore this example until migrating to GMP Express.
 ];
 
 describe('Check Examples', function () {
@@ -54,7 +59,9 @@ describe('Check Examples', function () {
         await destroyExported();
     });
 
-    for (const exampleName of examples) {
+    const allExamples = [...examples, ...forkExamples];
+
+    for (const exampleName of allExamples) {
         it(exampleName, async function () {
             const example = rootRequire(`examples/evm/${exampleName}/index.js`);
             console.log(example);
