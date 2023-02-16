@@ -57,8 +57,11 @@ async function execute(chains, wallet, options) {
 
     while (true) {
         const updatedBalance = await destination.usdc.balanceOf(accounts[0]);
-        console.log(updatedBalance.toString(), balance.toString());
-        if (updatedBalance.gt(balance)) break;
+
+        if (updatedBalance.gt(balance)) {
+            break;
+        }
+
         await sleep(1000);
     }
 
