@@ -1,5 +1,4 @@
-const { deploy } = require('./libs/deploy.js');
-const { checkEnv, getChains, getExamplePath, getWallet } = require('./libs/utils.js');
+const { deploy, checkEnv, getChains, getExamplePath, getWallet } = require('./libs');
 
 const exampleName = process.argv[2];
 const env = process.argv[3];

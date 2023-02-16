@@ -1,5 +1,4 @@
-const { start } = require('./libs/start');
-const { getWallet } = require('./libs/utils');
+const { start, getWallet } = require('./libs');
 
 // Get the wallet from the environment variables.
 const wallet = getWallet();
