@@ -12,9 +12,8 @@ const ExecutableSample = rootRequire('./artifacts/examples/evm/call-contract/Exe
 
 async function deploy(chain, wallet) {
     console.log(`Deploying ExecutableSample for ${chain.name}.`);
-    const provider = getDefaultProvider(chain.rpc);
-    chain.wallet = wallet.connect(provider);
     chain.contract = await deployContract(wallet, ExecutableSample, [chain.gateway, chain.gasService]);
+    chain.wallet = wallet;
     console.log(`Deployed ExecutableSample for ${chain.name} at ${chain.contract.address}.`);
 }
 

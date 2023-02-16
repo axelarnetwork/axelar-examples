@@ -34,7 +34,9 @@ function getChains(env, testnetChains = ['Avalanche', 'Fantom']) {
         return rootRequire('chain-config/local.json');
     }
 
-    return require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`)
+    const testnet = rootRequire('chain-config/testnet.json') || require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
+
+    return testnet
         .filter((chain) => {
             return testnetChains.includes(chain.name);
         })
