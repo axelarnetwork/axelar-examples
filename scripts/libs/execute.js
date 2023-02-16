@@ -1,7 +1,5 @@
 'use strict';
 
-require('dotenv').config();
-require('./rootRequire');
 const { Contract, getDefaultProvider } = require('ethers');
 const { calculateBridgeFee, getDepositAddress, sanitizeEventArgs } = require('./utils.js');
 const AxelarGatewayContract = rootRequire(

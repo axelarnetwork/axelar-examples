@@ -1,4 +1,3 @@
-require('./rootRequire');
 const { Wallet, ethers } = require('ethers');
 const path = require('path');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
