@@ -44,7 +44,7 @@ async function deploy(chain, wallet) {
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const getGasPrice = options.getGasPrice;
+    const calculateBridgeFee = options.calculateBridgeFee;
     const client = new AptosNetwork(process.env.APTOS_URL);
     const coins = new CoinClient(client);
 
@@ -85,7 +85,7 @@ async function execute(chains, wallet, options) {
 
     // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
     const gasLimit = 3e5;
-    const gasPrice = await getGasPrice(evm, 'aptos', AddressZero);
+    const gasPrice = 1
 
     console.log(`Minting and Approving ${Number(amount1) / 1e18} ALT`);
 

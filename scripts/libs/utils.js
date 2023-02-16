@@ -7,7 +7,7 @@ const {
 const axios = require('axios');
 const path = require('path');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
-const { AxelarAssetTransfer } = require('@axelar-network/axelarjs-sdk');
+const { AxelarAssetTransfer, AxelarQueryAPI } = require('@axelar-network/axelarjs-sdk');
 
 /**
  * Get the wallet from the environment variables. If the EVM_PRIVATE_KEY environment variable is set, use that. Otherwise, use the EVM_MNEMONIC environment variable.
@@ -100,33 +100,18 @@ function getDepositAddress(env, source, destination, destinationAddress, symbol)
     return axelarLocal.getDepositAddress(source, destination, destinationAddress, symbol, 8500);
 }
 
-async function getGasPrice(env, source, destination, tokenAddress) {
-    if (env === 'local') return 1;
-    if (env !== 'testnet') throw Error('env needs to be "local" or "testnet".');
-    const apiUrl = 'https://devnet.api.gmp.axelarscan.io';
-
-    const requester = axios.create({ baseURL: apiUrl });
-    const params = {
-        method: 'getGasPrice',
-        destinationChain: destination.name,
-        sourceChain: source.name,
-    };
-
-    // set gas token address to params
-    if (tokenAddress !== AddressZero) {
-        params.sourceTokenAddress = tokenAddress;
-    } else {
-        params.sourceTokenSymbol = source.tokenSymbol;
-    }
-
-    // send request
-    const response = await requester.get('/', { params }).catch((error) => {
-        return { data: { error } };
-    });
-    const result = response.data.result;
-    const dest = result.destination_native_token;
-    const destPrice = 1e18 * dest.gas_price * dest.token_price.usd;
-    return destPrice / result.source_token.token_price.usd;
+/**
+ * Calculate the gas amount for a transaction using axelarjs-sdk.
+ * @param {*} source - The source chain object.
+ * @param {*} destination - The destination chain object.
+ * @param {*} symbol - The symbol of the token to get the deposit address for.
+ * @param {*} options - The options to pass to the estimateGasFee function. Available options are gasLimit and gasMultiplier.
+ * @returns {number} - The gas amount.
+ */
+async function calculateBridgeFee(source, destination, symbol = source.tokenSymbol, options = {}) {
+    const api = new AxelarQueryAPI({ environment: 'testnet' });
+    const { gasLimit, gasMultiplier } = options;
+    return api.estimateGasFee(source.name, destination.name, symbol, gasLimit, gasMultiplier || 1.5);
 }
 
 // Check if the wallet is set. If not, throw an error.
@@ -149,10 +134,10 @@ function getExamplePath(exampleName) {
 
 module.exports = {
     getWallet,
-    getGasPrice,
     getDepositAddress,
     getBalances,
     getChains,
     checkEnv,
+    calculateBridgeFee,
     getExamplePath,
 };

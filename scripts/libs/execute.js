@@ -3,7 +3,7 @@
 require('dotenv').config();
 require('./rootRequire');
 const { Contract, getDefaultProvider } = require('ethers');
-const { getGasPrice, getDepositAddress } = require('./utils.js');
+const { calculateBridgeFee, getDepositAddress } = require('./utils.js');
 
 const AxelarGatewayContract = rootRequire(
     'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
@@ -37,7 +37,7 @@ async function execute(env, chains, args, wallet, example) {
     }
 
     await example.execute(chains, wallet, {
-        getGasPrice: (source, destination, tokenAddress) => getGasPrice(env, source, destination, tokenAddress),
+        calculateBridgeFee: (source, destination, tokenAddress) => calculateBridgeFee(env, source, destination, tokenAddress),
         getDepositAddress: (source, destination, destinationAddress, symbol) =>
             getDepositAddress(env, source, destination, destinationAddress, symbol),
         args,

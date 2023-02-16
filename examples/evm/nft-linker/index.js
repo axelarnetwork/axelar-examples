@@ -42,7 +42,7 @@ async function deploy(chain, wallet) {
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const getGasPrice = options.getGasPrice;
+    const calculateBridgeFee = options.calculateBridgeFee;
 
     const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
     const originChain = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
@@ -87,8 +87,7 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await print();
 
-    const gasLimit = 1e6;
-    const gasPrice = await getGasPrice(source, destination, AddressZero);
+    const fee = await calculateBridgeFee(source, destination);
 
     if (originChain === source) {
         await (await source.erc721.approve(source.contract.address, owner.tokenId)).wait();
@@ -100,7 +99,7 @@ async function execute(chains, wallet, options) {
             owner.tokenId,
             destination.name,
             wallet.address,
-            { value: gasLimit * gasPrice },
+            { value: fee },
         )
     ).wait();
 

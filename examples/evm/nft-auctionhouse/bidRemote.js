@@ -27,8 +27,7 @@ async function bidRemote(sourceChain, destinationChain, privateKey, tokenId, amo
         }
     }
 
-    const gasLimit = 3e5;
-    const gasPrice = (await options?.getGasPrice(sourceChain, destinationChain, AddressZero)) || 1;
+    const bridgeFee = await options.calculateBridgeFee(sourceChain, destinationChain);
 
     const fee = (await options?.getFee(sourceChain, destinationChain, 'aUSDC')) || 1e6;
     await (await usdc.approve(auctionhouse.address, amount + fee)).wait();
@@ -40,7 +39,7 @@ async function bidRemote(sourceChain, destinationChain, privateKey, tokenId, amo
             tokenId,
             wallet.address,
             BigInt(amount + fee),
-            { value: gasLimit * gasPrice },
+            { value: bridgeFee },
         )
     ).wait();
 

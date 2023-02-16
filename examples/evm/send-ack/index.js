@@ -4,6 +4,7 @@ const {
     getDefaultProvider,
     constants: { AddressZero },
     utils: { defaultAbiCoder },
+    BigNumber,
 } = require('ethers');
 const {
     utils: { deployContract },
@@ -31,7 +32,7 @@ async function deploy(chain, wallet) {
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const getGasPrice = options.getGasPrice;
+    const calculateBridgeFee = options.calculateBridgeFee;
 
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
     const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
@@ -52,16 +53,12 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await print();
 
-    const gasLimitRemote = 3e5;
-    const gasLimitSource = 3e5;
-    const gasPriceRemote = await getGasPrice(source, destination, AddressZero);
-    const gasPriceSource = await getGasPrice(source, source, AddressZero);
-    const gasAmountRemote = BigInt(Math.floor(gasLimitRemote * gasPriceRemote));
-    const gasAmountSource = BigInt(Math.floor(gasLimitSource * gasPriceSource));
+    const feeRemote = await calculateBridgeFee(source, destination);
+    const feeSource = await calculateBridgeFee(source, source);
 
     const tx = await (
         await source.sender.sendContractCall(destination.name, destination.receiver.address, payload, gasAmountRemote, {
-            value: gasAmountRemote + gasAmountSource,
+            value: BigNumber.from(feeRemote).add(feeSource),
         })
     ).wait();
     const event = tx.events.find((event) => event.event === 'ContractCallSent');

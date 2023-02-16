@@ -33,7 +33,7 @@ async function deploy(chain, wallet) {
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const getGasPrice = options.getGasPrice;
+    const calculateBridgeFee = options.calculateBridgeFee;
 
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
     const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
@@ -50,16 +50,14 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await print();
 
-    // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price (this is constant and always 1).
-    const gasLimit = 3e5;
-    const gasPrice = await getGasPrice(source, destination, AddressZero);
+    const fee = await calculateBridgeFee(source, destination);
     await (await source.contract.giveMe(amount)).wait();
     console.log('--- After getting some token on the source chain ---');
     await print();
 
     await (
         await source.contract.transferRemote(destination.name, wallet.address, amount, {
-            value: BigInt(Math.floor(gasLimit * gasPrice)),
+            value: fee,
         })
     ).wait();
 

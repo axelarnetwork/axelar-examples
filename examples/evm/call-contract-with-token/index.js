@@ -30,7 +30,7 @@ async function deploy(chain, wallet) {
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const getGasPrice = options.getGasPrice;
+    const calculateBridgeFee = options.calculateBridgeFee;
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
     const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
     const amount = Math.floor(parseFloat(args[2])) * 1e6 || 10e6;
@@ -49,8 +49,7 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await logAccountBalances();
 
-    const gasLimit = 3e6;
-    const gasPrice = await getGasPrice(source, destination, AddressZero);
+    const fee = await calculateBridgeFee(source, destination);
 
     const balance = await destination.usdc.balanceOf(accounts[0]);
 
@@ -58,7 +57,7 @@ async function execute(chains, wallet, options) {
     await approveTx.wait();
 
     const sendTx = await source.contract.sendToMany(destination.name, destination.contract.address, accounts, 'aUSDC', amount, {
-        value: BigInt(Math.floor(gasLimit * gasPrice)),
+        value: fee,
     });
     await sendTx.wait();
 
