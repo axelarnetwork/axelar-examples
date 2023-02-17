@@ -8,39 +8,10 @@ const {
     utils: { keccak256, defaultAbiCoder },
     ContractFactory,
 } = require('ethers');
-const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 const DistributionExecutable = rootRequire(
     './artifacts/examples/evm/call-contract-with-token-express/DistributionExpressExecutable.sol/DistributionExpressExecutable.json',
 );
-const ExpressProxy = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/express/ExpressProxy.sol/ExpressProxy.json');
-const Gateway = rootRequire(
-    './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
-);
-const IERC20 = rootRequire('./artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 const IGMPExpressService = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/interfaces/IGMPExpressService.sol/IGMPExpressService.json');
-
-async function deployOld(chain, wallet) {
-    console.log(`Deploying DistributionExecutable for ${chain.name}.`);
-    const provider = getDefaultProvider(chain.rpc);
-    chain.wallet = wallet.connect(provider);
-    console.log(`Deploying DistributionProxy for ${chain.name}.`);
-    chain.contract = await deployUpgradable(
-        chain.constAddressDeployer,
-        wallet,
-        DistributionExecutable,
-        ExpressProxy,
-        [chain.gateway, chain.gasService],
-        [chain.gateway, '0xfb72239394647e97894585D0D93Ca91f6C3852a4'],
-        '0x',
-    );
-    console.log(`Deployed DistributionProxy for ${chain.name} at ${chain.contract.address}.`);
-    const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
-    const usdcAddress = await gateway.tokenAddresses('aUSDC');
-    chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
-    chain.proxy = new Contract(chain.contract.address, ExpressProxy.abi, chain.wallet);
-    await chain.proxy.deployRegistry();
-    console.log(`Deployed Registry for ${chain.name} at ${await chain.proxy.registry()}.`);
-}
 
 const getSaltFromKey = (key) => {
     return keccak256(defaultAbiCoder.encode(['string'], [key.toString()]));
@@ -85,8 +56,7 @@ async function execute(chains, wallet, options) {
 
     if (accounts.length === 0) accounts.push(wallet.address);
 
-    // console.log(await destination.contract.registry())
-    // return;
+    const initialBalance = await destination.usdc.balanceOf(accounts[0]);
 
     async function logAccountBalances() {
         for (const account of accounts) {
@@ -112,15 +82,12 @@ async function execute(chains, wallet, options) {
     await sendTx.wait();
     console.log('Sent tokens to distribution contract.', sendTx.hash);
 
-    // // express call
-    const payload = ethers.utils.defaultAbiCoder.encode(['address[]'], [accounts]);
-    const approveDestTx = await destination.usdc.approve(destination.contract.address, amount);
-    await approveDestTx.wait();
-    const expressTx = await destination.contract.expressExecuteWithToken(source.name, source.contract.address, payload, 'aUSDC', amount).then(tx => tx.wait());
-    console.log('Call expressExecuteWithToken.', expressTx.transactionHash);
-
     console.log('--- After ---');
-    // await sleep(3000);
+
+    while ((await destination.usdc.balanceOf(accounts[0])).eq(initialBalance)) {
+        await sleep(1000);
+    }
+
     await logAccountBalances();
 }
 
