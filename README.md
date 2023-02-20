@@ -26,6 +26,16 @@ cp .env.example .env
 
 Then update to your own private key.
 
+## Print wallet balances
+
+This script will print your wallet balances for each chain.
+
+```bash
+npm run checkBalance [local|testnet]
+```
+
+If not specify, this will print balances of the wallet for testnet.
+
 ## Deploy and test each example
 
 In order to run the examples against the local emulator, cd to `axelar-examples` and run

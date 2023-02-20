@@ -31,7 +31,7 @@ function getChains(env) {
         return rootRequire('chain-config/local.json');
     }
 
-    return require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
+    return require("@axelar-network/axelar-cgp-solidity/info/testnet.json");
 }
 
 /**
@@ -43,7 +43,7 @@ function getChains(env) {
 async function getBalances(chains, address) {
     const balances = await Promise.all(
         chains.map((chain) => {
-            const provider = ethers.providers.JsonRpcProvider(chain.rpc);
+            const provider = new ethers.providers.JsonRpcProvider(chain.rpc);
             return provider.getBalance(address).then((b) => b.toString());
         }),
     );
