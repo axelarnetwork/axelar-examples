@@ -3,7 +3,6 @@
 require('dotenv').config();
 const {
     utils: { setJSON },
-    testnetInfo,
 } = require('@axelar-network/axelar-local-dev');
 const { Wallet, getDefaultProvider } = require('ethers');
 const { FormatTypes } = require('ethers/lib/utils');
@@ -72,11 +71,7 @@ if (require.main === module) {
     if (env === 'local') {
         temp = require(`../chain-config/local.json`);
     } else {
-        try {
-            temp = require(`../chain-config/testnet.json`);
-        } catch (e) {
-            temp = testnetInfo;
-        }
+        temp = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
     }
 
     const chains = temp;

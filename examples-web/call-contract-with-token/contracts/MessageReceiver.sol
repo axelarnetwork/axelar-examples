@@ -6,12 +6,12 @@ import {IAxelarGasService} from "@axelar-network/axelar-gmp-sdk-solidity/contrac
 import {AxelarExecutable} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
 
 contract MessageReceiver is AxelarExecutable {
-    IAxelarGasService immutable gasReceiver;
+    IAxelarGasService immutable gasService;
 
     constructor(address _gateway, address _gasReceiver)
         AxelarExecutable(_gateway)
     {
-        gasReceiver = IAxelarGasService(_gasReceiver);
+        gasService = IAxelarGasService(_gasReceiver);
     }
 
     event Executed();

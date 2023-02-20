@@ -23,7 +23,7 @@ async function deploy(chain, wallet) {
         wallet,
         ERC20CrossChain,
         ExampleProxy,
-        [chain.gateway, chain.gasReceiver, decimals],
+        [chain.gateway, chain.gasService, decimals],
         [],
         defaultAbiCoder.encode(['string', 'string'], [name, symbol]),
         'cross-chain-token',

@@ -11,10 +11,10 @@ contract ExecutableSample is AxelarExecutable {
     string public value;
     string public sourceChain;
     string public sourceAddress;
-    IAxelarGasService public immutable gasReceiver;
+    IAxelarGasService public immutable gasService;
 
     constructor(address gateway_, address gasReceiver_) AxelarExecutable(gateway_) {
-        gasReceiver = IAxelarGasService(gasReceiver_);
+        gasService = IAxelarGasService(gasReceiver_);
     }
 
     // Call this function to update the value of this contract along with all its siblings'.
@@ -25,7 +25,7 @@ contract ExecutableSample is AxelarExecutable {
     ) external payable {
         bytes memory payload = abi.encode(value_);
         if (msg.value > 0) {
-            gasReceiver.payNativeGasForContractCall{ value: msg.value }(
+            gasService.payNativeGasForContractCall{ value: msg.value }(
                 address(this),
                 destinationChain,
                 destinationAddress,

@@ -23,7 +23,7 @@ async function preDeploy() {
 
 async function deploy(chain, wallet) {
     console.log(`Deploying HelloWorld for ${chain.name}.`);
-    const contract = await deployContract(wallet, HelloWorld, [chain.gateway, chain.gasReceiver]);
+    const contract = await deployContract(wallet, HelloWorld, [chain.gateway, chain.gasService]);
     chain.helloWorld = contract.address;
     console.log(`Deployed HelloWorld for ${chain.name} at ${chain.helloWorld}.`);
 }

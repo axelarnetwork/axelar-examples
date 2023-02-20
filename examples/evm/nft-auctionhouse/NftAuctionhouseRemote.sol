@@ -11,7 +11,7 @@ import './NftAuctionhouse.sol';
 import { AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
 
 contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutable {
-    IAxelarGasService public immutable gasReceiver;
+    IAxelarGasService public immutable gasService;
     mapping(address => mapping(uint256 => address)) biddersRemote;
     mapping(address => mapping(uint256 => string)) sourceChains;
     mapping(address => mapping(uint256 => address)) refundAddresses;
@@ -23,7 +23,7 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutable {
         address gasReceiver_,
         address usdc_
     ) NftAuctionhouse(usdc_) AxelarExecutable(gateway_) {
-        gasReceiver = IAxelarGasService(gasReceiver_);
+        gasService = IAxelarGasService(gasReceiver_);
     }
 
     function bidRemote(
@@ -38,7 +38,7 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutable {
         usdc.approve(address(gateway), amount);
         bytes memory payload = abi.encode(msg.sender, bidder, operator, tokenId);
         if (msg.value > 0) {
-            gasReceiver.payNativeGasForContractCallWithToken{ value: msg.value }(
+            gasService.payNativeGasForContractCallWithToken{ value: msg.value }(
                 address(this),
                 destinationChain,
                 destinationAuctionhouse,

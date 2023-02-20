@@ -6,11 +6,11 @@ import {IAxelarGasService} from "@axelar-network/axelar-gmp-sdk-solidity/contrac
 
 contract MessageSender {
     IAxelarGateway immutable gateway;
-    IAxelarGasService immutable gasReceiver;
+    IAxelarGasService immutable gasService;
 
     constructor(address _gateway, address _gasReceiver) {
         gateway = IAxelarGateway(_gateway);
-        gasReceiver = IAxelarGasService(_gasReceiver);
+        gasService = IAxelarGasService(_gasReceiver);
     }
 
     function sendMessage(
@@ -20,7 +20,7 @@ contract MessageSender {
     ) external payable {
         bytes memory payload = abi.encode(value_);
         if (msg.value > 0) {
-            gasReceiver.payNativeGasForContractCall{value: msg.value}(
+            gasService.payNativeGasForContractCall{value: msg.value}(
                 address(this),
                 destinationChain,
                 destinationAddress,

@@ -33,7 +33,7 @@ async function deploy(chain, wallet) {
     console.log(`Deploying AptosTokenLinker for ${chain.name}.`);
     const contract = await deployContract(wallet, TokenLinker, [
         chain.gateway,
-        chain.gasReceiver,
+        chain.gasService,
         chain.aptosLinkedToken,
         aptosTokenLinkerAddress,
         ignoreDigits,

@@ -24,13 +24,13 @@ contract NftLinker is
 
     mapping(uint256 => bytes) public original; //abi.encode(originaChain, operator, tokenId);
     string public chainName; //To check if we are the source chain.
-    IAxelarGasService public immutable gasReceiver;
+    IAxelarGasService public immutable gasService;
 
     constructor(address gateway_, address gasReceiver_)
         ERC721("Axelar NFT Linker", "ANL")
         AxelarExecutable(gateway_)
     {
-        gasReceiver = IAxelarGasService(gasReceiver_);
+        gasService = IAxelarGasService(gasReceiver_);
     }
 
     function _setup(bytes calldata params)
@@ -107,7 +107,7 @@ contract NftLinker is
         string memory stringAddress = address(this)
             .toString();
         //Pay for gas. We could also send the contract call here but then the sourceAddress will be that of the gas receiver which is a problem later.
-        gasReceiver.payNativeGasForContractCall{
+        gasService.payNativeGasForContractCall{
             value: msg.value
         }(
             address(this),
@@ -144,7 +144,7 @@ contract NftLinker is
         string memory stringAddress = address(this)
             .toString();
         //Pay for gas. We could also send the contract call here but then the sourceAddress will be that of the gas receiver which is a problem later.
-        gasReceiver.payNativeGasForContractCall{
+        gasService.payNativeGasForContractCall{
             value: msg.value
         }(
             address(this),

@@ -6,12 +6,12 @@ import {IAxelarGateway} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/
 import {IAxelarGasService} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
 
 contract MessageSender {
-    IAxelarGasService immutable gasReceiver;
+    IAxelarGasService immutable gasService;
     IAxelarGateway immutable gateway;
 
     constructor(address _gateway, address _gasReceiver) {
         gateway = IAxelarGateway(_gateway);
-        gasReceiver = IAxelarGasService(_gasReceiver);
+        gasService = IAxelarGasService(_gasReceiver);
     }
 
     function sendToMany(
@@ -26,7 +26,7 @@ contract MessageSender {
         IERC20(tokenAddress).approve(address(gateway), amount);
         bytes memory payload = abi.encode(destinationAddresses);
         if (msg.value > 0) {
-            gasReceiver.payNativeGasForContractCallWithToken{value: msg.value}(
+            gasService.payNativeGasForContractCallWithToken{value: msg.value}(
                 address(this),
                 destinationChain,
                 destinationAddress,
