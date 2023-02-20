@@ -4,10 +4,12 @@ const {
     getDefaultProvider,
     Contract,
     constants: { AddressZero },
-    ethers,
     utils: { keccak256, defaultAbiCoder },
     ContractFactory,
 } = require('ethers');
+const {
+    contracts: { GMPExpressService },
+} = require('@axelar-network/axelar-local-dev');
 const DistributionExecutable = rootRequire(
     './artifacts/examples/evm/call-contract-with-token-express/DistributionExpressExecutable.sol/DistributionExpressExecutable.json',
 );
@@ -50,13 +52,15 @@ async function execute(chains, wallet, options) {
     const getGasPrice = options.getGasPrice;
     const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
     const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
-
     const amount = Math.floor(parseFloat(args[2])) * 1e6 || 10e6;
     const accounts = args.slice(3);
 
     if (accounts.length === 0) accounts.push(wallet.address);
 
     const initialBalance = await destination.usdc.balanceOf(accounts[0]);
+    const expressService = new Contract(destination.GMPExpressService.address, GMPExpressService.abi, wallet.connect(destination.provider));
+    const expressServiceBalance = await destination.usdc.balanceOf(expressService.address);
+    console.log('aUSDC Balance for ExpressService', expressServiceBalance.toString());
 
     async function logAccountBalances() {
         for (const account of accounts) {

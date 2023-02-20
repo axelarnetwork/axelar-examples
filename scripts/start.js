@@ -16,6 +16,7 @@ async function start(toFund = [], chains = null) {
         for (const address of toFund) {
             await chain.giveToken(address, 'aUSDC', BigInt(1e18));
         }
+        await chain.giveToken(info.GMPExpressService.address, 'aUSDC', BigInt(1e18));
     }
 
     const pathname = path.resolve(__dirname, '..', 'chain-config', 'local.json');
