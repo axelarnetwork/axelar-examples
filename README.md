@@ -23,7 +23,7 @@ You can get started quickly with a random local key and `.env` file by running
 
 ```bash
 # node scripts/createPrivateKey.js
-npm run create-private-key
+npm run setup
 ```
 
 Or you can manually copy the example `.env.example` file and fill in your EVM private key. See the [example Metamask Instructions](https://metamask.zendesk.com/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key) for exporting your private keys.
