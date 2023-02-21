@@ -23,5 +23,5 @@ if (!fs.existsSync('.env')) {
     const envPath = path.join(__dirname, '..', '.env');
     fs.writeFileSync(envPath, newEnvFile);
 } else {
-    console.log('A .env file already exist in '+ path.dirname(__dirname) + ', not modifying it.');
+    console.log(`A .env file already exist in ${path.dirname(__dirname)}, not modifying it.`);
 }
