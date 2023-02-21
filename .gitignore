@@ -12,3 +12,4 @@ aptos-artifacts
 .env
 
 .vscode
+chain-config/*.json
