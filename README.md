@@ -4,7 +4,7 @@
 
 This repo provides the code for several example dApps in the [Axelar Local Development Environment](https://github.com/axelarnetwork/axelar-local-dev). Examples contain both JavaScript and Solidity smart contract code.
 
-**Note:** Some example folders in this repo are not documented below.
+**Note:** Some example folders in this repo are not documented.
 
 ## One-time setup
 
@@ -25,6 +25,16 @@ cp .env.example .env
 ```
 
 Then update to your own private key.
+
+## Print wallet balances
+
+This script will print your wallet balances for each chain.
+
+```bash
+npm run checkBalance [local|testnet]
+```
+
+If not specify, this will print balances of the wallet for testnet.
 
 ## Running the local chains
 

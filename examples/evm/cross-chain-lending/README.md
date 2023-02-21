@@ -1,4 +1,7 @@
-# Cross-chain lending platform
+# Cross-chain lending platform (Deprecated)
+
+> Note: This example uses forecallable which is deprecated.
+> Todo: Migrate to GMP Express.
 
 This example demonstrates how to use the existing Compound Protocol to supply collateral and borrow tokens from a satellite chain to a fork of Ethereum's mainnet. Unlike the other examples in this repository, executing this one doesn't require the execution of the script scripts/start or scripts/deploy in order to run this test, the needed mainnet fork and the satellite chain are set up while running the test script itself.
 
