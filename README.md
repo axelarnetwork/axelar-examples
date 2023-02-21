@@ -22,7 +22,6 @@ git clone https://github.com/axelarnetwork/axelar-examples.git
 You can get started quickly with a random local key and `.env` file by running
 
 ```bash
-# node scripts/createPrivateKey.js
 npm run setup
 ```
 
