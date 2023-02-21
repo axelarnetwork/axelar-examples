@@ -39,7 +39,7 @@ Then update to your own private key.
 This script will print your wallet balances for each chain.
 
 ```bash
-npm run checkBalance [local|testnet]
+npm run check-balance [local|testnet]
 ```
 
 If not specify, this will print balances of the wallet for testnet.
