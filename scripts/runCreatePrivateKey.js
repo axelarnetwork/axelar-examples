@@ -7,7 +7,6 @@ const ethers = require('ethers');
 const fs = require('fs');
 const path = require('path');
 
-
 if (!fs.existsSync('.env')) {
     const envExamplePath = path.join(__dirname, '..', '.env.example');
     const contents = fs.readFileSync(envExamplePath);
