@@ -26,17 +26,16 @@ cp .env.example .env
 
 Then update to your own private key.
 
-## Deploy and test each example
-
-In order to run the examples against the local emulator, cd to `axelar-examples` and run
+## Running the local chains
 
 ```bash
-node scripts/start
+npm run start
 ```
 
 Leave this node running on a separate terminal before deploying and testing the dApps.
 
-# Examples
+## Examples
 
 -   [Evm Examples](/examples/evm/)
 -   [Aptos Examples](/examples/aptos/)
+-   [Web Examples](/examples-web/)
