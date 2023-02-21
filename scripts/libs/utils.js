@@ -34,7 +34,9 @@ function getChains(env, chains = []) {
         return rootRequire('chain-config/local.json').filter((chain) => selectedChains.includes(chain.name));
     }
 
-    return require('@axelar-network/axelar-cgp-solidity/info/testnet.json')
+    const testnet = rootRequire('chain-config/testnet.json') || require('@axelar-network/axelar-cgp-solidity/info/testnet.json');
+
+    return testnet
         .filter((chain) => selectedChains.includes(chain.name))
         .map((chain) => ({
             ...chain,

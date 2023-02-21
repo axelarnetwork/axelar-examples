@@ -48,6 +48,7 @@ function deserializeContract(chain, wallet) {
     // Loop through every keys in the chain object.
     for (const key of Object.keys(chain)) {
         // If the object has an abi, it is a contract.
+
         if (chain[key].abi) {
             // Get the contract object.
             const contract = chain[key];
