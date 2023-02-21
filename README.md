@@ -4,7 +4,7 @@
 
 This repo provides the code for several example dApps in the [Axelar Local Development Environment](https://github.com/axelarnetwork/axelar-local-dev). Examples contain both JavaScript and Solidity smart contract code.
 
-**Note:** Some example folders in this repo are not documented below.
+**Note:** Some example folders in this repo are not documented.
 
 ## One-time setup
 
@@ -32,17 +32,28 @@ Or you can manually copy the example `.env.example` file and fill in your EVM pr
 cp .env.example .env
 ```
 
-## Deploy and test each example
+Then update to your own private key.
 
-In order to run the examples against the local emulator, cd to `axelar-examples` and run
+## Print wallet balances
+
+This script will print your wallet balances for each chain.
 
 ```bash
-node scripts/start
+npm run checkBalance [local|testnet]
+```
+
+If not specify, this will print balances of the wallet for testnet.
+
+## Running the local chains
+
+```bash
+npm run start
 ```
 
 Leave this node running on a separate terminal before deploying and testing the dApps.
 
-# Examples
+## Examples
 
 -   [Evm Examples](/examples/evm/)
 -   [Aptos Examples](/examples/aptos/)
+-   [Web Examples](/examples-web/)

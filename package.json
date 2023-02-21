@@ -11,6 +11,7 @@
         "deploy": "node scripts/deploy",
         "execute": "node scripts/execute",
         "setup": "node scripts/createPrivateKey",
+        "checkBalance": "node scripts/runCheckBalance",
         "build": "rm -rf artifacts && npx hardhat compile",
         "build-aptos": "./build-aptos.sh"
     },

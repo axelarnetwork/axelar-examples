@@ -2,7 +2,6 @@
 
 const {
     getDefaultProvider,
-    Contract,
     constants: { AddressZero },
 } = require('ethers');
 const {

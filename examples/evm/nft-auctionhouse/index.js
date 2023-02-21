@@ -75,12 +75,13 @@ async function execute(chains, wallet, options) {
     const auctioneer = new Wallet(keccak256(defaultAbiCoder.encode(['string'], ['auctioneer'])), destination.provider);
 
     console.log(`Funding Auctioneer ${auctioneer.address}`);
-    await (
-        await destination.wallet.sendTransaction({
+    const destinationWallet = wallet.connect(destination.provider);
+    await destinationWallet
+        .sendTransaction({
             to: auctioneer.address,
             value: BigInt(1e18),
         })
-    ).wait();
+        .then((tx) => tx.wait());
 
     async function print() {
         console.log(`Auctioneer has ${await destination.usdc.balanceOf(auctioneer.address)}.`);
@@ -116,7 +117,7 @@ async function execute(chains, wallet, options) {
         console.log('waiting for auction end.');
         await sleep(1000);
         await (
-            await destination.wallet.sendTransaction({
+            await destinationWallet.sendTransaction({
                 to: wallet.address,
                 value: 0,
             })
@@ -125,7 +126,7 @@ async function execute(chains, wallet, options) {
 
     await sleep(1000);
     await (
-        await destination.wallet.sendTransaction({
+        await destinationWallet.sendTransaction({
             to: wallet.address,
             value: 0,
         })
