@@ -7,9 +7,9 @@
     },
     "scripts": {
         "test": "mocha examples/tests",
-        "start": "node scripts/start",
-        "deploy": "node scripts/deploy",
-        "execute": "node scripts/execute",
+        "start": "node scripts/runStart",
+        "deploy": "node scripts/runDeploy",
+        "execute": "node scripts/runExecute",
         "setup": "node scripts/createPrivateKey",
         "check-balance": "node scripts/runCheckBalance",
         "build": "rm -rf artifacts && npx hardhat compile",
