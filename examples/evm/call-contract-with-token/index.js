@@ -1,10 +1,6 @@
 'use strict';
 
-const {
-    getDefaultProvider,
-    Contract,
-    constants: { AddressZero },
-} = require('ethers');
+const { getDefaultProvider, Contract } = require('ethers');
 const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
@@ -30,9 +26,7 @@ async function deploy(chain, wallet) {
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const getGasPrice = options.getGasPrice;
-    const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
-    const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
+    const { source, destination, calculateBridgeFee } = options;
     const amount = Math.floor(parseFloat(args[2])) * 1e6 || 10e6;
     const accounts = args.slice(3);
 
@@ -49,8 +43,7 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await logAccountBalances();
 
-    const gasLimit = 3e6;
-    const gasPrice = await getGasPrice(source, destination, AddressZero);
+    const fee = await calculateBridgeFee(source, destination);
 
     const balance = await destination.usdc.balanceOf(accounts[0]);
 
@@ -58,14 +51,17 @@ async function execute(chains, wallet, options) {
     await approveTx.wait();
 
     const sendTx = await source.contract.sendToMany(destination.name, destination.contract.address, accounts, 'aUSDC', amount, {
-        value: BigInt(Math.floor(gasLimit * gasPrice)),
+        value: fee,
     });
     await sendTx.wait();
 
     while (true) {
         const updatedBalance = await destination.usdc.balanceOf(accounts[0]);
-        console.log(updatedBalance.toString(), balance.toString());
-        if (updatedBalance.gt(balance)) break;
+
+        if (updatedBalance.gt(balance)) {
+            break;
+        }
+
         await sleep(1000);
     }
 

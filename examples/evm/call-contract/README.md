@@ -37,7 +37,7 @@ This example deploys the contract on a local network and relays a message "Hello
 
 ```bash
 npm run deploy evm/call-contract local
-npm run execute evm/call-contract local "Moonbeam" "Avalanche" "Hello World"
+npm run execute evm/call-contract local "Fantom" "Avalanche" "Hello World"
 ```
 
 The output will be:

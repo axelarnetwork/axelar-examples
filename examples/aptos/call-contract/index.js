@@ -30,7 +30,6 @@ async function deploy(chain, wallet) {
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const getGasPrice = options.getGasPrice;
     const client = new AptosNetwork(process.env.APTOS_URL);
 
     for (const chain of chains) {
@@ -39,7 +38,7 @@ async function execute(chains, wallet, options) {
         chain.contract = new Contract(chain.helloWorld, HelloWorld.abi, chain.wallet);
     }
 
-    const evm = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+    const evm = options.source
     const messageEvmToAptos = args[1] || `Hello aptos from ${evm.name}, it is ${new Date().toLocaleTimeString()}.`;
     const messageAptosToEvm = args[2] || `Hello ${evm.name} from aptos, it is ${new Date().toLocaleTimeString()}.`;
 
@@ -56,7 +55,7 @@ async function execute(chains, wallet, options) {
 
     // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
     const gasLimit = 3e5;
-    const gasPrice = await getGasPrice(evm, 'aptos', AddressZero);
+    const gasPrice = 1;
 
     const tx = await evm.contract.setRemoteValue('aptos', `${client.owner.address()}::hello_world`, messageEvmToAptos, {
         value: BigInt(Math.floor(gasLimit * gasPrice)),

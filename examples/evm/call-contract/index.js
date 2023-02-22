@@ -1,10 +1,6 @@
 'use strict';
 
 const {
-    getDefaultProvider,
-    constants: { AddressZero },
-} = require('ethers');
-const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
@@ -12,18 +8,14 @@ const ExecutableSample = rootRequire('./artifacts/examples/evm/call-contract/Exe
 
 async function deploy(chain, wallet) {
     console.log(`Deploying ExecutableSample for ${chain.name}.`);
-    const provider = getDefaultProvider(chain.rpc);
-    chain.wallet = wallet.connect(provider);
     chain.contract = await deployContract(wallet, ExecutableSample, [chain.gateway, chain.gasService]);
+    chain.wallet = wallet;
     console.log(`Deployed ExecutableSample for ${chain.name} at ${chain.contract.address}.`);
 }
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const getGasPrice = options.getGasPrice;
-
-    const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
-    const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
+    const { source, destination, calculateBridgeFee } = options;
     const message = args[2] || `Hello ${destination.name} from ${source.name}, it is ${new Date().toLocaleTimeString()}.`;
 
     async function logValue() {
@@ -33,12 +25,10 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await logValue();
 
-    // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
-    const gasLimit = 3e5;
-    const gasPrice = await getGasPrice(source, destination, AddressZero);
+    const fee = await calculateBridgeFee(source, destination);
 
     const tx = await source.contract.setRemoteValue(destination.name, destination.contract.address, message, {
-        value: BigInt(Math.floor(gasLimit * gasPrice)),
+        value: fee,
     });
     await tx.wait();
 

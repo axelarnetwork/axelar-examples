@@ -20,7 +20,7 @@ const tokenId = 0;
 async function deploy(chain, wallet) {
     console.log(`Deploying ERC721Demo for ${chain.name}.`);
     chain.erc721 = await deployContract(wallet, ERC721, ['Test', 'TEST']);
-    console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721}.`);
+    console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721.address}.`);
     console.log(`Deploying NftLinker for ${chain.name}.`);
     const provider = getDefaultProvider(chain.rpc);
     chain.wallet = wallet.connect(provider);
@@ -41,11 +41,7 @@ async function deploy(chain, wallet) {
 }
 
 async function execute(chains, wallet, options) {
-    const args = options.args || [];
-    const getGasPrice = options.getGasPrice;
-
-    const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
-    const originChain = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+    const { source: originChain, destination, calculateBridgeFee } = options;
 
     const ownerOf = async (chain = originChain) => {
         const operator = chain.erc721;
@@ -87,8 +83,7 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await print();
 
-    const gasLimit = 1e6;
-    const gasPrice = await getGasPrice(source, destination, AddressZero);
+    const fee = await calculateBridgeFee(source, destination);
 
     if (originChain === source) {
         await (await source.erc721.approve(source.contract.address, owner.tokenId)).wait();
@@ -100,7 +95,7 @@ async function execute(chains, wallet, options) {
             owner.tokenId,
             destination.name,
             wallet.address,
-            { value: gasLimit * gasPrice },
+            { value: fee },
         )
     ).wait();
 

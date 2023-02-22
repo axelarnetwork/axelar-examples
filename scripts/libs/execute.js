@@ -1,10 +1,7 @@
 'use strict';
 
-require('dotenv').config();
-require('./rootRequire');
 const { Contract, getDefaultProvider } = require('ethers');
-const { getGasPrice, getDepositAddress } = require('./utils.js');
-
+const { calculateBridgeFee, getDepositAddress, sanitizeEventArgs } = require('./utils.js');
 const AxelarGatewayContract = rootRequire(
     'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
 );
@@ -36,14 +33,52 @@ async function execute(env, chains, args, wallet, example) {
         chain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);
     }
 
+    // Get source and destination chains.
+    const source = getSourceChain(chains, args);
+    const destination = getDestChain(chains, args);
+
+    // Listen for GMP events.
+    listenForGMPEvent(env, source);
+
+    // Execute the example script.
     await example.execute(chains, wallet, {
-        getGasPrice: (source, destination, tokenAddress) => getGasPrice(env, source, destination, tokenAddress),
+        calculateBridgeFee,
         getDepositAddress: (source, destination, destinationAddress, symbol) =>
             getDepositAddress(env, source, destination, destinationAddress, symbol),
+        source,
+        destination,
         args,
     });
+
+    process.exit(0);
 }
 
+/**
+ * Get the source chain. If no source chain is provided, use Avalanche.
+ * @param {*} chains - The chain objects to execute on.
+ * @param {*} args - The arguments to pass to the example script.
+ * @returns The source chain.
+ */
+function getSourceChain(chains, args) {
+    return chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+}
+
+/**
+ * Get the destination chain. If no destination chain is provided, use Fantom.
+ * @param {*} chains - The chain objects to execute on.
+ * @param {*} args - The arguments to pass to the example script.
+ * @returns The destination chain.
+ */
+function getDestChain(chains, args) {
+    return chains.find((chain) => chain.name === (args[1] || 'Fantom'));
+}
+
+/**
+ * Deserialize the contracts in the chain object.
+ * @param {*} chain - The chain object.
+ * @param {*} wallet - The wallet to use for execution.
+ * @returns The chain object with the contracts deserialized.
+ */
 function deserializeContract(chain, wallet) {
     // Loop through every keys in the chain object.
     for (const key of Object.keys(chain)) {
@@ -56,6 +91,36 @@ function deserializeContract(chain, wallet) {
             chain[key] = new Contract(contract.address, contract.abi, wallet);
         }
     }
+
+    return chain;
+}
+
+/**
+ * Listen for GMP events.
+ * If a GMP event is detected, log the transaction hash. If the environment is testnet, log the link to the transaction on Axelarscan.
+ * @param {*} env - The environment to execute on.
+ * @param {*} source - The source chain.
+ * @param {*} wallet - The wallet to use for execution.
+ */
+function listenForGMPEvent(env, source) {
+    const gateway = source.gateway;
+    const callContractFilter = gateway.filters.ContractCall(source.contract.address);
+    const callContractWithTokenFilter = gateway.filters.ContractCallWithToken(source.contract.address);
+
+    const eventHandler = (...args) => {
+        const event = args.pop();
+        const sanitizedArgs = sanitizeEventArgs(event);
+
+        console.log(`\n--- ${event.event} event detected ---`);
+        console.log(sanitizedArgs, '\n');
+
+        if (env === 'testnet') {
+            console.log('Track the status on https://testnet.axelarscan.io/gmp/' + event.transactionHash + '\n');
+        }
+    };
+
+    gateway.once(callContractFilter, eventHandler);
+    gateway.once(callContractWithTokenFilter, eventHandler);
 }
 
 module.exports = {

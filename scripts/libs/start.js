@@ -1,4 +1,3 @@
-require('dotenv').config();
 const { ethers } = require('ethers');
 const { createAndExport, createAptosNetwork } = require('@axelar-network/axelar-local-dev');
 const path = require('path');

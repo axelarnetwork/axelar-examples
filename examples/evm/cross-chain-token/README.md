@@ -37,7 +37,7 @@ This example deploys the contract on a local network, mints 1 token on the Ether
 
 ```bash
 npm run deploy evm/cross-chain-token local
-npm run execute evm/cross-chain-token local "Ethereum" "Fantom" 1
+npm run execute evm/cross-chain-token local "Avalanche" "Fantom" 1
 ```
 
 The output will be:

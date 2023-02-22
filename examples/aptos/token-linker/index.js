@@ -44,7 +44,6 @@ async function deploy(chain, wallet) {
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const getGasPrice = options.getGasPrice;
     const client = new AptosNetwork(process.env.APTOS_URL);
     const coins = new CoinClient(client);
 
@@ -55,7 +54,7 @@ async function execute(chains, wallet, options) {
         chain.contract = new Contract(chain.aptosTokenLinker, TokenLinker.abi, chain.wallet);
     }
 
-    const evm = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+    const evm = options.getSourceChain(chains);
     const amount1 = args[1] || BigInt(1e18);
     const amount2 = args[2] || BigInt(Math.floor(5e17 / 256 ** ignoreDigits));
 
@@ -85,7 +84,7 @@ async function execute(chains, wallet, options) {
 
     // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
     const gasLimit = 3e5;
-    const gasPrice = await getGasPrice(evm, 'aptos', AddressZero);
+    const gasPrice = 1
 
     console.log(`Minting and Approving ${Number(amount1) / 1e18} ALT`);
 
