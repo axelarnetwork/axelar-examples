@@ -33,5 +33,5 @@ Output:
 --- Initially ---
 value at Avalanche is
 --- After ---
-value at Avalanche is Hello World
+value at Avalanche is Hello Avalanche from aptos, it is 6:29:55 PM.
 ```
