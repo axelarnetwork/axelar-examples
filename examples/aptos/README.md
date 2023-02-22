@@ -18,7 +18,7 @@ aptos node run-local-testnet --with-faucet
 3. Run the `evm` local network
 
 ```bash
-npm scripts/start
+npm run start
 ```
 
 Note: `aptos` cli needs to be installed in your local machine (https://aptos.dev/cli-tools/aptos-cli-tool/)
