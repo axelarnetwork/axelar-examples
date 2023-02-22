@@ -2,6 +2,13 @@
 
 This example demonstrates how to relay a message from a source-chain to a destination-chain.
 
+### Prerequisite
+
+Make sure you've already followed the following steps:
+
+-   [Setup environment variables](/README.md#set-environment-variables)
+-   [Run the local chains](/README.md#running-the-local-chains)
+
 ### Deployment
 
 To deploy the contract, use the following command:

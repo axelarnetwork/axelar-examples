@@ -18,7 +18,8 @@ Clone this repo:
 git clone https://github.com/axelarnetwork/axelar-examples.git
 ```
 
-## Set up deployer key
+## Set environment variables
+
 You can get started quickly with a random local key and `.env` file by running
 
 ```bash

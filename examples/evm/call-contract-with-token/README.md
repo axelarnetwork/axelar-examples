@@ -2,6 +2,13 @@
 
 This example allows you to send aUSDC from a source chain to a destination chain and distribute it equally among specified accounts.
 
+### Prerequisite
+
+Make sure you've already followed the following steps:
+
+-   [Setup environment variables](/README.md#set-environment-variables)
+-   [Run the local chains](/README.md#running-the-local-chains)
+
 ### Deployment
 
 To deploy the contract, run the following command:
