@@ -2,6 +2,13 @@
 
 Send a supported erc-20 token from source chain to the destination chain.
 
+### Prerequisite
+
+Make sure you've already followed the following steps:
+
+-   [Setup environment variables](/README.md#set-environment-variables)
+-   [Run the local chains](/README.md#running-the-local-chains)
+
 ### Execution
 
 ```bash

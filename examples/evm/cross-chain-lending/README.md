@@ -5,6 +5,13 @@
 
 This example demonstrates how to use the existing Compound Protocol to supply collateral and borrow tokens from a satellite chain to a fork of Ethereum's mainnet. Unlike the other examples in this repository, executing this one doesn't require the execution of the script scripts/start or scripts/deploy in order to run this test, the needed mainnet fork and the satellite chain are set up while running the test script itself.
 
+### Prerequisite
+
+Make sure you've already followed the following steps:
+
+-   [Setup environment variables](/README.md#set-environment-variables)
+-   [Run the local chains](/README.md#running-the-local-chains)
+
 ### Execution
 
 To execute the example, use the following command:
