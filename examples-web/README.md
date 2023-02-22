@@ -9,10 +9,9 @@ Discover a comprehensive collection of end-to-end examples in the `examples-web`
 
 ## Run Web Examples in Local
 
-1. Run `npm run contracts:build` to compile all smart contracts.
-2. Run `npm run contracts:deploy` to deploy all smart contracts.
-3. Run `npm run dev` to start web application server.
-4. Visit http://localhost:3000 in your web browser to play with examples demo.
+1. Run `npm run deploy` to compile all smart contracts, generate types for smart contract functions, and deploy to the local network.
+2. Run `npm run dev` to start web application server.
+3. Visit http://localhost:3000 in your web browser to play with examples demo.
 
 You should see the website looks like image below.
 
