@@ -20,7 +20,6 @@ const examples = [
     'call-contract-with-token',
     'cross-chain-token',
     'deposit-address',
-    // 'forecall', // forecall is deprecated, so ignore this example until migrating to GMP Express.
     'nft-auctionhouse',
     'nft-linker',
     'send-ack',
