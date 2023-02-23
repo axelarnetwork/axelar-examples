@@ -110,7 +110,7 @@ function deserializeContract(chain, wallet) {
  */
 function listenForGMPEvent(env, source, startBlockNumber) {
     const gateway = source.gateway;
-    if (!(source.contract && destination.contract)) return;
+    if (!source.contract) return;
 
     const callContractFilter = gateway.filters.ContractCall(source.contract.address);
     const callContractWithTokenFilter = gateway.filters.ContractCallWithToken(source.contract.address);
