@@ -2,8 +2,6 @@
 
 const {
     getDefaultProvider,
-    Contract,
-    constants: { AddressZero },
     utils: { keccak256, defaultAbiCoder },
 } = require('ethers');
 const {
@@ -32,7 +30,6 @@ async function deploy(chain, wallet) {
         [chain.gateway, chain.gasService],
         [],
         defaultAbiCoder.encode(['string'], [chain.name]),
-        'nftLinker',
     );
     console.log(`Deployed NftLinker for ${chain.name} at ${chain.contract.address}.`);
     console.log(`Minting token ${tokenId} for ${chain.name}`);

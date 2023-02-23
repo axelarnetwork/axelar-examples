@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.9;
 
-import {BaseProxy} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/BaseProxy.sol';
+import {InitProxy} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/InitProxy.sol';
 
-contract ExampleProxy is BaseProxy {
+contract ExampleProxy is InitProxy {
     function contractId()
         internal
         pure
