@@ -1,5 +1,6 @@
 const { Wallet, ethers } = require('ethers');
 const path = require('path');
+const fs = require('fs');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
 const { AxelarAssetTransfer, AxelarQueryAPI, CHAINS, Environment } = require('@axelar-network/axelarjs-sdk');
 
@@ -42,7 +43,11 @@ function getChains(env, chains = []) {
  * @returns {Chain[]} - The chain objects.
  */
 function getTestnetChains(chains = []) {
-    let testnet = rootRequire('chain-config/testnet.json').filter((chain) => chains.includes(chain.name));
+    const _path = path.join(__dirname, '../../chain-config/testnet.json');
+    let testnet = [];
+    if (fs.existsSync(_path)) {
+        testnet = rootRequire('chain-config/testnet.json').filter((chain) => chains.includes(chain.name));
+    }
 
     // If the chains are specified, but the testnet config file does not have the specified chains, use testnet.json from axelar-cgp-solidity.
     if (testnet.length < chains.length) {
