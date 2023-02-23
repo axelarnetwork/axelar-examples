@@ -42,9 +42,8 @@ async function deploy(chain, wallet) {
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const getGasPrice = options.getGasPrice;
-    const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
-    const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
+    const { source, destination, calculateBridgeFee } = options;
+    const fee = calculateBridgeFee(source, destination);
     const amount = Math.floor(parseFloat(args[2])) * 1e6 || 10e6;
     const accounts = args.slice(3);
 
@@ -66,25 +65,22 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await logAccountBalances();
 
-    const gasLimit = 3e6;
-    const gasPrice = await getGasPrice(source, destination, AddressZero);
-
     const approveTx = await source.usdc.approve(source.contract.address, amount);
     await approveTx.wait();
     console.log('Approved aUSDC on', source.name);
 
     const sendTx = await source.contract.sendToMany(destination.name, destination.contract.address, accounts, 'aUSDC', amount, {
-        value: BigInt(Math.floor(gasLimit * gasPrice)),
+        value: fee,
     });
     await sendTx.wait();
     console.log('Sent tokens to distribution contract.', sendTx.hash);
 
-    console.log('--- After ---');
 
     while ((await destination.usdc.balanceOf(accounts[0])).eq(initialBalance)) {
-        await sleep(1000);
+      await sleep(1000);
     }
 
+    console.log('--- After ---');
     await logAccountBalances();
 }
 
