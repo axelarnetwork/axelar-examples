@@ -2,7 +2,6 @@
 
 const {
     Contract,
-    constants: { AddressZero },
     ContractFactory,
     ethers,
 } = require('ethers');
@@ -43,16 +42,18 @@ async function deploy(chain, wallet) {
 async function execute(chains, wallet, options) {
     const args = options.args || [];
     const { source, destination, calculateBridgeFee } = options;
-    const fee = calculateBridgeFee(source, destination);
+    const fee = await calculateBridgeFee(source, destination);
     const amount = Math.floor(parseFloat(args[2])) * 1e6 || 10e6;
     const accounts = args.slice(3);
 
     if (accounts.length === 0) accounts.push(wallet.address);
 
     const initialBalance = await destination.usdc.balanceOf(accounts[0]);
-    const expressService = new Contract(destination.GMPExpressService.address, GMPExpressService.abi, wallet.connect(destination.provider));
-    const expressServiceBalance = await destination.usdc.balanceOf(expressService.address);
-    console.log('aUSDC Balance for ExpressService', expressServiceBalance.toString());
+
+    // for debugging
+    // const expressService = new Contract(destination.GMPExpressService.address, GMPExpressService.abi, wallet.connect(destination.provider));
+    // const expressServiceBalance = await destination.usdc.balanceOf(expressService.address);
+    // console.log('aUSDC Balance for ExpressService', expressServiceBalance.toString());
 
     async function logAccountBalances() {
         for (const account of accounts) {
@@ -72,8 +73,7 @@ async function execute(chains, wallet, options) {
     const sendTx = await source.contract.sendToMany(destination.name, destination.contract.address, accounts, 'aUSDC', amount, {
         value: fee,
     });
-    await sendTx.wait();
-    console.log('Sent tokens to distribution contract.', sendTx.hash);
+    console.log('Sent tokens to distribution contract:', sendTx.hash);
 
 
     while ((await destination.usdc.balanceOf(accounts[0])).eq(initialBalance)) {
