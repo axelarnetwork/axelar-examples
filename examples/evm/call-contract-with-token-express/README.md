@@ -41,7 +41,7 @@ Currently, our whitelisted contract addresses for this example are:
 
 ```bash
 npm run deploy evm/call-contract-with-token-express local
-npm run execute evm/call-contract-with-token-express local "Moonbeam" "Ethereum" 100 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
+npm run execute evm/call-contract-with-token-express local "Polygon" "Avalanche" 100 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
 ```
 
 ### Output:
