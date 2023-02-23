@@ -1,7 +1,7 @@
 const { Wallet, ethers } = require('ethers');
 const path = require('path');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
-const { AxelarAssetTransfer, AxelarQueryAPI, CHAINS, Environment, GasToken, EvmChain } = require('@axelar-network/axelarjs-sdk');
+const { AxelarAssetTransfer, AxelarQueryAPI, CHAINS, Environment } = require('@axelar-network/axelarjs-sdk');
 
 /**
  * Get the wallet from the environment variables. If the EVM_PRIVATE_KEY environment variable is set, use that. Otherwise, use the EVM_MNEMONIC environment variable.
@@ -24,9 +24,8 @@ function getChains(env, chains = []) {
 
     const selectedChains = chains.length > 0 ? chains : getDefaultChains(env);
 
-
     if (env === 'local') {
-      return rootRequire('chain-config/local.json').filter((chain) => selectedChains.includes(chain.name));
+        return rootRequire('chain-config/local.json').filter((chain) => selectedChains.includes(chain.name));
     }
 
     const testnet = getTestnetChains(selectedChains);
