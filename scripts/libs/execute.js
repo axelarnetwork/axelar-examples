@@ -37,8 +37,9 @@ async function execute(env, chains, args, wallet, example) {
     const source = getSourceChain(chains, args);
     const destination = getDestChain(chains, args);
 
-    // Listen for GMP events.
-    listenForGMPEvent(env, source);
+    // Listen for GMP events on testnet for printing an Axelarscan link for tracking.
+    const startBlockNumber = await source.provider.getBlockNumber();
+    listenForGMPEvent(env, source, startBlockNumber);
 
     // Execute the example script.
     await example.execute(chains, wallet, {
@@ -101,22 +102,24 @@ function deserializeContract(chain, wallet) {
  * If a GMP event is detected, log the transaction hash. If the environment is testnet, log the link to the transaction on Axelarscan.
  * @param {*} env - The environment to execute on.
  * @param {*} source - The source chain.
- * @param {*} wallet - The wallet to use for execution.
+ * @param {*} startBlockNumber - The block number to start listening for events.
  */
-function listenForGMPEvent(env, source) {
+function listenForGMPEvent(env, source, startBlockNumber) {
     const gateway = source.gateway;
     const callContractFilter = gateway.filters.ContractCall(source.contract.address);
     const callContractWithTokenFilter = gateway.filters.ContractCallWithToken(source.contract.address);
 
     const eventHandler = (...args) => {
         const event = args.pop();
-        const sanitizedArgs = sanitizeEventArgs(event);
+        if (event.blockNumber <= startBlockNumber) return;
 
-        console.log(`\n--- ${event.event} event detected ---`);
-        console.log(sanitizedArgs, '\n');
+        // Log the event.
+        // const sanitizedArgs = sanitizeEventArgs(event);
+        // console.log(`\n--- ${event.event} event detected ---`);
+        // console.log(sanitizedArgs, '\n');
 
         if (env === 'testnet') {
-            console.log('Track the status on https://testnet.axelarscan.io/gmp/' + event.transactionHash + '\n');
+            console.log(`You can track the GMP transaction status on https://testnet.axelarscan.io/gmp/${event.transactionHash}\n`);
         }
     };
 
