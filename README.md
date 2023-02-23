@@ -18,6 +18,12 @@ Clone this repo:
 git clone https://github.com/axelarnetwork/axelar-examples.git
 ```
 
+Then, install dependencies:
+
+```bash
+npm install
+```
+
 ## Set environment variables
 
 You can get started quickly with a random local key and `.env` file by running
