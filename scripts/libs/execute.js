@@ -38,8 +38,6 @@ async function execute(env, chains, args, wallet, example) {
     const source = getSourceChain(chains, args, example.sourceChain);
     const destination = getDestChain(chains, args, example.destinationChain);
 
-    console.log(source.name, destination.name);
-
     // Listen for GMP events on testnet for printing an Axelarscan link for tracking.
     const startBlockNumber = await source.provider.getBlockNumber();
     listenForGMPEvent(env, source, startBlockNumber);
