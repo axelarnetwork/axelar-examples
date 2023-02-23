@@ -2,6 +2,7 @@
 
 const { ethers } = require('ethers');
 const { getWallet, getBalances, getChains, checkEnv } = require('./libs');
+const testnetChains = require('@axelar-network/axelar-cgp-solidity/info/testnet.json');
 
 // Get the environment from the command line. If it is not provided, use 'testnet'.
 const env = process.argv[2] || 'testnet';
@@ -10,7 +11,8 @@ const env = process.argv[2] || 'testnet';
 checkEnv(env);
 
 // Get the chains for the environment.
-const chains = getChains(env);
+const allTestnetChains = testnetChains.map((chain) => chain.name);
+const chains = getChains(env, allTestnetChains);
 
 // Get the wallet.
 const wallet = getWallet();
