@@ -18,6 +18,7 @@ npm run build
 
 ## Advanced
 
+-   [call-contract-with-token-express](call-contract-with-token-express)
 -   [nft-linker](nft-linker)
 -   [nft-auctionhouse](nft-auctionhouse)
 -   [send-ack](send-ack)
