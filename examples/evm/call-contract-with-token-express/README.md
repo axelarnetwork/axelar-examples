@@ -26,8 +26,8 @@ The GMP Express feature is already lived on our testnet. However, the following 
 
 Currently, our whitelisted contract addresses for this example are:
 
--   Avalanche: `0x15509D7b6F63400A4caC10fa25842af4f5fe2977`
--   Polygon: `0xe050Eb237f8c9e152be1a02c81e2E30e20c70C4F`
+-   Avalanche: `0x4E3b6C3d284361Eb4fA9aDE5831eEfF85578b72c`
+-   Polygon: `0xAb6dAb12aCCAe665A44E69d44bcfC6219A30Dd32`
 
 ### Parameters
 
