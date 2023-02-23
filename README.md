@@ -12,16 +12,22 @@ Install [nodejs](https://nodejs.org/en/download/). Run `node -v` to check your i
 
 Support Node.js version 16.x and 18.x
 
-Clone this repo:
+1. Clone this repo:
 
 ```bash
 git clone https://github.com/axelarnetwork/axelar-examples.git
 ```
 
-Then, install dependencies:
+2. Install dependencies:
 
 ```bash
 npm install
+```
+
+3. Compile smart contracts:
+
+```bash
+npm run build
 ```
 
 ## Set environment variables
