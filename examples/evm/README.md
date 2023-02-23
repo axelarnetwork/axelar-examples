@@ -18,7 +18,6 @@ npm run build
 
 ## Advanced
 
--   [forecall](forecall)
 -   [headers](headers)
 -   [deposit-address](deposit-address)
 -   [nft-linker](nft-linker)
@@ -26,4 +25,3 @@ npm run build
 -   [nonced-execution](nonced-execution)
 -   [send-ack](send-ack)
 -   [cross-chain-token](cross-chain-token)
--   [cross-chain-lending](cross-chain-lending)
