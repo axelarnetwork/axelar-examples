@@ -127,7 +127,6 @@ function checkEnv(env) {
     }
 }
 
-<<<<<<< HEAD
 function getDefaultChains(env) {
     if (env === 'local') {
         return ['Avalanche', 'Fantom', 'Moonbeam', 'Polygon', 'Ethereum'];
@@ -136,13 +135,11 @@ function getDefaultChains(env) {
     return ['Avalanche', 'Fantom'];
 }
 
-=======
 /**
  * Get the path to an example.
  * @param {*} exampleName - The name of the example to get the path for.
  * @returns {string} - The path to the example.
  */
->>>>>>> main
 function getExamplePath(exampleName) {
     const destDir = path.resolve(__dirname, '..', `examples/${exampleName}/index.js`);
     return path.relative(__dirname, destDir);
