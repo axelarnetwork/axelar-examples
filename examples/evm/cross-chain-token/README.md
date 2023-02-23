@@ -2,6 +2,13 @@
 
 This example demonstrates how to mint tokens on a source-chain and transfer them to a destination-chain.
 
+### Prerequisite
+
+Make sure you've already followed the following steps:
+
+-   [Setup environment variables](/README.md#set-environment-variables)
+-   [Run the local chains](/README.md#running-the-local-chains)
+
 ### Deployment
 
 To deploy the contract, use the following command:
@@ -30,7 +37,7 @@ This example deploys the contract on a local network, mints 1 token on the Ether
 
 ```bash
 npm run deploy evm/cross-chain-token local
-npm run execute evm/cross-chain-token local "Ethereum" "Fantom" 1
+npm run execute evm/cross-chain-token local "Avalanche" "Fantom" 1
 ```
 
 The output will be:

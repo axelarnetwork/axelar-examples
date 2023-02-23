@@ -18,7 +18,15 @@ Clone this repo:
 git clone https://github.com/axelarnetwork/axelar-examples.git
 ```
 
-## Set up deployer key
+## Set environment variables
+
+You can get started quickly with a random local key and `.env` file by running
+
+```bash
+npm run setup
+```
+
+Or you can manually copy the example `.env.example` file and fill in your EVM private key. See the [example Metamask Instructions](https://metamask.zendesk.com/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key) for exporting your private keys.
 
 ```bash
 cp .env.example .env
@@ -31,7 +39,7 @@ Then update to your own private key.
 This script will print your wallet balances for each chain.
 
 ```bash
-npm run checkBalance [local|testnet]
+npm run check-balance [local|testnet]
 ```
 
 If not specify, this will print balances of the wallet for testnet.

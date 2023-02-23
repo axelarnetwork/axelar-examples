@@ -1,8 +1,5 @@
 'use strict';
 
-require('dotenv').config();
-require('./rootRequire');
-
 const {
     utils: { setJSON },
 } = require('@axelar-network/axelar-local-dev');

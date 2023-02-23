@@ -9,9 +9,7 @@ const IERC20 = rootRequire('./artifacts/@axelar-network/axelar-gmp-sdk-solidity/
 
 async function execute(chains, wallet, options = {}) {
     const args = options.args || [];
-    const getDepositAddress = options.getDepositAddress;
-    const source = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
-    const destination = chains.find((chain) => chain.name === (args[1] || 'Fantom'));
+    const { source, destination, getDepositAddress } = options;
     const amount = args[2] || 10e6;
     const destinationAddress = args[3] || wallet.address;
     const symbol = 'aUSDC';

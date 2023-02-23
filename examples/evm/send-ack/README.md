@@ -1,14 +1,21 @@
-### Send ack
+# Send ack
 
 Send a message from source-chain to destination-chain.
 
-**Deploy**
+### Prerequisite
+
+Make sure you've already followed the following steps:
+
+-   [Setup environment variables](/README.md#set-environment-variables)
+-   [Run the local chains](/README.md#running-the-local-chains)
+
+## Deployment
 
 ```bash
 npm run deploy evm/send-ack [local|testnet]
 ```
 
-Run the test:
+### Execution
 
 ```bash
 npm run execute evm/send-ack [local|testnet] ${srcChain} ${destChain} ${message}
@@ -20,11 +27,11 @@ npm run execute evm/send-ack [local|testnet] ${srcChain} ${destChain} ${message}
 -   `destChain` is `Fantom`. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon
 -   `message` is `Hello World`
 
-#### Example
+## Example
 
 ```bash
 npm run deploy evm/send-ack local
-npm run execute evm/send-ack local "Fantom" "Moonbeam" 'Received'
+npm run execute evm/send-ack local "Avalanche" "Fantom" 'Received'
 ```
 
 **Output:**

@@ -1,27 +1,23 @@
 'use strict';
 
 const { HexString, CoinClient } = require('aptos');
-const {
-    getDefaultProvider,
-    Contract,
-    constants: { AddressZero },
-} = require('ethers');
+const { getDefaultProvider, Contract } = require('ethers');
 const {
     utils: { deployContract },
     AptosNetwork,
 } = require('@axelar-network/axelar-local-dev');
 
-const TokenLinker = rootRequire('./artifacts/examples/aptos-token-linker/contracts/AptosTokenLinker.sol/AptosTokenLinker.json');
+const TokenLinker = rootRequire('./artifacts/examples/aptos/token-linker/contracts/AptosTokenLinker.sol/AptosTokenLinker.json');
 const Token = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json');
 
 const aptosTokenLinkerAddress = process.env.APTOS_TOKEN_LINKER_ADDRESS;
 const ignoreDigits = 5;
 
 async function preDeploy() {
-    console.log(`Deploying token_linker for aptos.`);
+    console.log('Deploying token_linker for aptos.');
     const client = new AptosNetwork(process.env.APTOS_URL);
-    await client.deploy('examples/aptos-token-linker/modules/build/token_linker', ['token_linker.mv'], '0xa1');
-    console.log(`Deployed token_linker for aptos.`);
+    await client.deploy('examples/aptos/token-linker/modules/build/token_linker', ['token_linker.mv'], '0xa1');
+    console.log('Deployed token_linker for aptos.');
 }
 
 async function deploy(chain, wallet) {
@@ -44,7 +40,6 @@ async function deploy(chain, wallet) {
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const getGasPrice = options.getGasPrice;
     const client = new AptosNetwork(process.env.APTOS_URL);
     const coins = new CoinClient(client);
 
@@ -55,7 +50,7 @@ async function execute(chains, wallet, options) {
         chain.contract = new Contract(chain.aptosTokenLinker, TokenLinker.abi, chain.wallet);
     }
 
-    const evm = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+    const evm = options.source;
     const amount1 = args[1] || BigInt(1e18);
     const amount2 = args[2] || BigInt(Math.floor(5e17 / 256 ** ignoreDigits));
 
@@ -85,7 +80,7 @@ async function execute(chains, wallet, options) {
 
     // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
     const gasLimit = 3e5;
-    const gasPrice = await getGasPrice(evm, 'aptos', AddressZero);
+    const gasPrice = 1;
 
     console.log(`Minting and Approving ${Number(amount1) / 1e18} ALT`);
 
