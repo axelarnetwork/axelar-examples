@@ -18,10 +18,21 @@ To execute the example, use the following command:
 npm run execute evm/call-contract-with-token-express  [local|testnet] ${srcChain} ${destChain} ${amount} ${account} ${account2} ...
 ```
 
+**Note**
+The GMP Express feature is already lived on our testnet. However, the following conditions need to be met:
+
+-   The contract address must be whitelisted by our executor service.
+-   We only support `aUSDC` token and the amount must be less than 500 aUSDC.
+
+Currently, our whitelisted contract addresses for this example are:
+
+-   Avalanche: `0x15509D7b6F63400A4caC10fa25842af4f5fe2977`
+-   Polygon: `0xe050Eb237f8c9e152be1a02c81e2E30e20c70C4F`
+
 ### Parameters
 
--   `srcChain`: The blockchain network from which the aUSDC will be transferred. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon. Default value is Avalanche.
--   `destChain`: The blockchain network to which the aUSDC will be transferred. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon. Default value is Fantom.
+-   `srcChain`: The blockchain network from which the aUSDC will be transferred. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon. Default value is Polygon
+-   `destChain`: The blockchain network to which the aUSDC will be transferred. Valid values are Moonbeam, Avalanche, Fantom, Ethereum, and Polygon. Default value is Avalanche.
 -   `amount`: The amount of aUSDC to be transferred and distributed among the specified accounts. Default value is 10.
 -   `account`: The address of the first account to receive aUSDC.
 -   `account2`: The address of the second account to receive aUSDC, and so on.

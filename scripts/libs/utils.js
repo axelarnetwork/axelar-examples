@@ -24,8 +24,9 @@ function getChains(env, chains = []) {
 
     const selectedChains = chains.length > 0 ? chains : getDefaultChains(env);
 
+
     if (env === 'local') {
-        return rootRequire('chain-config/local.json').filter((chain) => selectedChains.includes(chain.name));
+      return rootRequire('chain-config/local.json').filter((chain) => selectedChains.includes(chain.name));
     }
 
     const testnet = getTestnetChains(selectedChains);
@@ -147,7 +148,7 @@ function getDefaultChains(env) {
         return ['Avalanche', 'Fantom', 'Moonbeam', 'Polygon', 'Ethereum'];
     }
 
-    return ['Avalanche', 'Fantom'];
+    return ['Avalanche', 'Fantom', 'Polygon'];
 }
 
 /**

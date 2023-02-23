@@ -1,13 +1,7 @@
 'use strict';
 
-const {
-    Contract,
-    ContractFactory,
-    ethers,
-} = require('ethers');
-const {
-    contracts: { GMPExpressService },
-} = require('@axelar-network/axelar-local-dev');
+const { Contract, ContractFactory, ethers } = require('ethers');
+
 const DistributionExpressExecutable = rootRequire(
     './artifacts/examples/evm/call-contract-with-token-express/DistributionExpressExecutable.sol/DistributionExpressExecutable.json',
 );
@@ -39,21 +33,52 @@ async function deploy(chain, wallet) {
     chain.contract = new Contract(deployedAddress, DistributionExpressExecutable.abi, chain.wallet);
 }
 
+const sourceChain = 'Polygon';
+const destinationChain = 'Avalanche';
+
+// Override the contract address for testnet for now. See README.md for more details.
+function overrideContract(env, source, destination, wallet) {
+    if (env === 'testnet') {
+        const allowedTestnetChains = [sourceChain, destinationChain];
+
+        if (!(allowedTestnetChains.includes(source.name) && allowedTestnetChains.includes(destination.name))) {
+            throw new Error(`GMP Express example is only supported on ${sourceChain} or ${destinationChain} chain on testnet`);
+        }
+
+        const whitelistedAddresses = {
+            [sourceChain]: '0xe050Eb237f8c9e152be1a02c81e2E30e20c70C4F',
+            [destinationChain]: '0x15509D7b6F63400A4caC10fa25842af4f5fe2977',
+        };
+
+        source.contract = new Contract(
+            whitelistedAddresses[source.name],
+            DistributionExpressExecutable.abi,
+            wallet.connect(source.provider),
+        );
+        destination.contract = new Contract(
+            whitelistedAddresses[destination.name],
+            DistributionExpressExecutable.abi,
+            wallet.connect(source.provider),
+        );
+    }
+}
+
 async function execute(chains, wallet, options) {
     const args = options.args || [];
-    const { source, destination, calculateBridgeFee } = options;
+    const { source, destination, calculateBridgeFee, env } = options;
+
+    // If the example is running on testnet, check that the source and destination chains are supported.
+    // TODO: Remove this check once we remove the whitelist on testnet.
+    overrideContract(env, source, destination, wallet);
+
     const fee = await calculateBridgeFee(source, destination);
     const amount = Math.floor(parseFloat(args[2])) * 1e6 || 10e6;
+
     const accounts = args.slice(3);
 
     if (accounts.length === 0) accounts.push(wallet.address);
 
     const initialBalance = await destination.usdc.balanceOf(accounts[0]);
-
-    // for debugging
-    // const expressService = new Contract(destination.GMPExpressService.address, GMPExpressService.abi, wallet.connect(destination.provider));
-    // const expressServiceBalance = await destination.usdc.balanceOf(expressService.address);
-    // console.log('aUSDC Balance for ExpressService', expressServiceBalance.toString());
 
     async function logAccountBalances() {
         for (const account of accounts) {
@@ -75,9 +100,12 @@ async function execute(chains, wallet, options) {
     });
     console.log('Sent tokens to distribution contract:', sendTx.hash);
 
+    if (env === 'testnet') {
+        console.log(`You can track the GMP transaction status on https://testnet.axelarscan.io/gmp/${sendTx.hash}\n`);
+    }
 
     while ((await destination.usdc.balanceOf(accounts[0])).eq(initialBalance)) {
-      await sleep(1000);
+        await sleep(1000);
     }
 
     console.log('--- After ---');
@@ -87,4 +115,6 @@ async function execute(chains, wallet, options) {
 module.exports = {
     deploy,
     execute,
+    sourceChain,
+    destinationChain,
 };
