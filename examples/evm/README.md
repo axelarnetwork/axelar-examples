@@ -18,10 +18,7 @@ npm run build
 
 ## Advanced
 
--   [headers](headers)
--   [deposit-address](deposit-address)
 -   [nft-linker](nft-linker)
 -   [nft-auctionhouse](nft-auctionhouse)
--   [nonced-execution](nonced-execution)
 -   [send-ack](send-ack)
 -   [cross-chain-token](cross-chain-token)
