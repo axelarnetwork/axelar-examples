@@ -26,7 +26,7 @@ async function deploy(env, chains, wallet, example) {
         }
 
         // Remove the wallet from the chain objects.
-        chain.wallet = undefined;
+        delete chain.wallet;
     }
 
     // Write the chain objects to the json file.

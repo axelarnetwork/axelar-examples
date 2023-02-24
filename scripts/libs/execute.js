@@ -74,7 +74,9 @@ async function executeEVMExample(env, chains, args, wallet, example) {
         env,
     });
 
-    process.exit(0);
+    if (!process.env.TEST) {
+        process.exit(0);
+    }
 }
 
 /**
@@ -130,7 +132,7 @@ function deserializeContract(chain, wallet) {
  * @param {*} startBlockNumber - The block number to start listening for events.
  */
 function listenForGMPEvent(env, source, startBlockNumber) {
-    if (!source.contract) return;
+    if (process.env.TEST || !source.contract) return;
 
     const gateway = source.gateway;
     const callContractFilter = gateway.filters.ContractCall(source.contract.address);
