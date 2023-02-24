@@ -109,9 +109,9 @@ function deserializeContract(chain, wallet) {
  * @param {*} startBlockNumber - The block number to start listening for events.
  */
 function listenForGMPEvent(env, source, startBlockNumber) {
-    const gateway = source.gateway;
-    if (!source.contract) return;
+  if (!source.contract) return;
 
+    const gateway = source.gateway;
     const callContractFilter = gateway.filters.ContractCall(source.contract.address);
     const callContractWithTokenFilter = gateway.filters.ContractCallWithToken(source.contract.address);
 

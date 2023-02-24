@@ -61,7 +61,24 @@ function getTestnetChains(chains = []) {
         AxelarGasService: {
             address: '0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6',
         },
-    }));
+    }))
+  }
+
+function getChains(env, chains = []) {
+    checkEnv(env);
+
+    const selectedChains = chains.length > 0 ? chains : getDefaultChains(env);
+
+    if (env === 'local') {
+        return rootRequire('chain-config/local.json').filter((chain) => selectedChains.includes(chain.name));
+    }
+
+    return getTestnetChains(chains)
+        .filter((chain) => selectedChains.includes(chain.name))
+        .map((chain) => ({
+            ...chain,
+            gasService: chain.AxelarGasService.address,
+        }));
 }
 
 /**
