@@ -30,7 +30,9 @@ Output:
 
 ```
 --- Initially ---
-value at Avalanche is
+value at Avalanche is ""
+value at Aptos is "Hello Aptos from Ethereum, it is 1:26:06 PM."
 --- After ---
-value at Avalanche is Hello Avalanche from aptos, it is 6:29:55 PM.
+value at Avalanche is "Hello Avalanche from Aptos, it is 7:05:48 PM."
+value at Aptos is "Hello Aptos from Avalanche, it is 7:05:48 PM."
 ```
