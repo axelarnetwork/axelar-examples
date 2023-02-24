@@ -1,7 +1,8 @@
 'use strict';
 
 const { Contract, getDefaultProvider } = require('ethers');
-const { calculateBridgeFee, getDepositAddress, sanitizeEventArgs } = require('./utils.js');
+const { calculateBridgeFee, getDepositAddress } = require('./utils.js');
+const { sourceChain } = require('../../examples/evm/call-contract-with-token-express/index.js');
 const AxelarGatewayContract = rootRequire(
     'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
 );
@@ -34,11 +35,12 @@ async function execute(env, chains, args, wallet, example) {
     }
 
     // Get source and destination chains.
-    const source = getSourceChain(chains, args);
-    const destination = getDestChain(chains, args);
+    const source = getSourceChain(chains, args, example.sourceChain);
+    const destination = getDestChain(chains, args, example.destinationChain);
 
-    // Listen for GMP events.
-    listenForGMPEvent(env, source);
+    // Listen for GMP events on testnet for printing an Axelarscan link for tracking.
+    const startBlockNumber = await source.provider.getBlockNumber();
+    listenForGMPEvent(env, source, startBlockNumber);
 
     // Execute the example script.
     await example.execute(chains, wallet, {
@@ -48,6 +50,7 @@ async function execute(env, chains, args, wallet, example) {
         source,
         destination,
         args,
+        env,
     });
 
     process.exit(0);
@@ -57,20 +60,22 @@ async function execute(env, chains, args, wallet, example) {
  * Get the source chain. If no source chain is provided, use Avalanche.
  * @param {*} chains - The chain objects to execute on.
  * @param {*} args - The arguments to pass to the example script.
+ * @param {*} exampleSourceChain - The default source chain per example. If not provided, use Avalanche.
  * @returns The source chain.
  */
-function getSourceChain(chains, args) {
-    return chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
+function getSourceChain(chains, args, exampleSourceChain) {
+    return chains.find((chain) => chain.name === (args[0] || exampleSourceChain || 'Avalanche'));
 }
 
 /**
  * Get the destination chain. If no destination chain is provided, use Fantom.
  * @param {*} chains - The chain objects to execute on.
  * @param {*} args - The arguments to pass to the example script.
+ * @param {*} exampleDestinationChain - The default destination chain per example. If not provided, use Fantom.
  * @returns The destination chain.
  */
-function getDestChain(chains, args) {
-    return chains.find((chain) => chain.name === (args[1] || 'Fantom'));
+function getDestChain(chains, args, exampleDestinationChain) {
+    return chains.find((chain) => chain.name === (args[1] || exampleDestinationChain || 'Fantom'));
 }
 
 /**
@@ -83,6 +88,7 @@ function deserializeContract(chain, wallet) {
     // Loop through every keys in the chain object.
     for (const key of Object.keys(chain)) {
         // If the object has an abi, it is a contract.
+
         if (chain[key].abi) {
             // Get the contract object.
             const contract = chain[key];
@@ -100,22 +106,21 @@ function deserializeContract(chain, wallet) {
  * If a GMP event is detected, log the transaction hash. If the environment is testnet, log the link to the transaction on Axelarscan.
  * @param {*} env - The environment to execute on.
  * @param {*} source - The source chain.
- * @param {*} wallet - The wallet to use for execution.
+ * @param {*} startBlockNumber - The block number to start listening for events.
  */
-function listenForGMPEvent(env, source) {
+function listenForGMPEvent(env, source, startBlockNumber) {
     const gateway = source.gateway;
+    if (!source.contract) return;
+
     const callContractFilter = gateway.filters.ContractCall(source.contract.address);
     const callContractWithTokenFilter = gateway.filters.ContractCallWithToken(source.contract.address);
 
     const eventHandler = (...args) => {
         const event = args.pop();
-        const sanitizedArgs = sanitizeEventArgs(event);
-
-        console.log(`\n--- ${event.event} event detected ---`);
-        console.log(sanitizedArgs, '\n');
+        if (event.blockNumber <= startBlockNumber) return;
 
         if (env === 'testnet') {
-            console.log('Track the status on https://testnet.axelarscan.io/gmp/' + event.transactionHash + '\n');
+            console.log(`You can track the GMP transaction status on https://testnet.axelarscan.io/gmp/${event.transactionHash}\n`);
         }
     };
 

@@ -2,6 +2,7 @@ const { deploy, checkEnv, getChains, getExamplePath, getWallet } = require('./li
 
 const exampleName = process.argv[2];
 const env = process.argv[3];
+const chainsToDeploy = process.argv.slice(4);
 
 // Check the environment. If it is not valid, exit.
 checkEnv(env);
@@ -10,7 +11,7 @@ checkEnv(env);
 const example = require(getExamplePath(exampleName));
 
 // Get the chains for the environment.
-const chains = getChains(env);
+const chains = getChains(env, chainsToDeploy);
 
 // Get the wallet.
 const wallet = getWallet();

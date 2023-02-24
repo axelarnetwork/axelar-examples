@@ -16,7 +16,13 @@ const example = require(getExamplePath(exampleName));
 const wallet = getWallet();
 
 // Get the chains for the environment.
-const chains = getChains(env);
+let selectedChains = [];
+
+if (args.length >= 2) {
+    selectedChains = [args[0], args[1]];
+}
+
+const chains = getChains(env, selectedChains);
 
 // This will execute an example script. The example script must have an `execute` function.
 execute(env, chains, args, wallet, example);

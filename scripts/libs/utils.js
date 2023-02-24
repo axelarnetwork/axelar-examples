@@ -1,7 +1,8 @@
 const { Wallet, ethers } = require('ethers');
 const path = require('path');
+const fs = require('fs');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
-const { AxelarAssetTransfer, AxelarQueryAPI } = require('@axelar-network/axelarjs-sdk');
+const { AxelarAssetTransfer, AxelarQueryAPI, CHAINS, Environment } = require('@axelar-network/axelarjs-sdk');
 
 /**
  * Get the wallet from the environment variables. If the EVM_PRIVATE_KEY environment variable is set, use that. Otherwise, use the EVM_MNEMONIC environment variable.
@@ -14,40 +15,53 @@ function getWallet() {
 }
 
 /**
- * Get testnet chains config from local if it exists, otherwise from axelar-cgp-solidity.
+ * Get the chain objects from the chain-config file.
+ * @param {*} env - The environment to get the chain objects for. Available options are 'local' and 'testnet'.
+ * @param {*} chains - The list of chains to get the chain objects for. If this is empty, the default chains will be used.
+ * @returns {Chain[]} - The chain objects.
  */
-function getTestnetConfig() {
-    // check if the testnet config file exists
-    try {
-        return rootRequire('chain-config/testnet.json');
-    } catch (e) {
-        return require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
+function getChains(env, chains = []) {
+    checkEnv(env);
+
+    const selectedChains = chains.length > 0 ? chains : getDefaultChains(env);
+
+    if (env === 'local') {
+        return rootRequire('chain-config/local.json').filter((chain) => selectedChains.includes(chain.name));
     }
+
+    const testnet = getTestnetChains(selectedChains);
+
+    return testnet.map((chain) => ({
+        ...chain,
+        gasService: chain.AxelarGasService.address,
+    }));
 }
 
 /**
- * Get the chain objects from the chain-config file.
- * @param {*} env - The environment to get the chain objects for. Available options are 'local' and 'testnet'.
- * @param {*} testnetChains - The list of chains to get the chain objects for if the environment is 'testnet'.
- * Checks the following file for available chain names https://github.com/axelarnetwork/axelar-cgp-solidity/blob/main/info/testnet.json
- * The default list of chains is ['Avalanche', 'Fantom']
+ * Get chains config for testnet.
+ * @param {*} chains - The list of chains to get the chain objects for. If this is empty, the default chains will be used.
  * @returns {Chain[]} - The chain objects.
  */
-function getChains(env, testnetChains = ['Avalanche', 'Fantom']) {
-    checkEnv(env);
-
-    if (env === 'local') {
-        return rootRequire('chain-config/local.json');
+function getTestnetChains(chains = []) {
+    const _path = path.join(__dirname, '../../chain-config/testnet.json');
+    let testnet = [];
+    if (fs.existsSync(_path)) {
+        testnet = rootRequire('chain-config/testnet.json').filter((chain) => chains.includes(chain.name));
     }
 
-    return getTestnetConfig()
-        .filter((chain) => {
-            return testnetChains.includes(chain.name);
-        })
-        .map((chain) => ({
-            ...chain,
-            gasService: chain.AxelarGasService.address,
-        }));
+    // If the chains are specified, but the testnet config file does not have the specified chains, use testnet.json from axelar-cgp-solidity.
+    if (testnet.length < chains.length) {
+        testnet = require('@axelar-network/axelar-cgp-solidity/info/testnet.json').filter((chain) => chains.includes(chain.name));
+    }
+
+    // temporary fix for gas service contract address
+
+    return testnet.map((chain) => ({
+        ...chain,
+        AxelarGasService: {
+            address: '0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6',
+        },
+    }));
 }
 
 /**
@@ -98,14 +112,20 @@ function getDepositAddress(env, source, destination, destinationAddress, symbol)
  * Calculate the gas amount for a transaction using axelarjs-sdk.
  * @param {*} source - The source chain object.
  * @param {*} destination - The destination chain object.
- * @param {*} symbol - The symbol of the token to get the deposit address for.
  * @param {*} options - The options to pass to the estimateGasFee function. Available options are gasLimit and gasMultiplier.
  * @returns {number} - The gas amount.
  */
-async function calculateBridgeFee(source, destination, options = {}) {
-    const api = new AxelarQueryAPI({ environment: 'testnet' });
+function calculateBridgeFee(source, destination, options = {}) {
+    const api = new AxelarQueryAPI({ environment: Environment.TESTNET });
     const { gasLimit, gasMultiplier, symbol } = options;
-    return api.estimateGasFee(source.name, destination.name, symbol || source.tokenSymbol, gasLimit, gasMultiplier || 1.5);
+
+    return api.estimateGasFee(
+        CHAINS.TESTNET[source.name.toUpperCase()],
+        CHAINS.TESTNET[destination.name.toUpperCase()],
+        symbol || source.tokenSymbol,
+        gasLimit,
+        gasMultiplier,
+    );
 }
 
 /**
@@ -125,6 +145,14 @@ function checkEnv(env) {
     if (env == null || (env !== 'testnet' && env !== 'local')) {
         throw new Error('Need to specify testnet or local as an argument to this script.');
     }
+}
+
+function getDefaultChains(env) {
+    if (env === 'local') {
+        return ['Avalanche', 'Fantom', 'Moonbeam', 'Polygon', 'Ethereum'];
+    }
+
+    return ['Avalanche', 'Fantom', 'Polygon'];
 }
 
 /**
