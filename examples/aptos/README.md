@@ -2,26 +2,30 @@
 
 ## Prerequisite
 
-1. Build the Aptos modules
+1. Install Aptos in your local machine
+
+Download here: https://aptos.dev/cli-tools/aptos-cli-tool/
+
+Note: Our examples are tested on Aptos version `1.0.4`
+
+2. Build the Aptos modules
 
 ```bash
 npm ci
 npm run build-aptos
 ```
 
-2. Run the `aptos` local network
+3. Run the `aptos` local network
 
 ```bash
 aptos node run-local-testnet --with-faucet
 ```
 
-3. Run the `evm` local network
+4. Run the local server
 
 ```bash
 npm run start
 ```
-
-Note: `aptos` cli needs to be installed in your local machine (https://aptos.dev/cli-tools/aptos-cli-tool/)
 
 ## Basic
 
