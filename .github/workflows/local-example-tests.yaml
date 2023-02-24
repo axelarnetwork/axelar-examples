@@ -18,8 +18,8 @@ jobs:
                   node-version: 16
             - name: Prerequisites
               run: |
-                  wget --no-check-certificate  https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.1/aptos-cli-1.0.1-Ubuntu-22.04-x86_64.zip
-                  unzip aptos-cli-1.0.1-Ubuntu-22.04-x86_64.zip
+                  wget --no-check-certificate  https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.4/aptos-cli-1.0.4-Ubuntu-22.04-x86_64.zip
+                  unzip aptos-cli-1.0.4-Ubuntu-22.04-x86_64.zip
                   chmod +x aptos
                   cp aptos /usr/local/bin
                   nohup sh -c "aptos node run-local-testnet --with-faucet &"
