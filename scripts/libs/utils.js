@@ -64,23 +64,6 @@ function getTestnetChains(chains = []) {
     }))
   }
 
-function getChains(env, chains = []) {
-    checkEnv(env);
-
-    const selectedChains = chains.length > 0 ? chains : getDefaultChains(env);
-
-    if (env === 'local') {
-        return rootRequire('chain-config/local.json').filter((chain) => selectedChains.includes(chain.name));
-    }
-
-    return getTestnetChains(chains)
-        .filter((chain) => selectedChains.includes(chain.name))
-        .map((chain) => ({
-            ...chain,
-            gasService: chain.AxelarGasService.address,
-        }));
-}
-
 /**
  * Get the balances of an address on a list of chains.
  * @param {*} chains - The list of chains to get the balances from.
