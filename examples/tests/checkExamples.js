@@ -20,10 +20,10 @@ const examples = [
     'call-contract-with-token',
     'cross-chain-token',
     'deposit-address',
-    // 'nft-auctionhouse',
-    // 'nft-linker',
     'send-ack',
     'send-token',
+    // 'nft-linker',
+    // 'nft-auctionhouse',
 ];
 
 const aptosExamples = ['call-contract', 'token-linker'];
