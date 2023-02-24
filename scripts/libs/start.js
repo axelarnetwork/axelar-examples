@@ -43,6 +43,7 @@ async function initAptos() {
         await createAptosNetwork();
         console.log('Initialized Aptos.');
     } catch (e) {
+      console.log(e)
         console.log('Skip Aptos initlization, rerun this after starting an aptos node for proper support.');
     }
 }

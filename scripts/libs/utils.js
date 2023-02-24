@@ -20,7 +20,7 @@ function getWallet() {
  * @param {*} chains - The list of chains to get the chain objects for. If this is empty, the default chains will be used.
  * @returns {Chain[]} - The chain objects.
  */
-function getChains(env, chains = []) {
+function getEVMChains(env, chains = []) {
     checkEnv(env);
 
     const selectedChains = chains.length > 0 ? chains : getDefaultChains(env);
@@ -185,7 +185,7 @@ module.exports = {
     getWallet,
     getDepositAddress,
     getBalances,
-    getChains,
+    getEVMChains,
     checkEnv,
     calculateBridgeFee,
     getExamplePath,
