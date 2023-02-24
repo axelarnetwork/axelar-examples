@@ -36,9 +36,13 @@ jobs:
               run: |
                   npm ci
 
-            - name: Build
+            - name: Compile EVM Smart Contracts
               run: |
                   npm run build
+
+            - name: Compile Aptos Modules
+              run: |
+                  npm run build-aptos
 
             - name: Test
               run: |
