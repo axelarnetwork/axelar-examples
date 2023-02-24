@@ -1,7 +1,6 @@
 'use strict';
 
 const { HexString, CoinClient } = require('aptos');
-const { getDefaultProvider, Contract } = require('ethers');
 const {
     utils: { deployContract },
     AptosNetwork,
@@ -21,9 +20,9 @@ async function preDeploy() {
 }
 
 async function deploy(evmChain, wallet) {
-    console.log(`Deploying Aptos Linked Token for ${evmChain.name}.`);
-    evmChain.token = await deployContract(wallet, Token, ['Aptos Linked Token', 'ALT', 18]);
-    console.log(`Deployed Aptos Linked Token for ${evmChain.name} at ${evmChain.token.address}.`);
+    console.log(`Deploying AptosLinkedToken for ${evmChain.name}.`);
+    evmChain.token = await deployContract(wallet, Token, ['AptosLinkedToken', 'ALT', 18]);
+    console.log(`Deployed AptosLinkedToken for ${evmChain.name} at ${evmChain.token.address}.`);
 
     console.log(`Deploying AptosTokenLinker for ${evmChain.name}.`);
     evmChain.contract = await deployContract(wallet, TokenLinker, [
@@ -67,7 +66,7 @@ async function execute(evmChain, wallet, options) {
     console.log('--- Initially ---');
     await logBalances();
 
-    // Set the gasLimit to 3e5 (a safe overestimate) and get the gas price.
+    // Currently, our SDK can't calculate bridge fee for Aptos, so we just use a fixed value.
     const gasLimit = 3e5;
     const gasPrice = 1;
 
