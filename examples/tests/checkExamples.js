@@ -76,7 +76,7 @@ describe('Check EVM Examples', function () {
     }
 });
 
-describe.skip('Check Aptos Examples', function () {
+describe('Check Aptos Examples', function () {
     // marked as slow if it takes longer than 15 seconds to run each test.
     this.slow(15000);
     this.timeout(20000);
