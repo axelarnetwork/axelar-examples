@@ -3,21 +3,13 @@
  *
  */
 
-pub mod external;
-pub mod utils;
-pub use crate::external::*;
-pub mod executable;
-
-use ethabi::{ParamType, Token};
-use executable::{AxelarExecutable, ContractExecutable};
+use near_axelar_executable::ethabi::{ParamType, Token};
+use near_axelar_executable::utils::{abi_decode, abi_encode};
+use near_axelar_executable::{impl_axelar_executable, AxelarExecutable, ContractExecutable};
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::AccountId;
-use near_sdk::Gas;
 use near_sdk::PanicOnDefault;
 use near_sdk::{near_bindgen, Promise};
-use utils::{abi_decode, abi_encode};
-
-pub const TGAS: u64 = 1_000_000_000_000;
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
@@ -59,6 +51,7 @@ impl AxelarNearExample {
 
     #[payable]
     pub fn set(&mut self, chain: String, destination_address: String, value: String) -> Promise {
+        self.value = Some(value.clone());
         let payload = abi_encode(vec![Token::String(value)]);
         self.gateway_call_contract(chain, destination_address, payload)
     }

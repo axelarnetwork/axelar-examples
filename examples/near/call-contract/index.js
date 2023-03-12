@@ -70,8 +70,15 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await logValue();
 
+    // Currently, we do not calculate fee for NEAR, so we just use a fixed value.
+    const gasLimit = 3e5;
+    const gasPrice = 1;
+
+
     // Call set method on EVM contract
-    await (await evmContract.connect(evmUser).setRemoteValue('near', nearContract.accountId, messageEvmToNear)).wait();
+    await (await evmContract.connect(evmUser).setRemoteValue('near', nearContract.accountId, messageEvmToNear, {
+        value: BigInt(Math.floor(gasLimit * gasPrice)),
+    })).wait();
 
     // Call set method on NEAR contract
     await nearClient.callContract(

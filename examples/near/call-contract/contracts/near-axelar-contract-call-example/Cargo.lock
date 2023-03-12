@@ -695,6 +695,16 @@ dependencies = [
 name = "near-axelar-contract-call-example"
 version = "1.0.0"
 dependencies = [
+ "near-axelar-executable",
+ "near-sdk",
+ "primitive-types 0.9.1",
+]
+
+[[package]]
+name = "near-axelar-executable"
+version = "1.0.0"
+source = "git+https://github.com/axelarnetwork/axelar-cgp-near?branch=main#11e1ba21d2f35d10f8bb7ccc108ba6211bf2cdd4"
+dependencies = [
  "ethabi",
  "near-sdk",
  "primitive-types 0.9.1",
