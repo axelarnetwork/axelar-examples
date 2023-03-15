@@ -28,6 +28,12 @@ abstract contract NoncedExecutable is AxelarExecutable {
         gasReceiver = IAxelarGasService(_gasReciever);
     }
 
+    /**
+    * @dev Send a contract call to a contract on another chain.
+    * @param destinationChain The chain to send the contract call to.
+    * @param destinationContract The address of the contract to call.
+    * @param payload The payload to send to the contract.
+     */
     function sendContractCall(string calldata destinationChain, string calldata destinationContract, bytes calldata payload) external payable {
         // Build the payload. The first 32 bytes are the nonce, the next 32 bytes are the address of the sender, and the rest is the payload passed by the caller.
         bytes memory newPayload = abi.encode(outgoingNonces[destinationChain][address(this)], address(this), payload);
@@ -35,7 +41,7 @@ abstract contract NoncedExecutable is AxelarExecutable {
         // Increment the nonce.
         outgoingNonces[destinationChain][address(this)]++;
 
-        // Send the call.
+        // Pay gas for the contract call.
         if (msg.value > 0) {
             gasReceiver.payNativeGasForContractCall{ value: msg.value }(
                 address(this),
@@ -45,6 +51,8 @@ abstract contract NoncedExecutable is AxelarExecutable {
                 msg.sender
             );
         }
+
+        // Send the call to AxelarGateway.
         gateway.callContract(destinationChain, destinationContract, newPayload);
     }
 
