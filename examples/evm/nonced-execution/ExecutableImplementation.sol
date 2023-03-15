@@ -7,9 +7,8 @@ import { NoncedExecutable } from './NoncedExecutable.sol';
 contract ExecutableImplementation is NoncedExecutable {
     mapping(string => mapping(address => mapping(uint256 => string))) public messages;
 
-    constructor(address gateway_) NoncedExecutable(gateway_) {}
+    constructor(address gateway_, address gasService_) NoncedExecutable(gateway_, gasService_) {}
 
-    // Override these.
     function _executeNonced(
         string calldata sourceChain,
         address sourceAddress,

@@ -40,26 +40,4 @@ contract NoncedContractCallSender {
         }
         gateway.callContract(destinationChain, executableContract_, newPayload);
     }
-
-    function sendContractCallWithToken(
-        string calldata destinationChain,
-        bytes calldata payload,
-        string calldata symbol,
-        uint256 amount
-    ) external payable {
-        bytes memory newPayload = abi.encode(outgoingNonces[destinationChain][msg.sender]++, msg.sender, payload);
-        string memory executableContract_ = executableContract;
-        if (msg.value > 0) {
-            gasReceiver.payNativeGasForContractCallWithToken(
-                address(this),
-                destinationChain,
-                executableContract_,
-                payload,
-                symbol,
-                amount,
-                msg.sender
-            );
-        }
-        gateway.callContractWithToken(destinationChain, executableContract_, newPayload, symbol, amount);
-    }
 }

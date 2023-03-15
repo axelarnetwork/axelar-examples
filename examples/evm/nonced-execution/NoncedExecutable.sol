@@ -6,8 +6,9 @@ import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contract
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol';
 import { StringToAddress } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 
-abstract contract NoncedExecutable is AxelarExecutable, Upgradable {
+abstract contract NoncedExecutable is AxelarExecutable {
     using StringToAddress for string;
 
     error IncorrectNonce();
@@ -15,14 +16,26 @@ abstract contract NoncedExecutable is AxelarExecutable, Upgradable {
     error WrongSourceAddress(string sourceAddress);
 
     mapping(string => mapping(address => uint256)) public incomingNonces;
-    address public senderContract;
+    mapping(string => mapping(address => uint256)) public outgoingNonces;
+    string public executableContract;
+    IAxelarGasService public gasReceiver;
 
-    constructor(address gateway_) AxelarExecutable(gateway_) {}
+    constructor(address _gateway, address _gasReciever) AxelarExecutable(_gateway) {
+        gasReceiver = IAxelarGasService(_gasReciever);
+    }
 
-    function _setup(bytes calldata params) internal override {
-        address senderContract_ = abi.decode(params, (address));
-        if (senderContract != address(0)) revert AlreadyInitialized();
-        senderContract = senderContract_;
+    function sendContractCall(string calldata destinationChain, string calldata destinationContract, bytes calldata payload) external payable {
+        bytes memory newPayload = abi.encode(outgoingNonces[destinationChain][address(this)]++, address(this), payload);
+        if (msg.value > 0) {
+            gasReceiver.payNativeGasForContractCall{ value: msg.value }(
+                address(this),
+                destinationChain,
+                destinationContract,
+                newPayload,
+                msg.sender
+            );
+        }
+        gateway.callContract(destinationChain, destinationContract, newPayload);
     }
 
     function _execute(
@@ -30,28 +43,10 @@ abstract contract NoncedExecutable is AxelarExecutable, Upgradable {
         string calldata sourceAddress,
         bytes calldata payload
     ) internal override {
-        if (sourceAddress.toAddress() != senderContract) {
-            revert WrongSourceAddress(sourceAddress);
-        }
         (uint256 nonce, address sender, bytes memory newPayload) = abi.decode(payload, (uint256, address, bytes));
         if (nonce != incomingNonces[sourceChain][sender]++) revert IncorrectNonce();
         gateway.callContract(sourceChain, sourceAddress, abi.encode(nonce));
         _executeNonced(sourceChain, sender, nonce, newPayload);
-    }
-
-    function _executeWithToken(
-        string calldata sourceChain,
-        string calldata sourceAddress,
-        bytes calldata payload,
-        string calldata tokenSymbol,
-        uint256 amount
-    ) internal override {
-        if (sourceAddress.toAddress() != senderContract) {
-            revert WrongSourceAddress(sourceAddress);
-        }
-        (uint256 nonce, address sender, bytes memory newPayload) = abi.decode(payload, (uint256, address, bytes));
-        if (nonce != incomingNonces[sourceChain][sender]++) revert IncorrectNonce();
-        _executeNoncedWithToken(sourceChain, sender, nonce, newPayload, tokenSymbol, amount);
     }
 
     // Override these.
@@ -61,17 +56,4 @@ abstract contract NoncedExecutable is AxelarExecutable, Upgradable {
         uint256 nonce,
         bytes memory payload
     ) internal virtual {}
-
-    function _executeNoncedWithToken(
-        string calldata sourceChain,
-        address sourceAddress,
-        uint256 nonce,
-        bytes memory payload,
-        string calldata tokenSymbol,
-        uint256 amount
-    ) internal virtual {}
-
-    function contractId() external pure returns (bytes32) {
-        return keccak256('example');
-    }
 }
