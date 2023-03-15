@@ -15,9 +15,13 @@ abstract contract NoncedExecutable is AxelarExecutable {
     error AlreadyInitialized();
     error WrongSourceAddress(string sourceAddress);
 
+    // Nonces are stored per chain and per address.
+    // This is the address that will receive the GMP message.
     mapping(string => mapping(address => uint256)) public incomingNonces;
+
+    // This is the address that will send the GMP message.
     mapping(string => mapping(address => uint256)) public outgoingNonces;
-    string public executableContract;
+
     IAxelarGasService public gasReceiver;
 
     constructor(address _gateway, address _gasReciever) AxelarExecutable(_gateway) {
@@ -25,7 +29,13 @@ abstract contract NoncedExecutable is AxelarExecutable {
     }
 
     function sendContractCall(string calldata destinationChain, string calldata destinationContract, bytes calldata payload) external payable {
-        bytes memory newPayload = abi.encode(outgoingNonces[destinationChain][address(this)]++, address(this), payload);
+        // Build the payload. The first 32 bytes are the nonce, the next 32 bytes are the address of the sender, and the rest is the payload passed by the caller.
+        bytes memory newPayload = abi.encode(outgoingNonces[destinationChain][address(this)], address(this), payload);
+
+        // Increment the nonce.
+        outgoingNonces[destinationChain][address(this)]++;
+
+        // Send the call.
         if (msg.value > 0) {
             gasReceiver.payNativeGasForContractCall{ value: msg.value }(
                 address(this),
@@ -40,12 +50,19 @@ abstract contract NoncedExecutable is AxelarExecutable {
 
     function _execute(
         string calldata sourceChain,
-        string calldata sourceAddress,
+        string calldata,
         bytes calldata payload
     ) internal override {
+        // Decode the payload. The first 32 bytes are the nonce, the next 32 bytes are the address of the sender, and the rest is the payload passed by the sender.
         (uint256 nonce, address sender, bytes memory newPayload) = abi.decode(payload, (uint256, address, bytes));
-        if (nonce != incomingNonces[sourceChain][sender]++) revert IncorrectNonce();
-        gateway.callContract(sourceChain, sourceAddress, abi.encode(nonce));
+
+        // Check the nonce. If it's not the expected one, revert.
+        if (nonce != incomingNonces[sourceChain][sender]) revert IncorrectNonce();
+
+        // Increment the nonce.
+        incomingNonces[sourceChain][sender]++;
+
+        // Run `_executeNonced` function which is implemented by the child contract (ExecutableImplementation.sol).
         _executeNonced(sourceChain, sender, nonce, newPayload);
     }
 
