@@ -13,11 +13,21 @@ const { ethers } = require('ethers');
 const aptosTokenLinkerAddress = process.env.APTOS_TOKEN_LINKER_ADDRESS;
 const ignoreDigits = 5;
 
+async function isDeployedTokenLinker(client) {
+    const resources = await client.getAccountResources(aptosTokenLinkerAddress).catch((e) => undefined);
+    if (!resources) return false;
+    return resources.find((resource) => resource.type === `${aptosTokenLinkerAddress}::token_linker::State`);
+}
+
 async function preDeploy() {
-    console.log('Deploying token_linker for aptos.');
     const client = new AptosNetwork(process.env.APTOS_URL);
-    await client.deploy('examples/aptos/token-linker/modules/build/token_linker', ['token_linker.mv'], '0xa1');
-    console.log('Deployed token_linker for aptos.');
+    const isDeployed = await isDeployedTokenLinker(client);
+
+    if (!isDeployed) {
+        console.log('Deploying token_linker for Aptos.');
+        const tx = await client.deploy('examples/aptos/token-linker/modules/build/token_linker', ['token_linker.mv'], '0xa1');
+        console.log('Deployed token_linker for Aptos:', tx.hash);
+    }
 }
 
 async function deploy(evmChain, wallet) {
