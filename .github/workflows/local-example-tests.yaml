@@ -11,11 +11,6 @@ jobs:
                 arch: [amd64]
 
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 16
             - name: Prerequisites
               run: |
                   wget --no-check-certificate  https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.4/aptos-cli-1.0.4-Ubuntu-22.04-x86_64.zip
@@ -23,7 +18,12 @@ jobs:
                   chmod +x aptos
                   cp aptos /usr/local/bin
                   nohup sh -c "aptos node run-local-testnet --with-faucet &"
-
+                  sleep 10
+            - name: Checkout code
+              uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 16
             - name: Install
               run: |
                   npm ci
