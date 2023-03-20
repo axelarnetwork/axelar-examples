@@ -12,6 +12,7 @@ Note: Our examples are tested on Aptos version `1.0.4`
 
 ```bash
 npm ci
+npm run build
 npm run build-aptos
 ```
 
