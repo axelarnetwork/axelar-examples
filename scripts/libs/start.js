@@ -41,10 +41,12 @@ async function deployAndFundUsdc(chain, toFund) {
  */
 async function initAptos() {
     try {
-        await createAptosNetwork();
-        console.log('Initialized Aptos.');
+        await createAptosNetwork({
+            nodeUrl: 'http://0.0.0.0:8080',
+            faucetUrl: 'http://0.0.0.0:8081',
+        });
     } catch (e) {
-      console.log(e)
+        console.log(e);
         console.log('Skip Aptos initlization, rerun this after starting an aptos node for proper support.');
     }
 }

@@ -25,7 +25,7 @@ async function executeAptosExample(chains, args, wallet, example) {
     const tokenAddress = await evmChain.gateway.tokenAddresses('aUSDC');
     evmChain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);
 
-    example.execute(evmChain, wallet, {
+    await example.execute(evmChain, wallet, {
         args,
     });
 }
