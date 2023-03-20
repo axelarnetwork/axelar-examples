@@ -61,7 +61,7 @@ async function execute(evmChain, wallet, options) {
     async function logBalances() {
         const evmBalance = await evmChain.token.balanceOf(wallet.address).then((balance) => ethers.utils.formatEther(balance));
         console.log(`Balance at ${evmChain.name} is ${evmBalance} ALT`);
-        const aptosBalance = await coins.checkBalance(client.owner, { coinType: `${aptosTokenLinkerAddress}::token_linker::Token` });
+        const aptosBalance = await coins.checkBalance(client.owner.address(), { coinType: `${aptosTokenLinkerAddress}::token_linker::Token` });
         console.log(`Balance at aptos is ${(Number(aptosBalance) * 256 ** ignoreDigits) / 1e18} ALT`);
     }
 
