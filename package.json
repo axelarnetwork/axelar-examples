@@ -10,7 +10,7 @@
         "start": "node scripts/runStart",
         "deploy": "node scripts/runDeploy",
         "execute": "node scripts/runExecute",
-        "setup": "node scripts/runCreatePrivateKey",
+        "setup": "node scripts/runSetupEnv",
         "check-balance": "node scripts/runCheckBalance",
         "build": "rm -rf artifacts && npx hardhat clean && npx hardhat compile",
         "build-aptos": "./build-aptos.sh"
