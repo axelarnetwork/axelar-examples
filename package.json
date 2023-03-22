@@ -13,7 +13,7 @@
         "setup": "node scripts/runSetupEnv",
         "check-balance": "node scripts/runCheckBalance",
         "build": "rm -rf artifacts && npx hardhat clean && npx hardhat compile",
-        "build-aptos": "./build-aptos.sh"
+        "build-aptos": "bash ./build-aptos.sh"
     },
     "author": "",
     "license": "ISC",
