@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 
-const { start, deploy, executeEVMExample, executeAptosExample, getWallet, getEVMChains } = require('../../scripts/libs');
+const { start, deploy, executeEVMExample, executeAptosExample, getWallet, getEVMChains, executeNearExample } = require('../../scripts/libs');
 const {
     destroyExported,
     utils: { setLogger },
@@ -33,6 +33,8 @@ const examples = [
 
 const aptosExamples = ['call-contract', 'token-linker'];
 
+const nearExamples = ['call-contract'];
+
 // These examples fork the mainnet, so they take a long time to run.
 const forkExamples = [
     // 'cross-chain-lending', // cross-chain lending uses forecall which is deprecated, so ignore this example until migrating to GMP Express.
@@ -54,6 +56,19 @@ describe('Check Examples Execution', function () {
 
     afterEach(async () => {
         await destroyExported();
+    });
+
+    describe('NEAR Examples', function () {
+        for (const exampleName of nearExamples) {
+            it(exampleName, async function () {
+                const example = rootRequire(`examples/near/${exampleName}/index.js`);
+                const chains = getEVMChains('local', testChains);
+
+                if (example.deploy) await deploy('local', chains, wallet, example);
+
+                await executeNearExample(chains, [], wallet, example);
+            });
+        }
     });
 
     describe('EVM Examples', function () {
