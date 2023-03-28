@@ -14,8 +14,8 @@ module token_linker::token_linker {
   use aptos_framework::event::{Self};
   use aptos_framework::bcs;
 
-use axelar::axelar_gas_service;
-use axelar::gateway;
+  use axelar::axelar_gas_service;
+  use axelar::gateway;
 
   struct State has key {
     receive_token_events: event::EventHandle<ReceiveTokenMessage>,
@@ -42,13 +42,13 @@ use axelar::gateway;
 
   fun init_module(account: &signer) {
     let (burn_cap, freeze_cap, mint_cap) = coin::initialize<Token>(
-      account, 
-      string::utf8(b"Linked Token"), 
+      account,
+      string::utf8(b"Linked Token"),
       string::utf8(b"LT"),
       6,
       true
     );
-    move_to(account, State { 
+    move_to(account, State {
       receive_token_events: account::new_event_handle<ReceiveTokenMessage>(account),
       send_token_events: account::new_event_handle<SendTokenMessage>(account),
       signer_cap: resource_account::retrieve_resource_account_cap(account, @deployer),

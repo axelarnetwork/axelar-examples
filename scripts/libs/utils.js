@@ -1,6 +1,6 @@
 const { Wallet, ethers } = require('ethers');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
 const { AxelarAssetTransfer, AxelarQueryAPI, CHAINS, Environment } = require('@axelar-network/axelarjs-sdk');
 
@@ -20,13 +20,15 @@ function getWallet() {
  * @param {*} chains - The list of chains to get the chain objects for. If this is empty, the default chains will be used.
  * @returns {Chain[]} - The chain objects.
  */
-function getChains(env, chains = []) {
+function getEVMChains(env, chains = []) {
     checkEnv(env);
 
     const selectedChains = chains.length > 0 ? chains : getDefaultChains(env);
 
     if (env === 'local') {
-        return rootRequire('chain-config/local.json').filter((chain) => selectedChains.includes(chain.name));
+        return fs
+            .readJsonSync(path.join(__dirname, '../../chain-config/local.json'))
+            .filter((chain) => selectedChains.includes(chain.name));
     }
 
     const testnet = getTestnetChains(selectedChains);
@@ -46,7 +48,7 @@ function getTestnetChains(chains = []) {
     const _path = path.join(__dirname, '../../chain-config/testnet.json');
     let testnet = [];
     if (fs.existsSync(_path)) {
-        testnet = rootRequire('chain-config/testnet.json').filter((chain) => chains.includes(chain.name));
+        testnet = fs.readJsonSync(path.join(__dirname, '../../chain-config/testnet.json')).filter((chain) => chains.includes(chain.name));
     }
 
     // If the chains are specified, but the testnet config file does not have the specified chains, use testnet.json from axelar-cgp-solidity.
@@ -185,7 +187,7 @@ module.exports = {
     getWallet,
     getDepositAddress,
     getBalances,
-    getChains,
+    getEVMChains,
     checkEnv,
     calculateBridgeFee,
     getExamplePath,

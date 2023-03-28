@@ -1,4 +1,4 @@
-const { deploy, checkEnv, getChains, getExamplePath, getWallet } = require('./libs');
+const { deploy, checkEnv, getEVMChains, getExamplePath, getWallet } = require('./libs');
 
 const exampleName = process.argv[2];
 const env = process.argv[3];
@@ -11,7 +11,7 @@ checkEnv(env);
 const example = require(getExamplePath(exampleName));
 
 // Get the chains for the environment.
-const chains = getChains(env, chainsToDeploy);
+const chains = getEVMChains(env, chainsToDeploy);
 
 // Get the wallet.
 const wallet = getWallet();

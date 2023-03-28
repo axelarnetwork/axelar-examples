@@ -9,36 +9,37 @@ jobs:
             matrix:
                 os: [ubuntu-22.04]
                 arch: [amd64]
-
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - uses: actions/setup-node@v3
               with:
-                  node-version: 16
-            # - name: Prerequisites
-            #   run: |
-            #       wget --no-check-certificate  https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.1/aptos-cli-1.0.1-Ubuntu-22.04-x86_64.zip
-            #       unzip aptos-cli-1.0.1-Ubuntu-22.04-x86_64.zip
-            #       chmod +x aptos
-            #       cp aptos /usr/local/bin
-
-            - name: Create .env file
+                  node-version: 18
+            - name: Prerequisites
               run: |
-                  # Dummy private key created for testing purpose only, it is not secret
-                  echo "EVM_PRIVATE_KEY=0xeff6997bddf3dc96294e32123e29d2479c782744c2f0d753b266afa30102c1a5
-                  APTOS_URL=http://localhost:8080
-                  APTOS_ADDRESS=0x8ac1b8ff9583ac8e661c7f0ee462698c57bb7fc454f587e3fa25a57f9406acc0
-                  APTOS_TOKEN_LINKER_ADDRESS=0x1641cde81bb0ffd52cce178f6ab4f1fc86fe451de189ffc71298aaf2e74a7a15" > .env
-
+                  wget --no-check-certificate  https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.4/aptos-cli-1.0.4-Ubuntu-22.04-x86_64.zip
+                  unzip aptos-cli-1.0.4-Ubuntu-22.04-x86_64.zip
+                  chmod +x aptos
+                  cp aptos /usr/local/bin
             - name: Install
               run: |
                   npm ci
 
-            - name: Build
+            - name: Create .env file
+              run: |
+                  # Dummy private key created for testing purpose only, it is not secret
+                  npm run setup
+
+            - name: Compile EVM Smart Contracts
               run: |
                   npm run build
 
+            - name: Compile Aptos Modules
+              run: |
+                  npm run build-aptos
+
             - name: Test
               run: |
+                  nohup sh -c "aptos node run-local-testnet --with-faucet" > nohup.out 2> nohup.err < /dev/null &
+                  sleep 10
                   npm run test

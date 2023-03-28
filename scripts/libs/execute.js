@@ -2,7 +2,6 @@
 
 const { Contract, getDefaultProvider } = require('ethers');
 const { calculateBridgeFee, getDepositAddress } = require('./utils.js');
-const { sourceChain } = require('../../examples/evm/call-contract-with-token-express/index.js');
 const AxelarGatewayContract = rootRequire(
     'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
 );
@@ -10,6 +9,26 @@ const AxelarGasServiceContract = rootRequire(
     'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol/IAxelarGasService.json',
 );
 const IERC20 = rootRequire('artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
+
+async function executeAptosExample(chains, args, wallet, example) {
+    const evmChain = getSourceChain(chains, args, example.sourceChain);
+
+    evmChain.provider = getDefaultProvider(evmChain.rpc);
+    const connectedWallet = wallet.connect(evmChain.provider);
+
+    // Initialize contracts to chain object.
+    deserializeContract(evmChain, connectedWallet);
+
+    // Recover axelar contracts to chain object.
+    evmChain.gateway = new Contract(evmChain.gateway, AxelarGatewayContract.abi, connectedWallet);
+    evmChain.gasService = new Contract(evmChain.gasService, AxelarGasServiceContract.abi, connectedWallet);
+    const tokenAddress = await evmChain.gateway.tokenAddresses('aUSDC');
+    evmChain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);
+
+    await example.execute(evmChain, wallet, {
+        args,
+    });
+}
 
 /**
  * Execute an example script. The example script must have an `execute` function.
@@ -19,7 +38,7 @@ const IERC20 = rootRequire('artifacts/@axelar-network/axelar-gmp-sdk-solidity/co
  * @param {*} wallet - The wallet to use for execution.
  * @param {*} example - The example to execute.
  */
-async function execute(env, chains, args, wallet, example) {
+async function executeEVMExample(env, chains, args, wallet, example) {
     for (const chain of chains) {
         chain.provider = getDefaultProvider(chain.rpc);
         const connectedWallet = wallet.connect(chain.provider);
@@ -53,7 +72,9 @@ async function execute(env, chains, args, wallet, example) {
         env,
     });
 
-    process.exit(0);
+    if (!process.env.TEST) {
+        process.exit(0);
+    }
 }
 
 /**
@@ -109,9 +130,9 @@ function deserializeContract(chain, wallet) {
  * @param {*} startBlockNumber - The block number to start listening for events.
  */
 function listenForGMPEvent(env, source, startBlockNumber) {
-    const gateway = source.gateway;
-    if (!source.contract) return;
+    if (process.env.TEST || !source.contract) return;
 
+    const gateway = source.gateway;
     const callContractFilter = gateway.filters.ContractCall(source.contract.address);
     const callContractWithTokenFilter = gateway.filters.ContractCallWithToken(source.contract.address);
 
@@ -129,5 +150,6 @@ function listenForGMPEvent(env, source, startBlockNumber) {
 }
 
 module.exports = {
-    execute,
+    executeAptosExample,
+    executeEVMExample,
 };

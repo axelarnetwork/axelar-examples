@@ -40,8 +40,8 @@ contract HelloWorld is AxelarExecutable {
 
     // Handles calls created by setAndSend. Updates this contract's value
     function _execute(
-        string memory sourceChain_,
-        string memory sourceAddress_,
+        string calldata sourceChain_,
+        string calldata sourceAddress_,
         bytes calldata payload_
     ) internal override {
         (value) = abi.decode(payload_, (string));
