@@ -23,7 +23,6 @@
         "@axelar-network/axelar-gmp-sdk-solidity": "^3.2.0",
         "@axelar-network/axelar-local-dev": "^1.4.4",
         "@axelar-network/axelarjs-sdk": "^0.12.5-alph.3",
-        "@axelar-network/axelar-local-dev-with-near": "axelarnetwork/axelar-local-dev#pull/58/head",
         "@openzeppelin/contracts": "^4.5.0",
         "axios": "^0.27.2",
         "bip39": "^3.0.4",
