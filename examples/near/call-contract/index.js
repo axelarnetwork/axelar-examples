@@ -32,10 +32,8 @@ async function deployNearContract(nearClient) {
     return nearContract;
 }
 
-async function execute(chains, wallet, options) {
+async function execute(chain, wallet, options) {
     const args = options.args || [];
-
-    const chain = chains.find((chain) => chain.name === (args[0] || 'Avalanche'));
 
     // Start NEAR network
     const nearClient = await createNearNetwork();
@@ -73,7 +71,6 @@ async function execute(chains, wallet, options) {
     // Currently, we do not calculate fee for NEAR, so we just use a fixed value.
     const gasLimit = 3e5;
     const gasPrice = 1;
-
 
     // Call set method on EVM contract
     await (await evmContract.connect(evmUser).setRemoteValue('near', nearContract.accountId, messageEvmToNear, {

@@ -10,6 +10,26 @@ const AxelarGasServiceContract = rootRequire(
 );
 const IERC20 = rootRequire('artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
+async function executeNearExample(chains, args, wallet, example) {
+    const evmChain = getSourceChain(chains, args, example.sourceChain);
+
+    evmChain.provider = getDefaultProvider(evmChain.rpc);
+    const connectedWallet = wallet.connect(evmChain.provider);
+
+    // Initialize contracts to chain object.
+    deserializeContract(evmChain, connectedWallet);
+
+    // Recover axelar contracts to chain object.
+    evmChain.gateway = new Contract(evmChain.gateway, AxelarGatewayContract.abi, connectedWallet);
+    evmChain.gasService = new Contract(evmChain.gasService, AxelarGasServiceContract.abi, connectedWallet);
+    const tokenAddress = await evmChain.gateway.tokenAddresses('aUSDC');
+    evmChain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);
+
+    await example.execute(evmChain, wallet, {
+        args,
+    });
+}
+
 async function executeAptosExample(chains, args, wallet, example) {
     const evmChain = getSourceChain(chains, args, example.sourceChain);
 
@@ -150,6 +170,7 @@ function listenForGMPEvent(env, source, startBlockNumber) {
 }
 
 module.exports = {
+    executeNearExample,
     executeAptosExample,
     executeEVMExample,
 };
