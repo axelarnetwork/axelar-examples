@@ -38,6 +38,10 @@ jobs:
               run: |
                   npm run build-aptos
 
+            - name: Compile NEAR Modules
+              run: |
+                  npm run build-near
+
             - name: Test
               run: |
                   nohup sh -c "aptos node run-local-testnet --with-faucet" > nohup.out 2> nohup.err < /dev/null &
