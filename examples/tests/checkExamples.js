@@ -24,6 +24,7 @@ const examples = [
     'call-contract-with-token-express',
     'cross-chain-token',
     'deposit-address',
+    'nonced-execution',
     'send-ack',
     'send-token',
     // 'nft-linker',
