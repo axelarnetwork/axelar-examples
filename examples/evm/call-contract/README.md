@@ -2,6 +2,13 @@
 
 This example demonstrates how to relay a message from a source-chain to a destination-chain.
 
+### Prerequisite
+
+Make sure you've already followed the following steps:
+
+-   [Setup environment variables](/README.md#set-environment-variables)
+-   [Run the local chains](/README.md#running-the-local-chains)
+
 ### Deployment
 
 To deploy the contract, use the following command:
@@ -30,7 +37,7 @@ This example deploys the contract on a local network and relays a message "Hello
 
 ```bash
 npm run deploy evm/call-contract local
-npm run execute evm/call-contract local "Moonbeam" "Avalanche" "Hello World"
+npm run execute evm/call-contract local "Fantom" "Avalanche" "Hello World"
 ```
 
 The output will be:

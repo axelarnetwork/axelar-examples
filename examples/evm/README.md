@@ -18,12 +18,8 @@ npm run build
 
 ## Advanced
 
--   [forecall](forecall)
--   [headers](headers)
--   [deposit-address](deposit-address)
+-   [call-contract-with-token-express](call-contract-with-token-express)
 -   [nft-linker](nft-linker)
 -   [nft-auctionhouse](nft-auctionhouse)
--   [nonced-execution](nonced-execution)
 -   [send-ack](send-ack)
 -   [cross-chain-token](cross-chain-token)
--   [cross-chain-lending](cross-chain-lending)

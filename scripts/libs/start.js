@@ -1,4 +1,3 @@
-require('dotenv').config();
 const { ethers } = require('ethers');
 const { createAndExport, createAptosNetwork } = require('@axelar-network/axelar-local-dev');
 const path = require('path');
@@ -9,7 +8,7 @@ const path = require('path');
  * @param {*} fundAddresses - addresses to fund with aUSDC
  * @param {*} chains - chains to start. All chains are started if not specified (Avalanche, Moonbeam, Polygon, Fantom, Ethereum).
  */
-async function start(fundAddresses = [], chains = []) {
+async function start(fundAddresses = [], chains = [], options = {}) {
     await initAptos();
 
     const pathname = path.resolve(__dirname, '../..', 'chain-config', 'local.json');
@@ -19,6 +18,7 @@ async function start(fundAddresses = [], chains = []) {
         accountsToFund: fundAddresses,
         callback: (chain, _info) => deployAndFundUsdc(chain, fundAddresses),
         chains: chains.length !== 0 ? chains : null,
+        relayInterval: options.relayInterval,
     });
 }
 
@@ -41,9 +41,12 @@ async function deployAndFundUsdc(chain, toFund) {
  */
 async function initAptos() {
     try {
-        await createAptosNetwork();
-        console.log('Initialized Aptos.');
+        await createAptosNetwork({
+            nodeUrl: 'http://0.0.0.0:8080',
+            faucetUrl: 'http://0.0.0.0:8081',
+        });
     } catch (e) {
+        console.log(e);
         console.log('Skip Aptos initlization, rerun this after starting an aptos node for proper support.');
     }
 }

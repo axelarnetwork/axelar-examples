@@ -1,13 +1,8 @@
-require('./rootRequire');
-const {
-    constants: { AddressZero },
-    Wallet,
-    ethers,
-} = require('ethers');
-const axios = require('axios');
+const { Wallet, ethers } = require('ethers');
 const path = require('path');
+const fs = require('fs-extra');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
-const { AxelarAssetTransfer } = require('@axelar-network/axelarjs-sdk');
+const { AxelarAssetTransfer, AxelarQueryAPI, CHAINS, Environment } = require('@axelar-network/axelarjs-sdk');
 
 /**
  * Get the wallet from the environment variables. If the EVM_PRIVATE_KEY environment variable is set, use that. Otherwise, use the EVM_MNEMONIC environment variable.
@@ -22,16 +17,53 @@ function getWallet() {
 /**
  * Get the chain objects from the chain-config file.
  * @param {*} env - The environment to get the chain objects for. Available options are 'local' and 'testnet'.
+ * @param {*} chains - The list of chains to get the chain objects for. If this is empty, the default chains will be used.
  * @returns {Chain[]} - The chain objects.
  */
-function getChains(env) {
+function getEVMChains(env, chains = []) {
     checkEnv(env);
 
+    const selectedChains = chains.length > 0 ? chains : getDefaultChains(env);
+
     if (env === 'local') {
-        return rootRequire('chain-config/local.json');
+        return fs
+            .readJsonSync(path.join(__dirname, '../../chain-config/local.json'))
+            .filter((chain) => selectedChains.includes(chain.name));
     }
 
-    return require("@axelar-network/axelar-cgp-solidity/info/testnet.json");
+    const testnet = getTestnetChains(selectedChains);
+
+    return testnet.map((chain) => ({
+        ...chain,
+        gasService: chain.AxelarGasService.address,
+    }));
+}
+
+/**
+ * Get chains config for testnet.
+ * @param {*} chains - The list of chains to get the chain objects for. If this is empty, the default chains will be used.
+ * @returns {Chain[]} - The chain objects.
+ */
+function getTestnetChains(chains = []) {
+    const _path = path.join(__dirname, '../../chain-config/testnet.json');
+    let testnet = [];
+    if (fs.existsSync(_path)) {
+        testnet = fs.readJsonSync(path.join(__dirname, '../../chain-config/testnet.json')).filter((chain) => chains.includes(chain.name));
+    }
+
+    // If the chains are specified, but the testnet config file does not have the specified chains, use testnet.json from axelar-cgp-solidity.
+    if (testnet.length < chains.length) {
+        testnet = require('@axelar-network/axelar-cgp-solidity/info/testnet.json').filter((chain) => chains.includes(chain.name));
+    }
+
+    // temporary fix for gas service contract address
+
+    return testnet.map((chain) => ({
+        ...chain,
+        AxelarGasService: {
+            address: '0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6',
+        },
+    }));
 }
 
 /**
@@ -66,7 +98,7 @@ async function getBalances(chains, address) {
 function getDepositAddress(env, source, destination, destinationAddress, symbol) {
     if (env === 'testnet') {
         const listing = {
-            aUSDC: 'uusdc',
+            aUSDC: env === 'local' ? 'uusdc' : 'uausdc',
         };
         const sdk = new AxelarAssetTransfer({
             environment: 'testnet',
@@ -78,59 +110,86 @@ function getDepositAddress(env, source, destination, destinationAddress, symbol)
     return axelarLocal.getDepositAddress(source, destination, destinationAddress, symbol, 8500);
 }
 
-async function getGasPrice(env, source, destination, tokenAddress) {
-    if (env === 'local') return 1;
-    if (env !== 'testnet') throw Error('env needs to be "local" or "testnet".');
-    const apiUrl = 'https://devnet.api.gmp.axelarscan.io';
+/**
+ * Calculate the gas amount for a transaction using axelarjs-sdk.
+ * @param {*} source - The source chain object.
+ * @param {*} destination - The destination chain object.
+ * @param {*} options - The options to pass to the estimateGasFee function. Available options are gasLimit and gasMultiplier.
+ * @returns {number} - The gas amount.
+ */
+function calculateBridgeFee(source, destination, options = {}) {
+    const api = new AxelarQueryAPI({ environment: Environment.TESTNET });
+    const { gasLimit, gasMultiplier, symbol } = options;
 
-    const requester = axios.create({ baseURL: apiUrl });
-    const params = {
-        method: 'getGasPrice',
-        destinationChain: destination.name,
-        sourceChain: source.name,
-    };
-
-    // set gas token address to params
-    if (tokenAddress !== AddressZero) {
-        params.sourceTokenAddress = tokenAddress;
-    } else {
-        params.sourceTokenSymbol = source.tokenSymbol;
-    }
-
-    // send request
-    const response = await requester.get('/', { params }).catch((error) => {
-        return { data: { error } };
-    });
-    const result = response.data.result;
-    const dest = result.destination_native_token;
-    const destPrice = 1e18 * dest.gas_price * dest.token_price.usd;
-    return destPrice / result.source_token.token_price.usd;
+    return api.estimateGasFee(
+        CHAINS.TESTNET[source.name.toUpperCase()],
+        CHAINS.TESTNET[destination.name.toUpperCase()],
+        symbol || source.tokenSymbol,
+        gasLimit,
+        gasMultiplier,
+    );
 }
 
-// Check if the wallet is set. If not, throw an error.
+/**
+ * Check if the wallet is set. If not, throw an error.
+ */
 function checkWallet() {
     if (process.env.EVM_PRIVATE_KEY == null && process.env.EVM_MNEMONIC == null) {
         throw new Error('Need to set EVM_PRIVATE_KEY or EVM_MNEMONIC environment variable.');
     }
 }
 
+/**
+ * Check if the environment is set. If not, throw an error.
+ * @param {*} env - The environment to check. Available options are 'local' and 'testnet'.
+ */
 function checkEnv(env) {
     if (env == null || (env !== 'testnet' && env !== 'local')) {
         throw new Error('Need to specify testnet or local as an argument to this script.');
     }
 }
 
+function getDefaultChains(env) {
+    if (env === 'local') {
+        return ['Avalanche', 'Fantom', 'Moonbeam', 'Polygon', 'Ethereum'];
+    }
+
+    return ['Avalanche', 'Fantom', 'Polygon'];
+}
+
+/**
+ * Get the path to an example.
+ * @param {*} exampleName - The name of the example to get the path for.
+ * @returns {string} - The path to the example.
+ */
 function getExamplePath(exampleName) {
     const destDir = path.resolve(__dirname, '..', `examples/${exampleName}/index.js`);
     return path.relative(__dirname, destDir);
 }
 
+/**
+ * Sanitize the event arguments.
+ * This is needed because ethers.js returns the event arguments as an object with the keys being the argument names and the values being the argument values.
+ * @param {*} event - The event to sanitize.
+ * @returns {Object} - The sanitized event arguments.
+ */
+function sanitizeEventArgs(event) {
+    return Object.keys(event.args).reduce((acc, key) => {
+        if (isNaN(parseInt(key))) {
+            acc[key] = event.args[key];
+        }
+
+        return acc;
+    }, {});
+}
+
 module.exports = {
     getWallet,
-    getGasPrice,
     getDepositAddress,
     getBalances,
-    getChains,
+    getEVMChains,
     checkEnv,
+    calculateBridgeFee,
     getExamplePath,
+    sanitizeEventArgs,
 };

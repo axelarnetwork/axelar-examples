@@ -2,6 +2,13 @@
 
 This example allows you to send aUSDC from a source chain to a destination chain and distribute it equally among specified accounts.
 
+### Prerequisite
+
+Make sure you've already followed the following steps:
+
+-   [Setup environment variables](/README.md#set-environment-variables)
+-   [Run the local chains](/README.md#running-the-local-chains)
+
 ### Deployment
 
 To deploy the contract, run the following command:
@@ -30,7 +37,7 @@ npm run execute evm/call-contract-with-token [local|testnet] ${srcChain} ${destC
 
 ```bash
 npm run deploy evm/call-contract-with-token local
-npm run execute evm/call-contract-with-token local "Moonbeam" "Ethereum" 100 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
+npm run execute evm/call-contract-with-token local "Avalanche" "Fantom" 100 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
 ```
 
 ### Output:

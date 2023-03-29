@@ -2,6 +2,13 @@
 
 This example sends the NFT that was originally minted at source-chain to destination-chain.
 
+### Prerequisite
+
+Make sure you've already followed the following steps:
+
+-   [Setup environment variables](/README.md#set-environment-variables)
+-   [Run the local chains](/README.md#running-the-local-chains)
+
 ### Deployment
 
 To deploy the NFT Linker, run the following command:
@@ -36,7 +43,7 @@ To deploy the NFT Linker locally and send the NFT originally minted on Avalanche
 
 ```bash
 npm run deploy evm/nft-linker local
-npm run execute evm/nft-linker local "Avalanche" "Polygon"
+npm run execute evm/nft-linker local "Avalanche" "Fantom"
 ```
 
 Output:

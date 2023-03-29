@@ -4,8 +4,9 @@ Discover a comprehensive collection of end-to-end examples in the `examples-web`
 
 ## Prerequisite
 
-1. Make sure you've already setup `.env` file in root directory. (See [here](../README.md#set-up-deployer-key))
+1. Make sure you've already setup `.env` file in root directory. (See [here](../README.md#set-environment-variables))
 2. Run `npm run setup`
+3. Run `npm run start` at root directory.
 
 ## Run Web Examples in Local
 
