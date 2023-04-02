@@ -8,7 +8,6 @@ function getEnvValue(rootEnv: string, key: string) {
 }
 
 async function main() {
-  if (!fs.existsSync('.env')) {
   const rootEnvPath= path.resolve(__dirname, '../../.env')
   const rootEnv = fs.readFileSync(rootEnvPath).toString();
   const evmPrivateKey = getEnvValue(rootEnv, "EVM_PRIVATE_KEY") || ""
@@ -20,9 +19,6 @@ async function main() {
   const examplesWebEnv = `NEXT_PUBLIC_EVM_PRIVATE_KEY=${evmPrivateKey}\nNEXT_PUBLIC_EVM_MNEMONIC=${evmMnemonic}`;
   await fs.writeFileSync(examplesWebEnvPath, examplesWebEnv);
   console.log(`The setup is done! The environment variables have been written to the examples-web/.env file. You're now ready to deploy and start the application.`);
-  } else {
-    console.log(`A .env file already exist in ${path.dirname(__dirname)}, not modifying it.`);
-  }
 }
 
 main();
