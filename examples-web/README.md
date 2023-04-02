@@ -4,15 +4,17 @@ Discover a comprehensive collection of end-to-end examples in the `examples-web`
 
 ## Prerequisite
 
-1. Make sure you've already setup `.env` file in root directory. (See [here](../README.md#set-environment-variables))
-2. Run `npm run setup`
-3. Run `npm run start` at root directory.
+Before you begin, make sure you've set up your environment variables at the root directory. See [here](../README.md#set-environment-variables) for instructions.
 
-## Run Web Examples in Local
+## Run Web Examples Locally
 
-1. Run `npm run deploy` to compile all smart contracts, generate types for smart contract functions, and deploy to the local network.
-2. Run `npm run dev` to start web application server.
-3. Visit http://localhost:3000 in your web browser to play with examples demo.
+1. Navigate to the root directory.
+2. Run `npm run start` to start the local chains.
+3. Navigate to the `examples-web` directory.
+4. Run `npm run setup` to copies the private key and mnemonic from the `.env` file at the root directory to the `.env` file in the `examples-web` directory.
+5. Run `npm run deploy` to compile all smart contracts, generate types for smart contract functions, and deploy to the local network.
+6. Run `npm run dev` to start the web application server.
+7. Open http://localhost:3000 in your web browser to view the examples demo.
 
 You should see the website looks like image below.
 
