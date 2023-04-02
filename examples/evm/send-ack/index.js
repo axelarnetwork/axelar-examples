@@ -47,12 +47,13 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await print();
 
-    const feeRemote = await calculateBridgeFee(source, destination);
-    const feeSource = await calculateBridgeFee(source, source);
+    const feeSource = await calculateBridgeFee(source, destination);
+    const feeRemote = await calculateBridgeFee(destination, source);
+    const totalFee = BigNumber.from(feeSource).add(feeRemote);
 
     const tx = await source.contract
-        .sendContractCall(destination.name, destination.receiver.address, payload, feeRemote, {
-            value: BigNumber.from(feeRemote).add(feeSource),
+        .sendContractCall(destination.name, destination.receiver.address, payload, {
+            value: totalFee,
         })
         .then((tx) => tx.wait());
     const event = tx.events.find((event) => event.event === 'ContractCallSent');

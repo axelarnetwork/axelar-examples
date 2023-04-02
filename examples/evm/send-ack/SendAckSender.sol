@@ -38,31 +38,21 @@ contract SendAckSender is AxelarExecutable {
     function sendContractCall(
         string calldata destinationChain,
         string calldata contractAddress,
-        bytes calldata payload,
-        uint256 gasForRemote
+        bytes calldata payload
     ) external payable {
         uint256 nonce_ = nonce;
         bytes memory modifiedPayload = abi.encode(nonce_, payload);
 
-        if (gasForRemote > 0) {
-            if (gasForRemote > msg.value) revert NotEnoughValueForGas();
-            gasService.payNativeGasForContractCall{ value: gasForRemote }(
-                address(this),
-                destinationChain,
-                contractAddress,
-                modifiedPayload,
-                msg.sender
-            );
-            if (msg.value > gasForRemote) {
-                gasService.payNativeGasForContractCall{ value: msg.value - gasForRemote }(
-                    contractAddress.toAddress(),
-                    thisChain,
-                    address(this).toString(),
-                    abi.encode(nonce_),
-                    msg.sender
-                );
-            }
-        }
+        if (msg.value == 0)  revert NotEnoughValueForGas();
+        
+        gasService.payNativeGasForContractCall{ value: msg.value }(
+            address(this),
+            destinationChain,
+            contractAddress,
+            modifiedPayload,
+            msg.sender
+        );
+
 
         gateway.callContract(destinationChain, contractAddress, modifiedPayload);
         emit ContractCallSent(destinationChain, contractAddress, payload, nonce_);
