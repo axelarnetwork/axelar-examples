@@ -2,7 +2,7 @@ import "dotenv/config";
 import fs from "fs";
 import path from 'path'
 
-function getEnvValue(rootEnv: any, key: string) {
+function getEnvValue(rootEnv: string, key: string) {
   const rootEnvLines = rootEnv.split('\n');
   return rootEnvLines.find((line: any) => line.startsWith(key))?.split('=')[1];
 }
@@ -10,7 +10,7 @@ function getEnvValue(rootEnv: any, key: string) {
 async function main() {
   if (!fs.existsSync('.env')) {
   const rootEnvPath= path.resolve(__dirname, '../../.env')
-  const rootEnv = fs.readFileSync(rootEnvPath);
+  const rootEnv = fs.readFileSync(rootEnvPath).toString();
   const evmPrivateKey = getEnvValue(rootEnv, "EVM_PRIVATE_KEY") || ""
   const evmMnemonic = getEnvValue(rootEnv, 'EVM_MNEMONIC') || ""
 
