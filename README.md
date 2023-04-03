@@ -54,7 +54,7 @@ This script will print your wallet balances for each chain.
 npm run check-balance [local|testnet]
 ```
 
-If not specify, this will print balances of the wallet for testnet.
+If not specified, this will print balances of the wallet for testnet.
 
 ## Running the local chains
 
