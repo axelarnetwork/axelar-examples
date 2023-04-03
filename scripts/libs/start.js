@@ -46,8 +46,7 @@ async function initAptos() {
             faucetUrl: 'http://0.0.0.0:8081',
         });
     } catch (e) {
-        console.log(e);
-        console.log('Skip Aptos initlization, rerun this after starting an aptos node for proper support.');
+        console.log('Skip Aptos initialization, rerun this after starting an aptos node for proper support.');
     }
 }
 

@@ -36,7 +36,6 @@ export async function deploy(wallet: Wallet, chainA: any, chainB: any) {
       [chainA.gateway, chainA.gasService],
       [],
       utils.defaultAbiCoder.encode(['string'], [chainA.name]),
-      'nftLinker',
   );
   chainA.nftLinker = nftLinkerA.address;
 
@@ -48,7 +47,6 @@ export async function deploy(wallet: Wallet, chainA: any, chainB: any) {
     [chainB.gateway, chainB.gasService],
     [],
     utils.defaultAbiCoder.encode(['string'], [chainB.name]),
-    'nftLinker',
   );
   chainB.nftLinker = nftLinkerB.address;
 
