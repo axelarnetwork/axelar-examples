@@ -101,8 +101,6 @@ export async function sendNftBack(
 
     await sleep(2000);
   }
-
-  await print();
 }
 
 export const ownerOf = async (chain = srcChain) => {
