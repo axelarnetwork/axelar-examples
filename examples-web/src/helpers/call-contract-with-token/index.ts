@@ -6,8 +6,8 @@ import {
   GasToken,
 } from "@axelar-network/axelarjs-sdk";
 
-import {MessageReceiver__factory as MessageReceiverFactory, MessageSender__factory as MessageSenderFactory} from 'types/contracts/factories/contracts/call-contract-with-token/contracts'
-import {IAxelarGateway__factory as AxelarGatewayFactory, IERC20__factory as IERC20Factory } from 'types/contracts/factories/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces'
+import {MessageReceiver__factory as MessageReceiverFactory, MessageSender__factory as MessageSenderFactory} from 'types/factories/contracts/call-contract-with-token/contracts'
+import {IAxelarGateway__factory as AxelarGatewayFactory, IERC20__factory as IERC20Factory } from 'types/factories/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces'
 import { isTestnet, srcChain, srcConnectedWallet, destChain, destConnectedWallet } from "config/constants";
 
 const srcGatewayContract = AxelarGatewayFactory.connect(srcChain.gateway, srcConnectedWallet)

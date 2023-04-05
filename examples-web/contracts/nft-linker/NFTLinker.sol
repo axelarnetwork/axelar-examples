@@ -12,38 +12,32 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 
-contract NftLinker is
-    ERC721URIStorage,
-    AxelarExecutable,
-    Upgradable
-{
+contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
     using StringToAddress for string;
     using AddressToString for address;
 
     error AlreadyInitialized();
 
+    bytes32 internal constant CONTRACT_ID = keccak256("token-linker");
     mapping(uint256 => bytes) public original; //abi.encode(originaChain, operator, tokenId);
     string public chainName; //To check if we are the source chain.
     IAxelarGasService public immutable gasService;
 
-    constructor(address gateway_, address gasReceiver_)
-        ERC721("Axelar NFT Linker", "ANL")
-        AxelarExecutable(gateway_)
-    {
+    constructor(
+        address gateway_,
+        address gasReceiver_
+    ) ERC721("Axelar NFT Linker", "ANL") AxelarExecutable(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
     }
 
-    function _setup(bytes calldata params)
-        internal
-        override
-    {
-        string memory chainName_ = abi.decode(
-            params,
-            (string)
-        );
-        if (bytes(chainName).length != 0)
-            revert AlreadyInitialized();
+    function _setup(bytes calldata params) internal override {
+        string memory chainName_ = abi.decode(params, (string));
+        if (bytes(chainName).length != 0) revert AlreadyInitialized();
         chainName = chainName_;
+    }
+
+    function contractId() external pure override returns (bytes32) {
+        return CONTRACT_ID;
     }
 
     //The main function users will interact with.
@@ -55,15 +49,8 @@ contract NftLinker is
     ) external payable {
         //If we are the operator then this is a minted token that lives remotely.
         if (operator == address(this)) {
-            require(
-                ownerOf(tokenId) == _msgSender(),
-                "NOT_YOUR_TOKEN"
-            );
-            _sendMintedToken(
-                tokenId,
-                destinationChain,
-                destinationAddress
-            );
+            require(ownerOf(tokenId) == _msgSender(), "NOT_YOUR_TOKEN");
+            _sendMintedToken(tokenId, destinationChain, destinationAddress);
         } else {
             IERC721(operator).transferFrom(
                 _msgSender(),
@@ -92,10 +79,7 @@ contract NftLinker is
             address operator,
             uint256 originalTokenId,
             string memory tokenURI
-        ) = abi.decode(
-                original[tokenId],
-                (string, address, uint256, string)
-            );
+        ) = abi.decode(original[tokenId], (string, address, uint256, string));
         //Create the payload.
         bytes memory payload = abi.encode(
             originalChain,
@@ -104,12 +88,9 @@ contract NftLinker is
             destinationAddress,
             tokenURI
         );
-        string memory stringAddress = address(this)
-            .toString();
+        string memory stringAddress = address(this).toString();
         //Pay for gas. We could also send the contract call here but then the sourceAddress will be that of the gas receiver which is a problem later.
-        gasService.payNativeGasForContractCall{
-            value: msg.value
-        }(
+        gasService.payNativeGasForContractCall{value: msg.value}(
             address(this),
             destinationChain,
             stringAddress,
@@ -117,11 +98,7 @@ contract NftLinker is
             msg.sender
         );
         //Call the remote contract.
-        gateway.callContract(
-            destinationChain,
-            stringAddress,
-            payload
-        );
+        gateway.callContract(destinationChain, stringAddress, payload);
     }
 
     //Locks and sends a token.
@@ -131,8 +108,7 @@ contract NftLinker is
         string memory destinationChain,
         address destinationAddress
     ) internal {
-        string memory tokenURI = IERC721Metadata(operator)
-            .tokenURI(tokenId);
+        string memory tokenURI = IERC721Metadata(operator).tokenURI(tokenId);
         //Create the payload.
         bytes memory payload = abi.encode(
             chainName,
@@ -141,12 +117,9 @@ contract NftLinker is
             destinationAddress,
             tokenURI
         );
-        string memory stringAddress = address(this)
-            .toString();
+        string memory stringAddress = address(this).toString();
         //Pay for gas. We could also send the contract call here but then the sourceAddress will be that of the gas receiver which is a problem later.
-        gasService.payNativeGasForContractCall{
-            value: msg.value
-        }(
+        gasService.payNativeGasForContractCall{value: msg.value}(
             address(this),
             destinationChain,
             stringAddress,
@@ -154,40 +127,27 @@ contract NftLinker is
             msg.sender
         );
         //Call remote contract.
-        gateway.callContract(
-            destinationChain,
-            stringAddress,
-            payload
-        );
+        gateway.callContract(destinationChain, stringAddress, payload);
     }
 
     //This is automatically executed by Axelar Microservices since gas was payed for.
     function _execute(
-        string calldata, /*sourceChain*/
+        string calldata /*sourceChain*/,
         string calldata sourceAddress,
         bytes calldata payload
     ) internal override {
-        //Check that the sender is another token linker.
-        require(
-            sourceAddress.toAddress() == address(this),
-            "NOT_A_LINKER"
-        );
-        //Decode the payload.
+        // Check that the sender is another token linker.
+        require(sourceAddress.toAddress() == address(this), "NOT_A_LINKER");
+        // Decode the payload
         (
             string memory originalChain,
             address operator,
             uint256 tokenId,
             address destinationAddress,
             string memory tokenURI
-        ) = abi.decode(
-                payload,
-                (string, address, uint256, address, string)
-            );
+        ) = abi.decode(payload, (string, address, uint256, address, string));
         //If this is the original chain then we give the NFT locally.
-        if (
-            keccak256(bytes(originalChain)) ==
-            keccak256(bytes(chainName))
-        ) {
+        if (keccak256(bytes(originalChain)) == keccak256(bytes(chainName))) {
             IERC721(operator).transferFrom(
                 address(this),
                 destinationAddress,
@@ -203,16 +163,10 @@ contract NftLinker is
                 tokenURI
             );
             //Avoids tokenId collisions.
-            uint256 newTokenId = uint256(
-                keccak256(originalData)
-            );
+            uint256 newTokenId = uint256(keccak256(originalData));
             original[newTokenId] = originalData;
             _safeMint(destinationAddress, newTokenId);
             _setTokenURI(newTokenId, tokenURI);
         }
-    }
-
-    function contractId() external pure returns (bytes32) {
-        return keccak256("example");
     }
 }

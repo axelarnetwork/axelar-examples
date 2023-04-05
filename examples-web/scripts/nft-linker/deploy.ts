@@ -1,8 +1,8 @@
 import { getDefaultProvider, utils, Wallet } from 'ethers';
-import { ExampleProxy__factory as ExampleProxy } from '../../src/types/contracts/factories/contracts/nft-linker/Proxy.sol'
-import { ERC721Demo__factory as ERC721Demo } from '../../src/types/contracts/factories/contracts/nft-linker/ERC721demo.sol'
-import { NftLinker__factory as NFTLinker} from '../../src/types/contracts/factories/contracts/nft-linker/NFTLinker.sol/'
-const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
+import { ExampleProxy__factory as ExampleProxy } from '../../src/types/factories/contracts/nft-linker/Proxy.sol'
+import { ERC721Demo__factory as ERC721Demo } from '../../src/types/factories/contracts/nft-linker/ERC721demo.sol'
+import { NftLinker__factory as NFTLinker} from '../../src/types/factories/contracts/nft-linker/NFTLinker.sol/'
+const { deployUpgradable, deployCreate3Upgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
 const nftTokenId = 0;
 
@@ -28,8 +28,8 @@ export async function deploy(wallet: Wallet, chainA: any, chainB: any) {
   await erc721B.mint(nftTokenId)
     .then((tx: any) => tx.wait(1));
 
-  const nftLinkerA = await deployUpgradable(
-      chainA.constAddressDeployer,
+  const nftLinkerA = await deployCreate3Upgradable(
+      chainA.create3Deployer,
       walletA,
       NFTLinker,
       ExampleProxy,
@@ -39,8 +39,8 @@ export async function deploy(wallet: Wallet, chainA: any, chainB: any) {
   );
   chainA.nftLinker = nftLinkerA.address;
 
-  const nftLinkerB = await deployUpgradable(
-    chainB.constAddressDeployer,
+  const nftLinkerB = await deployCreate3Upgradable(
+    chainB.create3Deployer,
     walletB,
     NFTLinker,
     ExampleProxy,

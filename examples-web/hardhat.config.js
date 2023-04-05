@@ -1,5 +1,8 @@
 require("hardhat-gas-reporter");
 require("solidity-coverage");
+require('@typechain/hardhat')
+// require('@nomiclabs/hardhat-ethers')
+// require('@nomiclabs/hardhat-waffle')
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -30,5 +33,9 @@ module.exports = {
   },
   paths: {
     sources: "./contracts",
+  },
+  typechain: {
+    outDir: 'src/types',
+    target: 'ethers-v5',
   },
 };
