@@ -28,6 +28,7 @@ export async function deploy(wallet: Wallet, chainA: any, chainB: any) {
   await erc721B.mint(nftTokenId)
     .then((tx: any) => tx.wait(1));
 
+  const salt = new Date().getTime().toString();
   const nftLinkerA = await deployCreate3Upgradable(
       chainA.create3Deployer,
       walletA,
@@ -36,6 +37,7 @@ export async function deploy(wallet: Wallet, chainA: any, chainB: any) {
       [chainA.gateway, chainA.gasService],
       [],
       utils.defaultAbiCoder.encode(['string'], [chainA.name]),
+      salt
   );
   chainA.nftLinker = nftLinkerA.address;
 
@@ -47,6 +49,7 @@ export async function deploy(wallet: Wallet, chainA: any, chainB: any) {
     [chainB.gateway, chainB.gasService],
     [],
     utils.defaultAbiCoder.encode(['string'], [chainB.name]),
+    salt
   );
   chainB.nftLinker = nftLinkerB.address;
 
