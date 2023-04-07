@@ -6,11 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "run-s contracts:build contracts:deploy",
+    "deploy": "run-s contracts:clean contracts:build contracts:deploy",
     "lint": "next lint",
     "setup": "ts-node scripts/setup.ts",
-    "contracts:build": "hardhat compile",
-    "contracts:deploy": "ts-node scripts/deploy-contracts.ts"
+    "contracts:build": "hardhat clean && hardhat compile",
+    "contracts:deploy": "ts-node scripts/deploy-contracts.ts",
+    "contracts:clean": "rm -rf artifacts src/types"
   },
   "dependencies": {
     "@axelar-network/axelar-gmp-sdk-solidity": "^3.2.1",
