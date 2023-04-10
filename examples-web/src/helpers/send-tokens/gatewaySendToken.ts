@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import {
   IERC20__factory as IERC20,
   IAxelarGateway__factory as IAxelarGateway,
-} from "types/contracts/factories/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces";
+} from "types/factories/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces";
 import {
   srcChain,
   srcConnectedWallet,

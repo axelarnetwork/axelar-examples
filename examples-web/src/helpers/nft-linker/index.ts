@@ -4,8 +4,8 @@ import {
   EvmChain,
   GasToken,
 } from "@axelar-network/axelarjs-sdk";
-import { ERC721Demo__factory as ERC721 } from "types/contracts/factories/contracts/nft-linker/ERC721demo.sol";
-import { NftLinker__factory as NftLinker } from "types/contracts/factories/contracts/nft-linker/NFTLinker.sol";
+import { ERC721Demo__factory as ERC721 } from "types/factories/contracts/nft-linker/ERC721demo.sol";
+import { NftLinker__factory as NftLinker } from "types/factories/contracts/nft-linker/NFTLinker.sol";
 import {
   isTestnet,
   wallet,
@@ -15,6 +15,7 @@ import {
   destConnectedWallet,
 } from "config/constants";
 import { defaultAbiCoder, keccak256 } from "ethers/lib/utils";
+import { nftLinker } from "types/contracts/contracts";
 
 const tokenId = 0;
 
@@ -36,6 +37,7 @@ export async function sendNftToDest(
   await srcErc721
     .approve(srcNftLinker.address, owner.tokenId || tokenId)
     .then((tx: any) => tx.wait());
+
   const tx = await (
     await srcNftLinker.sendNFT(
       srcErc721.address,
@@ -89,6 +91,7 @@ export async function sendNftBack(
   onSrcConfirmed(tx.transactionHash);
 
   while (true) {
+    // console.log(await srcNftLinker.hello());
     const owner = await ownerOf();
 
     if (owner.chain === srcChain.name) {
@@ -98,8 +101,6 @@ export async function sendNftBack(
 
     await sleep(2000);
   }
-
-  await print();
 }
 
 export const ownerOf = async (chain = srcChain) => {
@@ -132,14 +133,16 @@ export const ownerOf = async (chain = srcChain) => {
     const nftLinker = checkingChain.name === srcChain.name ? srcNftLinker : destNftLinker;
 
     try {
-      const address = await nftLinker.ownerOf(newTokenId);
+      const address = await nftLinker.ownerOf(newTokenId.toString());
       return {
         chain: checkingChain.name,
         address,
-        tokenId: newTokenId,
+        tokenId: newTokenId.toString(),
         tokenURI: metadata,
       };
-    } catch (e) {}
+    } catch (e) {
+
+    }
   }
 
   return { chain: "" };
