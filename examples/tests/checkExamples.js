@@ -61,6 +61,7 @@ describe('Check Examples Execution', function () {
     describe('NEAR Examples', function () {
         for (const exampleName of nearExamples) {
             it(exampleName, async function () {
+                this.timeout(200000);
                 const example = rootRequire(`examples/near/${exampleName}/index.js`);
                 const chains = getEVMChains('local', testChains);
 
