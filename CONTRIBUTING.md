@@ -38,7 +38,7 @@ Note: the optional commit `-a' command line option will automatically "add" and 
 
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-1. Search [GitHub project](https://github.com/axelarnetwork/axelar-example/issues) for an open or closed PR related to your submission. You don't want to duplicate effort.
+1. Search the [project](https://github.com/axelarnetwork/axelar-examples/pulls) for an open or closed PR related to your submission. You don't want to duplicate effort.
 2. Push your branch to GitHub with the following command: 
    ```shell
    git push origin my-fix-branch
