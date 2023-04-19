@@ -17,13 +17,12 @@ Welcome to `axelar-examples` project. This repository provides the code for seve
   - [Evm Examples](#evm-examples)
     - [Basic](#basic)
     - [Advanced](#advanced)
-  - [Aptos Examples](#aptos-examples)
   - [Web Examples](#web-examples)
 
 
 ## Introduction
 
-[Axelar Network](https://axelar.network/) is the universal interoperability network that securely connects all blockchain ecosystems, applications, assets, and users. Axelar cross-chain dApp examples demonstrate how to build cross-chain applications using Axelar SDK. In this repository, we provide several examples of dApps that demonstrate how to use Axelar to build cross-chain dApps.
+[Axelar Network](https://axelar.network/) is the universal interoperability network that securely connects all blockchain ecosystems, applications, assets, and users. In this repository, we provide several examples of dApps that demonstrate how to use Axelar to build cross-chain dApps.
 
 ## Getting Started
 
@@ -121,7 +120,7 @@ The advanced EVM examples demonstrate more complex smart contracts and their int
 
 The web examples demonstrate how to build web-based dApps that utilize cross-chain functionality. Conveniently, all of the examples have been packaged together, making it simple to set up and run them all in one place.
 
-Check the [web examples README](examples-web/README.md) get started.
+Check the [examples-web](examples-web/README.md) get started.
 
 Love Axelar? Give our repo a star ⭐️ [⬆️](#introduction)
 
