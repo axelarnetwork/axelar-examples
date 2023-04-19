@@ -2,9 +2,9 @@
 
 ## Introduction
 
-Welcome to Axelar cross-chain dApp examples! This repository provides the code for several example dApps in the [Axelar Local Development Environment](https://github.com/axelarnetwork/axelar-local-dev). These examples contain both JavaScript and Solidity smart contract code that can be used as a starting point for building your own cross-chain dApps. This readme provides a detailed guide on how to set up the development environment and run the examples.
+Welcome to `axelar-examples` project. This repository provides the code for several example dApps in the [Axelar Local Development Environment](https://github.com/axelarnetwork/axelar-local-dev). These examples contain both JavaScript and Solidity smart contract code that can be used as a starting point for building your own cross-chain dApps. This readme provides a detailed guide on how to set up the development environment and run the examples.
 
-**Note:** Please be aware that some example folders in this repository are currently being documented. Our team is working diligently to provide comprehensive documentation for all examples to ensure that you have the best possible experience building with our tools.
+**Note:** Some examples in this repo are not yet documented.
 
 ### Table of Contents
 - [Introduction](#introduction)
@@ -27,7 +27,7 @@ Welcome to Axelar cross-chain dApp examples! This repository provides the code f
 
 ## Getting Started
 
-To build cross-chain dApps using Axelar SDK, you must first set up your development environment. This section provides a detailed explanation on how to set up your development environment for running the examples.
+Ready to explore the `axelar-examples`? First, make sure you have your development environment set up. This section provides detailed instructions to help you get started.
 
 ## One-time setup
 
@@ -69,18 +69,6 @@ cp .env.example .env
 
 Then update to your own private key.
 
-## Print wallet balances
-
-To print your wallet balances for each chain, run:
-
-```bash
-npm run check-balance [local|testnet]
-```
-
-The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command. 
-
-An example of its usage is demonstrated as follows: `npm run check-balance local` or `npm run check-balance testnet`. It is noteworthy that the script defaults to testnet if no environment is explicitly specified.
-
 ## Running the local chains
 
 To start the local chains, run the following command:
@@ -88,7 +76,18 @@ To start the local chains, run the following command:
 ```bash
 npm run start
 ```
-**Note:** Leave this node running on a separate terminal before deploying and testing the dApps.
+**Note:** Leave this node running on a separate terminal while deploying and testing the dApps.
+
+## Print wallet balances
+
+To print your wallet balances for each chain, run:
+
+```bash
+npm run check-balance [local|testnet]
+```
+Here's an example of how to use the command above: `npm run check-balance local` or `npm run check-balance testnet`
+
+
 
 ## Examples
 
@@ -96,9 +95,7 @@ This repository contains several examples of dApps that you can use as a startin
 
 - `evm`: This folder contains several basic and advanced examples of how to interact with Ethereum Virtual Machine (EVM) contracts.
 
-- `aptos`: This folder contains examples of how to use `Aptos` module to enable cross-chain functionality.
-
-- `web`: This folder contains examples of how to build web-based dApps that utilize cross-chain functionality.
+Additionally, `examples-web` folder contains examples of how to build web-based dApps that utilize cross-chain functionality.
 
 ### Evm Examples
 
@@ -120,33 +117,12 @@ The advanced EVM examples demonstrate more complex smart contracts and their int
 - [send-ack](examples/evm/send-ack/): This example demonstrates a two-way messaging to send a message from source-chain to destination-chain.
 - [cross-chain-token](examples/evm/cross-chain-token/): This example demonstrates how to mint tokens on a source-chain and transfer them to a destination-chain.
 
-
-### Aptos Examples
-
-The Aptos examples demonstrate how to build and interact with smart contracts on the Cosmos network. The Aptos examples include both basic and advanced examples.
-
-#### Basic
-
-The basic Aptos examples demonstrate simple smart contracts and their interactions.
-
-- [call-contract](examples/aptos/call-contract/): This example demonstrates how to relay a  bi-directional messages between Aptos and an EVM chain.
-
 ### Web Examples
 
 The web examples demonstrate how to build web-based dApps that utilize cross-chain functionality. Conveniently, all of the examples have been packaged together, making it simple to set up and run them all in one place.
 
 Check the [web examples README](examples-web/README.md) get started.
 
-## Contributors
-
-We appreciate your contribution to the growth of `Axelar Examples` project. Thank you for dedicating your time and effort towards building and improving our platform. Keep up the great work and happy hacking!🍻
-
-[![Contributors](https://contrib.rocks/image?repo=axelarnetwork/axelar-examples)](https://github.com/axelarnetwork/axelar-examples/README.md)
-
-## Stargazers
-
-[![Stargazers](https://git-lister.onrender.com/api/stars/axelarnetwork/axelar-examples?limit=20)](https://github.com/axelarnetwork/axelar-examples)
-
-[Go to top](#introduction)
+Love Axelar? Give our repo a star ⭐️ [⬆️](#introduction)
 
 
