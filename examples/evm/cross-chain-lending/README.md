@@ -20,6 +20,10 @@ To execute the example, use the following command:
 npm run execute evm/cross-chain-lending [local|testnet]
 ```
 
+The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command. 
+
+An example of its usage is demonstrated as follows: `npm run execute evm/cross-chain-lending local` or `npm run execute evm/cross-chain-lending testnet`. 
+
 ## Example
 
 This example runs the test on a local network.

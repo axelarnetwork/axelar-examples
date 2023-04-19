@@ -10,6 +10,10 @@ To deploy the contract, run the following command:
 npm run deploy evm/call-contract-with-token-express [local|testnet]
 ```
 
+The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command. 
+
+An example of its usage is demonstrated as follows: `npm run deploy evm/call-contract-with-token-express local` or `npm run deploy evm/call-contract-with-token-express testnet`. 
+
 ### Execution
 
 To execute the example, use the following command:
