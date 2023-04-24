@@ -1,6 +1,6 @@
 const { ethers } = require('ethers');
 const { createAndExport, createAptosNetwork } = require('@axelar-network/axelar-local-dev');
-const { enabledAptos: shouldRunAptos } = require('./config');
+const { enabledAptos } = require('./config');
 const path = require('path');
 
 /**
@@ -10,7 +10,7 @@ const path = require('path');
  * @param {*} chains - chains to start. All chains are started if not specified (Avalanche, Moonbeam, Polygon, Fantom, Ethereum).
  */
 async function start(fundAddresses = [], chains = [], options = {}) {
-    if (shouldRunAptos()) {
+    if (enabledAptos) {
         await initAptos();
     }
 
