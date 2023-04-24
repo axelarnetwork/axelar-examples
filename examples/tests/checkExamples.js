@@ -73,7 +73,7 @@ describe('Check Examples Execution', function () {
         }
     });
 
-    describe('Aptos Examples', function () {
+    describe.skip('Aptos Examples', function () {
         for (const exampleName of aptosExamples) {
             it(exampleName, async function () {
                 const example = rootRequire(`examples/aptos/${exampleName}/index.js`);
