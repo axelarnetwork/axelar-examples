@@ -42,4 +42,4 @@ jobs:
               run: |
                   nohup sh -c "aptos node run-local-testnet --with-faucet" > nohup.out 2> nohup.err < /dev/null &
                   sleep 10
-                  npm run test
+                  NODE_ENV=ci npm run test
