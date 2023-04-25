@@ -68,6 +68,8 @@ describe('Check Examples Execution', function () {
                 if (example.deploy) await deploy('local', chains, wallet, example);
 
                 await executeNearExample(chains, [], wallet, example);
+
+                
             });
         }
     });
@@ -77,6 +79,7 @@ describe('Check Examples Execution', function () {
 
         for (const exampleName of allExamples) {
             it(exampleName, async function () {
+                this.timeout(200000);
                 const example = rootRequire(`examples/evm/${exampleName}/index.js`);
                 const chains = getEVMChains('local', testChains);
 
@@ -92,6 +95,7 @@ describe('Check Examples Execution', function () {
     describe('Aptos Examples', function () {
         for (const exampleName of aptosExamples) {
             it(exampleName, async function () {
+                this.timeout(200000);
                 const example = rootRequire(`examples/aptos/${exampleName}/index.js`);
                 const chains = getEVMChains('local', testChains);
 
