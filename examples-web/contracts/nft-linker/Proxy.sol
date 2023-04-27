@@ -2,15 +2,20 @@
 
 pragma solidity 0.8.9;
 
-import {BaseProxy} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/BaseProxy.sol";
+import {Proxy} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Proxy.sol";
 
-contract ExampleProxy is BaseProxy {
-    function contractId()
-        internal
-        pure
-        override
-        returns (bytes32)
-    {
-        return keccak256("example");
+contract ExampleProxy is Proxy {
+    bytes32 internal constant CONTRACT_ID = keccak256('token-linker');
+
+    constructor(
+        address implementationAddress,
+        address owner,
+        bytes memory setupParams
+    ) Proxy(implementationAddress, owner, setupParams) {}
+
+    function contractId() internal pure override returns (bytes32) {
+        return CONTRACT_ID;
     }
+
+    receive() external payable override {}
 }

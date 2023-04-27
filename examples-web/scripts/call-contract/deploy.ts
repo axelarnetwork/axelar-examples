@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { getDefaultProvider, Wallet } from "ethers";
-import {MessageSender__factory as CallContractSenderFactory, MessageReceiver__factory as CallContractReceiverFactory} from '../../src/types/contracts/factories/contracts/call-contract'
+import {MessageSender__factory as CallContractSenderFactory, MessageReceiver__factory as CallContractReceiverFactory} from '../../src/types/factories/contracts/call-contract'
 
 export async function deploy(wallet: Wallet, chainA: any, chainB: any) {
   // deploy on ethereum

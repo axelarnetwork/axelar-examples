@@ -1,5 +1,6 @@
 const { ethers } = require('ethers');
 const { createAndExport, createAptosNetwork } = require('@axelar-network/axelar-local-dev');
+const { enabledAptos } = require('./config');
 const path = require('path');
 
 /**
@@ -9,7 +10,9 @@ const path = require('path');
  * @param {*} chains - chains to start. All chains are started if not specified (Avalanche, Moonbeam, Polygon, Fantom, Ethereum).
  */
 async function start(fundAddresses = [], chains = [], options = {}) {
-    await initAptos();
+    if (enabledAptos) {
+        await initAptos();
+    }
 
     const pathname = path.resolve(__dirname, '../..', 'chain-config', 'local.json');
 
@@ -46,8 +49,7 @@ async function initAptos() {
             faucetUrl: 'http://0.0.0.0:8081',
         });
     } catch (e) {
-        console.log(e);
-        console.log('Skip Aptos initlization, rerun this after starting an aptos node for proper support.');
+        console.log('Skip Aptos initialization, rerun this after starting an aptos node for proper support.');
     }
 }
 

@@ -17,6 +17,10 @@ To deploy the NFT Linker, run the following command:
 npm run deploy evm/nft-linker [local|testnet]
 ```
 
+The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command. 
+
+An example of its usage is demonstrated as follows: `npm run deploy evm/nft-linker local` or `npm run deploy evm/nft-linker testnet`. 
+
 A single NFT is minted to the deployer (`0xBa86A5719722B02a5D5e388999C25f3333c7A9fb`) on each chain.
 
 ## Execution

@@ -1,5 +1,6 @@
 require("hardhat-gas-reporter");
 require("solidity-coverage");
+require('@typechain/hardhat')
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -30,5 +31,9 @@ module.exports = {
   },
   paths: {
     sources: "./contracts",
+  },
+  typechain: {
+    outDir: 'src/types',
+    target: 'ethers-v5',
   },
 };
