@@ -10,7 +10,7 @@ We appreciate your interest in contributing to Axelar Examples! This document `C
 
 ### Introduction
 
-`Axelar Examples` is a collection of examples and tutorials for the Axelar Network. Before you start, we encourage you to read the rest of this document, which contains information on how and what you can contribute.
+`Axelar Examples` is a collection of examples for the Axelar Network. Before you start, we encourage you to read the rest of this document, which contains information on how and what you can contribute.
 
 ### Getting Started
 
@@ -21,25 +21,22 @@ If you are new to contributing to open-source projects, we encourage you to read
 ---
 ### How to Contribute
 
-1. Fork the repository and clone it to your local machine.
-2. Install the dependencies for the project as indicated in the [README.md](https://github.com/axelarnetwork/axelar-examples#readme) file.
-3. Create a new branch for your contribution with the following command:
+1. Before you submit your Pull Request (PR), search the [project](https://github.com/axelarnetwork/axelar-examples/pulls) for an open or closed PR related to your submission. You don't want to duplicate effort.
+2. Fork the repository and clone it to your local machine.
+3. Install the dependencies for the project as indicated in the [README.md](https://github.com/axelarnetwork/axelar-examples#readme) file.
+4. Create a new branch for your contribution with the following command:
 
    ```shell
    git checkout -b my-fix-branch
    ```
-4. Make your changes in the new git branch 
-5. Commit your changes. Your commit message should follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
+5. Make your changes in the new git branch 
+6. Commit your changes. Your commit message should follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
 
    ```shell
    git commit -a
    ```
-Note: the optional commit `-a' command line option will automatically "add" and "rm" edited files.
+Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files. Push your branch to GitHub with the following command: 
 
-Before you submit your Pull Request (PR) consider the following guidelines:
-
-1. Search the [project](https://github.com/axelarnetwork/axelar-examples/pulls) for an open or closed PR related to your submission. You don't want to duplicate effort.
-2. Push your branch to GitHub with the following command: 
    ```shell
    git push origin my-fix-branch
    ```
