@@ -1,7 +1,9 @@
 const { ethers } = require('ethers');
-const { createAndExport, createAptosNetwork } = require('@axelar-network/axelar-local-dev');
+const { createAndExport } = require('@axelar-network/axelar-local-dev');
+
 const { enabledAptos } = require('./config');
 const path = require('path');
+const { EvmRelayer } = require('@axelar-network/axelar-local-dev/dist/relay/EvmRelayer');
 
 /**
  * Start the local chains with Axelar contracts deployed.
@@ -10,8 +12,14 @@ const path = require('path');
  * @param {*} chains - chains to start. All chains are started if not specified (Avalanche, Moonbeam, Polygon, Fantom, Ethereum).
  */
 async function start(fundAddresses = [], chains = [], options = {}) {
+    const evmRelayer = new EvmRelayer();
+    const relayers = { evm: evmRelayer };
+
     if (enabledAptos) {
-        await initAptos();
+        const { AptosRelayer, createAptosNetwork } = require('@axelar-network/axelar-local-dev-aptos');
+        await initAptos(createAptosNetwork);
+        relayers.aptos = new AptosRelayer();
+        evmRelayer.setRelayer('aptos', relayers.aptos);
     }
 
     const pathname = path.resolve(__dirname, '../..', 'chain-config', 'local.json');
@@ -21,6 +29,7 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         accountsToFund: fundAddresses,
         callback: (chain, _info) => deployAndFundUsdc(chain, fundAddresses),
         chains: chains.length !== 0 ? chains : null,
+        relayers,
         relayInterval: options.relayInterval,
     });
 }
@@ -42,8 +51,9 @@ async function deployAndFundUsdc(chain, toFund) {
  * Initialize aptos if it is running.
  * If aptos is not running, skip initialization and print a message.
  */
-async function initAptos() {
+async function initAptos(createAptosNetwork) {
     try {
+
         await createAptosNetwork({
             nodeUrl: 'http://0.0.0.0:8080',
             faucetUrl: 'http://0.0.0.0:8081',
