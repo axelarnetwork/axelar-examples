@@ -16,7 +16,7 @@ const infoPath = path.join(dir, 'chain-config/local.json');
 // disable logging
 setLogger((...args) => {});
 
-// console.log = () => {};
+console.log = () => {};
 
 const examples = [
     'call-contract',
@@ -56,22 +56,22 @@ describe('Check Examples Execution', function () {
         await destroyExported();
     });
 
-    // describe('EVM Examples', function () {
-    //     const allExamples = [...examples, ...forkExamples];
+    describe('EVM Examples', function () {
+        const allExamples = [...examples, ...forkExamples];
 
-    //     for (const exampleName of allExamples) {
-    //         it(exampleName, async function () {
-    //             const example = rootRequire(`examples/evm/${exampleName}/index.js`);
-    //             const chains = getEVMChains('local', testChains);
+        for (const exampleName of allExamples) {
+            it(exampleName, async function () {
+                const example = rootRequire(`examples/evm/${exampleName}/index.js`);
+                const chains = getEVMChains('local', testChains);
 
-    //             if (example.deploy) {
-    //                 await deploy('local', chains, wallet, example);
-    //             }
+                if (example.deploy) {
+                    await deploy('local', chains, wallet, example);
+                }
 
-    //             await executeEVMExample('local', chains, [], wallet, example);
-    //         });
-    //     }
-    // });
+                await executeEVMExample('local', chains, [], wallet, example);
+            });
+        }
+    });
 
     describe('Aptos Examples', function () {
         for (const exampleName of aptosExamples) {
