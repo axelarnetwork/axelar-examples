@@ -22,8 +22,10 @@ jobs:
                   chmod +x aptos
                   cp aptos /usr/local/bin
             - name: Install
-              run: |
-                  npm ci
+              run: npm ci
+
+            - name: Install axelar-local-dev-aptos
+              run: npm i @axelar-network/axelar-local-dev-aptos@alpha
 
             - name: Create .env file
               run: |
