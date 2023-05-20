@@ -1,6 +1,5 @@
 const { ethers } = require('ethers');
 const { createAndExport } = require('@axelar-network/axelar-local-dev');
-
 const { enabledAptos } = require('./config');
 const path = require('path');
 const { EvmRelayer } = require('@axelar-network/axelar-local-dev/dist/relay/EvmRelayer');
@@ -53,7 +52,6 @@ async function deployAndFundUsdc(chain, toFund) {
  */
 async function initAptos(createAptosNetwork) {
     try {
-
         await createAptosNetwork({
             nodeUrl: 'http://0.0.0.0:8080',
             faucetUrl: 'http://0.0.0.0:8081',
