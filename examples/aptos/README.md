@@ -15,7 +15,13 @@ To set up your environment:
 -   If you don't have a `.env` file, run `npm run setup` to create one quickly.
 -   If you already have a `.env` file but it's missing the `APTOS_TOKEN_LINKER_ADDRESS` and `APTOS_ADDRESS` variables, copy them from the `.`env.example` file.
 
-3. Build the Aptos modules
+3. Install `@axelar-network/axelar-local-dev-aptos`
+
+```
+npm install @axelar-network/axelar-local-dev-aptos@alpha
+```
+
+4. Build the Aptos modules
 
 ```bash
 npm ci
@@ -23,13 +29,13 @@ npm run build
 npm run build-aptos
 ```
 
-3. Run the `aptos` local network
+5. Run the `aptos` local network
 
 ```bash
 aptos node run-local-testnet --with-faucet --force-restart
 ```
 
-4. Run the local server
+6. Run the local server
 
 ```bash
 npm run start
