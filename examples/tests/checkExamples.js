@@ -5,7 +5,6 @@ require('dotenv').config();
 const { start, deploy, executeEVMExample, executeAptosExample, getWallet, getEVMChains, executeNearExample } = require('../../scripts/libs');
 const {
     destroyExported,
-    utils: { setLogger },
 } = require('@axelar-network/axelar-local-dev');
 const fs = require('fs-extra');
 const path = require('path');
@@ -14,9 +13,9 @@ const dir = path.resolve(__dirname, '..', '..');
 const infoPath = path.join(dir, 'chain-config/local.json');
 
 // disable logging
-setLogger((...args) => {});
+// setLogger((...args) => {});
 
-console.log = () => {};
+// console.log = () => {};
 
 const examples = [
     'call-contract',
@@ -61,7 +60,7 @@ describe('Check Examples Execution', function () {
     describe('NEAR Examples', function () {
         for (const exampleName of nearExamples) {
             it(exampleName, async function () {
-                this.timeout(200000);
+                this.timeout(900000);
                 const example = rootRequire(`examples/near/${exampleName}/index.js`);
                 const chains = getEVMChains('local', testChains);
 

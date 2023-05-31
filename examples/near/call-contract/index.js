@@ -16,6 +16,7 @@ async function deployNearContract(nearClient) {
     // Path to Example contract WASM for NEAR
     const nearWasmFilePath = path.join(path.resolve(__dirname), './contracts/near_axelar_contract_call_example.wasm');
 
+    console.log(`Deploying NEAR contract with ${nearClient.toString()}`);
     // Deploy Example contract for NEAR
     const nearContract = await nearClient.createAccountAndDeployContract('near_executable', nearWasmFilePath, 200);
 
