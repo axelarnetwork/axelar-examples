@@ -54,7 +54,7 @@ value at NEAR is "Hello from Moonbeam"
 
 If you wish to test things out and change the smart contracts you can find them in `examples/near/call-contract/contract`.
 
-Folder named `near-axelar-contract-call-example` has the NEAR smart contract written in `Rust`.
+Folder named `near-axelar-contract-call-example` has the NEAR smart contract written in programming language `Rust`.
 
 To make adjustments to it you just need to change `lib.rs` file located at `examples/near/call-contract/contract/near-axelar-contract-call-example/src/lib.rs`.
 
