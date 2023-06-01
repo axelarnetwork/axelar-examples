@@ -23,13 +23,13 @@ npm run build
 npm run build-aptos
 ```
 
-3. Run the `aptos` local network
+5. Run the `aptos` local network
 
 ```bash
 aptos node run-local-testnet --with-faucet --force-restart
 ```
 
-4. Run the local server
+6. Run the local server
 
 ```bash
 npm run start

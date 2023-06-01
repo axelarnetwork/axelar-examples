@@ -3,8 +3,8 @@
 const { HexString } = require('aptos');
 const {
     utils: { deployContract },
-    AptosNetwork,
 } = require('@axelar-network/axelar-local-dev');
+const { AptosNetwork } = require('@axelar-network/axelar-local-dev-aptos');
 
 const HelloWorld = rootRequire('./artifacts/examples/aptos/call-contract/contracts/HelloWorld.sol/HelloWorld.json');
 const { defaultAbiCoder } = require('ethers/lib/utils');
