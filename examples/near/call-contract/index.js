@@ -6,7 +6,7 @@ const {
     createNearNetwork,
     relay,
     stopAll,
-} = require('@axelar-network/axelar-local-dev');
+} = require('@axelar-network/axelar-local-dev-near');
 
 const path = require('path');
 
