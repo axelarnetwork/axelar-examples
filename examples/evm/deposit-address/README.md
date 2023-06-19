@@ -5,12 +5,15 @@ This test demonstrates how to deposit tokens from one chain to another using a d
 
 ### Context
 
-This example demonstrates how to deposit 10e6 tokens from Avalanche chain to Fantom chain using a deposit address. The initial balance of the Avalanche chain and Fantom chain is `100000000`. After the execution, the balance of Avalanche chain is `90000000` and the balance of Fantom chain is `109000000`. The deposit address is `0xb54eA64537F3307907E06d3B93ccd4A3E711623f`.
+This example demonstrates how to deposit 10e6 tokens from Avalanche chain to Fantom chain using a deposit address. The initial balance of the Avalanche chain and Fantom chain is `1.000`. After the execution, the balance of Avalanche chain is `0.999` and the balance of Fantom chain is `1.001`. 
 
 A deposit address is a unique temporary address that is generated to facilitate transfers between chains. Deposit Addresses are an additional mechanism to sendToken() for sending tokens between chains. In the case of sendToken(), it is directly interacting with the gateway contract, whereas deposit addresses allow for interoperable token transfers via addresses that may be generated off chain. The goal is to allow for a similar user experience to centralized exchanges in sending funds between chains. 
+[Further reading available here](https://docs.axelar.dev/dev/axelarjs-sdk/token-transfer-dep-addr)
 
 The flow can be though of as: 
-Sender ---> Temp Deposit Address --> Axelar Network --> Receiver
+1. (on source) Sender ---> deposit address 
+2. Axelar network verifies, confirms, and approves
+3. (on destination) Gateway ---> receiver (token unlocked/minted)
 
 
 ### Prerequisite
@@ -48,10 +51,10 @@ The output will be:
 
 ```
 --- Initially ---
-Balance at Avalanche is 100000000
-Balance at Fantom is 100000000
-0xb54eA64537F3307907E06d3B93ccd4A3E711623f
+Balance at Avalanche is 1.000
+Balance at Fantom is 1.000
+[deposit address]
 --- After ---
-Balance at Avalanche is 90000000
-Balance at Fantom is 109000000
+Balance at Avalanche is 0.999
+Balance at Fantom is 1.001
 ```
