@@ -5,7 +5,7 @@ This test demonstrates how to deposit tokens from one chain to another using a d
 
 ### Context
 
-This example demonstrates how to deposit 10e6 tokens from Avalanche chain to Fantom chain using a deposit address. The initial balance of the Avalanche chain and Fantom chain is `1.000`. After the execution, the balance of Avalanche chain is `0.999` and the balance of Fantom chain is `1.001`. 
+This example demonstrates how to deposit 10e14 tokens from Avalanche chain to Fantom chain using a deposit address. The initial balance of the Avalanche chain and Fantom chain is `1.000`. After the execution, the balance of Avalanche chain is `0.999` and the balance of Fantom chain is `1.001`. 
 
 A deposit address is a unique temporary address that is generated to facilitate transfers between chains. Deposit Addresses are an additional mechanism to sendToken() for sending tokens between chains. In the case of sendToken(), it is directly interacting with the gateway contract, whereas deposit addresses allow for interoperable token transfers via addresses that may be generated off chain. The goal is to allow for a similar user experience to centralized exchanges in sending funds between chains. 
 [Further reading available here](https://docs.axelar.dev/dev/axelarjs-sdk/token-transfer-dep-addr)
