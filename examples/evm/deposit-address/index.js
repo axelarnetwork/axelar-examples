@@ -24,7 +24,7 @@ async function execute(chains, wallet, options = {}) {
 
     async function print() {
         const sourceBalance = utils.formatEther(await source.token.balanceOf(wallet.address))
-        const destBalance = utils.formatEther(await destination.token.balanceOf(wallet.address))
+        const destBalance = utils.formatEther(await destination.token.balanceOf(destinationAddress))
 
         console.log(`Balance at ${source.name} is ${Number(sourceBalance).toFixed(3)}`);        
         console.log(`Balance at ${destination.name} is ${Number(destBalance).toFixed(3)}`);
