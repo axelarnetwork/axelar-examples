@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity 0.8.9;
+pragma solidity ^0.8.0;
 
 import {IAxelarGateway} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import {IAxelarGasService} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
@@ -18,16 +18,17 @@ contract MessageSender {
         string calldata destinationAddress,
         string calldata value_
     ) external payable {
+        require(msg.value > 0, 'Gas payment is required');
+
+        
         bytes memory payload = abi.encode(value_);
-        if (msg.value > 0) {
-            gasService.payNativeGasForContractCall{value: msg.value}(
-                address(this),
-                destinationChain,
-                destinationAddress,
-                payload,
-                msg.sender
-            );
-        }
+        gasService.payNativeGasForContractCall{value: msg.value}(
+            address(this),
+            destinationChain,
+            destinationAddress,
+            payload,
+            msg.sender
+        );
         gateway.callContract(destinationChain, destinationAddress, payload);
     }
 }
