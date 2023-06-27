@@ -1,12 +1,20 @@
 'use strict';
 
 const {
-    utils: { deployContract },
-    createNetwork,
+    EvmRelayer,
+} = require('@axelar-network/axelar-local-dev/dist/relay/EvmRelayer');
+
+const {
     createNearNetwork,
+    NearRelayer,
+} = require('@axelar-network/axelar-local-dev-near');
+
+const {
+    createNetwork,
+    deployContract,
     relay,
     stopAll,
-} = require('@axelar-network/axelar-local-dev-near');
+} = require('@axelar-network/axelar-local-dev');
 
 const path = require('path');
 
@@ -16,7 +24,6 @@ async function deployNearContract(nearClient) {
     // Path to Example contract WASM for NEAR
     const nearWasmFilePath = path.join(path.resolve(__dirname), './contracts/near_axelar_contract_call_example.wasm');
 
-    console.log(`Deploying NEAR contract with ${nearClient.toString()}`);
     // Deploy Example contract for NEAR
     const nearContract = await nearClient.createAccountAndDeployContract('near_executable', nearWasmFilePath, 200);
 
@@ -78,6 +85,12 @@ async function execute(chain, wallet, options) {
         value: BigInt(Math.floor(gasLimit * gasPrice)),
     })).wait();
 
+    const nearRelayer = new NearRelayer();
+    const relayers = { evm: new EvmRelayer({ nearRelayer }), near: nearRelayer };
+
+    // Relay transactions
+    await relay(relayers);
+
     // Call set method on NEAR contract
     await nearClient.callContract(
         nearContract,
@@ -92,7 +105,9 @@ async function execute(chain, wallet, options) {
     );
 
     // Relay transactions
-    await relay();
+    await relay({
+        near: new NearRelayer(),
+    });
 
     console.log('--- After ---');
     await logValue();
