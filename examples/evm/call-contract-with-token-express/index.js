@@ -1,14 +1,17 @@
 'use strict';
 
-const { Contract, ContractFactory, ethers } = require('ethers');
-
+const { getDefaultProvider, Contract, ethers } = require('ethers');
+const {
+    utils: { deployContract },
+} = require('@axelar-network/axelar-local-dev');
 const DistributionExpressExecutable = rootRequire(
     './artifacts/examples/evm/call-contract-with-token-express/DistributionExpressExecutable.sol/DistributionExpressExecutable.json',
 );
-const IGMPExpressService = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/interfaces/IGMPExpressService.sol/IGMPExpressService.json');
+const IGMPExpressService = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/interfaces/IExpressService.sol/IExpressService.json');
 
 async function deploy(chain, wallet) {
-    chain.wallet = wallet;
+    const provider = getDefaultProvider(chain.rpc);
+    chain.wallet = wallet.connect(provider);
 
     // Deploy the DistributionExpressExecutable contract
     const gmpExpressService = new Contract(chain.GMPExpressService.address, IGMPExpressService.abi, chain.wallet);
@@ -17,13 +20,17 @@ async function deploy(chain, wallet) {
     const salt = ethers.utils.id(Date.now().toString());
 
     // Get the bytecode for the DistributionExpressExecutable contract
-    const factory = new ContractFactory(DistributionExpressExecutable.abi, DistributionExpressExecutable.bytecode);
-    const bytecode = factory.getDeployTransaction(chain.gateway, chain.gasService).data;
     console.log(`Deploying DistributionExpressExecutable with Proxy for ${chain.name}.`);
+    const destributionExpressContract = await deployContract(chain.wallet, DistributionExpressExecutable, [
+        chain.gateway,
+        chain.gasService,
+    ]);
 
     // Deploy the DistributionExpressExecutable contract with the proxy
     const owner = chain.wallet.address;
-    await gmpExpressService.deployExpressExecutable(salt, bytecode, owner, '0x').then((tx) => tx.wait(1));
+    await gmpExpressService
+        .deployExpressProxy(salt, destributionExpressContract.address, chain.wallet.address, '0x')
+        .then((tx) => tx.wait(1));
 
     // Get the address of the deployed Proxy contract
     const deployedAddress = await gmpExpressService.deployedProxyAddress(salt, owner);

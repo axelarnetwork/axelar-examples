@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-
-pragma solidity 0.8.9;
+pragma solidity ^0.8.0;
 
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
@@ -45,18 +44,19 @@ contract ERC20CrossChain is AxelarExecutable, ERC20, Upgradable, IERC20CrossChai
         address destinationAddress,
         uint256 amount
     ) public payable override {
+        require(msg.value > 0, 'Gas payment is required');
+
+        
         _burn(msg.sender, amount);
         bytes memory payload = abi.encode(destinationAddress, amount);
         string memory stringAddress = address(this).toString();
-        if (msg.value > 0) {
-            gasService.payNativeGasForContractCall{ value: msg.value }(
-                address(this),
-                destinationChain,
-                stringAddress,
-                payload,
-                msg.sender
-            );
-        }
+        gasService.payNativeGasForContractCall{ value: msg.value }(
+            address(this),
+            destinationChain,
+            stringAddress,
+            payload,
+            msg.sender
+        );
         gateway.callContract(destinationChain, stringAddress, payload);
     }
 
