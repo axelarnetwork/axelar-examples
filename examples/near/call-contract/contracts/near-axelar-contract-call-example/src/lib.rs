@@ -51,7 +51,6 @@ impl AxelarNearExample {
 
     #[payable]
     pub fn set(&mut self, chain: String, destination_address: String, value: String) -> Promise {
-        self.value = Some(value.clone());
         let payload = abi_encode(vec![Token::String(value)]);
         self.gateway_call_contract(chain, destination_address, payload)
     }
