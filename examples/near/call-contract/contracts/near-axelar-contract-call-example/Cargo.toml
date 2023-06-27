@@ -1,0 +1,24 @@
+[package]
+name = "near-axelar-contract-call-example"
+version = "1.0.0"
+authors = ["Axelar Network <hello@axelar.org>"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+near-sdk = "4.1.1"
+primitive-types = { version = "0.9.0", default-features = false, features = ["rlp"] }
+near-axelar-executable = { git = "https://github.com/axelarnetwork/axelar-cgp-near", branch = "main" }
+
+[profile.release]
+codegen-units = 1
+opt-level = "z"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true
+
+[workspace]
+members = []

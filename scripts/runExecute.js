@@ -1,6 +1,6 @@
 'use strict';
 require('dotenv').config();
-const { executeEVMExample, executeAptosExample, checkEnv, getExamplePath, getWallet, getEVMChains } = require('./libs');
+const { executeEVMExample, executeAptosExample, executeNearExample, checkEnv, getExamplePath, getWallet, getEVMChains } = require('./libs');
 
 const exampleName = process.argv[2];
 const env = process.argv[3];
@@ -30,4 +30,7 @@ if (exampleName.split('/')[0] === 'evm') {
 } else if (exampleName.split('/')[0] === 'aptos') {
     const chains = getEVMChains(env);
     executeAptosExample(chains, args, wallet, example);
+} else if (exampleName.split('/')[0] === 'near') {
+    const chains = getEVMChains(env);
+    executeNearExample(chains, args, wallet, example);
 }

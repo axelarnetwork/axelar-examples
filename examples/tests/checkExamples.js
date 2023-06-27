@@ -2,10 +2,9 @@
 
 require('dotenv').config();
 
-const { start, deploy, executeEVMExample, executeAptosExample, getWallet, getEVMChains } = require('../../scripts/libs');
+const { start, deploy, executeEVMExample, executeAptosExample, getWallet, getEVMChains, executeNearExample } = require('../../scripts/libs');
 const {
     destroyExported,
-    utils: { setLogger },
 } = require('@axelar-network/axelar-local-dev');
 const fs = require('fs-extra');
 const path = require('path');
@@ -14,9 +13,9 @@ const dir = path.resolve(__dirname, '..', '..');
 const infoPath = path.join(dir, 'chain-config/local.json');
 
 // disable logging
-setLogger((...args) => {});
+// setLogger((...args) => {});
 
-console.log = () => {};
+// console.log = () => {};
 
 const examples = [
     'call-contract',
@@ -32,6 +31,8 @@ const examples = [
 ];
 
 const aptosExamples = ['call-contract', 'token-linker'];
+
+const nearExamples = ['call-contract'];
 
 // These examples fork the mainnet, so they take a long time to run.
 const forkExamples = [
@@ -56,11 +57,28 @@ describe('Check Examples Execution', function () {
         await destroyExported();
     });
 
+    describe('NEAR Examples', function () {
+        for (const exampleName of nearExamples) {
+            it(exampleName, async function () {
+                this.timeout(900000);
+                const example = rootRequire(`examples/near/${exampleName}/index.js`);
+                const chains = getEVMChains('local', testChains);
+
+                if (example.deploy) await deploy('local', chains, wallet, example);
+
+                await executeNearExample(chains, [], wallet, example);
+
+                
+            });
+        }
+    });
+
     describe('EVM Examples', function () {
         const allExamples = [...examples, ...forkExamples];
 
         for (const exampleName of allExamples) {
             it(exampleName, async function () {
+                this.timeout(200000);
                 const example = rootRequire(`examples/evm/${exampleName}/index.js`);
                 const chains = getEVMChains('local', testChains);
 
@@ -76,6 +94,7 @@ describe('Check Examples Execution', function () {
     describe('Aptos Examples', function () {
         for (const exampleName of aptosExamples) {
             it(exampleName, async function () {
+                this.timeout(200000);
                 const example = rootRequire(`examples/aptos/${exampleName}/index.js`);
                 const chains = getEVMChains('local', testChains);
 

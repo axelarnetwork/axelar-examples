@@ -68,4 +68,5 @@ Leave this node running on a separate terminal before deploying and testing the 
 
 -   [Evm Examples](/examples/evm/)
 -   [Aptos Examples](/examples/aptos/)
+-   [NEAR Examples](/examples/near/)
 -   [Web Examples](/examples-web/)
