@@ -31,8 +31,6 @@ const main = async () => {
         process.exit(1);
     }
 
-    console.log('addresses', addresses);
-
     const addressList = addresses.split(',');
 
     const allTestnetChains = testnetChains.map((chain) => chain.name);
