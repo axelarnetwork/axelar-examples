@@ -16,7 +16,11 @@ const main = async () => {
             default: 'local',
             choices: ['local', 'testnet'],
         })
-        .demandOption(['addresses']).argv;
+        .option('addresses', {
+            describe: 'Comma-separated addresses',
+            demandOption: true,
+            string: true,
+        }).argv;
 
     const addresses = argv.addresses;
     const env = argv.env;
@@ -26,6 +30,8 @@ const main = async () => {
         console.log('No addresses provided.');
         process.exit(1);
     }
+
+    console.log('addresses', addresses);
 
     const addressList = addresses.split(',');
 
