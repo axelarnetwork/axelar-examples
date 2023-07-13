@@ -1,4 +1,4 @@
-# Call contract with token
+# Call contract with token express
 
 This example allows you to send aUSDC from a source chain to a destination chain and distribute it equally among specified accounts.
 
