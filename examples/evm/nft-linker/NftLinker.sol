@@ -19,7 +19,11 @@ contract NftLinker is ERC721, AxelarExecutable, Upgradable {
     string public chainName; //To check if we are the source chain.
     IAxelarGasService public immutable gasService;
 
-    constructor(address gateway_, address gasReceiver_) ERC721('Axelar NFT Linker', 'ANL') AxelarExecutable(gateway_) {
+    constructor(
+        address gateway_,
+        address gasReceiver_,
+        address owner_
+    ) ERC721('Axelar NFT Linker', 'ANL') AxelarExecutable(gateway_) Upgradable(owner_) {
         gasService = IAxelarGasService(gasReceiver_);
     }
 
@@ -30,12 +34,7 @@ contract NftLinker is ERC721, AxelarExecutable, Upgradable {
     }
 
     //The main function users will interract with.
-    function sendNFT(
-        address operator,
-        uint256 tokenId,
-        string memory destinationChain,
-        address destinationAddress
-    ) external payable {
+    function sendNFT(address operator, uint256 tokenId, string memory destinationChain, address destinationAddress) external payable {
         //If we are the operator then this is a minted token that lives remotely.
         if (operator == address(this)) {
             require(ownerOf(tokenId) == _msgSender(), 'NOT_YOUR_TOKEN');
@@ -47,11 +46,7 @@ contract NftLinker is ERC721, AxelarExecutable, Upgradable {
     }
 
     //Burns and sends a token.
-    function _sendMintedToken(
-        uint256 tokenId,
-        string memory destinationChain,
-        address destinationAddress
-    ) internal {
+    function _sendMintedToken(uint256 tokenId, string memory destinationChain, address destinationAddress) internal {
         _burn(tokenId);
         //Get the original information.
         (string memory originalChain, address operator, uint256 originalTokenId) = abi.decode(
@@ -68,12 +63,7 @@ contract NftLinker is ERC721, AxelarExecutable, Upgradable {
     }
 
     //Locks and sends a token.
-    function _sendNativeToken(
-        address operator,
-        uint256 tokenId,
-        string memory destinationChain,
-        address destinationAddress
-    ) internal {
+    function _sendNativeToken(address operator, uint256 tokenId, string memory destinationChain, address destinationAddress) internal {
         //Create the payload.
         bytes memory payload = abi.encode(chainName, operator, tokenId, destinationAddress);
         string memory stringAddress = address(this).toString();
@@ -84,11 +74,7 @@ contract NftLinker is ERC721, AxelarExecutable, Upgradable {
     }
 
     //This is automatically executed by Axelar Microservices since gas was payed for.
-    function _execute(
-        string calldata, /*sourceChain*/
-        string calldata sourceAddress,
-        bytes calldata payload
-    ) internal override {
+    function _execute(string calldata /*sourceChain*/, string calldata sourceAddress, bytes calldata payload) internal override {
         //Check that the sender is another token linker.
         require(sourceAddress.toAddress() == address(this), 'NOT_A_LINKER');
         //Decode the payload.
