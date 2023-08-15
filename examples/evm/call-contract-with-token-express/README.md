@@ -1,18 +1,16 @@
-# Call contract with token
+# Call Contract with Token (Express)
 
-This example allows you to send aUSDC from a source chain to a destination chain and distribute it equally among specified accounts.
+This guide demonstrates how to send aUSDC from a source chain to a destination chain, distributing it equally among specified accounts. The distinction between this and the [Call Contract with Token](../call-contract-with-token/README.md) example is that this approach utilizes the express mechanism.
 
 ### Deployment
 
 To deploy the contract, run the following command:
 
 ```bash
-npm run deploy evm/call-contract-with-token-express [local|testnet]
+npm run deploy evm/call-contract-with-token-express
 ```
 
-The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command. 
-
-An example of its usage is demonstrated as follows: `npm run deploy evm/call-contract-with-token-express local` or `npm run deploy evm/call-contract-with-token-express testnet`. 
+**Note:** On the testnet, we use a whitelisting system. If you're running this example on the testnet, you can skip the deployment. The execution step will automatically select the whitelisted express contract for you.
 
 ### Execution
 
