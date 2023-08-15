@@ -24,12 +24,13 @@ npm run execute evm/call-contract-with-token-express  [local|testnet] ${srcChain
 The GMP Express feature is already lived on our testnet. However, the following conditions need to be met:
 
 -   The contract address must be whitelisted by our executor service.
--   We only support `aUSDC` token and the amount must be less than 500 aUSDC.
 
 Currently, our whitelisted contract addresses for this example are:
 
--   Avalanche: `0x4E3b6C3d284361Eb4fA9aDE5831eEfF85578b72c`
--   Polygon: `0xAb6dAb12aCCAe665A44E69d44bcfC6219A30Dd32`
+-   Avalanche: `0x22a214c3c2C23a370414e2A4b2CF829A76c29A1b`
+-   Polygon: `0x22a214c3c2C23a370414e2A4b2CF829A76c29A1b`
+
+The script will automatically select above whitelisted express contracts for you when running script against testnet.
 
 ### Parameters
 

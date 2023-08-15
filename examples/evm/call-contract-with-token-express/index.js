@@ -1,5 +1,6 @@
 'use strict';
 
+const { Contract } = require('ethers');
 const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
@@ -47,7 +48,7 @@ function overrideContract(env, source, destination, wallet) {
 
 async function execute(_chains, wallet, options) {
     const args = options.args || [];
-    const { source, destination, calculateBridgeExpressFee, env} = options;
+    const { source, destination, calculateBridgeExpressFee, env } = options;
 
     // If the example is running on testnet, check that the source and destination chains are supported.
     // TODO: Remove this check once we remove the whitelist on testnet.
@@ -87,13 +88,11 @@ async function execute(_chains, wallet, options) {
     console.log('Approved aUSDC on', source.name);
 
     // Send tokens to the distribution contract.
-    const sendTx = await source.contract
-        .sendToMany(destination.name, destination.contract.address, accounts, 'aUSDC', amount, {
-            value: expressFee,
-        })
-        .then((tx) => tx.wait());
+    const sendTx = await source.contract.sendToMany(destination.name, destination.contract.address, accounts, 'aUSDC', amount, {
+        value: expressFee,
+    });
 
-    console.log('Sent tokens to distribution contract:', sendTx.transactionHash);
+    console.log('Sent tokens to distribution contract:', sendTx.hash);
 
     // Wait for the distribution to complete by checking the balance of the first account.
     while ((await destination.usdc.balanceOf(accounts[0])).eq(initialBalance)) {
