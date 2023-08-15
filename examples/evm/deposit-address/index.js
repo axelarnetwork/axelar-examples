@@ -1,6 +1,6 @@
 'use strict';
 
-const { getDefaultProvider, Contract } = require('ethers');
+const { getDefaultProvider, Contract, utils } = require('ethers');
 
 const Gateway = rootRequire(
     './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
@@ -10,7 +10,7 @@ const IERC20 = rootRequire('./artifacts/@axelar-network/axelar-gmp-sdk-solidity/
 async function execute(chains, wallet, options = {}) {
     const args = options.args || [];
     const { source, destination, getDepositAddress } = options;
-    const amount = args[2] || 10e6;
+    const amount = args[2] || 10e14;
     const destinationAddress = args[3] || wallet.address;
     const symbol = 'aUSDC';
 
@@ -23,8 +23,11 @@ async function execute(chains, wallet, options = {}) {
     }
 
     async function print() {
-        console.log(`Balance at ${source.name} is ${await source.token.balanceOf(wallet.address)}`);
-        console.log(`Balance at ${destination.name} is ${await destination.token.balanceOf(destinationAddress)}`);
+        const sourceBalance = utils.formatEther(await source.token.balanceOf(wallet.address))
+        const destBalance = utils.formatEther(await destination.token.balanceOf(destinationAddress))
+
+        console.log(`Balance at ${source.name} is ${Number(sourceBalance).toFixed(3)}`);        
+        console.log(`Balance at ${destination.name} is ${Number(destBalance).toFixed(3)}`);
     }
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

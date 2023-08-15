@@ -3,9 +3,8 @@
 const { HexString, CoinClient } = require('aptos');
 const {
     utils: { deployContract },
-    AptosNetwork,
 } = require('@axelar-network/axelar-local-dev');
-
+const { AptosNetwork } = require('@axelar-network/axelar-local-dev-aptos');
 const TokenLinker = rootRequire('./artifacts/examples/aptos/token-linker/contracts/AptosTokenLinker.sol/AptosTokenLinker.json');
 const Token = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json');
 const { ethers } = require('ethers');
@@ -61,7 +60,9 @@ async function execute(evmChain, wallet, options) {
     async function logBalances() {
         const evmBalance = await evmChain.token.balanceOf(wallet.address).then((balance) => ethers.utils.formatEther(balance));
         console.log(`Balance at ${evmChain.name} is ${evmBalance} ALT`);
-        const aptosBalance = await coins.checkBalance(client.owner.address(), { coinType: `${aptosTokenLinkerAddress}::token_linker::Token` });
+        const aptosBalance = await coins.checkBalance(client.owner, {
+            coinType: `${aptosTokenLinkerAddress}::token_linker::Token`,
+        });
         console.log(`Balance at aptos is ${(Number(aptosBalance) * 256 ** ignoreDigits) / 1e18} ALT`);
     }
 

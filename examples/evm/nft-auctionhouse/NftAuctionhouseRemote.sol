@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-
-pragma solidity 0.8.9;
+pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
@@ -34,10 +33,12 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutable {
         address bidder,
         uint256 amount
     ) external payable {
+        require(msg.value > 0, 'Gas payment is required');
+
+        
         usdc.transferFrom(msg.sender, address(this), amount);
         usdc.approve(address(gateway), amount);
         bytes memory payload = abi.encode(msg.sender, bidder, operator, tokenId);
-        if (msg.value > 0) {
             gasService.payNativeGasForContractCallWithToken{ value: msg.value }(
                 address(this),
                 destinationChain,
@@ -47,7 +48,6 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutable {
                 amount,
                 msg.sender
             );
-        }
         gateway.callContractWithToken(destinationChain, destinationAuctionhouse, payload, 'aUSDC', amount);
     }
 

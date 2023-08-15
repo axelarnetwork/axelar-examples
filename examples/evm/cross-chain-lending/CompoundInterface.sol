@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity 0.8.9;
+pragma solidity ^0.8.0;
 
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
@@ -64,11 +64,7 @@ contract CompoundInterface is AxelarExecutable {
         _redeem(sourceChain, userAddress, redeemTokenSymbol, redeemAmount);
     }
 
-    function _mint(
-        string calldata tokenSymbol,
-        uint256 amount,
-        string memory userAddress
-    ) internal {
+    function _mint(string calldata tokenSymbol, uint256 amount, string memory userAddress) internal {
         CErc20Interface cToken = _cTokens[tokenSymbol];
         IERC20 tokenAddress = IERC20(gateway.tokenAddresses(tokenSymbol));
 
@@ -81,12 +77,7 @@ contract CompoundInterface is AxelarExecutable {
         cBalances[userAddress][tokenSymbol] += mintedTokens;
     }
 
-    function _borrow(
-        string calldata sourceChain,
-        string memory userAddress,
-        string memory tokenSymbol,
-        uint256 amount
-    ) internal {
+    function _borrow(string calldata sourceChain, string memory userAddress, string memory tokenSymbol, uint256 amount) internal {
         CErc20Interface cToken = _cTokens[tokenSymbol];
         IERC20 tokenAddress = IERC20(gateway.tokenAddresses(tokenSymbol));
 
@@ -105,12 +96,7 @@ contract CompoundInterface is AxelarExecutable {
         cToken.repayBorrow(amount);
     }
 
-    function _redeem(
-        string calldata sourceChain,
-        string memory userAddress,
-        string memory tokenSymbol,
-        uint256 amount
-    ) internal {
+    function _redeem(string calldata sourceChain, string memory userAddress, string memory tokenSymbol, uint256 amount) internal {
         CErc20Interface cToken = _cTokens[tokenSymbol];
         IERC20 tokenAddress = IERC20(gateway.tokenAddresses(tokenSymbol));
 
