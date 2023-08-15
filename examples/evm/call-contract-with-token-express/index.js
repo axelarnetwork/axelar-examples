@@ -47,7 +47,7 @@ function overrideContract(env, source, destination, wallet) {
 
 async function execute(_chains, wallet, options) {
     const args = options.args || [];
-    const { source, destination, calculateBridgeExpressFee } = options;
+    const { source, destination, calculateBridgeExpressFee, env} = options;
 
     // If the example is running on testnet, check that the source and destination chains are supported.
     // TODO: Remove this check once we remove the whitelist on testnet.
