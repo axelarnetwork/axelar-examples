@@ -1,7 +1,7 @@
 'use strict';
 
 const { Contract, getDefaultProvider } = require('ethers');
-const { calculateBridgeFee, getDepositAddress } = require('./utils.js');
+const { calculateBridgeFee, getDepositAddress, calculateBridgeExpressFee } = require('./utils.js');
 const AxelarGatewayContract = rootRequire(
     'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
 );
@@ -64,6 +64,7 @@ async function executeEVMExample(env, chains, args, wallet, example) {
     // Execute the example script.
     await example.execute(chains, wallet, {
         calculateBridgeFee,
+        calculateBridgeExpressFee,
         getDepositAddress: (source, destination, destinationAddress, symbol) =>
             getDepositAddress(env, source, destination, destinationAddress, symbol),
         source,
