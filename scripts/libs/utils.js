@@ -158,7 +158,7 @@ async function calculateBridgeExpressFee(source, destination, options = {}) {
 
     // baseFee + executionFeeWithMultiplier + expressFee
     return ethers.BigNumber.from(response.executionFeeWithMultiplier)
-        .mul(expressMultiplier * floatToIntFactor) // convert float to decimals
+        .mul(expressMultiplier * 2 * floatToIntFactor) // convert float to decimals
         .div(floatToIntFactor) // convert back without losing precision.
         .add(response.baseFee)
         .toString();
