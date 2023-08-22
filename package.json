@@ -19,7 +19,7 @@
     "license": "ISC",
     "dependencies": {
         "@axelar-network/axelar-cgp-solidity": "^4.5.0",
-        "@axelar-network/axelar-gmp-sdk-solidity": "^4.0.1",
+        "@axelar-network/axelar-gmp-sdk-solidity": "^5.0.0",
         "@axelar-network/axelar-local-dev": "^2.0.5",
         "@axelar-network/axelarjs-sdk": "^0.12.8",
         "@openzeppelin/contracts": "^4.5.0",

@@ -7,7 +7,7 @@ import { IERC20CrossChain } from './IERC20CrossChain.sol';
 import { ERC20 } from '@axelar-network/axelar-cgp-solidity/contracts/ERC20.sol';
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol';
-import { StringToAddress, AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
+import { StringToAddress, AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/AddressString.sol';
 
 contract ERC20CrossChain is AxelarExecutable, ERC20, Upgradable, IERC20CrossChain {
     using StringToAddress for string;
@@ -46,7 +46,7 @@ contract ERC20CrossChain is AxelarExecutable, ERC20, Upgradable, IERC20CrossChai
     ) public payable override {
         require(msg.value > 0, 'Gas payment is required');
 
-        
+
         _burn(msg.sender, amount);
         bytes memory payload = abi.encode(destinationAddress, amount);
         string memory stringAddress = address(this).toString();
