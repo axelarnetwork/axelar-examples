@@ -4,6 +4,10 @@ const { enabledAptos } = require('./config');
 const path = require('path');
 const { EvmRelayer } = require('@axelar-network/axelar-local-dev/dist/relay/EvmRelayer');
 
+const evmRelayer = new EvmRelayer();
+
+const relayers = { evm: evmRelayer };
+
 /**
  * Start the local chains with Axelar contracts deployed.
  * aUSDC is deployed and funded to the given addresses.
@@ -11,9 +15,6 @@ const { EvmRelayer } = require('@axelar-network/axelar-local-dev/dist/relay/EvmR
  * @param {*} chains - chains to start. All chains are started if not specified (Avalanche, Moonbeam, Polygon, Fantom, Ethereum).
  */
 async function start(fundAddresses = [], chains = [], options = {}) {
-    const evmRelayer = new EvmRelayer();
-    const relayers = { evm: evmRelayer };
-
     if (enabledAptos) {
         const { AptosRelayer, createAptosNetwork } = require('@axelar-network/axelar-local-dev-aptos');
         await initAptos(createAptosNetwork);
@@ -63,4 +64,6 @@ async function initAptos(createAptosNetwork) {
 
 module.exports = {
     start,
+    evmRelayer,
+    relayers,
 };

@@ -1,4 +1,4 @@
-# Call contract with token
+# Call Contract with Token
 
 This example allows you to send aUSDC from a source chain to a destination chain and distribute it equally among specified accounts.
 
@@ -17,9 +17,9 @@ To deploy the contract, run the following command:
 npm run deploy evm/call-contract-with-token [local|testnet]
 ```
 
-The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command. 
+The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command.
 
-An example of its usage is demonstrated as follows: `npm run deploy evm/call-contract-with-token local` or `npm run deploy evm/call-contract-with-token testnet`. 
+An example of its usage is demonstrated as follows: `npm run deploy evm/call-contract-with-token local` or `npm run deploy evm/call-contract-with-token testnet`.
 
 ### Execution
 

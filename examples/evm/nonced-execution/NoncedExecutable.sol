@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol';
-import { StringToAddress } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
+import { StringToAddress } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/AddressString.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 
 abstract contract NoncedExecutable is AxelarExecutable {
@@ -36,7 +36,7 @@ abstract contract NoncedExecutable is AxelarExecutable {
     function sendContractCall(string calldata destinationChain, string calldata destinationContract, bytes calldata payload) external payable {
         require(msg.value > 0, 'Gas payment is required');
 
-        
+
         // Build the payload. The first 32 bytes are the nonce, the next 32 bytes are the address of the sender, and the rest is the payload passed by the caller.
         bytes memory newPayload = abi.encode(outgoingNonces[destinationChain][address(this)], address(this), payload);
 
