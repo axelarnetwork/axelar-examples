@@ -13,7 +13,7 @@ for (let j = 2; j < process.argv.length; j++) {
 
 // Insert the chains you want to start here. Available values are:
 // 'Avalanche', 'Moonbeam', 'Polygon', 'Fantom', 'Ethereum'
-const chains = [];
+const chains = ['Avalanche', 'Ethereum'];
 
 // Start the chains.
 start(fundAddresses, chains);

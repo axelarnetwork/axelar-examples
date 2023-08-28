@@ -1,5 +1,5 @@
 {
     "aptos": {
-        "enabled": false
+        "enabled": true
     }
 }
