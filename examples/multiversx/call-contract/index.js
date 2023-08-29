@@ -34,8 +34,8 @@ async function deploy(chain, wallet) {
     console.log(`Deployed HelloWorld for ${chain.name} at ${chain.contract.address}.`);
 }
 
-async function execute(chains, wallet, options) {
-    const { destination } = options;
+async function execute(destination, wallet, options) {
+    const args = options.args || [];
 
     const client = await loadMultiversXNetwork();
 
@@ -73,9 +73,9 @@ async function execute(chains, wallet, options) {
     // Currently, the SDK can't calculate bridge fee for MultiversX, so we just use a fixed value.
     const crossChainGasLimit = 100_000_000;
 
-    // await executeMultiversXToEvm(contractAddress, client, destination, crossChainGasLimit);
+    // await executeMultiversXToEvm(contractAddress, client, destination, crossChainGasLimit, args?.[1]);
 
-    await executeEvmToMultiversX(contractAddress, client, destination, crossChainGasLimit);
+    await executeEvmToMultiversX(contractAddress, client, destination, crossChainGasLimit, args?.[2]);
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -85,8 +85,8 @@ async function execute(chains, wallet, options) {
     await logValue();
 }
 
-async function executeMultiversXToEvm(contractAddress, client, destination, crossChainGasLimit) {
-    const message = `Hello ${destination.name} from MultiversX, it is ${new Date().toLocaleTimeString()}.`;
+async function executeMultiversXToEvm(contractAddress, client, destination, crossChainGasLimit, optMessage) {
+    const message = optMessage || `Hello ${destination.name} from MultiversX, it is ${new Date().toLocaleTimeString()}.`;
 
     const messageEvm = defaultAbiCoder.encode(['string'], [message]);
     const contract = new SmartContract({ address: Address.fromBech32(contractAddress) });
@@ -114,8 +114,8 @@ async function executeMultiversXToEvm(contractAddress, client, destination, cros
     console.log(`Sent MultiversX setRemoteValue transaction with ${hash}... Waiting...`);
 }
 
-async function executeEvmToMultiversX(contractAddress, client, destination, crossChainGasLimit) {
-    const message = `Hello MultiversX from ${destination.name}, it is ${new Date().toLocaleTimeString()}.`;
+async function executeEvmToMultiversX(contractAddress, client, destination, crossChainGasLimit, optMessage) {
+    const message = optMessage || `Hello MultiversX from ${destination.name}, it is ${new Date().toLocaleTimeString()}.`;
 
     const tx = await destination.contract.setRemoteValue('multiversx', contractAddress, message, {
         value: BigInt(crossChainGasLimit),

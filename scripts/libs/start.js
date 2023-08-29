@@ -1,6 +1,7 @@
 const { ethers } = require('ethers');
 const { createAndExport } = require('@axelar-network/axelar-local-dev');
 const { enabledAptos } = require('./config');
+const { enabledMultiversx } = require('./config');
 const path = require('path');
 const { EvmRelayer } = require('@axelar-network/axelar-local-dev/dist/relay/EvmRelayer');
 
@@ -20,6 +21,13 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         await initAptos(createAptosNetwork);
         relayers.aptos = new AptosRelayer();
         evmRelayer.setRelayer('aptos', relayers.aptos);
+    }
+
+    if (enabledMultiversx) {
+        const { MultiversXRelayer, createMultiversXNetwork } = require('@axelar-network/axelar-local-dev-multiversx');
+        await initMultiversX(createMultiversXNetwork);
+        relayers.multiversx = new MultiversXRelayer();
+        evmRelayer.setRelayer('multiversx', relayers.multiversx);
     }
 
     const pathname = path.resolve(__dirname, '../..', 'chain-config', 'local.json');
@@ -59,6 +67,16 @@ async function initAptos(createAptosNetwork) {
         });
     } catch (e) {
         console.log('Skip Aptos initialization, rerun this after starting an aptos node for proper support.');
+    }
+}
+
+async function initMultiversX(createMultiversXNetwork) {
+    try {
+        await createMultiversXNetwork({
+            gatewayUrl: 'http://0.0.0.0:7950',
+        });
+    } catch (e) {
+        console.log('Skip MultiversX initialization, rerun this after starting a MultiversX localnet for proper support.');
     }
 }
 

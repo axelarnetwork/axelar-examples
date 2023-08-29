@@ -6,7 +6,7 @@
 
 Download from here: https://docs.multiversx.com/sdk-and-tools/sdk-py/installing-mxpy#install-using-mxpy-up-recommended
 
-_Note: Our examples are tested on Mxpy version `7.3.0`._
+_Note: Our examples are tested on Mxpy version `7.3.0`, but newer versions might also work._
 
 2. Build MultiversX contracts
 
@@ -26,7 +26,9 @@ mxpy localnet setup
 mxpy localnet start
 ```
 
-4. Run the local server
+4. Check that `multiversx` - `enabled` flag is set to `true` in `config/default.json` file
+
+5. Run the local server
 
 ```bash
 npm run start

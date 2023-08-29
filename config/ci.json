@@ -1,5 +1,8 @@
 {
   "aptos": {
       "enabled": true
+  },
+  "multiversx": {
+    "enabled": true
   }
 }
