@@ -9,7 +9,7 @@ const HelloWorld = rootRequire('./artifacts/examples/multiversx/call-contract/co
 
 const path = require('path');
 const { AddressValue, ContractFunction, Address, SmartContract, StringValue, ResultsParser, BinaryCodec, TupleType,
-    StringType, BytesType
+    StringType, BytesType, BytesValue
 } = require('@multiversx/sdk-core/out');
 const { defaultAbiCoder } = require('ethers/lib/utils');
 
@@ -17,15 +17,15 @@ async function preDeploy() {
     console.log(`Deploying HelloWorld for MultiversX.`);
     const client = await loadMultiversXNetwork();
 
-    const contract = path.join(__dirname, 'hello-world/output/hello-world.wasm')
+    const contractCode = path.join(__dirname, 'hello-world/output/hello-world.wasm')
 
-    const contractAddress = await client.deployContract(contract, [
+    const contractAddress = await client.deployContract(contractCode, [
         new AddressValue(client.gatewayAddress),
         new AddressValue(client.gasReceiverAddress),
     ]);
     console.log(`Deployed HelloWorld for MultiversX at ${contractAddress}.`);
 
-    updateMultiversXConfig({ contractAddress });
+    updateMultiversXConfig(contractAddress);
 }
 
 async function deploy(chain, wallet) {
@@ -46,7 +46,7 @@ async function execute(destination, wallet, options) {
     }
 
     async function logValue() {
-        console.log(`value at ${destination.name} is "${await destination.contract.value()}"`);
+        console.log(`Value at ${destination.name} is "${await destination.contract.value()}"`);
 
         const result = await client.callContract(contractAddress, "received_value");
 
@@ -73,13 +73,13 @@ async function execute(destination, wallet, options) {
     // Currently, the SDK can't calculate bridge fee for MultiversX, so we just use a fixed value.
     const crossChainGasLimit = 100_000_000;
 
-    // await executeMultiversXToEvm(contractAddress, client, destination, crossChainGasLimit, args?.[1]);
+    await executeMultiversXToEvm(contractAddress, client, destination, crossChainGasLimit, args?.[1]);
 
     await executeEvmToMultiversX(contractAddress, client, destination, crossChainGasLimit, args?.[2]);
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    await sleep(18000);
+    await sleep(15000);
 
     console.log('--- After ---');
     await logValue();
@@ -88,7 +88,8 @@ async function execute(destination, wallet, options) {
 async function executeMultiversXToEvm(contractAddress, client, destination, crossChainGasLimit, optMessage) {
     const message = optMessage || `Hello ${destination.name} from MultiversX, it is ${new Date().toLocaleTimeString()}.`;
 
-    const messageEvm = defaultAbiCoder.encode(['string'], [message]);
+    // Remove '0x' from beginning of hex strings encoded by Ethereum
+    const messageEvm = defaultAbiCoder.encode(['string'], [message]).substring(2);
     const contract = new SmartContract({ address: Address.fromBech32(contractAddress) });
     const transaction = contract.call({
         caller: client.owner,
@@ -97,7 +98,7 @@ async function executeMultiversXToEvm(contractAddress, client, destination, cros
         args: [
             new StringValue(destination.name),
             new StringValue(destination.contract.address),
-            new StringValue(messageEvm)
+            new BytesValue(Buffer.from(messageEvm, 'hex'))
         ],
         value: crossChainGasLimit,
         chainID: 'localnet'
@@ -110,8 +111,6 @@ async function executeMultiversXToEvm(contractAddress, client, destination, cros
     if (!returnCode.isSuccess()) {
         throw new Error(`Could not call MultiversX contract setRemoteValue... ${hash}`);
     }
-
-    console.log(`Sent MultiversX setRemoteValue transaction with ${hash}... Waiting...`);
 }
 
 async function executeEvmToMultiversX(contractAddress, client, destination, crossChainGasLimit, optMessage) {
@@ -121,9 +120,6 @@ async function executeEvmToMultiversX(contractAddress, client, destination, cros
         value: BigInt(crossChainGasLimit),
     });
     await tx.wait();
-
-    console.log(`Sent ${destination.name} setRemoteValue transaction...`);
-    console.log('Waiting...');
 }
 
 module.exports = {

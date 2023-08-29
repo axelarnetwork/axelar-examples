@@ -1,6 +1,6 @@
 {
     "aptos": {
-        "enabled": true
+        "enabled": false
     },
     "multiversx": {
         "enabled": true
