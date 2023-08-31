@@ -30,6 +30,27 @@ async function executeAptosExample(chains, args, wallet, example) {
     });
 }
 
+async function executeSuiExample(chains, args, wallet, example) {
+  const evmChain = getSourceChain(chains, args, example.sourceChain);
+
+  evmChain.provider = getDefaultProvider(evmChain.rpc);
+  const connectedWallet = wallet.connect(evmChain.provider);
+
+  // Initialize contracts to chain object.
+  deserializeContract(evmChain, connectedWallet);
+
+  // Recover axelar contracts to chain object.
+  evmChain.gateway = new Contract(evmChain.gateway, AxelarGatewayContract.abi, connectedWallet);
+  evmChain.gasService = new Contract(evmChain.gasService, AxelarGasServiceContract.abi, connectedWallet);
+  const tokenAddress = await evmChain.gateway.tokenAddresses('aUSDC');
+  evmChain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);
+
+  await example.execute(evmChain, wallet, {
+      args,
+  });
+}
+
+
 /**
  * Execute an example script. The example script must have an `execute` function.
  * @param {*} env - The environment to execute on.
@@ -153,4 +174,5 @@ function listenForGMPEvent(env, source, startBlockNumber) {
 module.exports = {
     executeAptosExample,
     executeEVMExample,
+    executeSuiExample,
 };

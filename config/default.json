@@ -1,5 +1,8 @@
 {
     "aptos": {
         "enabled": false
+    },
+    "sui": {
+        "enabled": true
     }
 }

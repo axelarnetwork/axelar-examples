@@ -1,6 +1,6 @@
 const { ethers } = require('ethers');
 const { createAndExport } = require('@axelar-network/axelar-local-dev');
-const { enabledAptos } = require('./config');
+const { enabledAptos, enabledSui } = require('./config');
 const path = require('path');
 const { EvmRelayer } = require('@axelar-network/axelar-local-dev/dist/relay/EvmRelayer');
 
@@ -20,6 +20,13 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         await initAptos(createAptosNetwork);
         relayers.aptos = new AptosRelayer();
         evmRelayer.setRelayer('aptos', relayers.aptos);
+    }
+
+    if (enabledSui) {
+        const { createSuiRelayer } = require('@axelar-network/axelar-local-dev-sui');
+        const suiRelayer = await createSuiRelayer(process.env.SUI_URL, process.env.SUI_FAUCET_URL);
+        relayers.sui = suiRelayer;
+        evmRelayer.setRelayer('sui', suiRelayer);
     }
 
     const pathname = path.resolve(__dirname, '../..', 'chain-config', 'local.json');
