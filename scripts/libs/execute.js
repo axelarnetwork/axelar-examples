@@ -1,7 +1,8 @@
 'use strict';
 
 const { Contract, getDefaultProvider } = require('ethers');
-const { calculateBridgeFee, getDepositAddress, calculateBridgeExpressFee } = require('./utils.js');
+const { SigningStargateClient } = require('@cosmjs/stargate');
+const { calculateBridgeFee, getDepositAddress, calculateBridgeExpressFee, getCosmosWallet } = require('./utils.js');
 const AxelarGatewayContract = rootRequire(
     'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
 );
@@ -28,6 +29,18 @@ async function executeAptosExample(chains, args, wallet, example) {
     await example.execute(evmChain, wallet, {
         args,
     });
+}
+
+async function executeCosmosExample(env, chains, evmChains, args, example) {
+    const srcChain = chains[args[0].toLowerCase()];
+    if (!srcChain) throw new Error(`cannot find chain ${args[0]}`);
+
+    const prefix = srcChain.cosmosConfigs.addressPrefix;
+    const rpc = srcChain.cosmosConfigs.rpc[0];
+    const wallet = await getCosmosWallet({ prefix });
+    const connectedSigner = await SigningStargateClient.connectWithSigner(rpc, wallet);
+    const destination = getDestChain(evmChains, args, example.destinationChain);
+    await example.execute(chains, connectedSigner, { args, source: srcChain, destination, wallet });
 }
 
 /**
@@ -153,4 +166,5 @@ function listenForGMPEvent(env, source, startBlockNumber) {
 module.exports = {
     executeAptosExample,
     executeEVMExample,
+    executeCosmosExample,
 };
