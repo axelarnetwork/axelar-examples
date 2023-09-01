@@ -7,6 +7,7 @@ const {
 const {
     utils: { defaultAbiCoder, arrayify },
 } = require('ethers');
+const { GasToken } = require('@axelar-network/axelarjs-sdk');
 
 const ExecutableSample = rootRequire('./artifacts/examples/evm/call-contract/ExecutableSample.sol/ExecutableSample.json');
 
@@ -19,12 +20,20 @@ async function deployEVMChains(chain, wallet) {
 
 async function execute(chains, connectedSigner, options) {
     const AXELAR_GMP_ACCOUNT_ADDRESS = 'axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5';
+    const AXELAR_GAS_RECEIVER = 'axelar1zl3rxpp70lmte2xr6c4lgske2fyuj3hupcsvcd';
     const args = options.args || [];
-    const { source, destination, wallet } = options;
+    const { source, destination, wallet, calculateBridgeFee } = options;
     const channelIdToAxelar = source.cosmosConfigs.channelIdToAxelar;
-    const messageString = `Hello ${destination.name} from ${source.name}, it is ${new Date().toLocaleTimeString()}.` || args[2];
+    const messageString = args[2] || `Hello ${destination.name} from ${source.name}, it is ${new Date().toLocaleTimeString()}.`;
 
     const { address: senderAddress } = (await wallet.getAccounts())[0];
+
+    source.name = args[0]; //HACK
+
+    const feeInAxl = {
+        denom: source.assets.find((asset) => asset.symbol === GasToken.AXL).ibcDenom,
+        feeAmount: await calculateBridgeFee(source, destination, { symbol: GasToken.AXL }),
+    };
 
     const payload = [
         {
@@ -33,8 +42,8 @@ async function execute(chains, connectedSigner, options) {
                 sender: senderAddress,
                 receiver: AXELAR_GMP_ACCOUNT_ADDRESS,
                 token: {
-                    denom: 'ibc/9463E39D230614B313B487836D13A392BD1731928713D4C8427A083627048DB3',
-                    amount: '1',
+                    denom: feeInAxl.denom,
+                    amount: feeInAxl.feeAmount,
                 },
                 sourceChannel: channelIdToAxelar,
                 sourcePort: 'transfer',
@@ -44,7 +53,7 @@ async function execute(chains, connectedSigner, options) {
                     destination_chain: destination.name,
                     destination_address: destination.contract.address,
                     payload: Buffer.from(arrayify(defaultAbiCoder.encode(['string'], [messageString]))).toString('base64'),
-                    fee: { amount: '1', recipient: 'axelar1zl3rxpp70lmte2xr6c4lgske2fyuj3hupcsvcd' },
+                    fee: { amount: feeInAxl.feeAmount, recipient: AXELAR_GAS_RECEIVER },
                     type: 1,
                 }),
             }),
