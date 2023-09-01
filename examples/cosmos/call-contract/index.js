@@ -6,7 +6,6 @@ const {
 } = require('@axelar-network/axelar-local-dev');
 const {
     utils: { defaultAbiCoder, arrayify },
-    ethers,
 } = require('ethers');
 
 const ExecutableSample = rootRequire('./artifacts/examples/evm/call-contract/ExecutableSample.sol/ExecutableSample.json');
@@ -52,11 +51,11 @@ async function execute(chains, connectedSigner, options) {
         },
     ];
 
-    // const tx = await connectedSigner.signAndBroadcast(senderAddress, payload, {
-    //     gas: '250000',
-    //     amount: [{ denom: 'uosmo', amount: '30000' }],
-    // });
-    // console.log({ tx });
+    const tx = await connectedSigner.signAndBroadcast(senderAddress, payload, {
+        gas: '250000',
+        amount: [{ denom: 'uosmo', amount: '30000' }],
+    });
+    console.log({ tx });
 
     async function logValue() {
         console.log('logValue', { destination: destination.contract });
