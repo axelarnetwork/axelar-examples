@@ -44,7 +44,7 @@ Or you can manually copy the example `.env.example` file and fill in your EVM pr
 cp .env.example .env
 ```
 
-Then update to your own private key.
+Then update to your own private key for EVM. Add your own mnemonic for Cosmos wallet.
 
 ## Print wallet balances
 
