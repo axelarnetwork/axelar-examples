@@ -3,6 +3,7 @@ const { createAndExport } = require('@axelar-network/axelar-local-dev');
 const { enabledAptos, enabledSui } = require('./config');
 const path = require('path');
 const { EvmRelayer } = require('@axelar-network/axelar-local-dev/dist/relay/EvmRelayer');
+const { RelayerType } = require('@axelar-network/axelar-local-dev');
 
 const evmRelayer = new EvmRelayer();
 
@@ -23,10 +24,10 @@ async function start(fundAddresses = [], chains = [], options = {}) {
     }
 
     if (enabledSui) {
-        const { createSuiRelayer } = require('@axelar-network/axelar-local-dev-sui');
-        const suiRelayer = await createSuiRelayer(process.env.SUI_URL, process.env.SUI_FAUCET_URL);
+        const { initSui } = require('@axelar-network/axelar-local-dev-sui');
+        const { suiRelayer } = await initSui(process.env.SUI_URL, process.env.SUI_FAUCET_URL);
         relayers.sui = suiRelayer;
-        evmRelayer.setRelayer('sui', suiRelayer);
+        evmRelayer.setRelayer(RelayerType.Sui, suiRelayer);
     }
 
     const pathname = path.resolve(__dirname, '../..', 'chain-config', 'local.json');
