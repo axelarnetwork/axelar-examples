@@ -58,5 +58,5 @@ jobs:
               run: |
                   nohup sh -c "sui-test-validator" > nohup.out 2> nohup.err < /dev/null &
                   nohup sh -c "aptos node run-local-testnet --with-faucet" > nohup.out 2> nohup.err < /dev/null &
-                  sleep 15
+                  sleep 10
                   npm run test
