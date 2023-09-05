@@ -56,13 +56,9 @@ async function execute(evmChain, wallet, options) {
     console.log('--- Initially ---');
     await logValue();
 
-    // Currently, our SDK can't calculate bridge fee for Sui, so we just use a fixed value.
-    const gasLimit = 3e5;
-    const gasPrice = 1;
-
     // Send message from EVM to Sui.
     const tx = await evmChain.contract.setRemoteValue('sui', `${evmChain.sui.packageId}::hello_world`, messageEvmToSui, {
-        value: BigInt(Math.floor(gasLimit * gasPrice)),
+        value: 1, // Currently, we didn't check for the fee, so we set it to 1.
     });
     await tx.wait();
 
