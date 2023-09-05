@@ -54,8 +54,9 @@ jobs:
                   npm run build-aptos
 
             - name: Test
+              timeout-minutes: 15
               run: |
                   nohup sh -c 'RUST_LOG="off" sui-test-validator' &
                   nohup sh -c "aptos node run-local-testnet --with-faucet" > nohup.out 2> nohup.err < /dev/null &
                   sleep 15
-                  NODE_ENV=ci npm run test
+                  npm run test
