@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 
-const { start, deploy, executeEVMExample, executeAptosExample, getWallet, getEVMChains, relayers } = require('../../scripts/libs');
+const { start, deploy, executeEVMExample, executeAptosExample, getWallet, getEVMChains, relayers, executeSuiExample } = require('../../scripts/libs');
 const {
     destroyExported,
     utils: { setLogger },
@@ -85,12 +85,12 @@ describe('Check Examples Execution', function () {
     describe('Sui Examples', function () {
         for (const exampleName of suiExamples) {
             it(exampleName, async function () {
-                const example = rootRequire(`examples/aptos/${exampleName}/index.js`);
+                const example = rootRequire(`examples/sui/${exampleName}/index.js`);
                 const chains = getEVMChains('local', testChains);
 
                 if (example.deploy) await deploy('local', chains, wallet, example);
 
-                await executeAptosExample(chains, [], wallet, example);
+                await executeSuiExample(chains, [], wallet, example);
             });
         }
     });
