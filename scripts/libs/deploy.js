@@ -37,12 +37,7 @@ async function deploy(env, chains, wallet, example) {
 function preDeploy(chains, wallet, example) {
     if (!example.preDeploy) return;
 
-    const deploys = chains.map((chain) => {
-        const provider = getDefaultProvider(chain.rpc);
-        return example.preDeploy(chain, wallet.connect(provider));
-    });
-
-    return Promise.all(deploys);
+    return example.preDeploy(chains, wallet);
 }
 
 // Deploy the contracts.

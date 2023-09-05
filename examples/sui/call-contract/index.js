@@ -10,14 +10,18 @@ const { SuiNetwork } = require('@axelar-network/axelar-local-dev-sui');
 const path = require('path');
 const HelloWorld = rootRequire('./artifacts/examples/sui/call-contract/contracts/HelloWorld.sol/HelloWorld.json');
 
-async function preDeploy(chain) {
+async function preDeploy(chains) {
     console.log(`Deploying HelloWorld for Sui.`);
     const client = new SuiNetwork(process.env.SUI_URL, process.env.SUI_FAUCET_URL);
     await client.init();
     const response = await client.deploy(path.join(__dirname, 'modules'));
-    chain.sui = {
-        packageId: response.packages[0].packageId,
-    };
+
+    for (const chain of chains) {
+        chain.sui = {
+            packageId: response.packages[0].packageId,
+        };
+    }
+
     console.log(`Deployed HelloWorld module for Sui.`);
 }
 
