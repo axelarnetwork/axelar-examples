@@ -18,12 +18,24 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v3
 
-            - name: Prerequisites
+            - name: Download and Install Aptos Binary
               run: |
-                  wget --no-check-certificate  https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.4/aptos-cli-1.0.4-Ubuntu-22.04-x86_64.zip
+                  wget --no-check-certificate https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.4/aptos-cli-1.0.4-Ubuntu-22.04-x86_64.zip
                   unzip aptos-cli-1.0.4-Ubuntu-22.04-x86_64.zip
-                  chmod +x aptos
-                  cp aptos /usr/local/bin
+                  sudo mv aptos /usr/local/bin
+
+            - name: Setup Dependencies for Sui Binary
+              run: sudo apt-get update && sudo apt-get install -y libpq-dev
+
+            - name: Download and Install Sui Binary
+              run: |
+                  wget https://github.com/MystenLabs/sui/releases/download/devnet-v1.7.0/sui-devnet-v1.7.0-ubuntu-x86_64.tgz
+                  tar -xvf sui-devnet-v1.7.0-ubuntu-x86_64.tgz
+                  sudo mv ./target/release/sui-test-validator-ubuntu-x86_64 /usr/local/bin/sui-test-validator
+                  sudo mv ./target/release/sui-ubuntu-x86_64 /usr/local/bin/sui
+
+            - name: Cleanup
+              run: rm -rf target aptos-cli-1.0.4-Ubuntu-22.04-x86_64.zip sui-devnet-v1.7.0-ubuntu-x86_64.tgz
 
             - name: Install
               run: npm ci
@@ -43,6 +55,7 @@ jobs:
 
             - name: Test
               run: |
+                  nohup sh -c "sui-test-validator" > nohup.out 2> nohup.err < /dev/null &
                   nohup sh -c "aptos node run-local-testnet --with-faucet" > nohup.out 2> nohup.err < /dev/null &
                   sleep 10
                   NODE_ENV=ci npm run test
