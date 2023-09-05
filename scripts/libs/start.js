@@ -17,6 +17,7 @@ const relayers = { evm: evmRelayer };
  * @param {*} chains - chains to start. All chains are started if not specified (Avalanche, Moonbeam, Polygon, Fantom, Ethereum).
  */
 async function start(fundAddresses = [], chains = [], options = {}) {
+    // Set default DNS lookup order to ipv4 first to resolve this issue https://github.com/node-fetch/node-fetch/issues/1624
     dns.setDefaultResultOrder('ipv4first');
 
     if (enabledAptos) {
