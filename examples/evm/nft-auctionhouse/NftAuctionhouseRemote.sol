@@ -7,7 +7,7 @@ import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contra
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import './NftAuctionhouse.sol';
-import { AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
+import { AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/AddressString.sol';
 
 contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutable {
     IAxelarGasService public immutable gasService;
@@ -35,7 +35,7 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutable {
     ) external payable {
         require(msg.value > 0, 'Gas payment is required');
 
-        
+
         usdc.transferFrom(msg.sender, address(this), amount);
         usdc.approve(address(gateway), amount);
         bytes memory payload = abi.encode(msg.sender, bidder, operator, tokenId);

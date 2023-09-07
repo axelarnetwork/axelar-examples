@@ -1,43 +1,19 @@
 'use strict';
 
-const { getDefaultProvider, Contract, ethers } = require('ethers');
+const { Contract } = require('ethers');
 const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
+
 const DistributionExpressExecutable = rootRequire(
     './artifacts/examples/evm/call-contract-with-token-express/DistributionExpressExecutable.sol/DistributionExpressExecutable.json',
 );
-const IGMPExpressService = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/interfaces/IExpressService.sol/IExpressService.json');
 
 async function deploy(chain, wallet) {
-    const provider = getDefaultProvider(chain.rpc);
-    chain.wallet = wallet.connect(provider);
-
-    // Deploy the DistributionExpressExecutable contract
-    const gmpExpressService = new Contract(chain.GMPExpressService.address, IGMPExpressService.abi, chain.wallet);
-
-    // Get the salt for the proxy deployment. Salt has to be a unique value for each deployment.
-    const salt = ethers.utils.id(Date.now().toString());
-
-    // Get the bytecode for the DistributionExpressExecutable contract
-    console.log(`Deploying DistributionExpressExecutable with Proxy for ${chain.name}.`);
-    const destributionExpressContract = await deployContract(chain.wallet, DistributionExpressExecutable, [
-        chain.gateway,
-        chain.gasService,
-    ]);
-
-    // Deploy the DistributionExpressExecutable contract with the proxy
-    const owner = chain.wallet.address;
-    await gmpExpressService
-        .deployExpressProxy(salt, destributionExpressContract.address, chain.wallet.address, '0x')
-        .then((tx) => tx.wait(1));
-
-    // Get the address of the deployed Proxy contract
-    const deployedAddress = await gmpExpressService.deployedProxyAddress(salt, owner);
-    console.log(`Deployed DistributionExpressExecutable with Proxy for ${chain.name} at`, deployedAddress);
-
-    // Create a contract instance for the deployed contract
-    chain.contract = new Contract(deployedAddress, DistributionExpressExecutable.abi, chain.wallet);
+    chain.wallet = wallet;
+    console.log(`Deploying DistributionExpressExecutable for ${chain.name}.`);
+    chain.contract = await deployContract(wallet, DistributionExpressExecutable, [chain.gateway, chain.gasService]);
+    console.log(`Deployed DistributionExpressExecutable for ${chain.name} at`, chain.contract.address);
 }
 
 const sourceChain = 'Polygon';
@@ -53,8 +29,8 @@ function overrideContract(env, source, destination, wallet) {
         }
 
         const whitelistedAddresses = {
-            [sourceChain]: '0xAb6dAb12aCCAe665A44E69d44bcfC6219A30Dd32',
-            [destinationChain]: '0x4E3b6C3d284361Eb4fA9aDE5831eEfF85578b72c',
+            [sourceChain]: '0x22a214c3c2C23a370414e2A4b2CF829A76c29A1b',
+            [destinationChain]: '0x22a214c3c2C23a370414e2A4b2CF829A76c29A1b',
         };
 
         source.contract = new Contract(
@@ -70,52 +46,61 @@ function overrideContract(env, source, destination, wallet) {
     }
 }
 
-async function execute(chains, wallet, options) {
+async function execute(_chains, wallet, options) {
     const args = options.args || [];
-    const { source, destination, calculateBridgeFee, env } = options;
+    const { source, destination, calculateBridgeExpressFee, env } = options;
 
     // If the example is running on testnet, check that the source and destination chains are supported.
     // TODO: Remove this check once we remove the whitelist on testnet.
     overrideContract(env, source, destination, wallet);
 
-    const fee = await calculateBridgeFee(source, destination);
+    // Calculate the express fee for the bridge.
+    const expressFee = await calculateBridgeExpressFee(source, destination);
+
+    // Get the amount to send.
     const amount = Math.floor(parseFloat(args[2])) * 1e6 || 10e6;
 
+    // Get the accounts to send to.
     const accounts = args.slice(3);
 
+    // If no accounts are specified, send to the default wallet address.
     if (accounts.length === 0) accounts.push(wallet.address);
 
+    // Get the balance of the first account.
     const initialBalance = await destination.usdc.balanceOf(accounts[0]);
 
     async function logAccountBalances() {
         for (const account of accounts) {
-            console.log(`${account} has ${(await destination.usdc.balanceOf(account)) / 1e6} aUSDC`);
+            console.log(`${account} has ${(await destination.usdc.balanceOf(account)) / 1e6} aUSDC on ${destination.name}`);
         }
     }
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     console.log('--- Initially ---');
+
+    // Log the balances of the accounts.
     await logAccountBalances();
 
+    // Approve the distribution contract to spend aUSDC.
     const approveTx = await source.usdc.approve(source.contract.address, amount);
     await approveTx.wait();
     console.log('Approved aUSDC on', source.name);
 
+    // Send tokens to the distribution contract.
     const sendTx = await source.contract.sendToMany(destination.name, destination.contract.address, accounts, 'aUSDC', amount, {
-        value: fee,
+        value: expressFee,
     });
+
     console.log('Sent tokens to distribution contract:', sendTx.hash);
 
-    if (env === 'testnet') {
-        console.log(`You can track the GMP transaction status on https://testnet.axelarscan.io/gmp/${sendTx.hash}\n`);
-    }
-
+    // Wait for the distribution to complete by checking the balance of the first account.
     while ((await destination.usdc.balanceOf(accounts[0])).eq(initialBalance)) {
         await sleep(1000);
     }
 
     console.log('--- After ---');
+    // Log the balances of the accounts.
     await logAccountBalances();
 }
 

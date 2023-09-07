@@ -114,7 +114,7 @@ function getDepositAddress(env, source, destination, destinationAddress, symbol)
  * Calculate the gas amount for a transaction using axelarjs-sdk.
  * @param {*} source - The source chain object.
  * @param {*} destination - The destination chain object.
- * @param {*} options - The options to pass to the estimateGasFee function. Available options are gasLimit and gasMultiplier.
+ * @param {*} options - The options to pass to the estimateGasFee function. Available options are gas token symbol, gasLimit and gasMultiplier.
  * @returns {number} - The gas amount.
  */
 function calculateBridgeFee(source, destination, options = {}) {
@@ -128,6 +128,40 @@ function calculateBridgeFee(source, destination, options = {}) {
         gasLimit,
         gasMultiplier,
     );
+}
+
+/**
+ * Calculate total gas to cover for a express transaction using axelarjs-sdk.
+ * @param {*} source - The source chain object.
+ * @param {*} destination - The destination chain object.
+ * @param {*} options - The options to pass to the estimateGasFee function. Available options are gas token symbol, gasLimit and gasMultiplier.
+ * @returns {number} - The gas amount.
+ */
+async function calculateBridgeExpressFee(source, destination, options = {}) {
+    const api = new AxelarQueryAPI({ environment: Environment.TESTNET });
+    const { gasLimit, gasMultiplier, symbol } = options;
+
+    const response = await api.estimateGasFee(
+        CHAINS.TESTNET[source.name.toUpperCase()],
+        CHAINS.TESTNET[destination.name.toUpperCase()],
+        symbol || source.tokenSymbol,
+        gasLimit,
+        gasMultiplier,
+        '0',
+        {
+            showDetailedFees: true,
+        },
+    );
+
+    const expressMultiplier = response.apiResponse.result.express_execute_gas_adjustment_with_multiplier;
+    const floatToIntFactor = 10000;
+
+    // baseFee + executionFeeWithMultiplier + expressFee
+    return ethers.BigNumber.from(response.executionFeeWithMultiplier)
+        .mul(expressMultiplier * 2 * floatToIntFactor) // convert float to decimals
+        .div(floatToIntFactor) // convert back without losing precision.
+        .add(response.baseFee)
+        .toString();
 }
 
 /**
@@ -190,6 +224,7 @@ module.exports = {
     getEVMChains,
     checkEnv,
     calculateBridgeFee,
+    calculateBridgeExpressFee,
     getExamplePath,
     sanitizeEventArgs,
 };

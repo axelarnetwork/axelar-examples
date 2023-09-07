@@ -6,7 +6,7 @@ const {
 } = require('@axelar-network/axelar-local-dev');
 const { AptosNetwork } = require('@axelar-network/axelar-local-dev-aptos');
 const TokenLinker = rootRequire('./artifacts/examples/aptos/token-linker/contracts/AptosTokenLinker.sol/AptosTokenLinker.json');
-const Token = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json');
+const Token = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/token/ERC20MintableBurnable.sol/ERC20MintableBurnable.json');
 const { ethers } = require('ethers');
 
 const aptosTokenLinkerAddress = process.env.APTOS_TOKEN_LINKER_ADDRESS;
