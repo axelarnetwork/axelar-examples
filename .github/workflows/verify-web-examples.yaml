@@ -22,14 +22,14 @@ jobs:
               run: |
                   echo '{"aptos": {"enabled": false}}' > config/ci.json
 
-            - name: Install dependencies for examples
+            - name: Install Dependencies for Cli Examples
               run: npm ci
 
             - name: Compile EVM Smart Contracts
               run: |
                   npm run build
 
-            - name: Create .env file
+            - name: Create .env file and Generate Chains Config
               run: |
                   # Dummy private key created for testing purpose only, it is not secret
                   npm run setup
