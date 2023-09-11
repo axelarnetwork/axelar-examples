@@ -20,7 +20,7 @@
     "dependencies": {
         "@axelar-network/axelar-cgp-solidity": "^4.5.0",
         "@axelar-network/axelar-gmp-sdk-solidity": "^5.0.0",
-        "@axelar-network/axelar-local-dev": "^2.0.5",
+        "@axelar-network/axelar-local-dev": "^2.1.0",
         "@axelar-network/axelarjs-sdk": "^0.12.8",
         "@openzeppelin/contracts": "^4.5.0",
         "axios": "^0.27.2",
@@ -28,6 +28,7 @@
         "config": "^3.3.9",
         "dotenv": "^16.0.2",
         "ethers": "^5.6.2",
+        "fs-extra": "^11.1.1",
         "uuid": "^8.3.2"
     },
     "devDependencies": {
@@ -41,6 +42,7 @@
         "solidity-coverage": "^0.8.2"
     },
     "optionalDependencies": {
-        "@axelar-network/axelar-local-dev-aptos": "^2.0.2"
+        "@axelar-network/axelar-local-dev-aptos": "^2.1.0",
+        "@axelar-network/axelar-local-dev-sui": "^2.1.0"
     }
 }

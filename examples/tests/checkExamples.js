@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 
-const { start, deploy, executeEVMExample, executeAptosExample, getWallet, getEVMChains, relayers } = require('../../scripts/libs');
+const { start, deploy, executeEVMExample, executeAptosExample, getWallet, getEVMChains, relayers, executeSuiExample } = require('../../scripts/libs');
 const {
     destroyExported,
     utils: { setLogger },
@@ -32,6 +32,7 @@ const examples = [
 ];
 
 const aptosExamples = ['call-contract', 'token-linker'];
+const suiExamples = ['call-contract'];
 
 describe('Check Examples Execution', function () {
     // marked as slow if it takes longer than 15 seconds to run each test.
@@ -77,6 +78,19 @@ describe('Check Examples Execution', function () {
                 if (example.deploy) await deploy('local', chains, wallet, example);
 
                 await executeAptosExample(chains, [], wallet, example);
+            });
+        }
+    });
+
+    describe('Sui Examples', function () {
+        for (const exampleName of suiExamples) {
+            it(exampleName, async function () {
+                const example = rootRequire(`examples/sui/${exampleName}/index.js`);
+                const chains = getEVMChains('local', testChains);
+
+                if (example.deploy) await deploy('local', chains, wallet, example);
+
+                await executeSuiExample(chains, [], wallet, example);
             });
         }
     });

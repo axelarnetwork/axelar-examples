@@ -1,0 +1,11 @@
+[package]
+name = "sui-example"
+version = "0.0.1"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "77a9e0d"}
+axelar = { git = "https://github.com/axelarnetwork/axelar-local-dev.git", subdir = "packages/axelar-local-dev-sui/move/axelar", rev = "ae68c9c" }
+
+[addresses]
+sui_example = "0x0"
+sui = "0x2"

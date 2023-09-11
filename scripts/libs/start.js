@@ -1,8 +1,10 @@
 const { ethers } = require('ethers');
 const { createAndExport } = require('@axelar-network/axelar-local-dev');
-const { enabledAptos } = require('./config');
+const { enabledAptos, enabledSui } = require('./config');
+const dns = require('dns');
 const path = require('path');
 const { EvmRelayer } = require('@axelar-network/axelar-local-dev/dist/relay/EvmRelayer');
+const { RelayerType } = require('@axelar-network/axelar-local-dev');
 
 const evmRelayer = new EvmRelayer();
 
@@ -15,11 +17,21 @@ const relayers = { evm: evmRelayer };
  * @param {*} chains - chains to start. All chains are started if not specified (Avalanche, Moonbeam, Polygon, Fantom, Ethereum).
  */
 async function start(fundAddresses = [], chains = [], options = {}) {
+    // Set default DNS lookup order to ipv4 first to resolve this issue https://github.com/node-fetch/node-fetch/issues/1624
+    dns.setDefaultResultOrder('ipv4first');
+
     if (enabledAptos) {
         const { AptosRelayer, createAptosNetwork } = require('@axelar-network/axelar-local-dev-aptos');
         await initAptos(createAptosNetwork);
         relayers.aptos = new AptosRelayer();
         evmRelayer.setRelayer('aptos', relayers.aptos);
+    }
+
+    if (enabledSui) {
+        const { initSui } = require('@axelar-network/axelar-local-dev-sui');
+        const { suiRelayer } = await initSui(process.env.SUI_URL, process.env.SUI_FAUCET_URL);
+        relayers.sui = suiRelayer;
+        evmRelayer.setRelayer(RelayerType.Sui, suiRelayer);
     }
 
     const pathname = path.resolve(__dirname, '../..', 'chain-config', 'local.json');
