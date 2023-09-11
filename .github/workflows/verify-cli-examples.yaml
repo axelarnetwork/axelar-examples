@@ -1,4 +1,4 @@
-name: Run GMP Example Tests
+name: Verify Cli Examples
 
 on: pull_request
 
