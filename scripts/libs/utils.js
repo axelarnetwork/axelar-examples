@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
 const { AxelarAssetTransfer, AxelarQueryAPI, CHAINS, Environment } = require('@axelar-network/axelarjs-sdk');
+const { DirectSecp256k1HdWallet } = require('@cosmjs/proto-signing');
 
 /**
  * Get the wallet from the environment variables. If the EVM_PRIVATE_KEY environment variable is set, use that. Otherwise, use the EVM_MNEMONIC environment variable.
@@ -12,6 +13,10 @@ function getWallet() {
     checkWallet();
     const privateKey = process.env.EVM_PRIVATE_KEY;
     return privateKey ? new Wallet(privateKey) : Wallet.fromMnemonic(process.env.EVM_MNEMONIC);
+}
+function getCosmosWallet({ prefix }) {
+    const mnemonic = process.env.COSMOS_MNEMONIC;
+    return DirectSecp256k1HdWallet.fromMnemonic(mnemonic, { prefix });
 }
 
 /**
@@ -37,6 +42,38 @@ function getEVMChains(env, chains = []) {
         ...chain,
         gasService: chain.AxelarGasService.address,
     }));
+}
+
+/**
+ * Get the chain objects from the chain-config file.
+ * @param {*} env - The environment to get the chain objects for. Available options are 'local' and 'testnet'.
+ * @param {*} chains - The list of chains to get the chain objects for. If this is empty, the default chains will be used.
+ * @returns {Chain[]} - The chain objects.
+ */
+function getCosmosChains(env, chains = []) {
+    checkEnv(env);
+
+    const selectedChains = chains.length > 0 ? chains : getDefaultChains(env);
+
+    if (env === 'local') {
+        console.error('todo');
+    }
+
+    return getCosmosTestnetChains(selectedChains);
+}
+
+/**
+ * Get chains config for testnet.
+ * @param {*} chains - The list of chains to get the chain objects for. If this is empty, the default chains will be used.
+ * @returns {Chain[]} - The chain objects.
+ */
+function getCosmosTestnetChains(chains = []) {
+    const _path = path.join(__dirname, '../../chain-config/cosmos_testnet.json');
+    let testnet = [];
+    if (fs.existsSync(_path)) {
+        testnet = fs.readJsonSync(path.join(__dirname, '../../chain-config/cosmos_testnet.json'));
+    }
+    return testnet.chains;
 }
 
 /**
@@ -174,6 +211,15 @@ function checkWallet() {
 }
 
 /**
+ * Check if the wallet is set. If not, throw an error.
+ */
+function checkCosmosWallet() {
+    if (process.env.COSMOS_MNEMONIC == null) {
+        throw new Error('Need to set the COSMOS_MNEMONIC environment variable.');
+    }
+}
+
+/**
  * Check if the environment is set. If not, throw an error.
  * @param {*} env - The environment to check. Available options are 'local' and 'testnet'.
  */
@@ -219,8 +265,10 @@ function sanitizeEventArgs(event) {
 
 module.exports = {
     getWallet,
+    getCosmosWallet,
     getDepositAddress,
     getBalances,
+    getCosmosChains,
     getEVMChains,
     checkEnv,
     calculateBridgeFee,
