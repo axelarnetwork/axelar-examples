@@ -5,15 +5,15 @@ const {
     utils: { defaultAbiCoder, keccak256, id },
     constants: { AddressZero },
 } = require('ethers');
-const { deployCreate3Upgradable } = require('../index.js');
+const { deployCreate3Upgradable } = require('@axelar-network/axelar-gmp-sdk-solidity/index');
 
 const { expect } = chai;
 const { ethers } = require('hardhat');
 
-const TokenLinkerProxy = require('../artifacts/examples/evm/token-linker/TokenLinkerProxy.sol/TokenLinkerProxy.json');
-const TokenLinkerLockUnlock = require('../artifacts/examples/evm/token-linker/TokenLinkerLockUnlock.sol/TokenLinkerLockUnlock.json');
-const TokenLinkerMintBurn = require('../artifacts/examples/evm/token-linker/TokenLinkerMintBurn.sol/TokenLinkerMintBurn.json');
-const TokenLinkerNative = require('../artifacts/examples/evm/token-linker/TokenLinkerNative.sol/TokenLinkerNative.json');
+const TokenLinkerProxy = require('../../artifacts/examples/evm/token-linker/TokenLinkerProxy.sol/TokenLinkerProxy.json');
+const TokenLinkerLockUnlock = require('../../artifacts/examples/evm/token-linker/TokenLinkerLockUnlock.sol/TokenLinkerLockUnlock.json');
+const TokenLinkerMintBurn = require('../../artifacts/examples/evm/token-linker/TokenLinkerMintBurn.sol/TokenLinkerMintBurn.json');
+const TokenLinkerNative = require('../../artifacts/examples/evm/token-linker/TokenLinkerNative.sol/TokenLinkerNative.json');
 
 const getRandomID = () => id(Math.floor(Math.random() * 1e10).toString());
 

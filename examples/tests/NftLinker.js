@@ -5,17 +5,17 @@ const {
     utils: { defaultAbiCoder, keccak256, id },
     constants: { AddressZero },
 } = require('ethers');
-const { deployCreate3Upgradable } = require('../index.js');
+const { deployCreate3Upgradable } = require('@axelar-network/axelar-gmp-sdk-solidity/index');
 const { expect } = chai;
 const { ethers } = require('hardhat');
 
-const NftLinkerProxy = require('../artifacts/examples/evm/nft-linker/NftLinkerProxy.sol/NftLinkerProxy.json');
-const NftLinkerLockUnlock = require('../artifacts/examples/evm/nft-linker/NftLinkerLockUnlock.sol/NftLinkerLockUnlock.json');
-const NftLinkerMintBurn = require('../artifacts/examples/evm/nft-linker/NftLinkerMintBurn.sol/NftLinkerMintBurn.json');
+const NftLinkerProxy = require('../../artifacts/examples/evm/nft-linker/NftLinkerProxy.sol/NftLinkerProxy.json');
+const NftLinkerLockUnlock = require('../../artifacts/examples/evm/nft-linker/NftLinkerLockUnlock.sol/NftLinkerLockUnlock.json');
+const NftLinkerMintBurn = require('../../artifacts/examples/evm/nft-linker/NftLinkerMintBurn.sol/NftLinkerMintBurn.json');
 
 const getRandomID = () => id(Math.floor(Math.random() * 1e10).toString());
 
-describe('NftLinker', () => {
+describe.only('NftLinker', () => {
     let gatewayFactory;
     let gasServiceFactory;
     let tokenFactory;

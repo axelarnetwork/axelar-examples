@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
-import { AddressToString, StringToAddress } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
+import { AddressToString, StringToAddress } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/AddressString.sol';
 import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol';
 
 abstract contract NftLinkerBase is AxelarExecutable, Upgradable {
@@ -15,7 +15,7 @@ abstract contract NftLinkerBase is AxelarExecutable, Upgradable {
     bytes32 internal constant CONTRACT_ID = keccak256('nft-linker');
     IAxelarGasService public immutable gasService;
 
-    constructor(address gatewayAddress, address gasServiceAddress_, address owner_) AxelarExecutable(gatewayAddress) Upgradable(owner_) {
+    constructor(address gatewayAddress, address gasServiceAddress_) AxelarExecutable(gatewayAddress) Upgradable() {
         gasService = IAxelarGasService(gasServiceAddress_);
     }
 

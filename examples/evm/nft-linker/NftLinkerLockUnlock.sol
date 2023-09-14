@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import { IERC721 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC721.sol';
+import { IERC721 } from '@openzeppelin/contracts/interfaces/IERC721.sol';
 import { NftLinkerBase } from './NftLinkerBase.sol';
 
 contract NftLinkerLockUnlock is NftLinkerBase {
@@ -14,9 +14,8 @@ contract NftLinkerLockUnlock is NftLinkerBase {
     constructor(
         address gatewayAddress_,
         address gasServiceAddress_,
-        address operatorAddress_,
-        address owner_
-    ) NftLinkerBase(gatewayAddress_, gasServiceAddress_, owner_) {
+        address operatorAddress_
+    ) NftLinkerBase(gatewayAddress_, gasServiceAddress_) {
         operatorAddress = operatorAddress_;
     }
 

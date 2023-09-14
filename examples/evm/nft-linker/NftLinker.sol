@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
+import { ERC721 } from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
+import { IERC721 } from '@openzeppelin/contracts/interfaces/IERC721.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
@@ -19,11 +20,7 @@ contract NftLinker is ERC721, AxelarExecutable, Upgradable {
     string public chainName; //To check if we are the source chain.
     IAxelarGasService public immutable gasService;
 
-    constructor(
-        address gateway_,
-        address gasReceiver_,
-        address owner_
-    ) ERC721('Axelar NFT Linker', 'ANL') AxelarExecutable(gateway_) Upgradable(owner_) {
+    constructor(address gateway_, address gasReceiver_) ERC721('Axelar NFT Linker', 'ANL') AxelarExecutable(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
     }
 
