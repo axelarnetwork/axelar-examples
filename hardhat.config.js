@@ -1,4 +1,4 @@
-require("@nomiclabs/hardhat-ethers");
+require('@nomiclabs/hardhat-ethers');
 require('hardhat-gas-reporter');
 require('solidity-coverage');
 
@@ -32,6 +32,5 @@ module.exports = {
     paths: {
         sources: './examples',
         artifacts: './artifacts',
-        tests: './examples/tests',
     },
 };
