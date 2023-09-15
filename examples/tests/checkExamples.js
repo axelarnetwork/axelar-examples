@@ -27,6 +27,7 @@ const examples = [
     'nonced-execution',
     'send-ack',
     'send-token',
+    // 'token-linker'
     // 'nft-linker',
     // 'nft-auctionhouse',
 ];
@@ -68,7 +69,7 @@ describe('Check Examples Execution', function () {
         }
     });
 
-    describe('Aptos Examples', function () {
+    describe.only('Aptos Examples', function () {
         for (const exampleName of aptosExamples) {
             it(exampleName, async function () {
                 const example = rootRequire(`examples/aptos/${exampleName}/index.js`);

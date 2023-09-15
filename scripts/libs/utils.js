@@ -53,7 +53,11 @@ function getTestnetChains(chains = []) {
 
     // If the chains are specified, but the testnet config file does not have the specified chains, use testnet.json from axelar-cgp-solidity.
     if (testnet.length < chains.length) {
-        testnet = require('@axelar-network/axelar-cgp-solidity/info/testnet.json').filter((chain) => chains.includes(chain.name));
+        const testnetChains = require('@axelar-network/axelar-chains-config/info/testnet.json');
+        testnet = [];
+        for (const chain of chains) {
+            testnet.push(testnetChains[chain.name.toLowerCase()]);
+        }
     }
 
     // temporary fix for gas service contract address
