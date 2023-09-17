@@ -42,6 +42,6 @@
         "solidity-coverage": "^0.8.2"
     },
     "optionalDependencies": {
-        "@axelar-network/axelar-local-dev-aptos": "^2.1.1-alpha.2"
+        "@axelar-network/axelar-local-dev-aptos": "^2.1.1-alpha.4"
     }
 }
