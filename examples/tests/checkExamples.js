@@ -27,7 +27,6 @@ const examples = [
     'nonced-execution',
     'send-ack',
     'send-token',
-    // 'token-linker'
     // 'nft-linker',
     // 'nft-auctionhouse',
 ];
