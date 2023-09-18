@@ -46,6 +46,14 @@ cp .env.example .env
 
 Then update to your own private key.
 
+## Running the local chains
+
+```bash
+npm run start
+```
+
+Leave this node running on a separate terminal before deploying and testing the dApps.
+
 ## Print wallet balances
 
 This script will print your wallet balances for each chain.
@@ -55,14 +63,6 @@ npm run check-balance [local|testnet]
 ```
 
 If not specified, this will print balances of the wallet for testnet.
-
-## Running the local chains
-
-```bash
-npm run start
-```
-
-Leave this node running on a separate terminal before deploying and testing the dApps.
 
 ## Examples
 
