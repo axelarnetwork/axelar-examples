@@ -12,6 +12,7 @@
         "execute": "node scripts/runExecute",
         "setup": "node scripts/runSetupEnv",
         "check-balance": "node scripts/runCheckBalance",
+        "get-balance": "node scripts/runGetBalanceForAddress",
         "build": "rm -rf artifacts && npx hardhat clean && npx hardhat compile",
         "build-aptos": "bash ./build-aptos.sh"
     },
@@ -28,7 +29,8 @@
         "config": "^3.3.9",
         "dotenv": "^16.0.2",
         "ethers": "^5.6.2",
-        "uuid": "^8.3.2"
+        "uuid": "^8.3.2",
+        "yargs": "^17.7.2"
     },
     "devDependencies": {
         "eslint-config-richardpringle": "^2.0.0",

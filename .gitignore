@@ -14,3 +14,4 @@ aptos-artifacts
 .vscode
 chain-config/*.json
 .aptos
+.idea
