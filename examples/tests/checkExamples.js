@@ -69,7 +69,7 @@ describe('Check Examples Execution', function () {
         }
     });
 
-    describe.only('Aptos Examples', function () {
+    describe('Aptos Examples', function () {
         for (const exampleName of aptosExamples) {
             it(exampleName, async function () {
                 const example = rootRequire(`examples/aptos/${exampleName}/index.js`);
