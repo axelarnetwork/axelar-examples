@@ -15,7 +15,6 @@ import {
   destConnectedWallet,
 } from "config/constants";
 import { defaultAbiCoder, keccak256 } from "ethers/lib/utils";
-import { nftLinker } from "types/contracts/contracts";
 
 const tokenId = 0;
 
