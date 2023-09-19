@@ -18,9 +18,9 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@axelar-network/axelar-cgp-solidity": "^4.5.0",
-        "@axelar-network/axelar-gmp-sdk-solidity": "^5.0.0",
-        "@axelar-network/axelar-local-dev": "^2.0.5",
+        "@axelar-network/axelar-chains-config": "^0.1.0",
+        "@axelar-network/axelar-gmp-sdk-solidity": "^5.3.1",
+        "@axelar-network/axelar-local-dev": "^2.1.1-alpha.2",
         "@axelar-network/axelarjs-sdk": "^0.12.8",
         "@openzeppelin/contracts": "^4.5.0",
         "axios": "^0.27.2",
@@ -41,6 +41,6 @@
         "solidity-coverage": "^0.8.2"
     },
     "optionalDependencies": {
-        "@axelar-network/axelar-local-dev-aptos": "^2.0.2"
+        "@axelar-network/axelar-local-dev-aptos": "^2.1.1-alpha.4"
     }
 }

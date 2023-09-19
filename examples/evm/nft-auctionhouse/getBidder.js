@@ -30,7 +30,7 @@ if (require.main === module) {
         temp = require(`../../../chain-config/local.json`);
     } else {
         try {
-            temp = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
+            temp = require(`@axelar-network/axelar-chains-config`).getChainArray('testnet');
         } catch {
             temp = testnetInfo;
         }
