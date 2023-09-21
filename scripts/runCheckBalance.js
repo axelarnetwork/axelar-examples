@@ -2,7 +2,7 @@
 
 const { ethers } = require('ethers');
 const { getWallet, getBalances, getEVMChains, checkEnv } = require('./libs');
-const testnetChains = require('@axelar-network/axelar-cgp-solidity/info/testnet.json');
+const { testnetInfo } = require('@axelar-network/axelar-local-dev');
 const {
     contracts: { BurnableMintableCappedERC20, AxelarGateway },
 } = require('@axelar-network/axelar-local-dev');
@@ -14,7 +14,7 @@ const env = process.argv[2] || 'testnet';
 checkEnv(env);
 
 // Get the chains for the environment.
-const allTestnetChains = testnetChains.map((chain) => chain.name);
+const allTestnetChains = Object.entries(testnetInfo).map((_, chain) => chain.name);
 const chains = getEVMChains(env, allTestnetChains);
 
 // Get the wallet.
