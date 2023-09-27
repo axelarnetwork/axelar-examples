@@ -35,7 +35,8 @@ function getEVMChains(env, chains = []) {
 
     return testnet.map((chain) => ({
         ...chain,
-        gasService: chain.AxelarGasService.address,
+        gateway: chain.contracts.AxelarGateway.address,
+        gasService: chain.contracts.AxelarGasService.address,
     }));
 }
 
@@ -55,7 +56,7 @@ function getTestnetChains(chains = []) {
         const { testnetInfo } = require('@axelar-network/axelar-local-dev');
         testnet = [];
         for (const chain of chains) {
-            testnet.push(testnetInfo[chain.name.toLowerCase()]);
+            testnet.push(testnetInfo[chain.toLowerCase()]);
         }
     }
 
