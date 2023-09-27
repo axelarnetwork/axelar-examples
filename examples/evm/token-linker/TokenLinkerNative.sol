@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import { SafeNativeTransfer } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/SafeTransfer.sol';
+import { SafeNativeTransfer } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/SafeNativeTransfer.sol';
 import { TokenLinkerBase } from './TokenLinkerBase.sol';
 
 contract TokenLinkerNative is TokenLinkerBase {
