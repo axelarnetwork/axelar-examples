@@ -131,7 +131,6 @@ contract CompoundInterface is AxelarExecutable {
             revert('Invalid function name');
         }
 
-        // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory result) = address(this).call(
             abi.encodeWithSelector(commandSelector, sourceChain, sourceAddress, tokenSymbol, amount, params)
         );
