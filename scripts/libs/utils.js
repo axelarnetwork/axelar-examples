@@ -35,7 +35,8 @@ function getEVMChains(env, chains = []) {
 
     return testnet.map((chain) => ({
         ...chain,
-        gasService: chain.AxelarGasService.address,
+        gateway: chain.contracts.AxelarGateway.address,
+        gasService: chain.contracts.AxelarGasService.address,
     }));
 }
 
