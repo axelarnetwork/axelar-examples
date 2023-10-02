@@ -39,10 +39,7 @@ contract CrossChainDeployer is AxelarExecutable {
         gateway.callContract(destinationChain, destinationAddress, payload);
     }
 
-    // Handles calls created by setAndSend. Updates this contract's value
-    function _execute(string calldata sourceChain_, string calldata sourceAddress_, bytes calldata payload_) internal override {
-        sourceChain = sourceChain_;
-        sourceAddress = sourceAddress_;
+    function _execute(string calldata, string calldata, bytes calldata payload_) internal override {
         (bytes memory contractBytecode, bytes32 salt) = abi.decode(payload_, (bytes, bytes32));
         create3Deployer.deploy((contractBytecode), salt);
     }
