@@ -43,7 +43,12 @@ async function execute(chains, wallet, options) {
     const bytecode = factory.getDeployTransaction(...[]).data;
     const salt = getSaltFromKey('1');
 
-    const tx = await source.crossChainDeployer.deployContract(destination.name, destination.crossChainDeployer.address, bytecode, salt, {
+    const calls = {
+        destinationChain: destination.name,
+        destinationAddress: destination.crossChainDeployer.address,
+        gas: fee,
+    };
+    const tx = await source.crossChainDeployer.deployRemoteContracts([calls], bytecode, salt, {
         value: fee,
     });
 
