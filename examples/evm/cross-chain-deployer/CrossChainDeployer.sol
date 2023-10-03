@@ -14,11 +14,10 @@ struct RemoteChains {
 }
 
 contract CrossChainDeployer is AxelarExecutable {
-    string public value;
-    string public sourceChain;
-    string public sourceAddress;
     IAxelarGasService public immutable gasService;
     IDeployer public immutable create3Deployer;
+
+    event Executed(address indexed _from, address indexed _owner, address indexed _deployedAddress);
 
     constructor(address gateway_, address gasReceiver_, address create3Deployer_) AxelarExecutable(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
@@ -50,6 +49,7 @@ contract CrossChainDeployer is AxelarExecutable {
 
     function _execute(string calldata, string calldata, bytes calldata payload_) internal override {
         (bytes memory contractBytecode, bytes32 salt) = abi.decode(payload_, (bytes, bytes32));
-        create3Deployer.deploy((contractBytecode), salt);
+        address deployedAddress = create3Deployer.deploy((contractBytecode), salt);
+        emit Executed(msg.sender, address(this), deployedAddress);
     }
 }

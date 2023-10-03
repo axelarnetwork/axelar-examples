@@ -11,8 +11,9 @@ const Create3Deployer = rootRequire(
 );
 const {
     ContractFactory,
-    utils: { keccak256, defaultAbiCoder },
+    utils: { keccak256, defaultAbiCoder, id },
 } = require('ethers');
+const ethers = require('ethers');
 
 const getSaltFromKey = (key) => {
     return keccak256(defaultAbiCoder.encode(['string'], [key.toString()]));
@@ -41,7 +42,7 @@ async function execute(chains, wallet, options) {
 
     const factory = new ContractFactory(SampleContract.abi, SampleContract.bytecode);
     const bytecode = factory.getDeployTransaction(...[]).data;
-    const salt = getSaltFromKey('1');
+    const salt = getSaltFromKey('2');
 
     const calls = {
         destinationChain: destination.name,
@@ -52,8 +53,28 @@ async function execute(chains, wallet, options) {
         value: fee,
     });
 
-    const txFinished = await tx.wait(1);
-    console.log({ txFinished });
+    await tx.wait(1);
+
+    const destProvider = new ethers.providers.JsonRpcProvider(destination.rpc);
+    const waitForEvent = () =>
+        new Promise((resolve, reject) => {
+            destProvider.on(
+                {
+                    address: destination.crossChainDeployer.address,
+                    topics: [id('Executed(address,address,address)')],
+                },
+                (tx) => resolve(tx),
+            );
+            destProvider.on('error', (tx) => reject(tx));
+        });
+
+    const destTx = await waitForEvent();
+    const destTxReceipt = await destProvider.getTransactionReceipt(destTx.transactionHash);
+
+    const log = new ethers.utils.Interface([
+        'event Executed(address indexed _from, address indexed _owner, address indexed _deployedAddress)',
+    ]).parseLog(destTxReceipt.logs[1]);
+    console.log(`${SampleContract.contractName} deployed on ${destination.name} at ${log.args._deployedAddress} by ${log.args._owner}`);
 }
 
 module.exports = {
