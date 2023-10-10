@@ -52,3 +52,16 @@ value at Avalanche is
 --- After ---
 value at Avalanche is Hello World
 ```
+
+## Tutorial
+
+For a complete working example of using `callContract` on testnet to build a full-stack interchain decentralized application with Next.js, Solidity, and Axelar General Message Passing (GMP) to send messages from one blockchain to another, check out the following tutorial:
+
+[How to Build a Full-Stack Interchain Application With Next.js, Solidity & Axelar](https://axelar.network/blog/how-to-build-interchain-dapp-with-next.js-solidity-and-Axelar).
+
+This in-depth tutorial walks through building a full-stack interchain decentralized application with Next.js, Solidity, using Axelar's cross-chain communication protocol.
+
+This tutorial guides you through a simple three-step process that empowers users to:
+Connect their wallet.
+Enter their desired message for cross-chain interaction.
+Send the message from Binance to Avalanche.
