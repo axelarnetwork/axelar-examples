@@ -52,3 +52,17 @@ npm run execute evm/call-contract-with-token local "Avalanche" "Fantom" 100 0xBa
 --- After ---
 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb has 199 aUSDC
 ```
+
+## Tutorial
+
+For a complete working example of using `callContractWithToken` on testnet to build a cross-chain airdrop dApp using Solidity, Next.js, and Axelar, check out the following tutorial:
+
+[How to Build a Cross-Chain Airdrop DApp With Solidity, Next.js and Axelar](https://axelar.network/blog/cross-chain-airdrop-dapp-tutorial).
+
+This in-depth tutorial walks through building a decentralized application for distributing tokens across multiple chains using Axelar's cross-chain communication protocol.
+
+This tutorial guides you through a simple four-step process that empowers users to:
+-  Connect their wallet.
+-  Authorize the airdrop token amount for spending.
+-  Add wallet addresses.
+-  Distribute tokens from Polygon to Avalanche testnet via airdrop.
