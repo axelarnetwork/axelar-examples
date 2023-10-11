@@ -40,13 +40,16 @@ async function deploy(chain, wallet) {
 }
 
 async function execute(chains, wallet, options) {
-    const { source, destination } = options;
+    const { source, destination, calculateBridgeFee } = options;
 
-    const fee = '5000000'; // (await calculateBridgeFee(source, destination));
+    const fee = await calculateBridgeFee(source, destination, {
+        gasLimit: 3000000,
+        gasMultiplier: 2,
+    });
 
     const factory = new ContractFactory(SampleImplementation.abi, SampleImplementation.bytecode);
     const bytecode = factory.getDeployTransaction(...[]).data;
-    const salt = getSaltFromKey('6');
+    const salt = getSaltFromKey('1');
 
     const calls = {
         destinationChain: destination.name,
@@ -77,10 +80,10 @@ async function execute(chains, wallet, options) {
     const destTxReceipt = await destProvider.getTransactionReceipt(destTx.transactionHash);
 
     const log = new ethers.utils.Interface([
-        'event Executed(address indexed _from, address indexed _owner, address indexed _deployedAddress)',
+        'event Executed(address indexed _owner, address indexed _deployedImplementationAddress, address indexed _deployedProxyAddress)',
     ]).parseLog(destTxReceipt.logs[1]);
     console.log(
-        `${SampleImplementation.contractName} deployed on ${destination.name} at ${log.args._deployedAddress} by ${log.args._owner}`,
+        `${SampleImplementation.contractName} deployed on ${destination.name} at ${log.args._deployedImplementationAddress} with proxy at ${log.args._deployedProxyAddress} by ${log.args._owner}`,
     );
 }
 

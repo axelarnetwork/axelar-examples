@@ -20,7 +20,7 @@ contract CrossChainUpgradeableContractDeployer is AxelarExecutable {
     IAxelarGasService public immutable gasService;
     IDeployer public immutable create3Deployer;
 
-    event Executed(address indexed _from, address indexed _owner, address indexed _deployedImplementationAddress);
+    event Executed(address indexed _owner, address indexed _deployedImplementationAddress, address indexed _deployedProxyAddress);
 
     constructor(address gateway_, address gasReceiver_, address create3Deployer_) AxelarExecutable(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
@@ -62,16 +62,12 @@ contract CrossChainUpgradeableContractDeployer is AxelarExecutable {
             (bytes, bytes32, address, bytes)
         );
 
-        address deployedImplementationAddress = _deployExecutable(salt, implementationBytecode, owner, setupParams);
-        emit Executed(msg.sender, address(this), deployedImplementationAddress);
+        address deployedImplementationAddress = _deployExecutable(salt, implementationBytecode);
+        address deployedProxyAddress = _deployProxy(deployedImplementationAddress, owner, setupParams);
+        emit Executed(owner, deployedImplementationAddress, deployedProxyAddress);
     }
 
-    function _deployExecutable(
-        bytes32 deploySalt,
-        bytes memory implementationBytecode,
-        address owner,
-        bytes memory setupParams
-    ) internal returns (address) {
+    function _deployExecutable(bytes32 deploySalt, bytes memory implementationBytecode) internal returns (address) {
         if (implementationBytecode.length == 0) revert('empty bytecode');
 
         address implementation;
@@ -82,7 +78,7 @@ contract CrossChainUpgradeableContractDeployer is AxelarExecutable {
 
         if (implementation == address(0)) revert('failed to deploy');
 
-        return _deployProxy(implementation, owner, setupParams);
+        return implementation;
     }
 
     function _deployProxy(
@@ -90,7 +86,7 @@ contract CrossChainUpgradeableContractDeployer is AxelarExecutable {
         address owner,
         bytes memory setupParams
     ) internal returns (address deployedProxyAddress) {
-        SampleProxy proxy = new SampleProxy(implementationAddress, owner, setupParams);
-        return proxy.implementation();
+        address proxyAddress = address(new SampleProxy(implementationAddress, owner, setupParams));
+        return proxyAddress;
     }
 }

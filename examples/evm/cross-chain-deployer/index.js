@@ -56,6 +56,7 @@ async function execute(chains, wallet, options) {
     await tx.wait(1);
 
     const destProvider = new ethers.providers.JsonRpcProvider(destination.rpc);
+
     const waitForEvent = () =>
         new Promise((resolve, reject) => {
             destProvider.on(
