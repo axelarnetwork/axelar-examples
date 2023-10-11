@@ -4,8 +4,12 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const SampleContract = rootRequire('./artifacts/examples/evm/cross-chain-deployer/SampleContract.sol/SampleContract.json');
-const CrossChainDeployer = rootRequire('./artifacts/examples/evm/cross-chain-deployer/CrossChainDeployer.sol/CrossChainDeployer.json');
+const SampleImplementation = rootRequire(
+    './artifacts/examples/evm/cross-chain-deployer/upgradeable/SampleImplementation.sol/SampleImplementation.json',
+);
+const CrossChainDeployer = rootRequire(
+    './artifacts/examples/evm/cross-chain-deployer/upgradeable/CrossChainUpgradeableContractDeployer.sol/CrossChainUpgradeableContractDeployer.json',
+);
 const Create3Deployer = rootRequire(
     './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/deploy/Create3Deployer.sol/Create3Deployer.json',
 );
@@ -36,20 +40,21 @@ async function deploy(chain, wallet) {
 }
 
 async function execute(chains, wallet, options) {
-    const { source, destination, calculateBridgeFee } = options;
+    const { source, destination } = options;
 
     const fee = '5000000'; // (await calculateBridgeFee(source, destination));
 
-    const factory = new ContractFactory(SampleContract.abi, SampleContract.bytecode);
+    const factory = new ContractFactory(SampleImplementation.abi, SampleImplementation.bytecode);
     const bytecode = factory.getDeployTransaction(...[]).data;
-    const salt = getSaltFromKey('3');
+    const salt = getSaltFromKey('6');
 
     const calls = {
         destinationChain: destination.name,
         destinationAddress: destination.crossChainDeployer.address,
         gas: fee,
     };
-    const tx = await source.crossChainDeployer.deployRemoteContracts([calls], bytecode, salt, {
+    const setupParams = defaultAbiCoder.encode(['string'], ['0x']);
+    const tx = await source.crossChainDeployer.deployRemoteContracts([calls], bytecode, salt, wallet.address, setupParams, {
         value: fee,
     });
 
@@ -74,7 +79,9 @@ async function execute(chains, wallet, options) {
     const log = new ethers.utils.Interface([
         'event Executed(address indexed _from, address indexed _owner, address indexed _deployedAddress)',
     ]).parseLog(destTxReceipt.logs[1]);
-    console.log(`${SampleContract.contractName} deployed on ${destination.name} at ${log.args._deployedAddress} by ${log.args._owner}`);
+    console.log(
+        `${SampleImplementation.contractName} deployed on ${destination.name} at ${log.args._deployedAddress} by ${log.args._owner}`,
+    );
 }
 
 module.exports = {
