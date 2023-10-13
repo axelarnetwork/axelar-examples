@@ -56,7 +56,7 @@ async function execute(chains, wallet, options) {
 
     const factory = new ContractFactory(SampleImplementation.abi, SampleImplementation.bytecode);
     const bytecode = factory.getDeployTransaction(...[]).data;
-    const salt = getSaltFromKey('3');
+    const salt = getSaltFromKey('1');
 
     const calls = {
         destinationChain: destination.name,
@@ -94,43 +94,82 @@ async function execute(chains, wallet, options) {
     );
 
     const proxy = new Contract(log.args._deployedProxyAddress, SampleProxy.abi, destination.provider);
+    const implementationContract = new Contract(log.args._deployedProxyAddress, SampleImplementation.abi, destination.provider);
 
     let contractId = await proxy.implementation();
+    let messageFromImplementationContract = await implementationContract.getSampleMessage();
 
-    console.log({ contractId });
+    console.log({ contractId, messageFromImplementationContract });
 
-    // now upgrade the contract
+    // now upgrade the contract on destination chain from destination chain
+    const upgradeFromDest = async () => {
+        const implementationFactory = new ContractFactory(
+            SampleUpgradedImplementation.abi,
+            SampleUpgradedImplementation.bytecode,
+            wallet.connect(destination.provider),
+        );
 
-    const implementationFactory = new ContractFactory(
-        SampleUpgradedImplementation.abi,
-        SampleUpgradedImplementation.bytecode,
-        wallet.connect(destination.provider),
-    );
+        const implementationConstructorArgs = [];
+        const implementation = await implementationFactory.deploy(...implementationConstructorArgs);
+        await implementation.deployed();
 
-    const implementationConstructorArgs = [];
-    const implementation = await implementationFactory.deploy(...implementationConstructorArgs);
-    await implementation.deployed();
+        const implementationCode = await destination.provider.getCode(implementation.address);
+        const implementationCodeHash = keccak256(implementationCode);
 
-    const implementationCode = await destination.provider.getCode(implementation.address);
-    const implementationCodeHash = keccak256(implementationCode);
+        const destUpgradeTx = await destination.crossChainDeployer.upgrade(
+            log.args._deployedProxyAddress,
+            implementation.address,
+            implementationCodeHash,
+            setupParams,
+            {
+                gasLimit: 5000000,
+            },
+        );
 
-    const destUpgradeTx = await destination.crossChainDeployer.upgrade(
-        log.args._deployedProxyAddress,
-        implementation.address,
-        implementationCodeHash,
-        setupParams,
-        {
-            gasLimit: 5000000,
-        },
-    );
+        const finalTx = await destUpgradeTx.wait(1);
 
-    const finalTx = await destUpgradeTx.wait(1);
+        const destUpgradeTxReceipt = await destProvider.getTransactionReceipt(finalTx.transactionHash);
+        console.log({ destUpgradeTxReceipt: JSON.stringify(destUpgradeTxReceipt.logs) });
 
-    const destUpgradeTxReceipt = await destProvider.getTransactionReceipt(finalTx.transactionHash);
-    console.log({ destUpgradeTxReceipt: JSON.stringify(destUpgradeTxReceipt.logs) });
+        contractId = await proxy.implementation();
+        console.log({ contractId });
+    };
 
-    contractId = await proxy.implementation();
-    console.log({ contractId });
+    // now upgrade the contract on destination chain from src chain
+    const upgradeFromSrc = async () => {
+        const implementationFactory = new ContractFactory(
+            SampleUpgradedImplementation.abi,
+            SampleUpgradedImplementation.bytecode,
+            wallet.connect(destination.provider),
+        );
+
+        const implementationConstructorArgs = [];
+        const implementation = await implementationFactory.deploy(...implementationConstructorArgs);
+        await implementation.deployed();
+
+        const implementationCode = await destination.provider.getCode(implementation.address);
+        const implementationCodeHash = keccak256(implementationCode);
+
+        const srcUpgradeTx = await source.crossChainDeployer.upgradeRemoteContracts(
+            [calls],
+            log.args._deployedProxyAddress,
+            implementation.address,
+            implementationCodeHash,
+            setupParams,
+            {
+                value: fee,
+            },
+        );
+        await srcUpgradeTx.wait(1);
+        await waitForEvent('Upgraded(address)');
+
+        contractId = await proxy.implementation();
+        messageFromImplementationContract = await implementationContract.getSampleMessage();
+
+        console.log({ contractId, messageFromImplementationContract });
+    };
+
+    await upgradeFromSrc();
 }
 
 module.exports = {

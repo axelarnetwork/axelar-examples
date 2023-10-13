@@ -20,4 +20,8 @@ contract SampleImplementation is Upgradable {
     function contractId() external pure override returns (bytes32) {
         return keccak256('test');
     }
+
+    function getSampleMessage() external pure returns (string memory) {
+        return 'this is me in implementation 1';
+    }
 }
