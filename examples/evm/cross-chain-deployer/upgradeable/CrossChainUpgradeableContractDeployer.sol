@@ -6,7 +6,7 @@ import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contract
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IDeployer } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IDeployer.sol';
-import { StringToAddress, AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/AddressString.sol';
+import { IUpgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IUpgradable.sol';
 import { SampleProxy } from './SampleProxy.sol';
 
 struct RemoteChains {
@@ -16,15 +16,25 @@ struct RemoteChains {
 }
 
 contract CrossChainUpgradeableContractDeployer is AxelarExecutable {
-    using AddressToString for address;
     IAxelarGasService public immutable gasService;
     IDeployer public immutable create3Deployer;
+    mapping(address => address) public owners;
 
     event Executed(address indexed _owner, address indexed _deployedImplementationAddress, address indexed _deployedProxyAddress);
+    event Upgraded(bytes32 codehash, bytes32 actualCodehash);
 
     constructor(address gateway_, address gasReceiver_, address create3Deployer_) AxelarExecutable(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
         create3Deployer = IDeployer(create3Deployer_);
+    }
+
+    /**
+     * @notice Modifier that throws an error if called by any account other than the owner.
+     */
+    modifier onlyProxyOwner(address _proxyAddress) {
+        if (owners[_proxyAddress] != msg.sender) revert('not proxy owner');
+
+        _;
     }
 
     function deployRemoteContracts(
@@ -56,18 +66,28 @@ contract CrossChainUpgradeableContractDeployer is AxelarExecutable {
         gateway.callContract(destinationChain, destinationAddress, payload);
     }
 
+    function upgrade(
+        address proxyAddress,
+        address newImplementation,
+        bytes32 newImplementationCodeHash,
+        bytes calldata params
+    ) external onlyProxyOwner(proxyAddress) {
+        IUpgradable(proxyAddress).upgrade(newImplementation, newImplementationCodeHash, params);
+    }
+
     function _execute(string calldata, string calldata, bytes calldata payload_) internal override {
         (bytes memory implementationBytecode, bytes32 salt, address owner, bytes memory setupParams) = abi.decode(
             payload_,
             (bytes, bytes32, address, bytes)
         );
 
-        address deployedImplementationAddress = _deployExecutable(salt, implementationBytecode);
-        address deployedProxyAddress = _deployProxy(deployedImplementationAddress, owner, setupParams);
+        address deployedImplementationAddress = _deployImplementation(salt, implementationBytecode);
+        address deployedProxyAddress = _deployProxy(deployedImplementationAddress, address(this), setupParams);
+        owners[deployedProxyAddress] = owner;
         emit Executed(owner, deployedImplementationAddress, deployedProxyAddress);
     }
 
-    function _deployExecutable(bytes32 deploySalt, bytes memory implementationBytecode) internal returns (address) {
+    function _deployImplementation(bytes32 deploySalt, bytes memory implementationBytecode) internal returns (address) {
         if (implementationBytecode.length == 0) revert('empty bytecode');
 
         address implementation;
@@ -86,7 +106,6 @@ contract CrossChainUpgradeableContractDeployer is AxelarExecutable {
         address owner,
         bytes memory setupParams
     ) internal returns (address deployedProxyAddress) {
-        address proxyAddress = address(new SampleProxy(implementationAddress, owner, setupParams));
-        return proxyAddress;
+        return address(new SampleProxy(implementationAddress, owner, setupParams));
     }
 }
