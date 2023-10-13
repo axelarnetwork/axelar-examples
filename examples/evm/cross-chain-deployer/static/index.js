@@ -4,8 +4,10 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const SampleContract = rootRequire('./artifacts/examples/evm/cross-chain-deployer/SampleContract.sol/SampleContract.json');
-const CrossChainDeployer = rootRequire('./artifacts/examples/evm/cross-chain-deployer/CrossChainDeployer.sol/CrossChainDeployer.json');
+const SampleContract = rootRequire('./artifacts/examples/evm/cross-chain-deployer/static/SampleContract.sol/SampleContract.json');
+const CrossChainDeployer = rootRequire(
+    './artifacts/examples/evm/cross-chain-deployer/static/CrossChainDeployer.sol/CrossChainDeployer.json',
+);
 const Create3Deployer = rootRequire(
     './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/deploy/Create3Deployer.sol/Create3Deployer.json',
 );
