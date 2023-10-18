@@ -2,76 +2,64 @@
 pragma solidity ^0.8.0;
 
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
+import { Create3 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/deploy/Create3.sol';
+import { Proxy } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Proxy.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IDeployer } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IDeployer.sol';
 import { IUpgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IUpgradable.sol';
-import { SampleProxy } from './SampleProxy.sol';
+import { Ownable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/Ownable.sol';
+import { IInterchainDeployer } from './IInterchainDeployer.sol';
 
-import { SampleImplementation } from './SampleImplementation.sol';
-
-struct RemoteChains {
-    string destinationChain;
-    string destinationAddress;
-    uint256 gas;
-}
-
-contract CrossChainUpgradeableContractDeployer is AxelarExecutable {
+contract CrossChainUpgradeableContractDeployer is IInterchainDeployer, AxelarExecutable, Ownable, Create3 {
     IAxelarGasService public immutable gasService;
-    IDeployer public immutable create3Deployer;
-    enum Command {
-        Deploy,
-        Upgrade
-    }
-    mapping(address => address) public owners;
 
-    event Executed(address indexed _owner, address indexed _deployedImplementationAddress, address indexed _deployedProxyAddress);
-    event Upgraded(address indexed _deployedImplementationAddress);
+    mapping(string => mapping(string => bool)) public whitelistedSourceAddresses;
 
-    constructor(address gateway_, address gasReceiver_, address create3Deployer_) AxelarExecutable(gateway_) {
-        gasService = IAxelarGasService(gasReceiver_);
-        create3Deployer = IDeployer(create3Deployer_);
+    constructor(address gateway_, address gasService_, address owner_) AxelarExecutable(gateway_) Ownable(owner_) {
+        gasService = IAxelarGasService(gasService_);
     }
 
-    /**
-     * @notice Modifier that throws an error if called by any account other than the owner.
-     */
-    modifier onlyProxyOwner(address _proxyAddress) {
-        if (owners[_proxyAddress] != msg.sender) revert('not proxy owner');
+    function deployStatic(bytes32 userSalt, bytes memory implementationBytecode) external {
+        _deployImplementation(keccak256(abi.encode(msg.sender, userSalt)), implementationBytecode);
+    }
 
-        _;
+    function deployUpgradeable(bytes32 userSalt, bytes memory newImplementationBytecode, bytes memory setupParams) external {
+        _deployUpgradeable(msg.sender, userSalt, newImplementationBytecode, setupParams, '');
+    }
+
+    function upgradeUpgradeable(bytes32 userSalt, bytes memory newImplementationBytecode, bytes memory setupParams) external {
+        _upgradeUpgradeable(msg.sender, userSalt, newImplementationBytecode, setupParams, '');
     }
 
     function deployRemoteContracts(
         RemoteChains[] calldata remoteChains,
         bytes calldata implementationBytecode,
-        bytes32 salt,
-        address owner,
+        bytes32 userSalt,
         bytes calldata setupParams
     ) external payable {
         require(msg.value > 0, 'Gas payment is required');
 
-        bytes memory payload = abi.encode(Command.Deploy, implementationBytecode, salt, owner, setupParams);
+        bytes memory payload = abi.encode(Command.DeployUpgradeable, msg.sender, userSalt, implementationBytecode, setupParams);
 
-        _fanOut(remoteChains, payload);
+        _sendRemote(remoteChains, payload);
     }
 
     function upgradeRemoteContracts(
         RemoteChains[] calldata remoteChains,
-        address proxyAddress,
-        address newImplementation,
-        bytes32 newImplementationCodeHash,
+        bytes32 userSalt,
+        bytes calldata newImplementationBytecode,
         bytes calldata setupParams
     ) external payable {
         require(msg.value > 0, 'Gas payment is required');
 
-        bytes memory payload = abi.encode(Command.Upgrade, proxyAddress, newImplementation, newImplementationCodeHash, setupParams);
+        bytes memory payload = abi.encode(Command.UpgradeUpgradeable, msg.sender, userSalt, newImplementationBytecode, setupParams);
 
-        _fanOut(remoteChains, payload);
+        _sendRemote(remoteChains, payload);
     }
 
-    function _fanOut(RemoteChains[] calldata remoteChains, bytes memory payload) internal {
+    function _sendRemote(RemoteChains[] calldata remoteChains, bytes memory payload) internal {
         for (uint256 i = 0; i < remoteChains.length; i++) {
             if (remoteChains[i].gas > 0) {
                 gasService.payNativeGasForContractCall{ value: remoteChains[i].gas }(
@@ -86,31 +74,40 @@ contract CrossChainUpgradeableContractDeployer is AxelarExecutable {
         }
     }
 
-    function upgrade(
-        address proxyAddress,
-        address newImplementation,
-        bytes32 newImplementationCodeHash,
-        bytes memory params
-    ) external onlyProxyOwner(proxyAddress) {
-        _upgrade(proxyAddress, newImplementation, newImplementationCodeHash, params);
+    function _upgradeUpgradeable(
+        address sender,
+        bytes32 userSalt,
+        bytes memory newImplementationBytecode,
+        bytes memory setupParams,
+        string memory sourceChain
+    ) internal {
+        bytes32 deploySalt = keccak256(abi.encode(sender, userSalt));
+        address proxy = _create3Address(deploySalt);
+        address newImplementation = _deployImplementation(deploySalt, newImplementationBytecode);
+        bytes32 newImplementationCodeHash = newImplementation.codehash;
+        IUpgradable(proxy).upgrade(newImplementation, newImplementationCodeHash, setupParams);
+        emit Upgraded(sender, userSalt, proxy, newImplementation, sourceChain);
     }
 
-    function _upgrade(address proxyAddress, address newImplementation, bytes32 newImplementationCodeHash, bytes memory params) internal {
-        IUpgradable(proxyAddress).upgrade(newImplementation, newImplementationCodeHash, params);
-        emit Upgraded(SampleImplementation(proxyAddress).implementation());
-    }
+    function _deployUpgradeable(
+        address sender,
+        bytes32 userSalt,
+        bytes memory implementationBytecode,
+        bytes memory setupParams,
+        string memory sourceChain
+    ) internal {
+        bytes32 deploySalt = keccak256(abi.encode(sender, userSalt));
+        address deployedImplementationAddress = _deployImplementation(deploySalt, implementationBytecode);
+        address deployedProxyAddress = _deployProxy(deploySalt, deployedImplementationAddress, setupParams);
 
-    function _deploy(bytes memory implementationBytecode, bytes32 salt, bytes memory setupParams, address owner) internal {
-        address deployedImplementationAddress = _deployImplementation(salt, implementationBytecode);
-        address deployedProxyAddress = _deployProxy(deployedImplementationAddress, address(this), setupParams);
-        owners[deployedProxyAddress] = owner;
-        emit Executed(owner, deployedImplementationAddress, deployedProxyAddress);
+        emit Deployed(sender, userSalt, deployedProxyAddress, deployedImplementationAddress, sourceChain);
     }
 
     function _deployImplementation(bytes32 deploySalt, bytes memory implementationBytecode) internal returns (address) {
         if (implementationBytecode.length == 0) revert('empty bytecode');
 
         address implementation;
+
         // solhint-disable-next-line no-inline-assembly
         assembly {
             implementation := create2(0, add(implementationBytecode, 32), mload(implementationBytecode), deploySalt)
@@ -122,30 +119,42 @@ contract CrossChainUpgradeableContractDeployer is AxelarExecutable {
     }
 
     function _deployProxy(
+        bytes32 deploySalt,
         address implementationAddress,
-        address owner,
         bytes memory setupParams
     ) internal returns (address deployedProxyAddress) {
-        return address(new SampleProxy(implementationAddress, owner, setupParams));
+        return
+            _create3(abi.encodePacked(type(Proxy).creationCode, abi.encode(implementationAddress, address(this), setupParams)), deploySalt);
     }
 
-    function _execute(string calldata, string calldata, bytes calldata payload_) internal override {
-        Command command = abi.decode(payload_, (Command));
+    function _execute(string calldata sourceChain, string calldata sourceAddress, bytes calldata payload) internal override {
+        if (!whitelistedSourceAddresses[sourceChain][sourceAddress]) {
+            revert NotWhitelistedSourceAddress();
+        }
+        Command command = abi.decode(payload, (Command));
 
-        if (command == Command.Deploy) {
-            (, bytes memory implementationBytecode, bytes32 salt, address owner, bytes memory setupParams) = abi.decode(
-                payload_,
-                (Command, bytes, bytes32, address, bytes)
+        if (command == Command.DeployStatic) {
+            (, address sender, bytes32 userSalt, bytes memory bytecode) = abi.decode(payload, (Command, address, bytes32, bytes));
+            _deployImplementation(keccak256(abi.encode(sender, userSalt)), bytecode);
+        } else if (command == Command.DeployUpgradeable) {
+            (, address sender, bytes32 userSalt, bytes memory bytecode, bytes memory setupParams) = abi.decode(
+                payload,
+                (Command, address, bytes32, bytes, bytes)
             );
-            _deploy(implementationBytecode, salt, setupParams, owner);
-        } else if (command == Command.Upgrade) {
-            (, address proxyAddress, address newImplementation, bytes32 newImplementationCodeHash, bytes memory setupParams) = abi.decode(
-                payload_,
-                (Command, address, address, bytes32, bytes)
+            _deployUpgradeable(sender, userSalt, bytecode, setupParams, sourceChain);
+        } else if (command == Command.UpgradeUpgradeable) {
+            (, address sender, bytes32 userSalt, bytes memory bytecode, bytes memory setupParams) = abi.decode(
+                payload,
+                (Command, address, bytes32, bytes, bytes)
             );
-            _upgrade(proxyAddress, newImplementation, newImplementationCodeHash, setupParams);
+            _upgradeUpgradeable(sender, userSalt, bytecode, setupParams, sourceChain);
         } else {
             revert('invalid command');
         }
+    }
+
+    function setWhitelistedSourceAddress(string calldata sourceChain, string calldata sourceSender, bool whitelisted) external onlyOwner {
+        whitelistedSourceAddresses[sourceChain][sourceSender] = whitelisted;
+        emit WhitelistedSourceAddressSet(sourceChain, sourceSender, whitelisted);
     }
 }

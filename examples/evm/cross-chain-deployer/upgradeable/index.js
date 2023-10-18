@@ -37,11 +37,7 @@ async function deploy(chain, wallet) {
     console.log(`Deployed Create3Deployer for ${chain.name} at ${chain.create3Deployer.address}.`);
 
     console.log(`Deploying CrossChainDeployer for ${chain.name}.`);
-    chain.crossChainDeployer = await deployContract(wallet, CrossChainDeployer, [
-        chain.gateway,
-        chain.gasService,
-        chain.create3Deployer.address,
-    ]);
+    chain.crossChainDeployer = await deployContract(wallet, CrossChainDeployer, [chain.gateway, chain.gasService, wallet.address]);
     console.log(`Deployed CrossChainDeployer for ${chain.name} at ${chain.crossChainDeployer.address}.`);
 }
 
@@ -56,7 +52,7 @@ async function execute(chains, wallet, options) {
 
     const factory = new ContractFactory(SampleImplementation.abi, SampleImplementation.bytecode);
     const bytecode = factory.getDeployTransaction(...[]).data;
-    const salt = getSaltFromKey('1');
+    const salt = getSaltFromKey('2');
 
     const calls = {
         destinationChain: destination.name,
@@ -64,7 +60,14 @@ async function execute(chains, wallet, options) {
         gas: fee,
     };
     const setupParams = defaultAbiCoder.encode(['string'], ['0x']);
-    const tx = await source.crossChainDeployer.deployRemoteContracts([calls], bytecode, salt, wallet.address, setupParams, {
+    const setWhitelist = await destination.crossChainDeployer.setWhitelistedSourceAddress(
+        source.name,
+        source.crossChainDeployer.address,
+        true,
+    );
+    await setWhitelist.wait(1);
+
+    const tx = await source.crossChainDeployer.deployRemoteContracts([calls], bytecode, salt, setupParams, {
         value: fee,
     });
 
@@ -83,85 +86,51 @@ async function execute(chains, wallet, options) {
             destProvider.on('error', (tx) => reject(tx));
         });
 
-    const destTx = await waitForEvent('Executed(address,address,address)');
+    const destTx = await waitForEvent('Deployed(address,bytes32,address,address,string)');
     const destTxReceipt = await destProvider.getTransactionReceipt(destTx.transactionHash);
 
     const log = new ethers.utils.Interface([
-        'event Executed(address indexed _owner, address indexed _deployedImplementationAddress, address indexed _deployedProxyAddress)',
+        'event Deployed(address indexed sender, bytes32 indexed userSalt, address indexed proxy, address implementation, string sourceChain)',
     ]).parseLog(destTxReceipt.logs[1]);
     console.log(
-        `${SampleImplementation.contractName} deployed on ${destination.name} at ${log.args._deployedImplementationAddress} with proxy at ${log.args._deployedProxyAddress} by ${log.args._owner}`,
+        `${SampleImplementation.contractName} deployed on ${destination.name} at ${log.args.implementation} with proxy at ${log.args.proxy} by ${log.args.sender}`,
     );
 
-    const proxy = new Contract(log.args._deployedProxyAddress, SampleProxy.abi, destination.provider);
-    const implementationContract = new Contract(log.args._deployedProxyAddress, SampleImplementation.abi, destination.provider);
+    const proxy = new Contract(log.args.proxy, SampleProxy.abi, destination.provider);
+    const implementationContract = new Contract(log.args.proxy, SampleImplementation.abi, destination.provider);
 
     let contractId = await proxy.implementation();
     let messageFromImplementationContract = await implementationContract.getSampleMessage();
 
     console.log({ contractId, messageFromImplementationContract });
 
-    // now upgrade the contract on destination chain from destination chain
+    // upgrade the contract on destination chain from destination chain
     const upgradeFromDest = async () => {
-        const implementationFactory = new ContractFactory(
-            SampleUpgradedImplementation.abi,
-            SampleUpgradedImplementation.bytecode,
-            wallet.connect(destination.provider),
-        );
+        const factory = new ContractFactory(SampleUpgradedImplementation.abi, SampleUpgradedImplementation.bytecode);
+        const newImplBytecode = factory.getDeployTransaction(...[]).data;
 
-        const implementationConstructorArgs = [];
-        const implementation = await implementationFactory.deploy(...implementationConstructorArgs);
-        await implementation.deployed();
+        const destUpgradeTx = await destination.crossChainDeployer.upgradeUpgradeable(salt, newImplBytecode, setupParams, {
+            gasLimit: 5000000,
+        });
 
-        const implementationCode = await destination.provider.getCode(implementation.address);
-        const implementationCodeHash = keccak256(implementationCode);
-
-        const destUpgradeTx = await destination.crossChainDeployer.upgrade(
-            log.args._deployedProxyAddress,
-            implementation.address,
-            implementationCodeHash,
-            setupParams,
-            {
-                gasLimit: 5000000,
-            },
-        );
-
-        const finalTx = await destUpgradeTx.wait(1);
-
-        const destUpgradeTxReceipt = await destProvider.getTransactionReceipt(finalTx.transactionHash);
-        console.log({ destUpgradeTxReceipt: JSON.stringify(destUpgradeTxReceipt.logs) });
+        await destUpgradeTx.wait(1);
 
         contractId = await proxy.implementation();
-        console.log({ contractId });
+        messageFromImplementationContract = await implementationContract.getSampleMessage();
+
+        console.log({ contractId, messageFromImplementationContract });
     };
 
-    // now upgrade the contract on destination chain from src chain
+    // upgrade the contract on destination chain from src chain
     const upgradeFromSrc = async () => {
-        const implementationFactory = new ContractFactory(
-            SampleUpgradedImplementation.abi,
-            SampleUpgradedImplementation.bytecode,
-            wallet.connect(destination.provider),
-        );
+        const factory = new ContractFactory(SampleUpgradedImplementation.abi, SampleUpgradedImplementation.bytecode);
+        const newImplBytecode = factory.getDeployTransaction(...[]).data;
 
-        const implementationConstructorArgs = [];
-        const implementation = await implementationFactory.deploy(...implementationConstructorArgs);
-        await implementation.deployed();
-
-        const implementationCode = await destination.provider.getCode(implementation.address);
-        const implementationCodeHash = keccak256(implementationCode);
-
-        const srcUpgradeTx = await source.crossChainDeployer.upgradeRemoteContracts(
-            [calls],
-            log.args._deployedProxyAddress,
-            implementation.address,
-            implementationCodeHash,
-            setupParams,
-            {
-                value: fee,
-            },
-        );
+        const srcUpgradeTx = await source.crossChainDeployer.upgradeRemoteContracts([calls], salt, newImplBytecode, setupParams, {
+            value: fee,
+        });
         await srcUpgradeTx.wait(1);
-        await waitForEvent('Upgraded(address)');
+        await waitForEvent('Upgraded(address,bytes32,address,address,string)');
 
         contractId = await proxy.implementation();
         messageFromImplementationContract = await implementationContract.getSampleMessage();
