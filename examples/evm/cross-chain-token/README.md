@@ -14,7 +14,7 @@ The Axelar Interchain Token Service provides a robust, managed service for creat
 - Built-in security, monitoring, and reliability features
 - Easy integration into dApps with SDKs
 
-See the [ITS docs](https://docs.axelar.dev/axelar-interchain-token-service) for usage, APIs, and more details.
+See the [ITS docs](https://docs.axelar.dev/dev/send-tokens/interchain-tokens) for usage, APIs, and more details.
 
 ## Local Example
 The example below provides a basic local implementation for reference.
