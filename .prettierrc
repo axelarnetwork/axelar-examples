@@ -16,6 +16,12 @@
             "options": {
                 "trailingComma": "all"
             }
+        },
+        {
+            "files": "*.json",
+            "options": {
+                "tabWidth": 2
+            }
         }
     ]
 }
