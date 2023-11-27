@@ -18,3 +18,8 @@ We will use this file to deploy to the wasm chain for this example.
 
 ## Deploy a Contract
 
+```
+npm run deploy cosmos/call-contract local
+```
+
+## Execute example
