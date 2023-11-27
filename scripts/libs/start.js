@@ -1,4 +1,5 @@
 const { ethers } = require('ethers');
+const fs = require('fs');
 const { createAndExport, EvmRelayer } = require('@axelar-network/axelar-local-dev');
 const { IBCRelayerService } = require('@axelar-network/axelar-local-dev-cosmos');
 const { enabledAptos, enabledCosmos } = require('./config');
@@ -31,6 +32,14 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         const ibcRelayer = await IBCRelayerService.create();
         // Setup IBC Channels. This command will take a while to complete. (should be around 2-3 mins)
         await ibcRelayer.setup();
+
+        const cosmosConfig = {
+            srcChannelId: ibcRelayer.srcChannelId,
+            dstChannelId: ibcRelayer.destChannelId,
+        };
+
+        // write that to cosmos config path
+        fs.writeFileSync(configPath.localCosmosChains, JSON.stringify(cosmosConfig, null, 2));
     }
 
     await createAndExport({
