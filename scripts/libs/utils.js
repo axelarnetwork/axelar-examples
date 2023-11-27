@@ -1,6 +1,7 @@
 const { Wallet, ethers } = require('ethers');
 const path = require('path');
 const fs = require('fs-extra');
+const { configPath } = require('../../config');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
 const { AxelarAssetTransfer, AxelarQueryAPI, CHAINS, Environment } = require('@axelar-network/axelarjs-sdk');
 
@@ -26,9 +27,7 @@ function getEVMChains(env, chains = []) {
     const selectedChains = chains.length > 0 ? chains : getDefaultChains(env);
 
     if (env === 'local') {
-        return fs
-            .readJsonSync(path.join(__dirname, '../../chain-config/local.json'))
-            .filter((chain) => selectedChains.includes(chain.name));
+        return fs.readJsonSync(configPath.localEvmChains).filter((chain) => selectedChains.includes(chain.name));
     }
 
     const testnet = getTestnetChains(selectedChains);
