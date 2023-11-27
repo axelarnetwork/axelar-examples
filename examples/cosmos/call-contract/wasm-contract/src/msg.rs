@@ -2,7 +2,9 @@ use cosmwasm_schema::cw_serde;
 use cosmwasm_std::Binary;
 
 #[cw_serde]
-pub struct InstantiateMsg {}
+pub struct InstantiateMsg {
+    pub channel: String
+}
 
 #[cw_serde]
 pub enum ExecuteMsg {

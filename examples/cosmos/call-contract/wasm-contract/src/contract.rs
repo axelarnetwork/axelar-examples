@@ -2,6 +2,7 @@
 use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
 use ethabi::{decode, encode, ParamType, Token};
 use serde_json_wasm::to_string;
+use crate::state::{Config, CONFIG};
 
 // use cw2::set_contract_version;
 
@@ -16,12 +17,18 @@ const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 */
 
 pub fn instantiate(
-    _deps: DepsMut,
+    deps: DepsMut,
     _env: Env,
     _info: MessageInfo,
-    _msg: InstantiateMsg,
+    msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
-    Ok(Response::new())
+    let cfg = Config {
+        channel: msg.channel,
+    };
+
+    CONFIG.save(deps.storage, &cfg)?;
+
+    Ok(Response::default())
 }
 
 pub fn execute(
@@ -74,7 +81,7 @@ mod exec {
 
     // Sends a message via Axelar GMP to the EVM {destination_chain} and {destination_address}
     pub fn send_message_evm(
-        _deps: DepsMut,
+        deps: DepsMut,
         env: Env,
         info: MessageInfo,
         destination_chain: String,
@@ -98,9 +105,11 @@ mod exec {
             fee: None,
         };
 
+        let config = CONFIG.load(deps.storage)?;
+
         let ibc_message = crate::ibc::MsgTransfer {
             source_port: "transfer".to_string(),
-            source_channel: "channel-3".to_string(), // Testnet Osmosis to axelarnet: https://docs.axelar.dev/resources/testnet#ibc-channels
+            source_channel: config.channel.to_string(), // Testnet Osmosis to axelarnet: https://docs.axelar.dev/resources/testnet#ibc-channels
             token: Some(coin.into()),
             sender: env.contract.address.to_string(),
             receiver: "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5"
@@ -116,7 +125,7 @@ mod exec {
     // Sends a message via Axelar GMP to the other cosmos chains
     // only difference is how the {message_payload} is constructed
     pub fn send_message_cosmos(
-        _deps: DepsMut,
+        deps: DepsMut,
         env: Env,
         info: MessageInfo,
         destination_chain: String,
@@ -143,9 +152,11 @@ mod exec {
         // info.funds used to pay gas. Must only contain 1 token type.
         let coin: cosmwasm_std::Coin = cw_utils::one_coin(&info).unwrap();
 
+        let config = CONFIG.load(deps.storage)?;
+
         let ibc_message = crate::ibc::MsgTransfer {
             source_port: "transfer".to_string(),
-            source_channel: "channel-3".to_string(), // Testnet Osmosis to axelarnet: https://docs.axelar.dev/resources/testnet#ibc-channels
+            source_channel: config.channel.to_string(), // Testnet Osmosis to axelarnet: https://docs.axelar.dev/resources/testnet#ibc-channels
             token: Some(coin.into()),
             sender: env.contract.address.to_string(),
             receiver: "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5"
