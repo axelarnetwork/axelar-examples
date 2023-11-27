@@ -20,7 +20,8 @@
     "dependencies": {
         "@axelar-network/axelar-chains-config": "^0.1.0",
         "@axelar-network/axelar-gmp-sdk-solidity": "^5.4.0",
-        "@axelar-network/axelar-local-dev": "^2.1.1-alpha.2",
+        "@axelar-network/axelar-local-dev": "^2.2.0-alpha.7",
+        "@axelar-network/axelar-local-dev-cosmos": "^2.2.0-alpha.7",
         "@axelar-network/axelarjs-sdk": "^0.12.8",
         "@openzeppelin/contracts": "^4.5.0",
         "axios": "^0.27.2",

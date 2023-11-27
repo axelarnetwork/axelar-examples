@@ -1,6 +1,6 @@
 const { ethers } = require('ethers');
 const { createAndExport } = require('@axelar-network/axelar-local-dev');
-const { enabledAptos } = require('./config');
+const { enabledAptos, enabledCosmos } = require('./config');
 const path = require('path');
 const { EvmRelayer } = require('@axelar-network/axelar-local-dev/dist/relay/EvmRelayer');
 
@@ -20,6 +20,11 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         await initAptos(createAptosNetwork);
         relayers.aptos = new AptosRelayer();
         evmRelayer.setRelayer('aptos', relayers.aptos);
+    }
+
+    if(enabledCosmos) {
+      const { startAll } = require("@axelar-network/axelar-local-dev-cosmos")
+      await startAll()
     }
 
     const pathname = path.resolve(__dirname, '../..', 'chain-config', 'local.json');
