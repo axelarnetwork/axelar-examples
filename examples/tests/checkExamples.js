@@ -8,10 +8,8 @@ const {
     utils: { setLogger },
 } = require('@axelar-network/axelar-local-dev');
 const fs = require('fs-extra');
-const path = require('path');
-
-const dir = path.resolve(__dirname, '..', '..');
-const infoPath = path.join(dir, 'chain-config/local.json');
+const { configPath } = require('../../config');
+const { config } = require('dotenv');
 
 // disable logging
 setLogger((...args) => {});
@@ -39,9 +37,9 @@ describe('Check Examples Execution', function () {
     const testChains = ['Avalanche', 'Fantom', 'Polygon'];
 
     beforeEach(async () => {
-        // Remove local.json before each test to ensure a clean start
-        if (fs.existsSync(infoPath)) {
-            fs.unlinkSync(infoPath);
+        // Remove local-evm8.json before each test to ensure a clean start
+        if (fs.existsSync(configPath.localEvmChains)) {
+            fs.unlinkSync(configPath.localEvmChains);
         }
 
         await start([wallet.address], testChains, { relayInterval: 500 });

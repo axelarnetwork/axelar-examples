@@ -1,5 +1,6 @@
 'use strict';
 
+const { config } = require('dotenv');
 const { getDefaultProvider, Contract, Wallet } = require('ethers');
 
 const ERC721 = rootRequire('./artifacts/examples/evm/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
@@ -35,7 +36,7 @@ if (require.main === module) {
     let temp;
 
     if (env == 'local') {
-        temp = require(`../../../chain-config/local.json`);
+        temp = require(configPath.localEvmChains);
     } else {
         try {
             temp = require(`@axelar-network/axelar-chains-config`).getChainArray('testnet');

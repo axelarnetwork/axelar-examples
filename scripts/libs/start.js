@@ -1,8 +1,8 @@
 const { ethers } = require('ethers');
-const { createAndExport } = require('@axelar-network/axelar-local-dev');
+const { createAndExport, EvmRelayer } = require('@axelar-network/axelar-local-dev');
+const { IBCRelayerService } = require('@axelar-network/axelar-local-dev-cosmos');
 const { enabledAptos, enabledCosmos } = require('./config');
-const path = require('path');
-const { EvmRelayer } = require('@axelar-network/axelar-local-dev/dist/relay/EvmRelayer');
+const { configPath } = require('../../config');
 
 const evmRelayer = new EvmRelayer();
 
@@ -22,15 +22,19 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         evmRelayer.setRelayer('aptos', relayers.aptos);
     }
 
-    if(enabledCosmos) {
-      const { startAll } = require("@axelar-network/axelar-local-dev-cosmos")
-      await startAll()
+    if (enabledCosmos) {
+        const { startAll } = require('@axelar-network/axelar-local-dev-cosmos');
+
+        // Spin up cosmos chains in docker containers
+        await startAll();
+
+        const ibcRelayer = await IBCRelayerService.create();
+        // Setup IBC Channels. This command will take a while to complete. (should be around 2-3 mins)
+        await ibcRelayer.setup();
     }
 
-    const pathname = path.resolve(__dirname, '../..', 'chain-config', 'local.json');
-
     await createAndExport({
-        chainOutputPath: pathname,
+        chainOutputPath: configPath.localEvmChains,
         accountsToFund: fundAddresses,
         callback: (chain, _info) => deployAndFundUsdc(chain, fundAddresses),
         chains: chains.length !== 0 ? chains : null,
