@@ -15,6 +15,14 @@ function getWallet() {
     return privateKey ? new Wallet(privateKey) : Wallet.fromMnemonic(process.env.EVM_MNEMONIC);
 }
 
+function readChainConfig(filePath) {
+    if (!fs.existsSync(filePath)) {
+        return undefined;
+    }
+
+    return fs.readJsonSync(filePath);
+}
+
 /**
  * Get the chain objects from the chain-config file.
  * @param {*} env - The environment to get the chain objects for. Available options are 'local' and 'testnet'.
@@ -231,5 +239,6 @@ module.exports = {
     calculateBridgeFee,
     calculateBridgeExpressFee,
     getExamplePath,
+    readChainConfig,
     sanitizeEventArgs,
 };

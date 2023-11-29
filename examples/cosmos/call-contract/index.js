@@ -14,7 +14,7 @@ async function preDeploy() {
     console.log('Created Cosmos client');
     const wasmPath = path.join(__dirname, 'wasm-contract/artifacts/send_receive.wasm');
     const wasm = await cosmosClient.uploadWasm(wasmPath);
-    console.log('Uploaded wasm contract to wasm chain: ', wasm.transactionHash);
+    console.log('Uploaded wasm contract to wasm chain:', wasm.transactionHash);
     const { client, address: senderAddress } = await cosmosClient.generateRandomSigningClient();
 
     const cosmosConfig = JSON.parse(fs.readFileSync(configPath.localCosmosChains));
@@ -31,7 +31,12 @@ async function preDeploy() {
 
     console.log('Instantiated contract on wasm chain with address: ', contractAddress);
 
-    setJSON({});
+    return {
+      data: {
+        contractAddress,
+      },
+      path: configPath.localCosmosChains,
+    }
 }
 
 async function deploy(chain, wallet) {

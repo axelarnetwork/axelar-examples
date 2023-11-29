@@ -3,7 +3,9 @@
 const {
     utils: { setJSON },
 } = require('@axelar-network/axelar-local-dev');
+const { readChainConfig } = require('./utils');
 const { getDefaultProvider, utils } = require('ethers');
+const { configPath } = require('../../config');
 
 /**
  * Deploy a contract to a list of chains.
@@ -13,12 +15,7 @@ const { getDefaultProvider, utils } = require('ethers');
  * @param {Object} example - The example to deploy.
  */
 async function deploy(env, chains, wallet, example) {
-    const { data, filePath } = await preDeploy(chains, wallet, example);
-
-    // read the cosmos file
-    // const existData =
-    // // TODO merge with the current data
-    // setJSON(data, filePath);
+    await preDeploy(chains, wallet, example);
     await doDeploy(chains, wallet, example);
     await postDeploy(chains, wallet, example);
 
@@ -39,10 +36,28 @@ async function deploy(env, chains, wallet, example) {
 }
 
 // Run the preDeploy function if it exists.
-function preDeploy(chains, wallet, example) {
+async function preDeploy(chains, wallet, example) {
     if (!example.preDeploy) return;
 
-    return example.preDeploy(chains, wallet);
+    const payload = await example.preDeploy(chains, wallet);
+
+    // update the chain config file
+    if (payload) {
+        const { data, path } = payload;
+
+        const config = readChainConfig(configPath.localCosmosChains);
+        if (config) {
+            setJSON(
+                {
+                    ...config,
+                    data,
+                },
+                path,
+            );
+        }
+    }
+
+    return payload;
 }
 
 // Deploy the contracts.
