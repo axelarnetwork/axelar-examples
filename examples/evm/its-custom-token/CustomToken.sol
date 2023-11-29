@@ -6,7 +6,7 @@ import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contract
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { InterchainToken } from '@axelar-network/interchain-token-service/contracts/interchain-token/InterchainToken.sol';
 
-contract CustonToken is InterchainToken {
+contract CustomToken is InterchainToken {
     string public value;
     string public sourceChain;
     string public sourceAddress;
