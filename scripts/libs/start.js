@@ -1,7 +1,7 @@
 const { ethers } = require('ethers');
 const fs = require('fs');
-const { createAndExport, EvmRelayer } = require('@axelar-network/axelar-local-dev');
-const { IBCRelayerService } = require('@axelar-network/axelar-local-dev-cosmos');
+const { createAndExport, EvmRelayer, relay, RelayerType } = require('@axelar-network/axelar-local-dev');
+const { IBCRelayerService, AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
 const { enabledAptos, enabledCosmos } = require('./config');
 const { configPath } = require('../../config');
 
@@ -20,7 +20,7 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         const { AptosRelayer, createAptosNetwork } = require('@axelar-network/axelar-local-dev-aptos');
         await initAptos(createAptosNetwork);
         relayers.aptos = new AptosRelayer();
-        evmRelayer.setRelayer('aptos', relayers.aptos);
+        evmRelayer.setRelayer(RelayerType.Aptos, relayers.aptos);
     }
 
     if (enabledCosmos) {
@@ -38,9 +38,20 @@ async function start(fundAddresses = [], chains = [], options = {}) {
             dstChannelId: ibcRelayer.destChannelId,
         };
 
+        // set relayer for cosmos
+        relayers.wasm = await AxelarRelayerService.create(defaultAxelarChainInfo);
+        evmRelayer.setRelayer(RelayerType.Wasm, relayers.wasm);
+
+        await relayers.wasm.listenForEvents();
+
+        // Auto relay ibc message every 2 seconds
+        // await ibcRelayer.runInterval(10000).catch(() => {});
+
         // write that to cosmos config path
         fs.writeFileSync(configPath.localCosmosChains, JSON.stringify(cosmosConfig, null, 2));
     }
+
+    console.log(relayers);
 
     await createAndExport({
         chainOutputPath: configPath.localEvmChains,

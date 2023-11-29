@@ -156,7 +156,7 @@ mod exec {
 
         let ibc_message = crate::ibc::MsgTransfer {
             source_port: "transfer".to_string(),
-            source_channel: config.channel.to_string(), // Testnet Osmosis to axelarnet: https://docs.axelar.dev/resources/testnet#ibc-channels
+            source_channel: config.channel.to_string(),
             token: Some(coin.into()),
             sender: env.contract.address.to_string(),
             receiver: "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5"
