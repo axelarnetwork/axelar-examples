@@ -6,7 +6,7 @@ import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contract
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { InterchainToken } from '@axelar-network/interchain-token-service/contracts/interchain-token/InterchainToken.sol';
 
-contract CustomToken is InterchainToken {
+contract CanonicalToken is InterchainToken {
     string public value;
     string public sourceChain;
     string public sourceAddress;
@@ -16,9 +16,5 @@ contract CustomToken is InterchainToken {
         symbol = symbol_;
         decimals = decimals_;
         _addDistributor(msg.sender);
-    }
-
-    function addDistributor(address distributor) external {
-        _addDistributor(distributor);
     }
 }
