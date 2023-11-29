@@ -30,6 +30,8 @@ async function preDeploy() {
     );
 
     console.log('Instantiated contract on wasm chain with address: ', contractAddress);
+
+    setJSON({});
 }
 
 async function deploy(chain, wallet) {
@@ -37,7 +39,12 @@ async function deploy(chain, wallet) {
     deployContract(wallet, SendReceive, [chain.gateway, chain.gasService]);
 }
 
-async function execute(evmChain, wallet, options) {}
+async function execute(evmChain, wallet, options) {
+    // execute from evm to wasm
+    evmChain.contract.send('wasm');
+
+    // execute from wasm to evm
+}
 
 module.exports = {
     preDeploy,

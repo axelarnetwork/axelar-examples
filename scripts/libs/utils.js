@@ -45,10 +45,12 @@ function getEVMChains(env, chains = []) {
  * @returns {Chain[]} - The chain objects.
  */
 function getTestnetChains(chains = []) {
-    const _path = path.join(__dirname, '../../chain-config/testnet.json');
+    const _path = path.join(__dirname, '../../chain-config/testnet-evm.json');
     let testnet = [];
     if (fs.existsSync(_path)) {
-        testnet = fs.readJsonSync(path.join(__dirname, '../../chain-config/testnet.json')).filter((chain) => chains.includes(chain.name));
+        testnet = fs
+            .readJsonSync(path.join(__dirname, '../../chain-config/testnet-evm.json'))
+            .filter((chain) => chains.includes(chain.name));
     }
 
     if (testnet.length < chains.length) {

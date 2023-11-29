@@ -13,7 +13,12 @@ const { getDefaultProvider, utils } = require('ethers');
  * @param {Object} example - The example to deploy.
  */
 async function deploy(env, chains, wallet, example) {
-    await preDeploy(chains, wallet, example);
+    const { data, filePath } = await preDeploy(chains, wallet, example);
+
+    // read the cosmos file
+    // const existData =
+    // // TODO merge with the current data
+    // setJSON(data, filePath);
     await doDeploy(chains, wallet, example);
     await postDeploy(chains, wallet, example);
 
@@ -30,7 +35,7 @@ async function deploy(env, chains, wallet, example) {
     }
 
     // Write the chain objects to the json file.
-    setJSON(chains, `./chain-config/${env}.json`);
+    setJSON(chains, `./chain-config/${env}-evm.json`);
 }
 
 // Run the preDeploy function if it exists.
