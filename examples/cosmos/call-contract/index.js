@@ -9,7 +9,7 @@ const { configPath } = require('../../../config');
 const path = require('path');
 const fs = require('fs');
 
-async function preDeploy() {
+async function deployOnAltChain() {
     const cosmosClient = await CosmosClient.create('wasm');
     console.log('Created Cosmos client');
     const wasmPath = path.join(__dirname, 'wasm-contract/artifacts/send_receive.wasm');
@@ -52,7 +52,7 @@ async function execute(evmChain, wallet, options) {
 }
 
 module.exports = {
-    preDeploy,
+    deployOnAltChain,
     deploy,
     execute,
 };

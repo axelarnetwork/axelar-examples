@@ -15,8 +15,8 @@ const { configPath } = require('../../config');
  * @param {Object} example - The example to deploy.
  */
 async function deploy(env, chains, wallet, example) {
-    await preDeploy(chains, wallet, example);
-    await doDeploy(chains, wallet, example);
+    await deployOnAltChain(example);
+    await deployOnEvmChain(chains, wallet, example);
     await postDeploy(chains, wallet, example);
 
     // Serialize the contracts by storing the human-readable abi with the address in the json file.
@@ -35,11 +35,11 @@ async function deploy(env, chains, wallet, example) {
     setJSON(chains, `./chain-config/${env}-evm.json`);
 }
 
-// Run the preDeploy function if it exists.
-async function preDeploy(chains, wallet, example) {
-    if (!example.preDeploy) return;
+// Run the deployOnAltChain function if it exists.
+async function deployOnAltChain(example) {
+    if (!example.deployOnAltChain) return;
 
-    const payload = await example.preDeploy(chains, wallet);
+    const payload = await example.deployOnAltChain();
 
     // update the chain config file
     if (payload) {
@@ -61,7 +61,7 @@ async function preDeploy(chains, wallet, example) {
 }
 
 // Deploy the contracts.
-function doDeploy(chains, wallet, example) {
+function deployOnEvmChain(chains, wallet, example) {
     const deploys = chains.map((chain) => {
         const provider = getDefaultProvider(chain.rpc);
         return example.deploy(chain, wallet.connect(provider));
