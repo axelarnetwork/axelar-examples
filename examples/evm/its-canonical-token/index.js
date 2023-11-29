@@ -5,12 +5,9 @@ const {
 } = require('@axelar-network/axelar-local-dev');
 const { IInterchainTokenService, IInterchainTokenFactory } = require('@axelar-network/axelar-local-dev/dist/contracts');
 const { Contract } = require('ethers');
-const { keccak256, defaultAbiCoder } = require('ethers/lib/utils');
 const { interchainTransfer } = require('../../../scripts/libs/its-utils');
 
 const CanonicalToken = rootRequire('./artifacts/examples/evm/its-canonical-token/CanonicalToken.sol/CanonicalToken.json');
-const ITokenManager = rootRequire('./artifacts/@axelar-network/interchain-token-service/contracts/interfaces/ITokenManager.sol/ITokenManager.json');
-const MINT_BURN = 0;
 
 async function deploy(chain, wallet) {
     console.log(`Deploying CanonicalToken for ${chain.name}.`);
@@ -18,8 +15,6 @@ async function deploy(chain, wallet) {
     chain.wallet = wallet;
     console.log(`Deployed CanonicalToken for ${chain.name} at ${chain.canonicalToken.address}.`);
 }
-
-
 
 async function execute(chains, wallet, options) {
     const args = options.args || [];
