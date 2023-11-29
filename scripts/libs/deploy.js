@@ -50,7 +50,7 @@ async function deployOnAltChain(example) {
             setJSON(
                 {
                     ...config,
-                    data,
+                    ...data,
                 },
                 path,
             );
