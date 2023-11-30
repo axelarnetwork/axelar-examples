@@ -47,7 +47,7 @@ async function deploy(chain, wallet) {
 }
 
 async function execute(evmChain, wallet, options) {
-    const { wasmContractAddress, wasmClient } = options;
+    const { wasmContractAddress, signingClient, signingAddress } = options;
 
     console.log(`Executing SendReceive from ${evmChain.name} to Wasm.`);
     const message = `hello from ${evmChain.name}`;
@@ -60,7 +60,7 @@ async function execute(evmChain, wallet, options) {
 
     await sleep(5);
 
-    const response = await wasmClient.client.queryContractSmart(wasmContractAddress, {
+    const response = await signingClient.queryContractSmart(wasmContractAddress, {
         get_stored_message: {},
     });
 
@@ -68,10 +68,11 @@ async function execute(evmChain, wallet, options) {
 
     // execute from wasm to evm
     console.log(`\nExecuting SendReceive from Wasm to ${evmChain.name}.`);
-    const senderAddress = wasmClient.getOwnerAccount();
     const wasmMessage = `hello from Wasm`;
-    await wasmClient.client.execute(
-        senderAddress,
+    const service = await IBCRelayerService.create();
+    await service.setup();
+    await signingClient.execute(
+        signingAddress,
         wasmContractAddress,
         {
             send_message_evm: {
@@ -85,9 +86,8 @@ async function execute(evmChain, wallet, options) {
         [{ amount: '100000', denom: 'uwasm' }],
     );
 
-    const service = await IBCRelayerService.create();
-    await service.relay()
-    await sleep(5)
+    // await service.relay();
+    await sleep(5);
 
     const evmResponse = await evmChain.contract.storedMessage();
     console.log('Message at EVM contract:', evmResponse.message);

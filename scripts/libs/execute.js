@@ -2,6 +2,7 @@
 
 const { Contract, getDefaultProvider } = require('ethers');
 const { CosmosClient } = require('@axelar-network/axelar-local-dev-cosmos');
+const { DirectSecp256k1HdWallet } = require('@cosmjs/proto-signing');
 const { calculateBridgeFee, getDepositAddress, calculateBridgeExpressFee, readChainConfig } = require('./utils.js');
 const { configPath } = require('../../config/index.js');
 const AxelarGatewayContract = rootRequire(
@@ -50,11 +51,13 @@ async function executeCosmosExample(chains, args, wallet, example) {
     const config = readChainConfig(configPath.localCosmosChains);
 
     const wasmClient = await CosmosClient.create('wasm');
+    const { client: signingClient, address: signingAddress } = await wasmClient.generateRandomSigningClient();
 
     await example.execute(evmChain, wallet, {
         args,
         wasmContractAddress: config.contractAddress,
-        wasmClient,
+        signingClient,
+        signingAddress,
     });
 }
 
