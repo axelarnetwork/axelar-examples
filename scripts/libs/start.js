@@ -44,8 +44,11 @@ async function start(fundAddresses = [], chains = [], options = {}) {
 
         await relayers.wasm.listenForEvents();
 
-        // Auto relay ibc message every 2 seconds
-        // await ibcRelayer.runInterval(10000).catch(() => {});
+        try {
+            await ibcRelayer.runInterval().catch(() => {});
+        } catch (e) {
+            console.log(e);
+        }
 
         // write that to cosmos config path
         fs.writeFileSync(configPath.localCosmosChains, JSON.stringify(cosmosConfig, null, 2));

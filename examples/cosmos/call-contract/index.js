@@ -3,12 +3,11 @@
 const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
-const { IBCRelayerService, CosmosClient } = require('@axelar-network/axelar-local-dev-cosmos');
+const { CosmosClient } = require('@axelar-network/axelar-local-dev-cosmos');
 const SendReceive = rootRequire('./artifacts/examples/cosmos/call-contract/evm-contract/SendReceive.sol/SendReceive.json');
 const { configPath } = require('../../../config');
 const path = require('path');
 const fs = require('fs');
-const { ethers } = require('ethers');
 const { sleep } = require('@axelar-network/axelarjs-sdk');
 
 async function deployOnAltChain() {
@@ -48,29 +47,27 @@ async function deploy(chain, wallet) {
 
 async function execute(evmChain, wallet, options) {
     const { wasmContractAddress, signingClient, signingAddress } = options;
+    // console.log(`Executing SendReceive from ${evmChain.name} to Wasm.`);
+    // const message = `hello from ${evmChain.name}`;
+    // await evmChain.contract
+    //     .send('wasm', wasmContractAddress, message, {
+    //         value: ethers.utils.parseEther('0.001'),
+    //     })
+    //     .then((tx) => tx.wait());
+    // console.log(`Executed SendReceive from ${evmChain.name} to Wasm.`);
 
-    console.log(`Executing SendReceive from ${evmChain.name} to Wasm.`);
-    const message = `hello from ${evmChain.name}`;
-    await evmChain.contract
-        .send('wasm', wasmContractAddress, message, {
-            value: ethers.utils.parseEther('0.001'),
-        })
-        .then((tx) => tx.wait());
-    console.log(`Executed SendReceive from ${evmChain.name} to Wasm.`);
+    // await sleep(5);
 
-    await sleep(5);
+    // const response = await signingClient.queryContractSmart(wasmContractAddress, {
+    //     get_stored_message: {},
+    // });
 
-    const response = await signingClient.queryContractSmart(wasmContractAddress, {
-        get_stored_message: {},
-    });
-
-    console.log('Message at Wasm contract:', response.message);
+    // console.log('Message at Wasm contract:', response.message);
 
     // execute from wasm to evm
     console.log(`\nExecuting SendReceive from Wasm to ${evmChain.name}.`);
-    const wasmMessage = `hello from Wasm`;
-    const service = await IBCRelayerService.create();
-    await service.setup();
+    const wasmMessage = `hello from Wasm 2`;
+
     await signingClient.execute(
         signingAddress,
         wasmContractAddress,
@@ -86,8 +83,7 @@ async function execute(evmChain, wallet, options) {
         [{ amount: '100000', denom: 'uwasm' }],
     );
 
-    // await service.relay();
-    await sleep(5);
+    await sleep(15);
 
     const evmResponse = await evmChain.contract.storedMessage();
     console.log('Message at EVM contract:', evmResponse.message);
@@ -97,4 +93,5 @@ module.exports = {
     deployOnAltChain,
     deploy,
     execute,
+    sourceChain: 'Ethereum',
 };
