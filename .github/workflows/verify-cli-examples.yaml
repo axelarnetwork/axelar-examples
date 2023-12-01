@@ -26,7 +26,7 @@ jobs:
                   cp aptos /usr/local/bin
 
             - name: Install
-              run: npm ci --no-optional
+              run: npm ci --omit=optional
 
             - name: Create .env file
               run: |

@@ -23,7 +23,7 @@ jobs:
                   echo '{"aptos": {"enabled": false}}' > config/ci.json
 
             - name: Install Dependencies for Cli Examples
-              run: npm ci --no-optional
+              run: npm ci --omit=optional
 
             - name: Compile EVM Smart Contracts
               run: |
