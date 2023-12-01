@@ -49,22 +49,23 @@ async function deploy(chain, wallet) {
 async function execute(evmChain, wallet, options) {
     const { wasmContractAddress, signingClient, signingAddress, args } = options;
     const message = args[0] || `hello from ${evmChain.name}`;
-    await evmChain.contract
-        .send('wasm', wasmContractAddress, message, {
-            value: ethers.utils.parseEther('0.001'),
-        })
-        .then((tx) => tx.wait());
+
+    // 1. Execute "send" function on EVM contract
+    await evmChain.contract.send('wasm', wasmContractAddress, message, {
+        value: ethers.utils.parseEther('0.001'),
+    });
     console.log(`Sent message '${message}' from ${evmChain.name} to Wasm.`);
 
+    // 2. Wait until the Cosmos Relayer relays the message to the Wasm chain
     await sleep(5);
 
+    // 3. Check the message on the Wasm chain
     const response = await signingClient.queryContractSmart(wasmContractAddress, {
         get_stored_message: {},
     });
 
     console.log('Message at Wasm contract:', response.message);
 
-    // execute from wasm to evm
     const wasmMessage = args[0] || `hello from Wasm`;
     const wasmFee = [{ amount: '100000', denom: 'uwasm' }];
     const payload = {
@@ -75,12 +76,14 @@ async function execute(evmChain, wallet, options) {
         },
     };
 
+    // 4. Execute "send_message_evm" message on Wasm contract
     await signingClient.execute(signingAddress, wasmContractAddress, payload, 'auto', undefined, wasmFee);
     console.log(`\nSent message '${message}' from Wasm to ${evmChain.name}.`);
 
-    // Waiting for the IBC relayer
+    // 5. Waiting for the IBC relayer + EVM relayer to relay the message to the EVM chain
     await sleep(15);
 
+    // 6. Check the message on the EVM chain
     const evmResponse = await evmChain.contract.storedMessage();
     console.log('Message at EVM contract:', evmResponse.message);
 }
@@ -89,5 +92,5 @@ module.exports = {
     deployOnAltChain,
     deploy,
     execute,
-    sourceChain: 'Ethereum',
+    sourceChain: 'Ethereum', // For now, we only support sending cosmos message to Ethereum chain
 };
