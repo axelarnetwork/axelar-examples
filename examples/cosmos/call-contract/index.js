@@ -47,15 +47,14 @@ async function deploy(chain, wallet) {
 }
 
 async function execute(evmChain, wallet, options) {
-    const { wasmContractAddress, signingClient, signingAddress } = options;
-    console.log(`Executing SendReceive from ${evmChain.name} to Wasm.`);
-    const message = `hello from ${evmChain.name}`;
+    const { wasmContractAddress, signingClient, signingAddress, args } = options;
+    const message = args[0] || `hello from ${evmChain.name}`;
     await evmChain.contract
         .send('wasm', wasmContractAddress, message, {
             value: ethers.utils.parseEther('0.001'),
         })
         .then((tx) => tx.wait());
-    console.log(`Executed SendReceive from ${evmChain.name} to Wasm.`);
+    console.log(`Sent message '${message}' from ${evmChain.name} to Wasm.`);
 
     await sleep(5);
 
@@ -66,24 +65,20 @@ async function execute(evmChain, wallet, options) {
     console.log('Message at Wasm contract:', response.message);
 
     // execute from wasm to evm
-    console.log(`\nExecuting SendReceive from Wasm to ${evmChain.name}.`);
-    const wasmMessage = `hello from Wasm`;
-
-    await signingClient.execute(
-        signingAddress,
-        wasmContractAddress,
-        {
-            send_message_evm: {
-                destination_chain: evmChain.name,
-                destination_address: evmChain.contract.address,
-                message: wasmMessage,
-            },
+    const wasmMessage = args[0] || `hello from Wasm`;
+    const wasmFee = [{ amount: '100000', denom: 'uwasm' }];
+    const payload = {
+        send_message_evm: {
+            destination_chain: evmChain.name,
+            destination_address: evmChain.contract.address,
+            message: wasmMessage,
         },
-        'auto',
-        undefined,
-        [{ amount: '100000', denom: 'uwasm' }],
-    );
+    };
 
+    await signingClient.execute(signingAddress, wasmContractAddress, payload, 'auto', undefined, wasmFee);
+    console.log(`\nSent message '${message}' from Wasm to ${evmChain.name}.`);
+
+    // Waiting for the IBC relayer
     await sleep(15);
 
     const evmResponse = await evmChain.contract.storedMessage();

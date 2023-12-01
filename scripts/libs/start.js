@@ -1,6 +1,6 @@
 const { ethers } = require('ethers');
 const fs = require('fs');
-const { createAndExport, EvmRelayer, relay, RelayerType } = require('@axelar-network/axelar-local-dev');
+const { createAndExport, EvmRelayer, RelayerType } = require('@axelar-network/axelar-local-dev');
 const { IBCRelayerService, AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
 const { enabledAptos, enabledCosmos } = require('./config');
 const { configPath } = require('../../config');
@@ -44,11 +44,7 @@ async function start(fundAddresses = [], chains = [], options = {}) {
 
         await relayers.wasm.listenForEvents();
 
-        try {
-            await ibcRelayer.runInterval().catch(() => {});
-        } catch (e) {
-            console.log(e);
-        }
+        await ibcRelayer.runInterval();
 
         // write that to cosmos config path
         fs.writeFileSync(configPath.localCosmosChains, JSON.stringify(cosmosConfig, null, 2));

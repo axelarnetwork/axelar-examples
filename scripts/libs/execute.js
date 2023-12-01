@@ -2,7 +2,6 @@
 
 const { Contract, getDefaultProvider } = require('ethers');
 const { CosmosClient } = require('@axelar-network/axelar-local-dev-cosmos');
-const { DirectSecp256k1HdWallet } = require('@cosmjs/proto-signing');
 const { calculateBridgeFee, getDepositAddress, calculateBridgeExpressFee, readChainConfig } = require('./utils.js');
 const { configPath } = require('../../config/index.js');
 const AxelarGatewayContract = rootRequire(
@@ -34,7 +33,7 @@ async function executeAptosExample(chains, args, wallet, example) {
 }
 
 async function executeCosmosExample(chains, args, wallet, example) {
-    const evmChain = getSourceChain(chains, args, example.sourceChain);
+    const evmChain = chains.find((chain) => chain.name === example.sourceChain);
 
     evmChain.provider = getDefaultProvider(evmChain.rpc);
     const connectedWallet = wallet.connect(evmChain.provider);
@@ -45,8 +44,6 @@ async function executeCosmosExample(chains, args, wallet, example) {
     // Recover axelar contracts to chain object.
     evmChain.gateway = new Contract(evmChain.gateway, AxelarGatewayContract.abi, connectedWallet);
     evmChain.gasService = new Contract(evmChain.gasService, AxelarGasServiceContract.abi, connectedWallet);
-    const tokenAddress = await evmChain.gateway.tokenAddresses('aUSDC');
-    evmChain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);
 
     const config = readChainConfig(configPath.localCosmosChains);
 
