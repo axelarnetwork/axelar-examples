@@ -18,7 +18,7 @@ const {
 } = require('@axelar-network/axelar-local-dev');
 const fs = require('fs-extra');
 const { configPath } = require('../../config');
-const { config } = require('dotenv');
+const { stopAll } = require('@axelar-network/axelar-local-dev-cosmos');
 
 // disable logging
 setLogger((...args) => {});
@@ -47,21 +47,21 @@ describe('Check Examples Execution', function () {
     const wallet = getWallet();
     const testChains = ['Avalanche', 'Fantom', 'Polygon'];
 
-    beforeEach(async () => {
-        // Remove local-evm8.json before each test to ensure a clean start
-        if (fs.existsSync(configPath.localEvmChains)) {
-            fs.unlinkSync(configPath.localEvmChains);
-        }
-
-        await start([wallet.address], testChains, { relayInterval: 500 });
-    });
-
-    afterEach(async () => {
-        await destroyExported(relayers);
-    });
-
     describe('EVM Examples', function () {
         const allExamples = [...examples];
+
+        beforeEach(async () => {
+            // Remove local-evm.json before each test to ensure a clean start
+            if (fs.existsSync(configPath.localEvmChains)) {
+                fs.unlinkSync(configPath.localEvmChains);
+            }
+
+            await start([wallet.address], testChains, { relayInterval: 500, skipCosmos: true, skipAptos: true });
+        });
+
+        afterEach(async () => {
+            await destroyExported(relayers);
+        });
 
         for (const exampleName of allExamples) {
             it(exampleName, async function () {
@@ -78,6 +78,19 @@ describe('Check Examples Execution', function () {
     });
 
     describe('Aptos Examples', function () {
+        before(async () => {
+            // Remove local-evm.json before each test to ensure a clean start
+            if (fs.existsSync(configPath.localEvmChains)) {
+                fs.unlinkSync(configPath.localEvmChains);
+            }
+
+            await start([wallet.address], testChains, { relayInterval: 500, skipCosmos: true });
+        });
+
+        after(async () => {
+            await destroyExported(relayers);
+        });
+
         for (const exampleName of aptosExamples) {
             it(exampleName, async function () {
                 const example = rootRequire(`examples/aptos/${exampleName}/index.js`);
@@ -91,10 +104,26 @@ describe('Check Examples Execution', function () {
     });
 
     describe('Cosmos Examples', function () {
+        let dropConnections;
+        beforeEach(async () => {
+            // Remove local-evm.json before each test to ensure a clean start
+            if (fs.existsSync(configPath.localEvmChains)) {
+                fs.unlinkSync(configPath.localEvmChains);
+            }
+
+            dropConnections = await start([wallet.address], ['Ethereum'], { relayInterval: 2000, skipAptos: true });
+        });
+
+        afterEach(async () => {
+            await destroyExported(relayers);
+            await stopAll();
+            await dropConnections();
+        });
+
         for (const exampleName of cosmosExamples) {
             it(exampleName, async function () {
                 const example = rootRequire(`examples/cosmos/${exampleName}/index.js`);
-                const chains = getEVMChains('local', testChains);
+                const chains = getEVMChains('local', ['Ethereum']);
 
                 if (example.deploy) await deploy('local', chains, wallet, example);
 

@@ -4,6 +4,7 @@ const { createAndExport, EvmRelayer, RelayerType } = require('@axelar-network/ax
 const { IBCRelayerService, AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
 const { enabledAptos, enabledCosmos } = require('./config');
 const { configPath } = require('../../config');
+const path = require('path');
 
 const evmRelayer = new EvmRelayer();
 
@@ -16,18 +17,24 @@ const relayers = { evm: evmRelayer };
  * @param {*} chains - chains to start. All chains are started if not specified (Avalanche, Moonbeam, Polygon, Fantom, Ethereum).
  */
 async function start(fundAddresses = [], chains = [], options = {}) {
-    if (enabledAptos) {
+    // For testing purpose
+    const { skipAptos, skipCosmos } = options;
+    const dropConnections = [];
+
+    if (!skipAptos && enabledAptos) {
         const { AptosRelayer, createAptosNetwork } = require('@axelar-network/axelar-local-dev-aptos');
         await initAptos(createAptosNetwork);
         relayers.aptos = new AptosRelayer();
         evmRelayer.setRelayer(RelayerType.Aptos, relayers.aptos);
     }
 
-    if (enabledCosmos) {
+    if (!skipCosmos && enabledCosmos) {
         const { startAll } = require('@axelar-network/axelar-local-dev-cosmos');
 
         // Spin up cosmos chains in docker containers
-        await startAll();
+        await startAll().catch((e) => {
+            console.log(e);
+        });
 
         const ibcRelayer = await IBCRelayerService.create();
         // Setup IBC Channels. This command will take a while to complete. (should be around 2-3 mins)
@@ -44,7 +51,18 @@ async function start(fundAddresses = [], chains = [], options = {}) {
 
         await relayers.wasm.listenForEvents();
 
+        dropConnections.push(() => relayers.wasm.stopListening());
+
         await ibcRelayer.runInterval();
+
+        dropConnections.push(() => ibcRelayer.stopInterval());
+
+        // check if folder is available
+        const dirname = path.dirname(configPath.localCosmosChains);
+
+        if (!fs.existsSync(dirname)) {
+            fs.mkdirSync(dirname, { recursive: true });
+        }
 
         // write that to cosmos config path
         fs.writeFileSync(configPath.localCosmosChains, JSON.stringify(cosmosConfig, null, 2));
@@ -58,6 +76,12 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         relayers,
         relayInterval: options.relayInterval,
     });
+
+    return async () => {
+        for (const dropConnection of dropConnections) {
+            await dropConnection();
+        }
+    };
 }
 
 /**

@@ -40,5 +40,5 @@ if (exampleName.split('/')[0] === 'evm') {
     executeAptosExample(chains, args, wallet, example);
 } else if (exampleName.split('/')[0] === 'cosmos') {
     const chains = getEVMChains(env);
-    executeCosmosExample(chains, args, wallet, example);
+    executeCosmosExample(env, chains, args, wallet, example);
 }

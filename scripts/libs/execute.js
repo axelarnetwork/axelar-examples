@@ -32,7 +32,7 @@ async function executeAptosExample(chains, args, wallet, example) {
     });
 }
 
-async function executeCosmosExample(chains, args, wallet, example) {
+async function executeCosmosExample(_env, chains, args, wallet, example) {
     const evmChain = chains.find((chain) => chain.name === example.sourceChain);
 
     evmChain.provider = getDefaultProvider(evmChain.rpc);

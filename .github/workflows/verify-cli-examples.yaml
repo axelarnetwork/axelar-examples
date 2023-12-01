@@ -43,7 +43,7 @@ jobs:
 
             - name: Override config/ci.json
               run: |
-                  echo '{"aptos": {"enabled": true}}' > config/ci.json
+                  echo '{"aptos": {"enabled": true},"cosmos": {"enabled": true}}' > config/ci.json
 
             - name: Test
               run: |
