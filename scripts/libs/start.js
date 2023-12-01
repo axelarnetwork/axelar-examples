@@ -51,8 +51,6 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         fs.writeFileSync(configPath.localCosmosChains, JSON.stringify(cosmosConfig, null, 2));
     }
 
-    console.log(relayers);
-
     await createAndExport({
         chainOutputPath: configPath.localEvmChains,
         accountsToFund: fundAddresses,
