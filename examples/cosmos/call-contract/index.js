@@ -8,6 +8,7 @@ const SendReceive = rootRequire('./artifacts/examples/cosmos/call-contract/evm-c
 const { configPath } = require('../../../config');
 const path = require('path');
 const fs = require('fs');
+const { ethers } = require('ethers');
 const { sleep } = require('@axelar-network/axelarjs-sdk');
 
 async function deployOnAltChain() {
