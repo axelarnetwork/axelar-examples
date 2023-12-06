@@ -20,7 +20,7 @@
     "dependencies": {
         "@axelar-network/axelar-chains-config": "^0.1.0",
         "@axelar-network/axelar-gmp-sdk-solidity": "5.6.2",
-        "@axelar-network/axelar-local-dev": "file:../axelar-local-dev/packages/axelar-local-dev",
+        "@axelar-network/axelar-local-dev": "^2.1.7",
         "@axelar-network/axelarjs-sdk": "^0.12.8",
         "@axelar-network/interchain-token-service": "^1.0.0-beta.4",
         "@openzeppelin/contracts": "^4.5.0",
