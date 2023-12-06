@@ -11,7 +11,7 @@ const CanonicalToken = rootRequire('./artifacts/examples/evm/its-canonical-token
 
 async function deploy(chain, wallet) {
     console.log(`Deploying CanonicalToken for ${chain.name}.`);
-    chain.canonicalToken = await deployContract(wallet, CanonicalToken, ['Custon Token', 'CT', 18]);
+    chain.canonicalToken = await deployContract(wallet, CanonicalToken, [chain.interchainTokenService, 'Custon Token', 'CT', 18]);
     chain.wallet = wallet;
     console.log(`Deployed CanonicalToken for ${chain.name} at ${chain.canonicalToken.address}.`);
 }
@@ -42,14 +42,11 @@ async function execute(chains, wallet, options) {
         await sleep(1000);
     }
 
-
     console.log(`Minting ${amount} canonical tokens to ${wallet.address}`);
     await (await source.canonicalToken.mint(wallet.address, amount)).wait();
 
-    const tokenManagerAddress = await sourceIts.tokenManagerAddress(tokenId);
-
     console.log(`Approving ${amount} canonical tokens to the token manager`);
-    await (await source.canonicalToken.approve(tokenManagerAddress, amount)).wait();
+    await (await source.canonicalToken.approve(source.interchainTokenService, amount)).wait();
 
     await interchainTransfer(source, destination, wallet, tokenId, amount, fee);
 }

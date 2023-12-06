@@ -11,7 +11,7 @@ contract CanonicalToken is InterchainToken {
     string public sourceChain;
     string public sourceAddress;
 
-    constructor(string memory name_, string memory symbol_, uint8 decimals_){
+    constructor(address interchainTokenService_, string memory name_, string memory symbol_, uint8 decimals_) InterchainToken(interchainTokenService_) {
         name = name_;
         symbol = symbol_;
         decimals = decimals_;
