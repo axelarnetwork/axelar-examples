@@ -5,8 +5,8 @@ const { Contract } = require('ethers');
 
 async function interchainTransfer(source, destination, wallet, tokenId, amount, fee) {
     const sourceIts = new Contract(source.interchainTokenService, IInterchainTokenService.abi, wallet.connect(source.provider));
-    const destionationIts = new Contract(destination.interchainTokenService, IInterchainTokenService.abi, wallet.connect(destination.provider));
-    const tokenAddress = await destionationIts.validTokenAddress(tokenId);
+    const destinationIts = new Contract(destination.interchainTokenService, IInterchainTokenService.abi, wallet.connect(destination.provider));
+    const tokenAddress = await destinationIts.validTokenAddress(tokenId);
     const destinationToken = new Contract(tokenAddress, IERC20.abi, destination.provider);
     let balance;
     async function logValue() {

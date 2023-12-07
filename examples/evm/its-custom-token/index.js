@@ -14,7 +14,7 @@ const MINT_BURN = 0;
 
 async function deploy(chain, wallet) {
     console.log(`Deploying CustomToken for ${chain.name}.`);
-    chain.customToken = await deployContract(wallet, CustomToken, [chain.interchainTokenService, 'Custon Token', 'CT', 18]);
+    chain.customToken = await deployContract(wallet, CustomToken, ['Custon Token', 'CT', 18, chain.interchainTokenService]);
     chain.wallet = wallet;
     console.log(`Deployed CustomToken for ${chain.name} at ${chain.customToken.address}.`);
 }
