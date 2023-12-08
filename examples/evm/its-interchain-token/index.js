@@ -35,14 +35,6 @@ async function execute(chains, wallet, options) {
         wallet.address,
     )).wait();
 
-    await (await sourceFactory.interchainTransfer(
-        tokenId,
-        '',
-        wallet.address,
-        amount,
-        0,
-    )).wait();
-
     console.log(`Deploying remote interchain token from ${source.name} to ${destination.name}`);
     await (await sourceFactory.deployRemoteInterchainToken(
         '',

@@ -15,7 +15,7 @@ async function deploy(chain, wallet) {
     console.log(`Deploying InterchainExecutableExample for ${chain.name}.`);
     chain.itsExecutable = await deployContract(wallet, InterchainExecutableExample, [chain.interchainTokenService]);
     chain.wallet = wallet;
-    console.log(`Deployed CustomToken for ${chain.name} at ${chain.customToken.address}.`);
+    console.log(`Deployed CustomToken for ${chain.name} at ${chain.itsExecutable.address}.`);
 }
 
 
@@ -61,14 +61,6 @@ async function execute(chains, wallet, options) {
         destination.name,
         fee,
         {value: fee},
-    )).wait();    
-    
-    await (await sourceFactory.interchainTransfer(
-        tokenId,
-        '',
-        wallet.address,
-        amount,
-        0,
     )).wait();
     
     const destinationTokenAddress = await destinationIts.interchainTokenAddress(tokenId);
@@ -92,7 +84,7 @@ async function execute(chains, wallet, options) {
 
     console.log(`Sending ${amount} of token ${tokenAddress} to ${destination.name} and executing with it.`);
 
-    const tx = await sourceIts.callContractWithInterchainToken(tokenId, destination.name, destination.itsExecutable.address, amount, data, {
+    const tx = await sourceIts.callContractWithInterchainToken(tokenId, destination.name, destination.itsExecutable.address, amount, data, fee, {
         value: fee,
     });
     await tx.wait();
