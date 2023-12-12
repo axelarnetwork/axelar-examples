@@ -1,25 +1,23 @@
-# Call Contract
+# Cosmos Examples
 
-This examples demonstrates on how you deploy a smart contract and sending message between evm chain and cosmos chain with Axelar.
+## Prerequisite
 
-## Build a Contract
-
-```
-cd wasm-contract
-docker run --rm -v "$(pwd)":/code \
-  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
-  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.12.13
-```
-
-Once completed, you should see the `wasm-contract/artifacts/send_receive.wasm` file.
+-   Docker running on your local machine.
 
 We will use this file to deploy to the wasm chain for this example.
 
-## Deploy a Contract
+## Enable Cosmos in Config
+
+To start Axelar and Wasm chain when running `npm run start`, you've to set `cosmos: true` in [config/default.json](../../config/default.json).
+
+## Run the EVM chains with Axelar and Wasm Chain
 
 ```
-npm run deploy cosmos/call-contract local
+npm run start
 ```
 
-## Execute example
+This will take about 5 mins to start on the first run, since it needs to download the axelar and wasm docker images, setup axelar axelars, and creating an IBC connection between Wasm and Axelar chain.
+
+## Basic
+
+-   [call-contract](call-contract)
