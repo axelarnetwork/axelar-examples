@@ -57,7 +57,7 @@ async function execute(evmChain, wallet, options) {
     console.log(`Sent message '${message}' from ${evmChain.name} to Wasm.`);
 
     // 2. Wait until the Cosmos Relayer relays the message to the Wasm chain
-    await sleep(5);
+    await sleep(10);
 
     // 3. Check the message on the Wasm chain
     const response = await signingClient.queryContractSmart(wasmContractAddress, {
@@ -81,7 +81,7 @@ async function execute(evmChain, wallet, options) {
     console.log(`\nSent message '${message}' from Wasm to ${evmChain.name}.`);
 
     // 5. Waiting for the IBC relayer + EVM relayer to relay the message to the EVM chain
-    await sleep(15);
+    await sleep(20);
 
     // 6. Check the message on the EVM chain
     const evmResponse = await evmChain.contract.storedMessage();

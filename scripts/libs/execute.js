@@ -48,7 +48,7 @@ async function executeCosmosExample(_env, chains, args, wallet, example) {
     const config = readChainConfig(configPath.localCosmosChains);
 
     const wasmClient = await CosmosClient.create('wasm');
-    const { client: signingClient, address: signingAddress } = await wasmClient.generateRandomSigningClient();
+    const { client: signingClient, address: signingAddress } = await wasmClient.createFundedSigningClient();
 
     await example.execute(evmChain, wallet, {
         args,
