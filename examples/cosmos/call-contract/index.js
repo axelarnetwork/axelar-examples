@@ -16,7 +16,7 @@ async function deployOnAltChain() {
     const cosmosClient = await CosmosClient.create('wasm');
     const wasmPath = path.join(__dirname, 'wasm-contract/artifacts/send_receive.wasm');
     const wasm = await cosmosClient.uploadWasm(wasmPath);
-    const { client, address: senderAddress } = await cosmosClient.generateRandomSigningClient();
+    const { client, address: senderAddress } = await cosmosClient.createFundedSigningClient();
 
     const cosmosConfig = JSON.parse(fs.readFileSync(configPath.localCosmosChains));
 

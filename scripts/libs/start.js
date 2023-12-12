@@ -1,5 +1,5 @@
-const { ethers } = require('ethers');
 const fs = require('fs');
+const { ethers } = require('ethers');
 const { createAndExport, EvmRelayer, RelayerType } = require('@axelar-network/axelar-local-dev');
 const { IBCRelayerService, AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
 const { enabledAptos, enabledCosmos } = require('./config');
@@ -29,33 +29,23 @@ async function start(fundAddresses = [], chains = [], options = {}) {
     }
 
     if (!skipCosmos && enabledCosmos) {
-        const { startAll } = require('@axelar-network/axelar-local-dev-cosmos');
+        const { startChains } = require('@axelar-network/axelar-local-dev-cosmos');
 
         // Spin up cosmos chains in docker containers
-        await startAll().catch((e) => {
+        await startChains().catch((e) => {
             console.log(e);
         });
 
-        const ibcRelayer = await IBCRelayerService.create();
-        // Setup IBC Channels. This command will take a while to complete. (should be around 2-3 mins)
-        await ibcRelayer.setup();
+        // set relayer for cosmos
+        relayers.wasm = await AxelarRelayerService.create(defaultAxelarChainInfo);
+        const ibcRelayer = relayers.wasm.ibcRelayer;
 
         const cosmosConfig = {
             srcChannelId: ibcRelayer.srcChannelId,
             dstChannelId: ibcRelayer.destChannelId,
         };
 
-        // set relayer for cosmos
-        relayers.wasm = await AxelarRelayerService.create(defaultAxelarChainInfo);
         evmRelayer.setRelayer(RelayerType.Wasm, relayers.wasm);
-
-        await relayers.wasm.listenForEvents();
-
-        dropConnections.push(() => relayers.wasm.stopListening());
-
-        await ibcRelayer.runInterval();
-
-        dropConnections.push(() => ibcRelayer.stopInterval());
 
         // check if folder is available
         const dirname = path.dirname(configPath.localCosmosChains);
@@ -66,6 +56,9 @@ async function start(fundAddresses = [], chains = [], options = {}) {
 
         // write that to cosmos config path
         fs.writeFileSync(configPath.localCosmosChains, JSON.stringify(cosmosConfig, null, 2));
+
+        dropConnections.push(() => ibcRelayer.stopInterval());
+        dropConnections.push(() => relayers.wasm.stopListening());
     }
 
     await createAndExport({

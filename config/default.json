@@ -3,6 +3,6 @@
         "enabled": false
     },
     "cosmos": {
-        "enabled": false
+        "enabled": true
     }
 }
