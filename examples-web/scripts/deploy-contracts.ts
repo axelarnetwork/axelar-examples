@@ -1,5 +1,6 @@
 import "dotenv/config";
 import fs from "fs/promises";
+import { existsSync } from "fs";
 import path from "path";
 import { Wallet } from "ethers";
 import { configPath } from "../../config";
@@ -42,6 +43,9 @@ async function main() {
   // update chains
   const updatedChains = [chainA, chainB];
   const _path = path.resolve(configPath.localEvmChains);
+  if (!existsSync(_path)) {
+    await fs.mkdir(_path, { recursive: true });
+  }
   const publicPath = path.resolve(__dirname, "../public/chains.json");
   await fs.writeFile(_path, JSON.stringify(updatedChains, null, 2));
   await fs.writeFile(publicPath, JSON.stringify(updatedChains, null, 2));
