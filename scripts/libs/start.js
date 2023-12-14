@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { ethers } = require('ethers');
 const { createAndExport, EvmRelayer, RelayerType } = require('@axelar-network/axelar-local-dev');
-const { IBCRelayerService, AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
+const { AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
 const { enabledAptos, enabledCosmos } = require('./config');
 const { configPath } = require('../../config');
 const path = require('path');

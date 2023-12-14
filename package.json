@@ -7,6 +7,9 @@
     },
     "scripts": {
         "test": "TEST=true mocha examples/tests",
+        "test:cosmos": "TEST=true mocha examples/tests/cosmos.test.js",
+        "test:evm": "TEST=true mocha examples/tests/evm.test.js",
+        "test:aptos": "TEST=true mocha examples/tests/aptos.test.js",
         "start": "node scripts/runStart",
         "deploy": "node scripts/runDeploy",
         "execute": "node scripts/runExecute",

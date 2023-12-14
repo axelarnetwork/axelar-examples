@@ -20,7 +20,7 @@ jobs:
 
             - name: Override config/ci.json
               run: |
-                  echo '{"aptos": {"enabled": false}}' > config/ci.json
+                  echo '{"aptos": {"enabled": false}, "cosmos": {"enabled": false}}' > config/ci.json
 
             - name: Install Dependencies for Cli Examples
               run: npm ci
@@ -33,7 +33,7 @@ jobs:
               run: |
                   # Dummy private key created for testing purpose only, it is not secret
                   npm run setup
-                  nohup npm run start &
+                  NODE_ENV=ci nohup npm run start &
                   sleep 5
 
             - name: Setup Web Examples
@@ -42,7 +42,7 @@ jobs:
                   npm ci
                   npm run setup
 
-            - name: Compile EVM Smart Contracts and Deploy
+            - name: Deploy
               run: |
                   cd examples-web
                   npm run deploy
