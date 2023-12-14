@@ -1,6 +1,6 @@
 # Call Contract
 
-This examples demonstrates on how you deploy a smart contract and sending message between evm chain and cosmos chain with Axelar.
+This example demonstrates how to deploy a smart contract and facilitate communication between an EVM chain and a Cosmos chain using Axelar.
 
 ## Prerequisite
 
@@ -8,23 +8,26 @@ This examples demonstrates on how you deploy a smart contract and sending messag
 
 ## Build a Contract (Optional)
 
-We've precompiled the contract [here](../cosmos/call-contract/wasm-contract/artifacts/send_receive.wasm), but if you'd like to modify some code, here's how you can recompile it:
+1. A precompiled version of the contract is available [here](../cosmos/call-contract/wasm-contract/artifacts/send_receive.wasm). If you wish to modify the contract, follow these steps to recompile it:
 
 ```
 npm run build-wasm
 ```
 
-Once completed, you should see the [wasm](./wasm-contract/artifacts/send_receive.wasm) file.
+2. Upon successful compilation, the wasm file will be available at [this location](./wasm-contract/artifacts/send_receive.wasm).
+   Note: This wasm file is necessary for deploying the contract on the wasm chain as part of this example.
 
-We will use this file to deploy to the wasm chain for this example.
+## Deploying the Contract
 
-## Deploy a Contract
+To deploy the contract to the wasm chain and evm chains, execute the following command:
 
 ```
 npm run deploy cosmos/call-contract local
 ```
 
 ## Execute example
+
+To run the example and see the contract in action, use the following command:
 
 ```
 npm run execute cosmos/call-contract local
