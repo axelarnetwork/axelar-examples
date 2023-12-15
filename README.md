@@ -18,7 +18,7 @@ Support Node.js version 16.x and 18.x
 git clone https://github.com/axelarnetwork/axelar-examples.git
 ```
 
-2. Install dependencies:
+2. Navigate to `axelar-examples` and install dependencies:
 
 ```bash
 npm install
