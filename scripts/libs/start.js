@@ -1,8 +1,10 @@
+const fs = require('fs');
 const { ethers } = require('ethers');
-const { createAndExport } = require('@axelar-network/axelar-local-dev');
-const { enabledAptos } = require('./config');
+const { createAndExport, EvmRelayer, RelayerType } = require('@axelar-network/axelar-local-dev');
+const { AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
+const { enabledAptos, enabledCosmos } = require('./config');
+const { configPath } = require('../../config');
 const path = require('path');
-const { EvmRelayer } = require('@axelar-network/axelar-local-dev/dist/relay/EvmRelayer');
 
 const evmRelayer = new EvmRelayer();
 
@@ -15,23 +17,64 @@ const relayers = { evm: evmRelayer };
  * @param {*} chains - chains to start. All chains are started if not specified (Avalanche, Moonbeam, Polygon, Fantom, Ethereum).
  */
 async function start(fundAddresses = [], chains = [], options = {}) {
-    if (enabledAptos) {
+    // For testing purpose
+    const { skipAptos, skipCosmos } = options;
+    const dropConnections = [];
+
+    if (!skipAptos && enabledAptos) {
         const { AptosRelayer, createAptosNetwork } = require('@axelar-network/axelar-local-dev-aptos');
         await initAptos(createAptosNetwork);
         relayers.aptos = new AptosRelayer();
-        evmRelayer.setRelayer('aptos', relayers.aptos);
+        evmRelayer.setRelayer(RelayerType.Aptos, relayers.aptos);
     }
 
-    const pathname = path.resolve(__dirname, '../..', 'chain-config', 'local.json');
+    if (!skipCosmos && enabledCosmos) {
+        const { startChains } = require('@axelar-network/axelar-local-dev-cosmos');
+
+        // Spin up cosmos chains in docker containers
+        await startChains().catch((e) => {
+            console.log(e);
+        });
+
+        // set relayer for cosmos
+        relayers.wasm = await AxelarRelayerService.create(defaultAxelarChainInfo);
+        const ibcRelayer = relayers.wasm.ibcRelayer;
+
+        const cosmosConfig = {
+            srcChannelId: ibcRelayer.srcChannelId,
+            dstChannelId: ibcRelayer.destChannelId,
+        };
+
+        evmRelayer.setRelayer(RelayerType.Wasm, relayers.wasm);
+
+        // check if folder is available
+        const dirname = path.dirname(configPath.localCosmosChains);
+
+        if (!fs.existsSync(dirname)) {
+            fs.mkdirSync(dirname, { recursive: true });
+        }
+
+        // write that to cosmos config path
+        fs.writeFileSync(configPath.localCosmosChains, JSON.stringify(cosmosConfig, null, 2));
+
+        dropConnections.push(() => ibcRelayer.stopInterval());
+        dropConnections.push(() => relayers.wasm.stopListening());
+    }
 
     await createAndExport({
-        chainOutputPath: pathname,
+        chainOutputPath: configPath.localEvmChains,
         accountsToFund: fundAddresses,
         callback: (chain, _info) => deployAndFundUsdc(chain, fundAddresses),
         chains: chains.length !== 0 ? chains : null,
         relayers,
         relayInterval: options.relayInterval,
     });
+
+    return async () => {
+        for (const dropConnection of dropConnections) {
+            await dropConnection();
+        }
+    };
 }
 
 /**

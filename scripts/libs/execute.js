@@ -1,7 +1,9 @@
 'use strict';
 
 const { Contract, getDefaultProvider } = require('ethers');
-const { calculateBridgeFee, getDepositAddress, calculateBridgeExpressFee } = require('./utils.js');
+const { CosmosClient } = require('@axelar-network/axelar-local-dev-cosmos');
+const { calculateBridgeFee, getDepositAddress, calculateBridgeExpressFee, readChainConfig } = require('./utils.js');
+const { configPath } = require('../../config/index.js');
 const AxelarGatewayContract = rootRequire(
     'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
 );
@@ -27,6 +29,32 @@ async function executeAptosExample(chains, args, wallet, example) {
 
     await example.execute(evmChain, wallet, {
         args,
+    });
+}
+
+async function executeCosmosExample(_env, chains, args, wallet, example) {
+    const evmChain = chains.find((chain) => chain.name === example.sourceChain);
+
+    evmChain.provider = getDefaultProvider(evmChain.rpc);
+    const connectedWallet = wallet.connect(evmChain.provider);
+
+    // Initialize contracts to chain object.
+    deserializeContract(evmChain, connectedWallet);
+
+    // Recover axelar contracts to chain object.
+    evmChain.gateway = new Contract(evmChain.gateway, AxelarGatewayContract.abi, connectedWallet);
+    evmChain.gasService = new Contract(evmChain.gasService, AxelarGasServiceContract.abi, connectedWallet);
+
+    const config = readChainConfig(configPath.localCosmosChains);
+
+    const wasmClient = await CosmosClient.create('wasm');
+    const { client: signingClient, address: signingAddress } = await wasmClient.createFundedSigningClient();
+
+    await example.execute(evmChain, wallet, {
+        args,
+        wasmContractAddress: config.contractAddress,
+        signingClient,
+        signingAddress,
     });
 }
 
@@ -153,4 +181,5 @@ function listenForGMPEvent(env, source, startBlockNumber) {
 module.exports = {
     executeAptosExample,
     executeEVMExample,
+    executeCosmosExample,
 };

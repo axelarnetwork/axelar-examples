@@ -18,7 +18,7 @@ async function isDeployedTokenLinker(client) {
     return resources.find((resource) => resource.type === `${aptosTokenLinkerAddress}::token_linker::State`);
 }
 
-async function preDeploy() {
+async function deployOnAltChain() {
     const client = new AptosNetwork(process.env.APTOS_URL);
     const isDeployed = await isDeployedTokenLinker(client);
 
@@ -122,7 +122,7 @@ async function execute(evmChain, wallet, options) {
 }
 
 module.exports = {
-    preDeploy,
+    deployOnAltChain,
     deploy,
     execute,
 };

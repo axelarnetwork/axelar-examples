@@ -3,7 +3,9 @@
 const {
     utils: { setJSON },
 } = require('@axelar-network/axelar-local-dev');
+const { readChainConfig } = require('./utils');
 const { getDefaultProvider, utils } = require('ethers');
+const { configPath } = require('../../config');
 
 /**
  * Deploy a contract to a list of chains.
@@ -13,8 +15,8 @@ const { getDefaultProvider, utils } = require('ethers');
  * @param {Object} example - The example to deploy.
  */
 async function deploy(env, chains, wallet, example) {
-    await preDeploy(chains, wallet, example);
-    await doDeploy(chains, wallet, example);
+    await deployOnAltChain(example);
+    await deployOnEvmChain(chains, wallet, example);
     await postDeploy(chains, wallet, example);
 
     // Serialize the contracts by storing the human-readable abi with the address in the json file.
@@ -30,18 +32,36 @@ async function deploy(env, chains, wallet, example) {
     }
 
     // Write the chain objects to the json file.
-    setJSON(chains, `./chain-config/${env}.json`);
+    setJSON(chains, `./chain-config/${env}-evm.json`);
 }
 
-// Run the preDeploy function if it exists.
-function preDeploy(chains, wallet, example) {
-    if (!example.preDeploy) return;
+// Run the deployOnAltChain function if it exists.
+async function deployOnAltChain(example) {
+    if (!example.deployOnAltChain) return;
 
-    return example.preDeploy(chains, wallet);
+    const payload = await example.deployOnAltChain();
+
+    // update the chain config file
+    if (payload) {
+        const { data, path } = payload;
+
+        const config = readChainConfig(configPath.localCosmosChains);
+        if (config) {
+            setJSON(
+                {
+                    ...config,
+                    ...data,
+                },
+                path,
+            );
+        }
+    }
+
+    return payload;
 }
 
 // Deploy the contracts.
-function doDeploy(chains, wallet, example) {
+function deployOnEvmChain(chains, wallet, example) {
     const deploys = chains.map((chain) => {
         const provider = getDefaultProvider(chain.rpc);
         return example.deploy(chain, wallet.connect(provider));

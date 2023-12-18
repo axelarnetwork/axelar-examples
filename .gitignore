@@ -3,7 +3,7 @@ build
 artifacts
 cache
 yarn-error.log
-local.json
+local*.json
 gasLogs.json
 scripts/deployConst.js
 
@@ -14,3 +14,4 @@ aptos-artifacts
 .vscode
 chain-config/*.json
 .aptos
+!./**/artifacts/send_receive.wasm

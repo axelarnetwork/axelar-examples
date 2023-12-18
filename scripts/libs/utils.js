@@ -1,6 +1,7 @@
 const { Wallet, ethers } = require('ethers');
 const path = require('path');
 const fs = require('fs-extra');
+const { configPath } = require('../../config');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
 const { AxelarAssetTransfer, AxelarQueryAPI, CHAINS, Environment } = require('@axelar-network/axelarjs-sdk');
 
@@ -12,6 +13,14 @@ function getWallet() {
     checkWallet();
     const privateKey = process.env.EVM_PRIVATE_KEY;
     return privateKey ? new Wallet(privateKey) : Wallet.fromMnemonic(process.env.EVM_MNEMONIC);
+}
+
+function readChainConfig(filePath) {
+    if (!fs.existsSync(filePath)) {
+        return undefined;
+    }
+
+    return fs.readJsonSync(filePath);
 }
 
 /**
@@ -26,9 +35,7 @@ function getEVMChains(env, chains = []) {
     const selectedChains = chains.length > 0 ? chains : getDefaultChains(env);
 
     if (env === 'local') {
-        return fs
-            .readJsonSync(path.join(__dirname, '../../chain-config/local.json'))
-            .filter((chain) => selectedChains.includes(chain.name));
+        return fs.readJsonSync(configPath.localEvmChains).filter((chain) => selectedChains.includes(chain.name));
     }
 
     const testnet = getTestnetChains(selectedChains);
@@ -46,10 +53,12 @@ function getEVMChains(env, chains = []) {
  * @returns {Chain[]} - The chain objects.
  */
 function getTestnetChains(chains = []) {
-    const _path = path.join(__dirname, '../../chain-config/testnet.json');
+    const _path = path.join(__dirname, '../../chain-config/testnet-evm.json');
     let testnet = [];
     if (fs.existsSync(_path)) {
-        testnet = fs.readJsonSync(path.join(__dirname, '../../chain-config/testnet.json')).filter((chain) => chains.includes(chain.name));
+        testnet = fs
+            .readJsonSync(path.join(__dirname, '../../chain-config/testnet-evm.json'))
+            .filter((chain) => chains.includes(chain.name));
     }
 
     if (testnet.length < chains.length) {
@@ -230,5 +239,6 @@ module.exports = {
     calculateBridgeFee,
     calculateBridgeExpressFee,
     getExamplePath,
+    readChainConfig,
     sanitizeEventArgs,
 };
