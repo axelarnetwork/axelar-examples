@@ -17,30 +17,35 @@ contract ExecutableSample is AxelarExecutable {
     }
 
     // Call this function to update the value of this contract along with all its siblings'.
-    function setRemoteValue(
+    function setRemoteValue(string calldata destinationChain, string calldata destinationAddress, string calldata value_) external payable {
+
+        bytes memory payload = abi.encode(value_);
+        gateway.callContract(destinationChain, destinationAddress, payload);
+    }
+
+    function many(
+        string calldata destinationChain,
+        string calldata destinationAddress,
+        string calldata value_,
+        uint num
+    ) external payable {
+
+        bytes memory payload = abi.encode(value_);
+        for (uint i = 0; i < num; i++) {
+            gateway.callContract(destinationChain, destinationAddress, payload);
+        }
+    }
+
+    function dummyCall(
         string calldata destinationChain,
         string calldata destinationAddress,
         string calldata value_
     ) external payable {
-        require(msg.value > 0, 'Gas payment is required');
 
-        bytes memory payload = abi.encode(value_);
-        gasService.payNativeGasForContractCall{ value: msg.value }(
-            address(this),
-            destinationChain,
-            destinationAddress,
-            payload,
-            msg.sender
-        );
-        gateway.callContract(destinationChain, destinationAddress, payload);
     }
 
     // Handles calls created by setAndSend. Updates this contract's value
-    function _execute(
-        string calldata sourceChain_,
-        string calldata sourceAddress_,
-        bytes calldata payload_
-    ) internal override {
+    function _execute(string calldata sourceChain_, string calldata sourceAddress_, bytes calldata payload_) internal override {
         (value) = abi.decode(payload_, (string));
         sourceChain = sourceChain_;
         sourceAddress = sourceAddress_;
