@@ -1,7 +1,6 @@
 'use strict';
 
 const {
-    getDefaultProvider,
     utils: { keccak256, defaultAbiCoder },
 } = require('ethers');
 const {
@@ -83,14 +82,15 @@ async function execute(chains, wallet, options) {
     const operatorAddress = source.erc721.address;
 
     // Approve NFT to the NFTLinker contract
-    console.log("\n==== Approve NFT to NFTLinker's contract if needed ====");
-    const txApprove = await source.erc721.approve(source.contract.address, owner.tokenId);
-    console.log("Approved NFT to NFTLinker's contract", txApprove.hash);
+    console.log(`\n==== Approve Original NFT to NFTLinker's contract if needed ====`);
+    const srcApproveTx = await source.erc721.approve(source.contract.address, owner.tokenId);
+    console.log(`Approved Original NFT (${tokenId}) to NFTLinker's contract`);
+    console.log(`Tx Approved Hash: ${srcApproveTx.hash}`);
 
     // Send NFT to NFTLinker's contract
     console.log("\n==== Send NFT to NFTLinker's contract ====");
     const sendNftTx = await source.contract.sendNFT(operatorAddress, owner.tokenId, destination.name, wallet.address, { value: fee });
-    console.log("Sent NFT to NFTLinker's contract", sendNftTx.hash);
+    console.log(`Sent NFT ${tokenId} to NFTLinker's contract`, sendNftTx.hash);
 
     const destinationTokenId = BigInt(
         keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [source.name, operatorAddress, tokenId])),
@@ -104,14 +104,14 @@ async function execute(chains, wallet, options) {
     }
 
     console.log('\n==== Verify Result ====');
-    await print(tokenId);
+    await print(destinationTokenId);
 
-    console.log("\n==== Approve NFT to NFTLinker's contract ====");
-    const txApprove2 = await destination.contract.approve(destination.contract.address, destinationTokenId);
-    console.log("Approved NFT to NFTLinker's contract", txApprove2.hash);
+    console.log("\n==== Approve Remote NFT to NFTLinker's contract ====");
+    const destApproveTx = await destination.contract.approve(destination.contract.address, destinationTokenId);
+    console.log(`Approved Remote NFT (${destinationTokenId}) to NFTLinker's contract`);
+    console.log(`Tx Approved Hash: ${destApproveTx.hash}`);
 
     console.log(`\n==== Send NFT back from '${source.name}' to ${destination.name} ====`);
-    console.log('OwnerOf', await destination.contract.ownerOf(destinationTokenId));
     const sendBackNftTx = await destination.contract.sendNFT(
         destination.contract.address,
         destinationTokenId,
@@ -121,11 +121,10 @@ async function execute(chains, wallet, options) {
             value: fee,
         },
     );
-    console.log("Sent NFT back to NFTLinker's contract", sendBackNftTx.hash);
+    console.log(`Sent NFT ${destinationTokenId} back to ${source.name}`, sendBackNftTx.hash);
 
     while (true) {
         const owner = await source.erc721.ownerOf(tokenId);
-        console.log(owner);
         if (owner === wallet.address) break;
         await sleep(2000);
     }
