@@ -1,7 +1,6 @@
 'use strict';
 
 const {
-    getDefaultProvider,
     utils: { keccak256, defaultAbiCoder },
 } = require('ethers');
 const {
@@ -13,97 +12,125 @@ const ERC721 = rootRequire('./artifacts/examples/evm/nft-linker/ERC721Demo.sol/E
 const ExampleProxy = rootRequire('./artifacts/examples/evm/Proxy.sol/ExampleProxy.json');
 const NftLinker = rootRequire('./artifacts/examples/evm/nft-linker/NftLinker.sol/NftLinker.json');
 
-const tokenId = 0;
+const tokenId = Math.floor(Math.random() * 1000000000);
 
-async function deploy(chain, wallet) {
-    console.log(`Deploying ERC721Demo for ${chain.name}.`);
+async function deploy(chain, wallet, key) {
     chain.erc721 = await deployContract(wallet, ERC721, ['Test', 'TEST']);
-    console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721.address}.`);
-    console.log(`Deploying NftLinker for ${chain.name}.`);
-    const provider = getDefaultProvider(chain.rpc);
-    chain.wallet = wallet.connect(provider);
+    console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721.address}`);
+
     chain.contract = await deployUpgradable(
         chain.constAddressDeployer,
-        wallet.connect(provider),
+        wallet,
         NftLinker,
         ExampleProxy,
         [chain.gateway, chain.gasService],
         [],
         defaultAbiCoder.encode(['string'], [chain.name]),
+        key,
     );
-    console.log(`Deployed NftLinker for ${chain.name} at ${chain.contract.address}.`);
-    console.log(`Minting token ${tokenId} for ${chain.name}`);
-    await (await chain.erc721.mint(tokenId)).wait();
-    console.log(`Minted token ${tokenId} for ${chain.name}`);
+    console.log(`Deployed NftLinker for ${chain.name} at ${chain.contract.address}`);
 }
 
 async function execute(chains, wallet, options) {
-    const { source: originChain, destination, calculateBridgeFee } = options;
+    const { source, destination, calculateBridgeFee } = options;
 
-    const ownerOf = async (chain = originChain) => {
-        const operator = chain.erc721;
-        const owner = await operator.ownerOf(tokenId);
+    const getOwnerDetails = async () => {
+        const sourceOwner = await source.erc721.ownerOf(tokenId);
 
-        if (owner !== chain.contract.address) {
-            return { chain: chain.name, address: owner, tokenId: BigInt(tokenId) };
+        if (sourceOwner !== source.contract.address) {
+            return {
+                chain: source.name,
+                ownerAddress: sourceOwner,
+                tokenId: BigInt(tokenId),
+            };
         }
 
         const newTokenId = BigInt(
-            keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [chain.name, operator.address, tokenId])),
+            keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [source.name, source.erc721.address, tokenId])),
         );
 
-        for (const checkingChain of chains) {
-            if (checkingChain === chain) continue;
+        const destOwner = destination.contract.ownerOf(newTokenId);
 
-            try {
-                const address = await checkingChain.contract.ownerOf(newTokenId);
-                return { chain: checkingChain.name, address, tokenId: newTokenId };
-            } catch (e) {}
+        if (destOwner) {
+            return { chain: destination.name, ownerAddress: destOwner, tokenId: newTokenId };
         }
 
-        return { chain: '' };
+        const ownerAddress = await source.erc721.ownerOf(tokenId);
+        return {
+            chain: source.name,
+            ownerAddress,
+            tokenId: BigInt(tokenId),
+        };
     };
 
-    async function print() {
-        for (const chain of chains) {
-            const owner = await ownerOf(chain);
-            console.log(`Token that was originally minted at ${chain.name} is at ${owner.chain}.`);
-        }
+    async function print(tokenId) {
+        const owner = await getOwnerDetails();
+        console.log(`Token '${tokenId}' was originally minted at ${source.name} is at ${owner.chain}.`);
     }
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    const owner = await ownerOf();
-    const source = chains.find((chain) => chain.name === owner.chain);
-    if (source === destination) throw new Error('Token is already where it should be!');
+    console.log('==== Initially ====');
+    await source.erc721.mint(tokenId);
+    console.log(`Minted token ID: '${tokenId}' for ${source.name}`);
 
-    console.log('--- Initially ---');
-    await print();
+    await print(tokenId);
 
     const fee = await calculateBridgeFee(source, destination);
 
-    if (originChain === source) {
-        await (await source.erc721.approve(source.contract.address, owner.tokenId)).wait();
-    }
+    const owner = await getOwnerDetails();
+    const operatorAddress = source.erc721.address;
 
-    await (
-        await source.contract.sendNFT(
-            originChain === source ? source.erc721.address : source.contract.address,
-            owner.tokenId,
-            destination.name,
-            wallet.address,
-            { value: fee },
-        )
-    ).wait();
+    // Approve NFT to the NFTLinker contract
+    console.log(`\n==== Approve Original NFT to NFTLinker's contract if needed ====`);
+    const srcApproveTx = await source.erc721.approve(source.contract.address, owner.tokenId);
+    console.log(`Approved Original NFT (${tokenId}) to NFTLinker's contract`);
+    console.log(`Tx Approved Hash: ${srcApproveTx.hash}`);
+
+    // Send NFT to NFTLinker's contract
+    console.log("\n==== Send NFT to NFTLinker's contract ====");
+    const sendNftTx = await source.contract.sendNFT(operatorAddress, owner.tokenId, destination.name, wallet.address, { value: fee });
+    console.log(`Sent NFT ${tokenId} to NFTLinker's contract`, sendNftTx.hash);
+
+    const destinationTokenId = BigInt(
+        keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [source.name, operatorAddress, tokenId])),
+    );
+    console.log(`Token ID at ${destination.name} will be: '${destinationTokenId}'`);
 
     while (true) {
-        const owner = await ownerOf();
-        if (owner.chain === destination.name) break;
+        const originalDetails = await destination.contract.original(destinationTokenId);
+        if (originalDetails !== '0x') break;
         await sleep(2000);
     }
 
-    console.log('--- Then ---');
-    await print();
+    console.log('\n==== Verify Result ====');
+    await print(destinationTokenId);
+
+    console.log("\n==== Approve Remote NFT to NFTLinker's contract ====");
+    const destApproveTx = await destination.contract.approve(destination.contract.address, destinationTokenId);
+    console.log(`Approved Remote NFT (${destinationTokenId}) to NFTLinker's contract`);
+    console.log(`Tx Approved Hash: ${destApproveTx.hash}`);
+
+    console.log(`\n==== Send NFT back from '${source.name}' to ${destination.name} ====`);
+    const sendBackNftTx = await destination.contract.sendNFT(
+        destination.contract.address,
+        destinationTokenId,
+        source.name,
+        wallet.address,
+        {
+            value: fee,
+        },
+    );
+    console.log(`Sent NFT ${destinationTokenId} back to ${source.name}`, sendBackNftTx.hash);
+
+    while (true) {
+        const owner = await source.erc721.ownerOf(tokenId);
+        if (owner === wallet.address) break;
+        await sleep(2000);
+    }
+
+    console.log('\n==== Verify Result ====');
+    await print(tokenId);
 }
 
 module.exports = {

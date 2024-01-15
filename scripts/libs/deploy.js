@@ -62,9 +62,10 @@ async function deployOnAltChain(example) {
 
 // Deploy the contracts.
 function deployOnEvmChain(chains, wallet, example) {
+    const key = new Date().getTime().toString();
     const deploys = chains.map((chain) => {
         const provider = getDefaultProvider(chain.rpc);
-        return example.deploy(chain, wallet.connect(provider));
+        return example.deploy(chain, wallet.connect(provider), key);
     });
 
     return Promise.all(deploys);
