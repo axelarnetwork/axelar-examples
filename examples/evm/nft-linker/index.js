@@ -13,93 +13,104 @@ const ERC721 = rootRequire('./artifacts/examples/evm/nft-linker/ERC721Demo.sol/E
 const ExampleProxy = rootRequire('./artifacts/examples/evm/Proxy.sol/ExampleProxy.json');
 const NftLinker = rootRequire('./artifacts/examples/evm/nft-linker/NftLinker.sol/NftLinker.json');
 
-const tokenId = 0;
+const tokenId = 1000;
 
-async function deploy(chain, wallet) {
-    console.log(`Deploying ERC721Demo for ${chain.name}.`);
+async function deploy(chain, wallet, key) {
     chain.erc721 = await deployContract(wallet, ERC721, ['Test', 'TEST']);
-    console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721.address}.`);
-    console.log(`Deploying NftLinker for ${chain.name}.`);
-    const provider = getDefaultProvider(chain.rpc);
-    chain.wallet = wallet.connect(provider);
+    console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721.address}`);
+
     chain.contract = await deployUpgradable(
         chain.constAddressDeployer,
-        wallet.connect(provider),
+        wallet,
         NftLinker,
         ExampleProxy,
         [chain.gateway, chain.gasService],
         [],
         defaultAbiCoder.encode(['string'], [chain.name]),
+        key,
     );
-    console.log(`Deployed NftLinker for ${chain.name} at ${chain.contract.address}.`);
-    console.log(`Minting token ${tokenId} for ${chain.name}`);
+    console.log(`Deployed NftLinker for ${chain.name} at ${chain.contract.address}`);
+
     await (await chain.erc721.mint(tokenId)).wait();
-    console.log(`Minted token ${tokenId} for ${chain.name}`);
+    console.log(`Minted token ID: '${tokenId}' for ${chain.name}`);
 }
 
 async function execute(chains, wallet, options) {
-    const { source: originChain, destination, calculateBridgeFee } = options;
+    const { source, destination, calculateBridgeFee } = options;
 
-    const ownerOf = async (chain = originChain) => {
-        const operator = chain.erc721;
-        const owner = await operator.ownerOf(tokenId);
+    console.log('==== Print All Addresses: ====');
+    console.log('source.erc721.address', source.erc721.address);
+    console.log('source.contract.address', source.contract.address);
+    console.log('wallet.address', wallet.address);
 
-        if (owner !== chain.contract.address) {
-            return { chain: chain.name, address: owner, tokenId: BigInt(tokenId) };
-        }
-
+    const getOwnerDetails = async () => {
         const newTokenId = BigInt(
-            keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [chain.name, operator.address, tokenId])),
+            keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [source.name, source.erc721.address, tokenId])),
         );
 
-        for (const checkingChain of chains) {
-            if (checkingChain === chain) continue;
+        const originalDetails = await destination.contract.original(newTokenId);
 
-            try {
-                const address = await checkingChain.contract.ownerOf(newTokenId);
-                return { chain: checkingChain.name, address, tokenId: newTokenId };
-            } catch (e) {}
+        // It's minted at the remote chain
+        if (originalDetails !== '0x') {
+            const ownerAddress = await destination.contract.ownerOf(newTokenId);
+            return { chain: destination.name, ownerAddress, tokenId: newTokenId };
         }
 
-        return { chain: '' };
+        const ownerAddress = await source.erc721.ownerOf(tokenId);
+        return {
+            chain: source.name,
+            ownerAddress,
+            tokenId: BigInt(tokenId),
+        };
     };
 
     async function print() {
-        for (const chain of chains) {
-            const owner = await ownerOf(chain);
-            console.log(`Token that was originally minted at ${chain.name} is at ${owner.chain}.`);
-        }
+        const owner = await getOwnerDetails();
+        console.log(`Token that was originally minted at ${source.name} is at ${owner.chain}.`);
     }
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    const owner = await ownerOf();
-    const source = chains.find((chain) => chain.name === owner.chain);
-    if (source === destination) throw new Error('Token is already where it should be!');
+    // console.log('OWNER', owner);
+    // const tokenChain = chains.find((chain) => chain.name === owner.chain);
+    // console.log(`Token is currently at ${source.name}`, destination.name);
+    // if (source.name === destination.name) throw new Error('Token is already where it should be!');
 
     console.log('--- Initially ---');
     await print();
 
     const fee = await calculateBridgeFee(source, destination);
 
-    if (originChain === source) {
-        await (await source.erc721.approve(source.contract.address, owner.tokenId)).wait();
+    const owner = await getOwnerDetails();
+    const isMintedAtOrigin = owner.chain === source.name;
+    const operatorAddress = isMintedAtOrigin ? source.erc721.address : source.contract.address;
+
+    console.log('Owner', owner, isMintedAtOrigin);
+
+    // Approve NFT to the NFTLinker contract
+    if (isMintedAtOrigin) {
+        await source.erc721.approve(source.contract.address, owner.tokenId);
+        console.log("Approved NFT to NFTLinker's contract");
     }
 
-    await (
-        await source.contract.sendNFT(
-            originChain === source ? source.erc721.address : source.contract.address,
-            owner.tokenId,
-            destination.name,
-            wallet.address,
-            { value: fee },
-        )
-    ).wait();
+    // Send NFT to NFTLinker's contract
+    console.log('Sending NFT', operatorAddress, owner.tokenId, destination.name, wallet.address, fee);
+    const sendNftTx = await source.contract.sendNFT(operatorAddress, owner.tokenId, destination.name, wallet.address, { value: fee });
+    console.log("Sent NFT to NFTLinker's contract", sendNftTx.hash);
 
     while (true) {
-        const owner = await ownerOf();
-        if (owner.chain === destination.name) break;
+        // const owner = await getOwnerDetails();
+        const newTokenId = BigInt(
+            keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [source.name, operatorAddress, tokenId])),
+        );
+
+        console.log('Waiting for NFT to be minted at destination chain', newTokenId.toString());
+
+        const originalDetails = await destination.contract.original(newTokenId);
+        console.log('originalDetails', originalDetails);
+        // console.log(`Token is now at ${owner.chain}.`, newOwnerAddress);
         await sleep(2000);
+        if (originalDetails !== '0x') break;
     }
 
     console.log('--- Then ---');
