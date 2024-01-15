@@ -22,6 +22,7 @@ const examples = [
     'cross-chain-token',
     'deposit-address',
     'nonced-execution',
+    'nft-linker',
     'send-ack',
     'send-token',
 ];
