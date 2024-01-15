@@ -166,7 +166,7 @@ async function calculateBridgeExpressFee(source, destination, options = {}) {
         },
     );
 
-    const expressMultiplier = response.apiResponse.result.express_execute_gas_adjustment_with_multiplier;
+    const expressMultiplier = response.apiResponse.result.express_execute_gas_multiplier;
     const floatToIntFactor = 10000;
 
     // baseFee + executionFeeWithMultiplier + expressFee
