@@ -44,6 +44,7 @@ contract NftLinker is ERC721, AxelarExecutable, Upgradable {
     //Burns and sends a token.
     function _sendMintedToken(uint256 tokenId, string memory destinationChain, address destinationAddress) internal {
         _burn(tokenId);
+
         //Get the original information.
         (string memory originalChain, address operator, uint256 originalTokenId) = abi.decode(
             original[tokenId],
