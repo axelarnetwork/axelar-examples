@@ -33,8 +33,6 @@ async function execute(chains, wallet, options) {
     const decimals = 18;
     const salt = keccak256(defaultAbiCoder.encode(['uint256', 'uint256'], [process.pid, process.ppid]));
     
-    const data = defaultAbiCoder.encode(['address', 'string'], [wallet.address, message]);
-
     const fee = await calculateBridgeFee(source, destination);
 
     const sourceIts = new Contract(source.interchainTokenService, IInterchainTokenService.abi, wallet.connect(source.provider));
@@ -63,6 +61,7 @@ async function execute(chains, wallet, options) {
         {value: fee},
     )).wait();
     
+    const sourceTokenAddress = await sourceIts.interchainTokenAddress(tokenId);
     const destinationTokenAddress = await destinationIts.interchainTokenAddress(tokenId);
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -70,8 +69,8 @@ async function execute(chains, wallet, options) {
         await sleep(1000);
     }
 
-    const tokenAddress = await destinationIts.validTokenAddress(tokenId);
-    const destinationToken = new Contract(tokenAddress, IERC20.abi, destination.provider);
+    const sourceToken = new Contract(sourceTokenAddress, IERC20.abi, wallet.connect(source.provider));
+    const destinationToken = new Contract(destinationTokenAddress, IERC20.abi, destination.provider);
     let balance;
     async function logValue() {
         balance = await destinationToken.balanceOf(wallet.address);
@@ -82,9 +81,13 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await logValue();
 
-    console.log(`Sending ${amount} of token ${tokenAddress} to ${destination.name} and executing with it.`);
+    console.log(`Sending ${amount} of token ${destinationTokenAddress} to ${destination.name} and executing with it.`);
 
-    const tx = await sourceIts.callContractWithInterchainToken(tokenId, destination.name, destination.itsExecutable.address, amount, data, fee, {
+    // We need to apoprove the executable before it can use our token.
+    let tx = await sourceToken.approve(source.itsExecutable.address, amount);
+    await tx.wait();
+
+    tx = await source.itsExecutable.sendInterchainTokenWithData(destination.name, destination.itsExecutable.address, tokenId, amount, wallet.address, message, {
         value: fee,
     });
     await tx.wait();

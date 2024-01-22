@@ -7,7 +7,7 @@ import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contr
 import { InterchainToken } from '@axelar-network/interchain-token-service/contracts/interchain-token/InterchainToken.sol';
 import { ITokenManager } from '@axelar-network/interchain-token-service/contracts/interfaces/ITokenManager.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
-
+import { IInterchainTokenService } from '@axelar-network/interchain-token-service/contracts/interfaces/IInterchainTokenService.sol';
 
 contract InterchainExecutableExample is InterchainTokenExecutable {
     event MessageReceived(
@@ -23,6 +23,31 @@ contract InterchainExecutableExample is InterchainTokenExecutable {
     string public lastMessage;
 
     constructor(address interchainTokenService_) InterchainTokenExecutable(interchainTokenService_) {}
+
+    function sendInterchainTokenWithData(
+        string calldata destinationChain,
+        bytes calldata executableAddress,
+        bytes32 tokenId,
+        uint256 amount,
+        address receiver,
+        string calldata message
+    ) external payable {
+        IERC20 token = IERC20(IInterchainTokenService(interchainTokenService).validTokenAddress(tokenId));
+        token.transferFrom(msg.sender, address(this), amount);
+        
+        // If the token needs to be approved one would add the following line.
+        // token.approve(interchainTokenService, amount);
+
+        bytes memory data = abi.encode(receiver, message);
+        IInterchainTokenService(interchainTokenService).callContractWithInterchainToken{value: msg.value}(
+            tokenId,
+            destinationChain,
+            executableAddress,
+            amount,
+            data,
+            msg.value
+        );
+    }
 
     function _executeWithInterchainToken(
         bytes32 commandId,

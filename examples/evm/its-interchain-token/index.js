@@ -1,8 +1,3 @@
-'use strict';
-
-const {
-    utils: { deployContract },
-} = require('@axelar-network/axelar-local-dev');
 const { IInterchainTokenService, IInterchainTokenFactory } = require('@axelar-network/axelar-local-dev/dist/contracts');
 const { Contract } = require('ethers');
 const { interchainTransfer } = require('../../../scripts/libs/its-utils');
