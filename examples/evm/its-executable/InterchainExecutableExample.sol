@@ -20,9 +20,9 @@ contract InterchainExecutableExample is InterchainTokenExecutable {
         uint256 amount
     );
 
-    constructor(address interchainTokenService_) InterchainTokenExecutable(interchainTokenService_) {}
-
     string public lastMessage;
+
+    constructor(address interchainTokenService_) InterchainTokenExecutable(interchainTokenService_) {}
 
     function _executeWithInterchainToken(
         bytes32 commandId,
