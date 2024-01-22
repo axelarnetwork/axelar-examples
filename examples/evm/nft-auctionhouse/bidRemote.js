@@ -1,11 +1,7 @@
 'use strict';
 
-const {
-    getDefaultProvider,
-    Contract,
-    constants: { AddressZero },
-    Wallet,
-} = require('ethers');
+const { getDefaultProvider, Wallet } = require('ethers');
+const { configPath } = require('../../../config');
 
 async function bidRemote(sourceChain, destinationChain, privateKey, tokenId, amount, options = null) {
     const provider = getDefaultProvider(sourceChain.rpc);
@@ -62,7 +58,7 @@ if (require.main === module) {
     let temp;
 
     if (env == 'local') {
-        temp = require(`../../../chain-config/local.json`);
+        temp = require(configPath.localEvmChains);
     } else {
         try {
             temp = require(`@axelar-network/axelar-chains-config`).getChainArray('testnet');

@@ -1,6 +1,7 @@
 'use strict';
 
 const { getDefaultProvider, Contract, Wallet } = require('ethers');
+const { configPath } = require('../../../config');
 
 const NftAuctionhouse = rootRequire('./artifacts/examples/evm/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
 
@@ -21,7 +22,7 @@ if (require.main === module) {
 
     const chains =
         env === 'local'
-            ? require(`../../../chain-config/local.json`)
+            ? require(configPath.localEvmChains)
             : require(`@axelar-network/axelar-chains-config`).getChainArray('testnet');
     const args = process.argv.slice(3);
 

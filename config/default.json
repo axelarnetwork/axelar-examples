@@ -1,5 +1,8 @@
 {
     "aptos": {
         "enabled": false
+    },
+    "cosmos": {
+        "enabled": false
     }
 }
