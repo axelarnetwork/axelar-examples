@@ -10,6 +10,7 @@ const {
 const fs = require('fs-extra');
 const { configPath } = require('../../config');
 const { stopAll } = require('@axelar-network/axelar-local-dev-cosmos');
+const { enabledCosmos } = require('../../scripts/libs/config');
 
 // disable logging
 setLogger((...args) => {});
@@ -38,14 +39,18 @@ describe('Verify Cosmos Examples', function () {
         await dropConnections();
     });
 
-    for (const exampleName of cosmosExamples) {
-        it(exampleName, async function () {
-            const example = rootRequire(`examples/cosmos/${exampleName}/index.js`);
-            const chains = getEVMChains('local', ['Ethereum']);
+    if (!enabledCosmos) {
+        console.info('Cosmos is not enabled in the config file. Skipping Cosmos tests.');
+    } else {
+        for (const exampleName of cosmosExamples) {
+            it(exampleName, async function () {
+                const example = rootRequire(`examples/cosmos/${exampleName}/index.js`);
+                const chains = getEVMChains('local', ['Ethereum']);
 
-            if (example.deploy) await deploy('local', chains, wallet, example);
+                if (example.deploy) await deploy('local', chains, wallet, example);
 
-            await executeCosmosExample('local', chains, [], wallet, example);
-        });
+                await executeCosmosExample('local', chains, [], wallet, example);
+            });
+        }
     }
 });
