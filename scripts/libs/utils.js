@@ -167,12 +167,10 @@ async function calculateBridgeExpressFee(source, destination, options = {}) {
     );
 
     const expressMultiplier = response.apiResponse.result.express_execute_gas_multiplier;
-    const floatToIntFactor = 10000;
 
     // baseFee + executionFeeWithMultiplier + expressFee
     return ethers.BigNumber.from(response.executionFeeWithMultiplier)
-        .mul(expressMultiplier * 2 * floatToIntFactor) // convert float to decimals
-        .div(floatToIntFactor) // convert back without losing precision.
+        .mul(Math.ceil(expressMultiplier * 2)) // convert float to decimals
         .add(response.baseFee)
         .toString();
 }
