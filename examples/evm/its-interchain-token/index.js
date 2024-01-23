@@ -9,9 +9,10 @@ async function execute(chains, wallet, options) {
 
     const name = args[2] || 'Interchain Token';
     const symbol = args[3] || 'IT';
-    const decimals = args[4] || 18;
-    const salt = args[5] || keccak256(defaultAbiCoder.encode(['uint256', 'uint256'], [process.pid, process.ppid]));
-    const amount = args[6] || 1000;
+    const decimals = args[4] || 18;    
+    const amount = args[5] || 1000;
+    const salt = args[6] || keccak256(defaultAbiCoder.encode(['uint256', 'uint256'], [process.pid, process.ppid]));
+
 
     const fee = await calculateBridgeFee(source, destination);
 

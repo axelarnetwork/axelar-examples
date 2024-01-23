@@ -24,9 +24,10 @@ async function deploy(chain, wallet) {
 async function execute(chains, wallet, options) {
     const args = options.args || [];
     const { source, destination, calculateBridgeFee } = options;    
+    
+    const amount = args[2] || 1000;
+    const salt = args[3] || keccak256(defaultAbiCoder.encode(['uint256', 'uint256'], [process.pid, process.ppid]));
 
-    const salt = args[2] || keccak256(defaultAbiCoder.encode(['uint256', 'uint256'], [process.pid, process.ppid]));
-    const amount = args[3] || 1000;
 
     const fee = await calculateBridgeFee(source, destination);
 

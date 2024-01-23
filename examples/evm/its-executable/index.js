@@ -26,7 +26,6 @@ async function execute(chains, wallet, options) {
     
     const message = args[2] || `Hello ${destination.name} from ${source.name}, the time is ${(new Date()).toLocaleString()}`;
     const amount = args[3] || 1000;
-    console.log(message);
 
     const name = 'Interchain Token';
     const symbol = 'IT';
