@@ -37,9 +37,7 @@ const CallContractWithToken: NextPage = () => {
     setLoading(false);
     setLoadingDestBalance(true);
 
-    // Wait until the Execute event is emitted
     await waitDestExecution();
-    // await new Promise((resolve) => setTimeout(resolve, 5000));
 
     const recipients = [
       ...new Set([...destRecipientAddresses, ...sourceRecipientAddresses]),
