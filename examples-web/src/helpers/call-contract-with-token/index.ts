@@ -5,10 +5,8 @@ import {
   EvmChain,
   GasToken,
 } from "@axelar-network/axelarjs-sdk";
-
 import {
-  MessageReceiver__factory as MessageReceiverFactory,
-  MessageSender__factory as MessageSenderFactory,
+  CallContractWithToken__factory as CallContractWithTokenFactory
 } from "types/factories/contracts/call-contract-with-token/contracts";
 import {
   IAxelarGateway__factory as AxelarGatewayFactory,
@@ -31,11 +29,11 @@ const destGatewayContract = AxelarGatewayFactory.connect(
   destConnectedWallet
 );
 
-const sourceContract = MessageSenderFactory.connect(
+const sourceContract = CallContractWithTokenFactory.connect(
   srcChain.callContractWithToken as string,
   srcConnectedWallet
 );
-const destContract = MessageReceiverFactory.connect(
+const destContract = CallContractWithTokenFactory.connect(
   destChain.callContractWithToken as string,
   destConnectedWallet
 );
