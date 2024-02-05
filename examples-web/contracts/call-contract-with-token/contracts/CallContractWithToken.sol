@@ -16,10 +16,24 @@ contract CallContractWithToken is AxelarExecutable {
 
     event Executed();
 
+    /**
+     * 
+     * @param gateway_ address of axl gateway on deployed chain
+     * @param gasReceiver_ address of axl gas service on deployed chain
+     */
     constructor(address gateway_, address gasReceiver_) AxelarExecutable(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
     }
 
+    /**
+     * @notice trigger interchain tx from src chain
+     * @dev destinationAddresses will be passed in as gmp message in this tx
+     * @param destinationChain name of the dest chain (ex. "Fantom")
+     * @param destinationAddress address on dest chain this tx is going to
+     * @param destinationAddresses recipient addresses receiving sent funds 
+     * @param symbol symbol of token being sent
+     * @param amount amount of tokens being sent
+     */
     function sendToMany(
         string memory destinationChain,
         string memory destinationAddress,
@@ -45,6 +59,17 @@ contract CallContractWithToken is AxelarExecutable {
         gateway.callContractWithToken(destinationChain, destinationAddress, payload, symbol, amount);
     }
 
+
+
+    /**
+     * @notice logic to be executed on dest chain
+     * @dev this is triggered automatically by relayer
+     * @param
+     * @param
+     * @param payload encoded gmp message sent from src chain
+     * @param tokenSymbol symbol of token sent from src chain
+     * @param amount amount of tokens sent from src chain
+     */
     function _executeWithToken(
         string calldata,
         string calldata,
