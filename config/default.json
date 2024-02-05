@@ -2,7 +2,10 @@
     "aptos": {
         "enabled": false
     },
+    "cosmos": {
+        "enabled": false
+    },
     "multiversx": {
-        "enabled": true
+        "enabled": false
     }
 }

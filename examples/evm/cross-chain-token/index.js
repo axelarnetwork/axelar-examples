@@ -14,7 +14,7 @@ const name = 'An Awesome Axelar Cross Chain Token';
 const symbol = 'AACCT';
 const decimals = 13;
 
-async function deploy(chain, wallet) {
+async function deploy(chain, wallet, key) {
     console.log(`Deploying ERC20CrossChain for ${chain.name}.`);
     const provider = getDefaultProvider(chain.rpc);
     chain.wallet = wallet.connect(provider);
@@ -26,7 +26,7 @@ async function deploy(chain, wallet) {
         [chain.gateway, chain.gasService, decimals],
         [],
         defaultAbiCoder.encode(['string', 'string'], [name, symbol]),
-        'cross-chain-token',
+        key,
     );
     console.log(`Deployed ERC20CrossChain for ${chain.name} at ${chain.contract.address}.`);
 }

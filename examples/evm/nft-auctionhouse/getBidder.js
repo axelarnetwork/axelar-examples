@@ -3,13 +3,8 @@
 const {
     getDefaultProvider,
     Contract,
-    constants: { AddressZero },
-    utils: { keccak256, defaultAbiCoder },
-    Wallet,
 } = require('ethers');
-const {
-    utils: { deployContract },
-} = require('@axelar-network/axelar-local-dev');
+const { configPath } = require('../../../config');
 
 const NftAuctionhouse = rootRequire('./artifacts/examples/evm/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
 
@@ -27,10 +22,10 @@ if (require.main === module) {
         throw new Error('Need to specify tesntet or local as an argument to this script.');
     let temp;
     if (env == 'local') {
-        temp = require(`../../../chain-config/local.json`);
+        temp = require(configPath.localEvmChains);
     } else {
         try {
-            temp = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
+            temp = require(`@axelar-network/axelar-chains-config`).getChainArray('testnet');
         } catch {
             temp = testnetInfo;
         }

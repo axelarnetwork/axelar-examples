@@ -1,6 +1,7 @@
 'use strict';
 
 const { getDefaultProvider, Contract } = require('ethers');
+const { configPath } = require('../../../config');
 
 const ERC721 = rootRequire('./artifacts/examples/evm/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
 
@@ -18,10 +19,10 @@ if (require.main === module) {
         throw new Error('Need to specify tesntet or local as an argument to this script.');
     let temp;
     if (env === 'local') {
-        temp = require(`../../../chain-config/local.json`);
+        temp = require(configPath.localEvmChains);
     } else {
         try {
-            temp = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
+            temp = require(`@axelar-network/axelar-chains-config`).getChainArray('testnet');
         } catch {
             temp = testnetInfo;
         }

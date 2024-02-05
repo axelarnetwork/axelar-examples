@@ -1,6 +1,7 @@
 const { Wallet, ethers } = require('ethers');
 const path = require('path');
 const fs = require('fs-extra');
+const { configPath } = require('../../config');
 const axelarLocal = require('@axelar-network/axelar-local-dev');
 const { AxelarAssetTransfer, AxelarQueryAPI, CHAINS, Environment } = require('@axelar-network/axelarjs-sdk');
 
@@ -12,6 +13,14 @@ function getWallet() {
     checkWallet();
     const privateKey = process.env.EVM_PRIVATE_KEY;
     return privateKey ? new Wallet(privateKey) : Wallet.fromMnemonic(process.env.EVM_MNEMONIC);
+}
+
+function readChainConfig(filePath) {
+    if (!fs.existsSync(filePath)) {
+        return undefined;
+    }
+
+    return fs.readJsonSync(filePath);
 }
 
 /**
@@ -26,16 +35,15 @@ function getEVMChains(env, chains = []) {
     const selectedChains = chains.length > 0 ? chains : getDefaultChains(env);
 
     if (env === 'local') {
-        return fs
-            .readJsonSync(path.join(__dirname, '../../chain-config/local.json'))
-            .filter((chain) => selectedChains.includes(chain.name));
+        return fs.readJsonSync(configPath.localEvmChains).filter((chain) => selectedChains.includes(chain.name));
     }
 
     const testnet = getTestnetChains(selectedChains);
 
     return testnet.map((chain) => ({
         ...chain,
-        gasService: chain.AxelarGasService.address,
+        gateway: chain.contracts.AxelarGateway.address,
+        gasService: chain.contracts.AxelarGasService.address,
     }));
 }
 
@@ -45,15 +53,20 @@ function getEVMChains(env, chains = []) {
  * @returns {Chain[]} - The chain objects.
  */
 function getTestnetChains(chains = []) {
-    const _path = path.join(__dirname, '../../chain-config/testnet.json');
+    const _path = path.join(__dirname, '../../chain-config/testnet-evm.json');
     let testnet = [];
     if (fs.existsSync(_path)) {
-        testnet = fs.readJsonSync(path.join(__dirname, '../../chain-config/testnet.json')).filter((chain) => chains.includes(chain.name));
+        testnet = fs
+            .readJsonSync(path.join(__dirname, '../../chain-config/testnet-evm.json'))
+            .filter((chain) => chains.includes(chain.name));
     }
 
-    // If the chains are specified, but the testnet config file does not have the specified chains, use testnet.json from axelar-cgp-solidity.
     if (testnet.length < chains.length) {
-        testnet = require('@axelar-network/axelar-cgp-solidity/info/testnet.json').filter((chain) => chains.includes(chain.name));
+        const { testnetInfo } = require('@axelar-network/axelar-local-dev');
+        testnet = [];
+        for (const chain of chains) {
+            testnet.push(testnetInfo[chain.toLowerCase()]);
+        }
     }
 
     // temporary fix for gas service contract address
@@ -153,13 +166,11 @@ async function calculateBridgeExpressFee(source, destination, options = {}) {
         },
     );
 
-    const expressMultiplier = response.apiResponse.result.express_execute_gas_adjustment_with_multiplier;
-    const floatToIntFactor = 10000;
+    const expressMultiplier = response.apiResponse.result.express_execute_gas_multiplier;
 
     // baseFee + executionFeeWithMultiplier + expressFee
     return ethers.BigNumber.from(response.executionFeeWithMultiplier)
-        .mul(expressMultiplier * 2 * floatToIntFactor) // convert float to decimals
-        .div(floatToIntFactor) // convert back without losing precision.
+        .mul(Math.ceil(expressMultiplier * 2)) // convert float to decimals
         .add(response.baseFee)
         .toString();
 }
@@ -226,5 +237,6 @@ module.exports = {
     calculateBridgeFee,
     calculateBridgeExpressFee,
     getExamplePath,
+    readChainConfig,
     sanitizeEventArgs,
 };

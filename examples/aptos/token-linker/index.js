@@ -6,7 +6,7 @@ const {
 } = require('@axelar-network/axelar-local-dev');
 const { AptosNetwork } = require('@axelar-network/axelar-local-dev-aptos');
 const TokenLinker = rootRequire('./artifacts/examples/aptos/token-linker/contracts/AptosTokenLinker.sol/AptosTokenLinker.json');
-const Token = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/token/ERC20MintableBurnable.sol/ERC20MintableBurnable.json');
+const Token = rootRequire('./artifacts/examples/aptos/token-linker/contracts/ERC20MintableBurnable.sol/ERC20MintableBurnable.json');
 const { ethers } = require('ethers');
 
 const aptosTokenLinkerAddress = process.env.APTOS_TOKEN_LINKER_ADDRESS;
@@ -18,7 +18,7 @@ async function isDeployedTokenLinker(client) {
     return resources.find((resource) => resource.type === `${aptosTokenLinkerAddress}::token_linker::State`);
 }
 
-async function preDeploy() {
+async function deployOnAltChain() {
     const client = new AptosNetwork(process.env.APTOS_URL);
     const isDeployed = await isDeployedTokenLinker(client);
 
@@ -122,7 +122,7 @@ async function execute(evmChain, wallet, options) {
 }
 
 module.exports = {
-    preDeploy,
+    deployOnAltChain,
     deploy,
     execute,
 };

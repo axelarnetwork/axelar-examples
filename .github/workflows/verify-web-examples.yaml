@@ -1,0 +1,48 @@
+name: Verify Web Examples
+
+on: pull_request
+
+jobs:
+    test:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-22.04]
+                arch: [amd64]
+        steps:
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Override config/ci.json
+              run: |
+                  echo '{"aptos": {"enabled": false}, "cosmos": {"enabled": false}}' > config/ci.json
+
+            - name: Install Dependencies for Cli Examples
+              run: npm ci
+
+            - name: Compile EVM Smart Contracts
+              run: |
+                  npm run build
+
+            - name: Create .env file and Generate Chains Config
+              run: |
+                  # Dummy private key created for testing purpose only, it is not secret
+                  npm run setup
+                  NODE_ENV=ci nohup npm run start &
+                  sleep 5
+
+            - name: Setup Web Examples
+              run: |
+                  cd examples-web
+                  npm ci
+                  npm run setup
+
+            - name: Deploy
+              run: |
+                  cd examples-web
+                  npm run deploy

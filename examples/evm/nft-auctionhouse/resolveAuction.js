@@ -1,6 +1,7 @@
 'use strict';
 
 const { getDefaultProvider, Contract, Wallet } = require('ethers');
+const { configPath } = require('../../../config');
 
 const NftAuctionhouse = rootRequire('./artifacts/examples/evm/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
 
@@ -16,23 +17,19 @@ module.exports = resolveAuction;
 
 if (require.main === module) {
     const env = process.argv[2];
-    if (env == null || (env != 'testnet' && env != 'local'))
-        throw new Error('Need to specify tesntet or local as an argument to this script.');
-    let temp;
+    if (env == null || (env !== 'testnet' && env !== 'local'))
+        throw new Error('Need to specify testnet or local as an argument to this script.');
 
-    if (env == 'local') {
-        temp = require(`../../../chain-config/local.json`);
-    } else {
-        temp = require(`@axelar-network/axelar-cgp-solidity/info/testnet.json`);
-    }
-
-    const chains = temp;
+    const chains =
+        env === 'local'
+            ? require(configPath.localEvmChains)
+            : require(`@axelar-network/axelar-chains-config`).getChainArray('testnet');
     const args = process.argv.slice(3);
 
     const chainName = args[0];
-    const private_key = args[1];
+    const privateKey = args[1];
     const tokenId = BigInt(args[2]);
-    const chain = chains.find((chain) => chain.name == chainName);
+    const chain = chains.find((chain) => chain.name === chainName);
 
-    resolveAuction(chain, private_key, tokenId);
+    resolveAuction(chain, privateKey, tokenId);
 }

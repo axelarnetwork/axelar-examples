@@ -1,9 +1,10 @@
+const fs = require('fs');
 const { ethers } = require('ethers');
-const { createAndExport } = require('@axelar-network/axelar-local-dev');
-const { enabledAptos } = require('./config');
-const { enabledMultiversx } = require('./config');
+const { createAndExport, EvmRelayer, RelayerType } = require('@axelar-network/axelar-local-dev');
+const { AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
+const { enabledAptos, enabledCosmos, enabledMultiversx } = require('./config');
+const { configPath } = require('../../config');
 const path = require('path');
-const { EvmRelayer } = require('@axelar-network/axelar-local-dev/dist/relay/EvmRelayer');
 
 const evmRelayer = new EvmRelayer();
 
@@ -16,11 +17,48 @@ const relayers = { evm: evmRelayer };
  * @param {*} chains - chains to start. All chains are started if not specified (Avalanche, Moonbeam, Polygon, Fantom, Ethereum).
  */
 async function start(fundAddresses = [], chains = [], options = {}) {
-    if (enabledAptos) {
+    // For testing purpose
+    const { skipAptos, skipCosmos } = options;
+    const dropConnections = [];
+
+    if (!skipAptos && enabledAptos) {
         const { AptosRelayer, createAptosNetwork } = require('@axelar-network/axelar-local-dev-aptos');
         await initAptos(createAptosNetwork);
         relayers.aptos = new AptosRelayer();
-        evmRelayer.setRelayer('aptos', relayers.aptos);
+        evmRelayer.setRelayer(RelayerType.Aptos, relayers.aptos);
+    }
+
+    if (!skipCosmos && enabledCosmos) {
+        const { startChains } = require('@axelar-network/axelar-local-dev-cosmos');
+
+        // Spin up cosmos chains in docker containers
+        await startChains().catch((e) => {
+            console.log(e);
+        });
+
+        // set relayer for cosmos
+        relayers.wasm = await AxelarRelayerService.create(defaultAxelarChainInfo);
+        const ibcRelayer = relayers.wasm.ibcRelayer;
+
+        const cosmosConfig = {
+            srcChannelId: ibcRelayer.srcChannelId,
+            dstChannelId: ibcRelayer.destChannelId
+        };
+
+        evmRelayer.setRelayer(RelayerType.Wasm, relayers.wasm);
+
+        // check if folder is available
+        const dirname = path.dirname(configPath.localCosmosChains);
+
+        if (!fs.existsSync(dirname)) {
+            fs.mkdirSync(dirname, { recursive: true });
+        }
+
+        // write that to cosmos config path
+        fs.writeFileSync(configPath.localCosmosChains, JSON.stringify(cosmosConfig, null, 2));
+
+        dropConnections.push(() => ibcRelayer.stopInterval());
+        dropConnections.push(() => relayers.wasm.stopListening());
     }
 
     if (enabledMultiversx) {
@@ -30,16 +68,20 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         evmRelayer.setRelayer('multiversx', relayers.multiversx);
     }
 
-    const pathname = path.resolve(__dirname, '../..', 'chain-config', 'local.json');
-
     await createAndExport({
-        chainOutputPath: pathname,
+        chainOutputPath: configPath.localEvmChains,
         accountsToFund: fundAddresses,
         callback: (chain, _info) => deployAndFundUsdc(chain, fundAddresses),
         chains: chains.length !== 0 ? chains : null,
         relayers,
-        relayInterval: options.relayInterval,
+        relayInterval: options.relayInterval
     });
+
+    return async () => {
+        for (const dropConnection of dropConnections) {
+            await dropConnection();
+        }
+    };
 }
 
 /**
@@ -63,7 +105,7 @@ async function initAptos(createAptosNetwork) {
     try {
         await createAptosNetwork({
             nodeUrl: 'http://0.0.0.0:8080',
-            faucetUrl: 'http://0.0.0.0:8081',
+            faucetUrl: 'http://0.0.0.0:8081'
         });
     } catch (e) {
         console.log('Skip Aptos initialization, rerun this after starting an aptos node for proper support.');
@@ -73,7 +115,7 @@ async function initAptos(createAptosNetwork) {
 async function initMultiversX(createMultiversXNetwork) {
     try {
         await createMultiversXNetwork({
-            gatewayUrl: 'http://0.0.0.0:7950',
+            gatewayUrl: 'http://0.0.0.0:7950'
         });
     } catch (e) {
         console.log('Skip MultiversX initialization, rerun this after starting a MultiversX localnet for proper support.');
@@ -83,5 +125,5 @@ async function initMultiversX(createMultiversXNetwork) {
 module.exports = {
     start,
     evmRelayer,
-    relayers,
+    relayers
 };

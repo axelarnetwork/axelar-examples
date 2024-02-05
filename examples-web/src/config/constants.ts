@@ -1,6 +1,6 @@
 import { getDefaultProvider, providers, Wallet } from "ethers";
-import testnet from '@axelar-network/axelar-cgp-solidity/info/testnet.json'
-import local from '../../../chain-config/local.json'
+import testnetInfo from "@axelar-network/axelar-chains-config/info/testnet.json";
+import { configPath } from "../../../config";
 
 if (typeof window === "undefined") {
   require("dotenv").config();
@@ -15,16 +15,20 @@ function getWallet() {
 export const isTestnet = process.env.NEXT_PUBLIC_ENVIRONMENT === "testnet";
 export const wallet = getWallet();
 
-export const chains = isTestnet
-  ? testnet as any
-  : local as any
+export const localChains = require(configPath.localEvmChains);
+
+const testnetChains = Object.entries(testnetInfo).map(([, value]) => {
+  return value;
+});
+
+export const chains = isTestnet ? testnetChains : localChains;
 
 export const srcChain = chains.find(
-  (chain: any) => chain.name === "Ethereum",
+  (chain: any) => chain.name === "Ethereum"
 ) as any;
 
 export const destChain = chains.find(
-  (chain: any) => chain.name === "Avalanche",
+  (chain: any) => chain.name === "Avalanche"
 ) as any;
 
 const useMetamask = false;

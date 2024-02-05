@@ -1,8 +1,11 @@
 {
-  "aptos": {
-      "enabled": true
-  },
-  "multiversx": {
-    "enabled": false
-  }
+    "aptos": {
+        "enabled": true
+    },
+    "cosmos": {
+        "enabled": false
+    },
+    "multiversx": {
+        "enabled": false
+    }
 }
