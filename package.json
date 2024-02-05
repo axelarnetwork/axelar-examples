@@ -9,14 +9,12 @@
         "test": "TEST=true mocha examples/tests",
         "test:cosmos": "TEST=true mocha examples/tests/cosmos.test.js",
         "test:evm": "TEST=true mocha examples/tests/evm.test.js",
-        "test:aptos": "TEST=true mocha examples/tests/aptos.test.js",
         "start": "node scripts/runStart",
         "deploy": "node scripts/runDeploy",
         "execute": "node scripts/runExecute",
         "setup": "node scripts/runSetupEnv",
         "check-balance": "node scripts/runCheckBalance",
         "build": "rm -rf artifacts && npx hardhat clean && npx hardhat compile",
-        "build-aptos": "bash ./build-aptos.sh",
         "build-wasm": "bash ./build-wasm.sh"
     },
     "author": "",
@@ -46,8 +44,5 @@
         "prettier-plugin-solidity": "^1.0.0-beta.19",
         "solhint": "^3.3.7",
         "solidity-coverage": "^0.8.2"
-    },
-    "optionalDependencies": {
-        "@axelar-network/axelar-local-dev-aptos": "^2.1.1-alpha.4"
     }
 }

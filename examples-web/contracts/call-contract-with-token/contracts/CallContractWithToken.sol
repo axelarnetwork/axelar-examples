@@ -9,7 +9,7 @@ import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contr
 /**
  * @title Call Contract With Token Contract
  * @author Axelar 
- * @notice Leveraging Axelar GMP messages to send a token along with a gmp message between two blockchains
+ * @notice Send a token along with an Axelar GMP message between two blockchains
  */
 contract CallContractWithToken is AxelarExecutable {
     IAxelarGasService public immutable gasService;
@@ -59,7 +59,7 @@ contract CallContractWithToken is AxelarExecutable {
         for (uint256 i = 0; i < recipients.length; i++) {
             IERC20(tokenAddress).transfer(recipients[i], sentAmount);
         }
-        
+
         emit Executed();
     }
 }
