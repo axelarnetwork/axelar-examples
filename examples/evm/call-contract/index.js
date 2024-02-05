@@ -4,13 +4,13 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const ExecutableSample = rootRequire('./artifacts/examples/evm/call-contract/ExecutableSample.sol/ExecutableSample.json');
+const CallContract = rootRequire('./artifacts/examples/evm/call-contract/CallContract.sol/CallContract.json');
 
 async function deploy(chain, wallet) {
-    console.log(`Deploying ExecutableSample for ${chain.name}.`);
-    chain.contract = await deployContract(wallet, ExecutableSample, [chain.gateway, chain.gasService]);
+    console.log(`Deploying CallContract for ${chain.name}.`);
+    chain.contract = await deployContract(wallet, CallContract, [chain.gateway, chain.gasService]);
     chain.wallet = wallet;
-    console.log(`Deployed ExecutableSample for ${chain.name} at ${chain.contract.address}.`);
+    console.log(`Deployed CallContract for ${chain.name} at ${chain.contract.address}.`);
 }
 
 async function execute(chains, wallet, options) {
@@ -19,7 +19,7 @@ async function execute(chains, wallet, options) {
     const message = args[2] || `Hello ${destination.name} from ${source.name}, it is ${new Date().toLocaleTimeString()}.`;
 
     async function logValue() {
-        console.log(`value at ${destination.name} is "${await destination.contract.value()}"`);
+        console.log(`value at ${destination.name} is "${await destination.contract.message()}"`);
     }
 
     console.log('--- Initially ---');
@@ -34,7 +34,7 @@ async function execute(chains, wallet, options) {
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    while ((await destination.contract.value()) !== message) {
+    while ((await destination.contract.message()) !== message) {
         await sleep(1000);
     }
 

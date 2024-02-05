@@ -18,11 +18,11 @@ contract CallContractWithToken is AxelarExecutable {
 
     /**
      * 
-     * @param gateway_ address of axl gateway on deployed chain
-     * @param gasReceiver_ address of axl gas service on deployed chain
+     * @param _gateway address of axl gateway on deployed chain
+     * @param _gasReceiver address of axl gas service on deployed chain
      */
-    constructor(address gateway_, address gasReceiver_) AxelarExecutable(gateway_) {
-        gasService = IAxelarGasService(gasReceiver_);
+    constructor(address _gateway, address _gasReceiver) AxelarExecutable(_gateway) {
+        gasService = IAxelarGasService(_gasReceiver);
     }
 
     /**
