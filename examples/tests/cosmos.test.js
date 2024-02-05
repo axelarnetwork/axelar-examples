@@ -30,7 +30,7 @@ describe('Verify Cosmos Examples', function () {
             fs.unlinkSync(configPath.localEvmChains);
         }
 
-        dropConnections = await start([wallet.address], ['Ethereum'], { relayInterval: 2000, skipAptos: true });
+        dropConnections = await start([wallet.address], ['Ethereum'], { relayInterval: 2000 });
     });
 
     afterEach(async () => {

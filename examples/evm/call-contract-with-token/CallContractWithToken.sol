@@ -2,15 +2,22 @@
 pragma solidity ^0.8.0;
 
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
-import { AxelarExpressExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/express/AxelarExpressExecutable.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 
-contract DistributionExpressExecutable is AxelarExpressExecutable {
+
+/**
+ * @title Call Contract With Token 
+ * @author Axelar 
+ * @notice Send a token along with an Axelar GMP message between two blockchains
+ */
+contract CallContractWithToken is AxelarExecutable {
     IAxelarGasService public immutable gasService;
 
-    constructor(address gateway_, address gasReceiver_) AxelarExpressExecutable(gateway_) {
+    event Executed();
+
+    constructor(address gateway_, address gasReceiver_) AxelarExecutable(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
     }
 
@@ -27,7 +34,7 @@ contract DistributionExpressExecutable is AxelarExpressExecutable {
         IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
         IERC20(tokenAddress).approve(address(gateway), amount);
         bytes memory payload = abi.encode(destinationAddresses);
-        gasService.payNativeGasForExpressCallWithToken{ value: msg.value }(
+        gasService.payNativeGasForContractCallWithToken{ value: msg.value }(
             address(this),
             destinationChain,
             destinationAddress,
@@ -53,5 +60,7 @@ contract DistributionExpressExecutable is AxelarExpressExecutable {
         for (uint256 i = 0; i < recipients.length; i++) {
             IERC20(tokenAddress).transfer(recipients[i], sentAmount);
         }
+
+        emit Executed();
     }
 }
