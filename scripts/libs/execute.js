@@ -53,18 +53,18 @@ async function executeEVMExample(env, chains, args, wallet, example) {
 
         // Initialize contracts to chain object.
         deserializeContract(chain, connectedWallet);
-
+        
         // Recover axelar contracts to chain object.
         chain.gateway = new Contract(chain.gateway, AxelarGatewayContract.abi, connectedWallet);
         chain.gasService = new Contract(chain.gasService, AxelarGasServiceContract.abi, connectedWallet);
         const tokenAddress = await chain.gateway.tokenAddresses('aUSDC');
         chain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);
     }
-
+    
     // Get source and destination chains.
     const source = getSourceChain(chains, args, example.sourceChain);
     const destination = getDestChain(chains, args, example.destinationChain);
-
+    
     // Listen for GMP events on testnet for printing an Axelarscan link for tracking.
     const startBlockNumber = await source.provider.getBlockNumber();
     listenForGMPEvent(env, source, startBlockNumber);
