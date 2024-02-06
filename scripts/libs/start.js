@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { ethers } = require('ethers');
-const { createAndExport, EvmRelayer, RelayerType } = require('@axelar-network/axelar-local-dev');
+const { createAndExport, EvmRelayer, RelayerType, networks } = require('@axelar-network/axelar-local-dev');
 const { AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
 const { enabledAptos, enabledCosmos, enabledMultiversx } = require('./config');
 const { configPath } = require('../../config');
@@ -61,11 +61,12 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         dropConnections.push(() => relayers.wasm.stopListening());
     }
 
+    let multiversxNetwork;
     if (enabledMultiversx) {
         const { MultiversXRelayer, createMultiversXNetwork } = require('@axelar-network/axelar-local-dev-multiversx');
-        await initMultiversX(createMultiversXNetwork);
+        multiversxNetwork = await initMultiversX(createMultiversXNetwork);
         relayers.multiversx = new MultiversXRelayer();
-        evmRelayer.setRelayer('multiversx', relayers.multiversx);
+        evmRelayer.setRelayer(RelayerType.MultiversX, relayers.multiversx);
     }
 
     await createAndExport({
@@ -76,6 +77,11 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         relayers,
         relayInterval: options.relayInterval
     });
+
+    if (enabledMultiversx && multiversxNetwork) {
+        const { registerMultiversXRemoteITS } = require('@axelar-network/axelar-local-dev-multiversx');
+        await registerMultiversXRemoteITS(multiversxNetwork, networks);
+    }
 
     return async () => {
         for (const dropConnection of dropConnections) {
@@ -114,12 +120,14 @@ async function initAptos(createAptosNetwork) {
 
 async function initMultiversX(createMultiversXNetwork) {
     try {
-        await createMultiversXNetwork({
+        return await createMultiversXNetwork({
             gatewayUrl: 'http://0.0.0.0:7950'
         });
     } catch (e) {
         console.log('Skip MultiversX initialization, rerun this after starting a MultiversX localnet for proper support.');
     }
+
+    return null;
 }
 
 module.exports = {

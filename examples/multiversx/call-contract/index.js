@@ -34,7 +34,7 @@ async function deploy(chain, wallet) {
     console.log(`Deployed HelloWorld for ${chain.name} at ${chain.contract.address}.`);
 }
 
-async function execute(destination, wallet, options) {
+async function execute(evmChain, wallet, options) {
     const args = options.args || [];
 
     const client = await loadMultiversXNetwork();
@@ -46,7 +46,7 @@ async function execute(destination, wallet, options) {
     }
 
     async function logValue() {
-        console.log(`Value at ${destination.name} is "${await destination.contract.value()}"`);
+        console.log(`Value at ${evmChain.name} is "${await evmChain.contract.value()}"`);
 
         const result = await client.callContract(contractAddress, "received_value");
 
@@ -73,9 +73,9 @@ async function execute(destination, wallet, options) {
     // Currently, the SDK can't calculate bridge fee for MultiversX, so we just use a fixed value.
     const crossChainGasLimit = 100_000_000;
 
-    await executeMultiversXToEvm(contractAddress, client, destination, crossChainGasLimit, args?.[1]);
+    await executeMultiversXToEvm(contractAddress, client, evmChain, crossChainGasLimit, args?.[1]);
 
-    await executeEvmToMultiversX(contractAddress, client, destination, crossChainGasLimit, args?.[2]);
+    await executeEvmToMultiversX(contractAddress, client, evmChain, crossChainGasLimit, args?.[2]);
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

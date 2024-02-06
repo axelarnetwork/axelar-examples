@@ -75,6 +75,7 @@ async function executeMultiversXExample(chains, args, wallet, example) {
     evmChain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);
 
     await example.execute(evmChain, wallet, {
+        calculateBridgeFee,
         args,
     });
 }
