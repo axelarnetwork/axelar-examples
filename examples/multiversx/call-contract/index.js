@@ -13,7 +13,7 @@ const { AddressValue, ContractFunction, Address, SmartContract, StringValue, Res
 } = require('@multiversx/sdk-core/out');
 const { defaultAbiCoder } = require('ethers/lib/utils');
 
-async function preDeploy() {
+async function deployOnAltChain() {
     console.log(`Deploying HelloWorld for MultiversX.`);
     const client = await loadMultiversXNetwork();
 
@@ -61,7 +61,7 @@ async function execute(destination, wallet, options) {
             const sourceAddress = decoded.field1;
             const payload = decoded.field2;
 
-            console.log(`Value at MultiversX is "${sourceChain}", "${sourceAddress}" - ${payload}`);
+            console.log(`Value at MultiversX is "${sourceChain}", "${sourceAddress}" - "${payload}"`);
         } else {
             console.log(`Value at MultiversX is ""`);
         }
@@ -123,7 +123,7 @@ async function executeEvmToMultiversX(contractAddress, client, destination, cros
 }
 
 module.exports = {
-    preDeploy,
+    deployOnAltChain,
     deploy,
     execute,
 };

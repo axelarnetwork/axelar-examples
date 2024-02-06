@@ -6,15 +6,14 @@
 
 1. Install Mxpy CLI Tool
 
-Download from here: https://docs.multiversx.com/sdk-and-tools/sdk-py/installing-mxpy#install-using-mxpy-up-recommended
+Download from here: https://docs.multiversx.com/sdk-and-tools/sdk-py/installing-mxpy/
 
-_Note: Our examples are tested on Mxpy version `7.3.0`, but newer versions might also work._
+> **Note**: Our examples are tested on Mxpy version `9.4.1`, but newer versions might also work.
 
-2. Build MultiversX contracts
+2. Optional: Build MultiversX contracts (make sure you use Rust Nightly version at least 1.76.0 - nightly-2023-12-11).
+However this is optional, a default wasm contract is provided.
 
 ```bash
-npm ci
-npm run build
 npm run build-multiversx
 ```
 
@@ -51,6 +50,8 @@ mxpy localnet start
 ```bash
 npm run start
 ```
+
+Wait for all the contracts to be successfully deployed.
 
 ## Basic
 

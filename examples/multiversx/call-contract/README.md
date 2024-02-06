@@ -31,7 +31,7 @@ Output:
 ```
 --- Initially ---
 value at Avalanche is ""
-value at MultiversX is "Hello MultiversX from Ethereum, it is 1:26:06 PM."
+value at MultiversX is ""
 --- After ---
 value at Avalanche is "Hello Avalanche from MultiversX, it is 7:05:48 PM."
 value at MultiversX is "Hello MultiversX from Avalanche, it is 7:05:48 PM."

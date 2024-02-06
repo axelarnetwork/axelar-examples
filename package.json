@@ -51,6 +51,7 @@
     },
     "optionalDependencies": {
         "@axelar-network/axelar-local-dev-aptos": "^2.1.1-alpha.4",
-        "@axelar-network/axelar-local-dev-multiversx": "file:../axelar-local-dev-multiversx/packages/axelar-local-dev-multiversx"
+        "@axelar-network/axelar-local-dev-multiversx": "file:../axelar-local-dev-multiversx/packages/axelar-local-dev-multiversx",
+        "@multiversx/sdk-core": "^12.18.0"
     }
 }

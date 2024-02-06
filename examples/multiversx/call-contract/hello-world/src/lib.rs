@@ -3,9 +3,10 @@
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
+use multiversx_sc::api::{KECCAK256_RESULT_LEN};
 use core::ops::Deref;
 
-mod gas_service_proxy {
+pub mod gas_service_proxy {
     multiversx_sc::imports!();
 
     #[multiversx_sc::proxy]
@@ -14,34 +15,37 @@ mod gas_service_proxy {
         #[endpoint(payNativeGasForContractCall)]
         fn pay_native_gas_for_contract_call(
             &self,
-            destination_chain: &ManagedBuffer,
-            destination_address: &ManagedBuffer,
-            payload: &ManagedBuffer,
+            sender: ManagedAddress,
+            destination_chain: ManagedBuffer,
+            destination_address: ManagedBuffer,
+            payload: ManagedBuffer,
             refund_address: ManagedAddress,
         );
     }
 }
 
-mod gateway_proxy {
+pub mod gateway_proxy {
     multiversx_sc::imports!();
+
+    use multiversx_sc::api::{KECCAK256_RESULT_LEN};
 
     #[multiversx_sc::proxy]
     pub trait Gateway {
         #[endpoint(callContract)]
         fn call_contract(
             &self,
-            destination_chain: &ManagedBuffer,
-            destination_contract_address: &ManagedBuffer,
-            payload: &ManagedBuffer,
+            destination_chain: ManagedBuffer,
+            destination_contract_address: ManagedBuffer,
+            payload: ManagedBuffer,
         );
 
         #[endpoint(validateContractCall)]
         fn validate_contract_call(
             &self,
-            command_id: &ManagedBuffer,
+            command_id: &ManagedByteArray<KECCAK256_RESULT_LEN>,
             source_chain: &ManagedBuffer,
             source_address: &ManagedBuffer,
-            payload_hash: &ManagedBuffer,
+            payload_hash: &ManagedByteArray<KECCAK256_RESULT_LEN>,
         ) -> bool;
     }
 }
@@ -75,6 +79,7 @@ pub trait HelloWorldContract {
 
         self.gas_receiver_proxy(self.gas_receiver_address().get())
             .pay_native_gas_for_contract_call(
+                self.blockchain().get_sc_address(),
                 destination_chain,
                 destination_address,
                 payload,
@@ -95,15 +100,15 @@ pub trait HelloWorldContract {
     #[endpoint]
     fn execute(
         &self,
-        command_id: ManagedBuffer,
+        command_id: ManagedByteArray<KECCAK256_RESULT_LEN>,
         source_chain: ManagedBuffer,
         source_address: ManagedBuffer,
-        payload: ManagedBuffer
+        payload: ManagedBuffer,
     ) {
         let payload_hash = self.crypto().keccak256(&payload);
 
         let valid = self.gateway_proxy(self.gateway_address().get())
-            .validate_contract_call(&command_id, &source_chain, &source_address, payload_hash.as_managed_buffer())
+            .validate_contract_call(&command_id, &source_chain, &source_address, &payload_hash)
             .execute_on_dest_context::<bool>();
 
         require!(valid, "Contract call is not valid");
