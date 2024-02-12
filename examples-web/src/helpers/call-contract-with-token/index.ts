@@ -6,15 +6,39 @@ import {
   GasToken,
 } from "@axelar-network/axelarjs-sdk";
 
-import {MessageReceiver__factory as MessageReceiverFactory, MessageSender__factory as MessageSenderFactory} from 'types/factories/contracts/call-contract-with-token/contracts'
-import {IAxelarGateway__factory as AxelarGatewayFactory, IERC20__factory as IERC20Factory } from 'types/factories/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces'
-import { isTestnet, srcChain, srcConnectedWallet, destChain, destConnectedWallet } from "config/constants";
+import {
+  MessageReceiver__factory as MessageReceiverFactory,
+  MessageSender__factory as MessageSenderFactory,
+} from "types/factories/contracts/call-contract-with-token/contracts";
+import {
+  IAxelarGateway__factory as AxelarGatewayFactory,
+  IERC20__factory as IERC20Factory,
+} from "types/factories/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces";
+import {
+  isTestnet,
+  srcChain,
+  srcConnectedWallet,
+  destChain,
+  destConnectedWallet,
+} from "config/constants";
 
-const srcGatewayContract = AxelarGatewayFactory.connect(srcChain.gateway, srcConnectedWallet)
-const destGatewayContract = AxelarGatewayFactory.connect(destChain.gateway, destConnectedWallet)
+const srcGatewayContract = AxelarGatewayFactory.connect(
+  srcChain.gateway,
+  srcConnectedWallet
+);
+const destGatewayContract = AxelarGatewayFactory.connect(
+  destChain.gateway,
+  destConnectedWallet
+);
 
-const sourceContract = MessageSenderFactory.connect(srcChain.callContractWithToken as string, srcConnectedWallet)
-const destContract = MessageReceiverFactory.connect(destChain.callContractWithToken as string, destConnectedWallet)
+const sourceContract = MessageSenderFactory.connect(
+  srcChain.callContractWithToken as string,
+  srcConnectedWallet
+);
+const destContract = MessageReceiverFactory.connect(
+  destChain.callContractWithToken as string,
+  destConnectedWallet
+);
 
 export function generateRecipientAddress(): string {
   return ethers.Wallet.createRandom().address;
@@ -23,12 +47,12 @@ export function generateRecipientAddress(): string {
 export async function sendTokenToDestChain(
   amount: string,
   recipientAddresses: string[],
-  onSent: (txhash: string) => void,
+  onSent: (txhash: string) => void
 ) {
   // Get token address from the gateway contract
   const tokenAddress = await srcGatewayContract.tokenAddresses("aUSDC");
 
-  const erc20 = IERC20Factory.connect(tokenAddress, srcConnectedWallet)
+  const erc20 = IERC20Factory.connect(tokenAddress, srcConnectedWallet);
 
   // Approve the token for the amount to be sent
   await erc20
@@ -43,7 +67,7 @@ export async function sendTokenToDestChain(
     EvmChain.AVALANCHE,
     GasToken.ETH,
     700000,
-    2,
+    2
   );
 
   // Send the token
@@ -56,15 +80,18 @@ export async function sendTokenToDestChain(
       ethers.utils.parseUnits(amount, 6),
       {
         value: BigInt(isTestnet ? gasFee : 3000000),
-      },
+      }
     )
     .then((tx: any) => tx.wait());
 
   onSent(receipt.transactionHash);
+}
 
-  // Wait destination contract to execute the transaction.
+export async function waitDestExecution() {
+  const currentBlock = await destConnectedWallet.provider.getBlockNumber();
   return new Promise((resolve, reject) => {
-    destContract.on("Executed", () => {
+    destContract.on("Executed", (event) => {
+      if (event.blockNumber <= currentBlock) return;
       destContract.removeAllListeners("Executed");
       resolve(null);
     });
@@ -73,23 +100,21 @@ export async function sendTokenToDestChain(
 
 export function truncatedAddress(address: string): string {
   return (
-    address.substring(0, 6) + "..." + address.substring(address.length - 4)
+    address.substring(0, 6) + "..." + address.substring(address.length - 6)
   );
 }
 
 export async function getBalance(addresses: string[], isSource: boolean) {
   const contract = isSource ? srcGatewayContract : destGatewayContract;
-  const connectedWallet = isSource
-    ? srcConnectedWallet
-    : destConnectedWallet;
+  const connectedWallet = isSource ? srcConnectedWallet : destConnectedWallet;
 
   const tokenAddress = await contract.tokenAddresses("aUSDC");
-  const erc20 = IERC20Factory.connect(tokenAddress, connectedWallet)
+  const erc20 = IERC20Factory.connect(tokenAddress, connectedWallet);
   const balances = await Promise.all(
     addresses.map(async (address) => {
       const balance = await erc20.balanceOf(address);
       return ethers.utils.formatUnits(balance, 6);
-    }),
+    })
   );
   return balances;
 }
