@@ -26,6 +26,8 @@ async function execute(evmChain, wallet, options) {
     const amount = args[5] || 1000;
     const salt = args[6] || keccak256(defaultAbiCoder.encode(['uint256', 'uint256'], [process.pid, process.ppid]));
 
+    console.log('salt', salt);
+
     // Can not calculate fee for MultiversX yet, so instead we use Axelar testnet
     // const fee = await calculateBridgeFee(evmChain, { name: CHAINS.TESTNET.AXELAR });
     const fee = await calculateBridgeFee(evmChain, evmChain);
@@ -35,7 +37,6 @@ async function execute(evmChain, wallet, options) {
 
     const tokenId = await evmItsFactory.interchainTokenId(wallet.address, salt);
 
-    // Evm to MultiversX
     console.log(`Deploying interchain token [${name}, ${symbol}, ${decimals}] at ${evmChain.name}`);
     await (await evmItsFactory.deployInterchainToken(
         salt,
@@ -79,6 +80,8 @@ async function execute(evmChain, wallet, options) {
     console.log('Token identifier', tokenIdentifier);
 
     await interchainTransferEvmToMultiversX(evmChain, client, wallet, evmTokenAddress, tokenIdentifier, tokenId, amount, fee);
+
+    await interchainTransferMultiversXToEvm(client, evmChain, wallet, evmTokenAddress, tokenIdentifier, tokenId, amount);
 }
 
 async function interchainTransferEvmToMultiversX(evmChain, client, wallet, evmTokenAddress, tokenIdentifier, tokenId, amount, fee) {
@@ -110,6 +113,34 @@ async function interchainTransferEvmToMultiversX(evmChain, client, wallet, evmTo
 
         await sleep(6000);
         retries++;
+    }
+
+    console.log('--- After ---');
+    await logValue();
+}
+
+async function interchainTransferMultiversXToEvm(client, evmChain, wallet, evmTokenAddress, tokenIdentifier, tokenId, amount) {
+    const destinationToken = new Contract(evmTokenAddress, IERC20.abi, evmChain.provider);
+    let balance;
+    async function logValue() {
+        balance = await destinationToken.balanceOf(wallet.address);
+        console.log(`Balance at ${evmChain.name} is ${balance}`);
+    }
+
+    console.log('--- Initially ---');
+    await logValue();
+
+    console.log(`Sending ${amount} of token ${tokenIdentifier} from MultiversX to ${evmChain.name}`);
+
+    const success = await client.its.interchainTransfer(tokenId, evmChain.name, wallet.address, tokenIdentifier, amount);
+    if (!success) {
+        throw new Error(`Could not send token from MultiversX to ${evmChain.name}...`);
+    }
+
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    while (Number(balance) == Number(await destinationToken.balanceOf(wallet.address))) {
+        await sleep(1000);
     }
 
     console.log('--- After ---');
