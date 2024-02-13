@@ -78,6 +78,7 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         relayInterval: options.relayInterval
     });
 
+    // Need to register ITS for MultiversX after ITS for EVM was initialized
     if (enabledMultiversx && multiversxNetwork) {
         const { registerMultiversXRemoteITS } = require('@axelar-network/axelar-local-dev-multiversx');
         await registerMultiversXRemoteITS(multiversxNetwork, networks);
