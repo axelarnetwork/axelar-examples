@@ -37,29 +37,33 @@ async function execute(evmChain, wallet, options) {
 
     const tokenId = await evmItsFactory.interchainTokenId(wallet.address, salt);
 
-    console.log(`Deploying interchain token [${name}, ${symbol}, ${decimals}] at ${evmChain.name}`);
-    await (await evmItsFactory.deployInterchainToken(
-        salt,
-        name,
-        symbol,
-        decimals,
-        amount,
-        wallet.address,
-    )).wait();
-
-    console.log(`Deploying remote interchain token from ${evmChain.name} to multiversx`);
-    await (await evmItsFactory.deployRemoteInterchainToken(
-        '',
-        salt,
-        wallet.address,
-        'multiversx',
-        fee,
-        {value: fee},
-    )).wait();
-
     console.log('Token id', tokenId);
 
     const evmTokenAddress = await evmIts.interchainTokenAddress(tokenId);
+
+    if (await evmChain.provider.getCode(evmTokenAddress) === '0x') {
+        console.log(`Deploying interchain token [${name}, ${symbol}, ${decimals}] at ${evmChain.name}`);
+        await (await evmItsFactory.deployInterchainToken(
+            salt,
+            name,
+            symbol,
+            decimals,
+            amount,
+            wallet.address,
+        )).wait();
+    }
+
+    if (!await client.its.getValidTokenIdentifier(tokenId)) {
+        console.log(`Deploying remote interchain token from ${evmChain.name} to multiversx`);
+        await (await evmItsFactory.deployRemoteInterchainToken(
+            '',
+            salt,
+            wallet.address,
+            'multiversx',
+            fee,
+            { value: fee },
+        )).wait();
+    }
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     while (await evmChain.provider.getCode(evmTokenAddress) === '0x') {
@@ -81,7 +85,8 @@ async function execute(evmChain, wallet, options) {
 
     await interchainTransferEvmToMultiversX(evmChain, client, wallet, evmTokenAddress, tokenIdentifier, tokenId, amount, fee);
 
-    await interchainTransferMultiversXToEvm(client, evmChain, wallet, evmTokenAddress, tokenIdentifier, tokenId, amount);
+    // TODO: The EVM execute call fails here for some reason
+    // await interchainTransferMultiversXToEvm(client, evmChain, wallet, evmTokenAddress, tokenIdentifier, tokenId, amount);
 }
 
 async function interchainTransferEvmToMultiversX(evmChain, client, wallet, evmTokenAddress, tokenIdentifier, tokenId, amount, fee) {
@@ -132,15 +137,22 @@ async function interchainTransferMultiversXToEvm(client, evmChain, wallet, evmTo
 
     console.log(`Sending ${amount} of token ${tokenIdentifier} from MultiversX to ${evmChain.name}`);
 
-    const success = await client.its.interchainTransfer(tokenId, evmChain.name, wallet.address, tokenIdentifier, amount);
+    // Gas value is not known for MultiversX, so we use 5 instead (will be multiplied by 100000000 in the MultiversXRelayer)
+    const success = await client.its.interchainTransfer(tokenId, evmChain.name, wallet.address, tokenIdentifier, amount, '5');
     if (!success) {
         throw new Error(`Could not send token from MultiversX to ${evmChain.name}...`);
     }
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    while (Number(balance) == Number(await destinationToken.balanceOf(wallet.address))) {
-        await sleep(1000);
+    let retries = 0;
+    while (Number(balance) === Number(await destinationToken.balanceOf(wallet.address))) {
+        if (retries >= 5) {
+            throw new Error(`Did not receive ERC20 transfer on ${evmChain.name}`);
+        }
+
+        await sleep(6000);
+        retries++;
     }
 
     console.log('--- After ---');
