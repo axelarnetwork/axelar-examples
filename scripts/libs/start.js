@@ -65,7 +65,7 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         const { MultiversXRelayer, createMultiversXNetwork } = require('@axelar-network/axelar-local-dev-multiversx');
         await initMultiversX(createMultiversXNetwork);
         relayers.multiversx = new MultiversXRelayer();
-        evmRelayer.setRelayer('multiversx', relayers.multiversx);
+        evmRelayer.setRelayer(RelayerType.MultiversX, relayers.multiversx);
     }
 
     await createAndExport({
