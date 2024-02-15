@@ -18,7 +18,7 @@ contract CallContract is AxelarExecutable {
     string public sourceAddress;
     IAxelarGasService public immutable gasService;
 
-    event Executed(address indexed _from, string _message);
+    event Executed(string _from, string _message);
 
     /**
      * 
@@ -70,7 +70,7 @@ contract CallContract is AxelarExecutable {
         sourceChain = _sourceChain;
         sourceAddress = _sourceAddress;
 
-        emit Executed(msg.sender, message);
+        emit Executed(sourceAddress, message);
 
     }
 }
