@@ -70,5 +70,7 @@ contract CallContract is AxelarExecutable {
         (message) = abi.decode(_payload, (string));
         sourceChain = _sourceChain;
         sourceAddress = _sourceAddress;
+
+        emit Execute(sourceAddress, message);
     }
 }
