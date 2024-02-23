@@ -34,6 +34,9 @@ async function deploy(chain, wallet, key) {
 async function execute(chains, wallet, options) {
     const { source, destination, calculateBridgeFee } = options;
 
+    const hash = "QmPGrjwCuHKLvbvcSXHLWSgsjfUVx2faV2xsN4b9VB9ogL";
+    const metadata = `https://ipfs.io/ipfs/${hash}`;
+
     const getOwnerDetails = async () => {
         const sourceOwner = await source.erc721.ownerOf(tokenId);
 
@@ -46,7 +49,9 @@ async function execute(chains, wallet, options) {
         }
 
         const newTokenId = BigInt(
-            keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [source.name, source.erc721.address, tokenId])),
+            keccak256(
+                defaultAbiCoder.encode(['string', 'address', 'uint256', 'string'], [source.name, source.erc721.address, tokenId, metadata]),
+            ),
         );
 
         const destOwner = destination.contract.ownerOf(newTokenId);
@@ -71,7 +76,7 @@ async function execute(chains, wallet, options) {
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     console.log('==== Initially ====');
-    await source.erc721.mint(tokenId);
+    await source.erc721.mintWithMetadata(tokenId, hash, metadata);
     console.log(`Minted token ID: '${tokenId}' for ${source.name}`);
 
     await print(tokenId);
@@ -93,7 +98,7 @@ async function execute(chains, wallet, options) {
     console.log(`Sent NFT ${tokenId} to NFTLinker's contract`, sendNftTx.hash);
 
     const destinationTokenId = BigInt(
-        keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256'], [source.name, operatorAddress, tokenId])),
+        keccak256(defaultAbiCoder.encode(['string', 'address', 'uint256', 'string'], [source.name, operatorAddress, tokenId, metadata])),
     );
     console.log(`Token ID at ${destination.name} will be: '${destinationTokenId}'`);
 
