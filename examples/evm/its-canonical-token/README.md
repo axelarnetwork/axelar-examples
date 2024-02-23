@@ -1,6 +1,6 @@
 # Canonical Token
 
-This example demonstrates how to use a canonical token implementation
+This example demonstrates how to use a canonical token implementation, using the lock/unlock token manager.
 
 ### Prerequisite
 
@@ -37,7 +37,7 @@ npm run execute evm/its-canonical-token [local|testnet] ${srcChain} ${destChain}
 
 ## Example
 
-This example deploys the token on Fantom and Avalanche, it then registers the token as a canonical token on Fantom and Avalanche. It then mints 1000 tokens and sends them to Avalanche
+This example deploys the token on Fantom and Avalanche, it registers the token as a canonical token on Fantom and Avalanche. After the token is registered it mints 1000 tokens on Fantom and send them via the Interchain Token Service to Avalanche.
 
 ```bash
 npm run deploy evm/its-canonical-token local
