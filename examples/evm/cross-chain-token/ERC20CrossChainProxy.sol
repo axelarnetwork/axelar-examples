@@ -3,13 +3,13 @@ pragma solidity ^0.8.0;
 
 import {InitProxy} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/InitProxy.sol';
 
-contract ExampleProxy is InitProxy {
+contract ERC20CrossChainProxy is InitProxy {
     function contractId()
         internal
         pure
         override
         returns (bytes32)
     {
-        return keccak256('example');
+        return keccak256('erc20-crosschain');
     }
 }

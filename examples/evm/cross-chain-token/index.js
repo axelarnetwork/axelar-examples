@@ -7,7 +7,7 @@ const {
 } = require('ethers');
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
-const ExampleProxy = rootRequire('./artifacts/examples/evm/Proxy.sol/ExampleProxy.json');
+const ERC20CrossChainProxy = rootRequire('./artifacts/examples/evm/cross-chain-token/ERC20CrossChainProxy.sol/ERC20CrossChainProxy.json');
 const ERC20CrossChain = rootRequire('./artifacts/examples/evm/cross-chain-token/ERC20CrossChain.sol/ERC20CrossChain.json');
 
 const name = 'An Awesome Axelar Cross Chain Token';
@@ -22,7 +22,7 @@ async function deploy(chain, wallet, key) {
         chain.constAddressDeployer,
         wallet,
         ERC20CrossChain,
-        ExampleProxy,
+        ERC20CrossChainProxy,
         [chain.gateway, chain.gasService, decimals],
         [],
         defaultAbiCoder.encode(['string', 'string'], [name, symbol]),

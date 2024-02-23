@@ -9,7 +9,7 @@ const {
 const { deployUpgradable } = require('@axelar-network/axelar-gmp-sdk-solidity');
 
 const ERC721 = rootRequire('./artifacts/examples/evm/nft-linker/ERC721Demo.sol/ERC721Demo.json');
-const ExampleProxy = rootRequire('./artifacts/examples/evm/Proxy.sol/ExampleProxy.json');
+const NftLinkerProxy = rootRequire('./artifacts/examples/evm/nft-linker/NftLinkerProxy.sol/NftLinkerProxy.json');
 const NftLinker = rootRequire('./artifacts/examples/evm/nft-linker/NftLinker.sol/NftLinker.json');
 
 const tokenId = Math.floor(Math.random() * 1000000000);
@@ -22,7 +22,7 @@ async function deploy(chain, wallet, key) {
         chain.constAddressDeployer,
         wallet,
         NftLinker,
-        ExampleProxy,
+        NftLinkerProxy,
         [chain.gateway, chain.gasService],
         [],
         defaultAbiCoder.encode(['string'], [chain.name]),
