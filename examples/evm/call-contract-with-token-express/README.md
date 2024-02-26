@@ -1,6 +1,8 @@
 # Call contract with token express
 
-This example allows you to send aUSDC from a source chain to a destination chain and distribute it equally among specified accounts.
+This example allows you to send aUSDC from a source chain to a destination chain and distribute it equally among specified accounts. 
+
+On mainnet & testnet your contract will need to be onboarded to use the express service this is simply an example of how to integrate at the contract level before getting onboarded. [Read more here](https://docs.axelar.dev/dev/general-message-passing/express)
 
 ### Deployment
 
