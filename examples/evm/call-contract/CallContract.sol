@@ -9,7 +9,6 @@ import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interf
 
 /**
  * @title CallContract
- * @author Axelar
  * @notice Send a message from chain A to chain B and stores gmp message
  */
 contract CallContract is AxelarExecutable {

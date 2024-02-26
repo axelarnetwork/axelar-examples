@@ -12,7 +12,6 @@ import { StringToAddress, AddressToString } from '@axelar-network/axelar-gmp-sdk
 
 /**
  * @title NFTLinker
- * @author Author
  * @notice Bridge NFTs from src chain to dest chain and back to src chain
  */
 contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {

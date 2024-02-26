@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 /**
  * @title ERC721 Demo
- * @author Axelar
  * @notice A simple ERC721 that allows users to mint NFTs as they please.
  */
 contract ERC721Demo is ERC721URIStorage {
