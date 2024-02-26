@@ -5,8 +5,8 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const DistributionExecutable = rootRequire(
-    './artifacts/examples/evm/call-contract-with-token/DistributionExecutable.sol/DistributionExecutable.json',
+const CallContractWithToken = rootRequire(
+    './artifacts/examples/evm/call-contract-with-token/CallContractWithToken.sol/CallContractWithToken.json',
 );
 const Gateway = rootRequire(
     './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
@@ -14,14 +14,14 @@ const Gateway = rootRequire(
 const IERC20 = rootRequire('./artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 async function deploy(chain, wallet) {
-    console.log(`Deploying DistributionExecutable for ${chain.name}.`);
+    console.log(`Deploying CallContractWithToken for ${chain.name}.`);
     const provider = getDefaultProvider(chain.rpc);
     chain.wallet = wallet.connect(provider);
-    chain.contract = await deployContract(wallet, DistributionExecutable, [chain.gateway, chain.gasService]);
+    chain.contract = await deployContract(wallet, CallContractWithToken, [chain.gateway, chain.gasService]);
     const gateway = new Contract(chain.gateway, Gateway.abi, chain.wallet);
     const usdcAddress = await gateway.tokenAddresses('aUSDC');
     chain.usdc = new Contract(usdcAddress, IERC20.abi, chain.wallet);
-    console.log(`Deployed DistributionExecutable for ${chain.name} at ${chain.contract.address}.`);
+    console.log(`Deployed CallContractWithToken for ${chain.name} at ${chain.contract.address}.`);
 }
 
 async function execute(chains, wallet, options) {

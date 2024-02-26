@@ -15,18 +15,24 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
     using StringToAddress for string;
     using AddressToString for address;
 
-    error AlreadyInitialized();
-
     bytes32 internal constant CONTRACT_ID = keccak256("token-linker");
-    mapping(uint256 => bytes) public original; //abi.encode(originaChain, operator, tokenId);
     string public chainName; //To check if we are the source chain.
     IAxelarGasService public immutable gasService;
 
+    mapping(uint256 => bytes) public original; //abi.encode(originaChain, operator, tokenId);
+
+    error AlreadyInitialized();
+
+    /**
+     * 
+     * @param _gateway address of axl gateway on deployed chain
+     * @param _gasReceiver address of axl gas service on deployed chain
+     */
     constructor(
-        address gateway_,
-        address gasReceiver_
-    ) ERC721("Axelar NFT Linker", "ANL") AxelarExecutable(gateway_) {
-        gasService = IAxelarGasService(gasReceiver_);
+        address _gateway,
+        address _gasReceiver
+    ) ERC721("Axelar NFT Linker", "ANL") AxelarExecutable(_gateway) {
+        gasService = IAxelarGasService(_gasReceiver);
     }
 
     function _setup(bytes calldata params) internal override {
@@ -39,7 +45,13 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
         return CONTRACT_ID;
     }
 
-    //The main function users will interact with.
+    /**
+     * @notice send nft from src chain to dest chain
+     * @param operator contract handling the nft briding
+     * @param tokenId id of the token being sent
+     * @param destinationChain name of the dest chain 
+     * @param destinationAddress address on dest chain tx is going to
+     */
     function sendNFT(
         address operator,
         uint256 tokenId,
@@ -65,7 +77,13 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
         }
     }
 
-    //Burns and sends a token.
+    /**
+     * @notice Burns and sends interchain nft tx
+     * @dev Used when sending nft back to origin chain
+     * @param tokenId id of nft to be bridged
+     * @param destinationChain name of the dest chain 
+     * @param destinationAddress address on dest chain tx is going to
+     */
     function _sendMintedToken(
         uint256 tokenId,
         string memory destinationChain,
@@ -100,7 +118,15 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
         gateway.callContract(destinationChain, stringAddress, payload);
     }
 
-    //Locks and sends a token.
+    
+    /**
+     * @notice Locks and sends a token from src to dest chain.
+     * @dev Used when sending from original chain to dest
+     * @param operator contract handling the nft briding
+     * @param tokenId id of nft to be bridged
+     * @param destinationChain name of the dest chain 
+     * @param destinationAddress address on dest chain tx is going to
+     */
     function _sendNativeToken(
         address operator,
         uint256 tokenId,
@@ -129,7 +155,13 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
         gateway.callContract(destinationChain, stringAddress, payload);
     }
 
-    //This is automatically executed by Axelar Microservices since gas was payed for.
+     /**
+     * @notice logic to be executed on dest chain
+     * @dev this is triggered automatically by relayer since gas was paid for
+     * @param
+     * @param sourceAddress address on src chain where tx is originating from
+     * @param payload encoded gmp message sent from src chain
+     */
     function _execute(
         string calldata /*sourceChain*/,
         string calldata sourceAddress,

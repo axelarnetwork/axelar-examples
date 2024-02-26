@@ -1,16 +1,20 @@
-# Call Contract with Token (Express)
+# Call contract with token express
 
-This guide demonstrates how to send aUSDC from a source chain to a destination chain, distributing it equally among specified accounts. The distinction between this and the [Call Contract with Token](../call-contract-with-token/README.md) example is that this approach utilizes the express mechanism.
+This example allows you to send aUSDC from a source chain to a destination chain and distribute it equally among specified accounts. 
+
+On mainnet & testnet your contract will need to be onboarded to use the express service this is simply an example of how to integrate at the contract level before getting onboarded. [Read more here](https://docs.axelar.dev/dev/general-message-passing/express)
 
 ### Deployment
 
 To deploy the contract, run the following command:
 
 ```bash
-npm run deploy evm/call-contract-with-token-express
+npm run deploy evm/call-contract-with-token-express [local|testnet]
 ```
 
-**Note:** On the testnet, we use a whitelisting system. If you're running this example on the testnet, you can skip the deployment. The execution step will automatically select the whitelisted express contract for you.
+The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command. 
+
+An example of its usage is demonstrated as follows: `npm run deploy evm/call-contract-with-token-express local` or `npm run deploy evm/call-contract-with-token-express testnet`. 
 
 ### Execution
 
@@ -24,13 +28,12 @@ npm run execute evm/call-contract-with-token-express  [local|testnet] ${srcChain
 The GMP Express feature is already lived on our testnet. However, the following conditions need to be met:
 
 -   The contract address must be whitelisted by our executor service.
+-   We only support `aUSDC` token and the amount must be less than 500 aUSDC.
 
 Currently, our whitelisted contract addresses for this example are:
 
--   Avalanche: `0x22a214c3c2C23a370414e2A4b2CF829A76c29A1b`
--   Polygon: `0x22a214c3c2C23a370414e2A4b2CF829A76c29A1b`
-
-The script will automatically select above whitelisted express contracts for you when running script against testnet.
+-   Avalanche: `0x4E3b6C3d284361Eb4fA9aDE5831eEfF85578b72c`
+-   Polygon: `0xAb6dAb12aCCAe665A44E69d44bcfC6219A30Dd32`
 
 ### Parameters
 
