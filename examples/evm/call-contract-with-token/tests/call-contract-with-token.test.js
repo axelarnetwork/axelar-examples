@@ -77,7 +77,7 @@ describe('Call Contract With Token', async () => {
             const myBalanceBefore = await aUSDCPolygon.balanceOf(polygonUserWallet.address);
 
             await deployedContractPolygon.sendToMany(
-                'Avalanche',
+                avalanche.name,
                 deployedContractAvalanche.address,
                 [avalancheUserWallet.address, avalancheUserWalletTwo.address],
                 'aUSDC',
@@ -98,7 +98,7 @@ describe('Call Contract With Token', async () => {
             const hashedPayload = utils.keccak256(payload);
             await expect(
                 deployedContractPolygon.sendToMany(
-                    'Avalanche',
+                    avalanche.name,
                     deployedContractAvalanche.address,
                     [avalancheUserWallet.address, avalancheUserWalletTwo.address],
                     'aUSDC',
@@ -111,7 +111,7 @@ describe('Call Contract With Token', async () => {
                 .to.emit(polygon.gateway, 'ContractCallWithToken')
                 .withArgs(
                     deployedContractPolygon.address,
-                    'Avalanche',
+                    avalanche.name,
                     deployedContractAvalanche.address,
                     hashedPayload,
                     payload,
@@ -125,7 +125,7 @@ describe('Call Contract With Token', async () => {
             const hashedPayload = utils.keccak256(payload);
             await expect(
                 deployedContractPolygon.sendToMany(
-                    'Avalanche',
+                    avalanche.name,
                     deployedContractAvalanche.address,
                     [avalancheUserWallet.address, avalancheUserWalletTwo.address],
                     'aUSDC',
@@ -138,7 +138,7 @@ describe('Call Contract With Token', async () => {
                 .to.emit(polygon.gasService, 'NativeGasPaidForContractCallWithToken')
                 .withArgs(
                     deployedContractPolygon.address,
-                    'Avalanche',
+                    avalanche.name,
                     deployedContractAvalanche.address,
                     hashedPayload,
                     'aUSDC',
@@ -175,7 +175,7 @@ describe('Call Contract With Token', async () => {
             const receiverTwoBalanceBefore = await aUSDCAvalanche.balanceOf(avalancheUserWalletTwo.address);
 
             await deployedContractPolygon.sendToMany(
-                'Avalanche',
+                avalanche.name,
                 deployedContractAvalanche.address,
                 [avalancheUserWallet.address, avalancheUserWalletTwo.address],
                 'aUSDC',
@@ -201,7 +201,7 @@ describe('Call Contract With Token', async () => {
             const eventsBefore = await deployedContractAvalanche.queryFilter(ExecutedEvent, blockInfoBefore.hash);
 
             await deployedContractPolygon.sendToMany(
-                'Avalanche',
+                avalanche.name,
                 deployedContractAvalanche.address,
                 [avalancheUserWallet.address, avalancheUserWalletTwo.address],
                 'aUSDC',

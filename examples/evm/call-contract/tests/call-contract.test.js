@@ -59,26 +59,26 @@ describe('CallContractTest', async () => {
             const payload = utils.defaultAbiCoder.encode(['string'], ['Testing123']);
             const hashedPayload = utils.keccak256(payload);
             await expect(
-                deployedContractPolygon.setRemoteValue('Avalanche', deployedContractAvalanche.address, 'Testing123', {
+                deployedContractPolygon.setRemoteValue(avalanche.name, deployedContractAvalanche.address, 'Testing123', {
                     value: (1e18).toString(),
                 }),
             )
                 .to.emit(polygon.gateway, 'ContractCall')
-                .withArgs(deployedContractPolygon.address, 'Avalanche', deployedContractAvalanche.address, hashedPayload, payload);
+                .withArgs(deployedContractPolygon.address, avalanche.name, deployedContractAvalanche.address, hashedPayload, payload);
         });
 
         it('should pay gas via axelar gas service', async () => {
             const payload = utils.defaultAbiCoder.encode(['string'], ['Testing123']);
             const hashedPayload = utils.keccak256(payload);
             await expect(
-                deployedContractPolygon.setRemoteValue('Avalanche', deployedContractAvalanche.address, 'Testing123', {
+                deployedContractPolygon.setRemoteValue(avalanche.name, deployedContractAvalanche.address, 'Testing123', {
                     value: (1e18).toString(),
                 }),
             )
                 .to.emit(polygon.gasService, 'NativeGasPaidForContractCall')
                 .withArgs(
                     deployedContractPolygon.address,
-                    'Avalanche',
+                    avalanche.name,
                     deployedContractAvalanche.address,
                     hashedPayload,
                     (1e18).toString(),
@@ -110,7 +110,7 @@ describe('CallContractTest', async () => {
             const messageBefore = await deployedContractAvalanche.message();
             expect(messageBefore).to.equal('');
 
-            await deployedContractPolygon.setRemoteValue('Avalanche', deployedContractAvalanche.address, 'Testing123', {
+            await deployedContractPolygon.setRemoteValue(avalanche.name, deployedContractAvalanche.address, 'Testing123', {
                 value: (1e18).toString(),
             });
 
@@ -126,7 +126,7 @@ describe('CallContractTest', async () => {
             const sourceChainBefore = await deployedContractAvalanche.sourceChain();
             expect(sourceChainBefore).to.equal('');
 
-            await deployedContractPolygon.setRemoteValue('Avalanche', deployedContractAvalanche.address, 'Testing123', {
+            await deployedContractPolygon.setRemoteValue(avalanche.name, deployedContractAvalanche.address, 'Testing123', {
                 value: (1e18).toString(),
             });
 
@@ -145,7 +145,7 @@ describe('CallContractTest', async () => {
             const blockInfoBefore = await avalanche.provider.getLogs(blockNumberBefore);
             const eventsBefore = await deployedContractAvalanche.queryFilter(ExecutedEvent, blockInfoBefore.hash);
 
-            await deployedContractPolygon.setRemoteValue('Avalanche', deployedContractAvalanche.address, 'Testing123', {
+            await deployedContractPolygon.setRemoteValue(avalanche.name, deployedContractAvalanche.address, 'Testing123', {
                 value: (1e18).toString(),
             });
 
