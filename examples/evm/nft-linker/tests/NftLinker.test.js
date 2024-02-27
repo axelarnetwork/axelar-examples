@@ -79,7 +79,7 @@ describe('NFT Linker', async () => {
                 [avalanche.gateway.address, avalanche.gasService.address],
                 [],
                 utils.defaultAbiCoder.encode(['string'], [avalanche.name]),
-                key + 1,
+                key,
             );
         });
         afterEach(async () => {
@@ -126,33 +126,52 @@ describe('NFT Linker', async () => {
                 .withArgs(nftLinkerPolygon.address, avalanche.name, nftLinkerPolygon.address.toLowerCase(), hashedPayload, payload);
         });
         it('should pay gas via axelar gas service', async () => {
-            //     const payload = utils.defaultAbiCoder.encode(['address[]'], [[avalancheUserWallet.address, avalancheUserWalletTwo.address]]);
-            //     const hashedPayload = utils.keccak256(payload);
-            //     await expect(
-            //         deployedContractPolygon.sendToMany(
-            //             'Avalanche',
-            //             deployedContractAvalanche.address,
-            //             [avalancheUserWallet.address, avalancheUserWalletTwo.address],
-            //             'aUSDC',
-            //             6e6,
-            //             {
-            //                 value: (1e18).toString(),
-            //             },
-            //         ),
-            //     )
-            //         .to.emit(polygon.gasService, 'NativeGasPaidForContractCallWithToken')
-            //         .withArgs(
-            //             deployedContractPolygon.address,
-            //             'Avalanche',
-            //             deployedContractAvalanche.address,
-            //             hashedPayload,
-            //             'aUSDC',
-            //             6e6,
-            //             (1e18).toString(),
-            //             polygonUserWallet.address,
-            //         );
+            const payload = utils.defaultAbiCoder.encode(
+                ['string', 'address', 'uint256', 'address', 'string'],
+                [polygon.name, deployedNftAvalanche.address, tokenId, avalancheUserWallet.address, tokenURI],
+            );
+            const hashedPayload = utils.keccak256(payload);
+            await expect(
+                nftLinkerPolygon.sendNFT(deployedNftPolygon.address, tokenId, avalanche.name, avalancheUserWallet.address, {
+                    value: (1e18).toString(),
+                }),
+            )
+                .to.emit(polygon.gasService, 'NativeGasPaidForContractCall')
+                .withArgs(
+                    nftLinkerPolygon.address,
+                    avalanche.name,
+                    nftLinkerPolygon.address.toLowerCase(),
+                    hashedPayload,
+                    (1e18).toString(),
+                    polygonUserWallet.address,
+                );
         });
-        // it('should return nft to original sender', async () => {});
+        it('should return nft to original sender', async () => {
+            const payload = utils.defaultAbiCoder.encode(
+                ['string', 'address', 'uint256', 'string'],
+                [polygon.name, deployedNftPolygon.address, tokenId, tokenURI],
+            );
+            const tokenIdAvalanche = utils.keccak256(payload);
+
+            //SEND TO DEST
+            await nftLinkerPolygon.sendNFT(deployedNftPolygon.address, tokenId, avalanche.name, avalancheUserWallet.address, {
+                value: (1e18).toString(),
+            });
+
+            const balanaceSrcBefore = await deployedNftPolygon.balanceOf(polygonUserWallet.address);
+
+            await relay();
+
+            //SEND BACK TO SRC
+            await nftLinkerAvalanche.sendNFT(nftLinkerAvalanche.address, tokenIdAvalanche, polygon.name, polygonUserWallet.address, {
+                value: (1e18).toString(),
+            });
+
+            await relay();
+
+            const balanaceSrcAfter = await deployedNftPolygon.balanceOf(polygonUserWallet.address);
+            expect(balanaceSrcAfter).to.equal(parseInt(balanaceSrcBefore) + 1);
+        });
     });
 
     // describe('dest chain', async () => {

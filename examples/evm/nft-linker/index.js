@@ -16,7 +16,7 @@ const tokenId = Math.floor(Math.random() * 1000000000);
 
 async function deploy(chain, wallet, key) {
     chain.erc721 = await deployContract(wallet, ERC721, ['Test', 'TEST']);
-    console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721.address}`);)
+    console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721.address}`);
 
     chain.contract = await deployUpgradable(
         chain.constAddressDeployer,

@@ -21,6 +21,10 @@ The aforementioned command pertains to specifying the intended environment for a
 
 An example of its usage is demonstrated as follows: `npm run deploy evm/call-contract local` or `npm run deploy evm/call-contract testnet`. 
 
+### Test
+`cd` into `evm` folder
+Run the command ` hh test call-contract/tests/call-contract.test.js`     
+
 ### Execution
 
 To execute the example, use the following command:
