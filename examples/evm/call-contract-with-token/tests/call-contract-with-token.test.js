@@ -65,13 +65,6 @@ describe('Call Contract With Token', async () => {
             expect(await deployedContractPolygon.gateway()).to.equal(polygon.gateway.address);
             expect(await deployedContractPolygon.gasService()).to.equal(polygon.gasService.address);
         });
-        /*
-        it('should fail if no gas sent', async () => {
-            await expect(
-                deployedContractPolygon.setRemoteValue('Avalanche', deployedContractAvalanche.address, 'Testing123'),
-            ).to.be.revertedWith('Gas payment is required');
-        });
-        */
         it('should deduct funds from msg.sender', async () => {
             const totalSupplyBefore = await aUSDCPolygon.totalSupply();
             const myBalanceBefore = await aUSDCPolygon.balanceOf(polygonUserWallet.address);

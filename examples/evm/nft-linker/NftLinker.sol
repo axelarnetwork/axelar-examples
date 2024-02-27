@@ -130,7 +130,7 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
             IERC721(operator).transferFrom(address(this), destinationAddress, tokenId);
             //Else we need to mint a new one.
         } else {
-            // //We need to save all the relevant information.
+            //We need to save all the relevant information.
             bytes memory originalData = abi.encode(originalChain, operator, tokenId, tokenURI);
             //Avoids _tokenId collisions.
             uint256 newTokenId = uint256(keccak256(originalData));

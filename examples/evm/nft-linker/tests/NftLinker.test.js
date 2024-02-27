@@ -14,20 +14,14 @@ describe('NFT Linker', async () => {
     let polygonUserWallet;
     let avalancheUserWallet;
 
-    let deployedContractPolygon;
-    let deployedContractAvalanche;
-
     let deployedNftPolygon;
-    let deployedNftAvalanche;
 
     let nftLinkerPolygon;
     let nftLinkerAvalanche;
 
-    let key;
-
     let tokenURI;
-
     let tokenId;
+    let key;
 
     before(async () => {
         // Initialize a Polygon network
@@ -45,8 +39,6 @@ describe('NFT Linker', async () => {
         [avalancheUserWallet] = avalanche.userWallets;
 
         deployedNftPolygon = await deployContract(polygonUserWallet, ERC721, ['Something Funny', 'SF']);
-        deployedNftAvalanche = await deployContract(avalancheUserWallet, ERC721, ['Something Funny', 'SF']);
-
         tokenId = 1;
     });
 
@@ -112,7 +104,7 @@ describe('NFT Linker', async () => {
         it('should successfully trigger interchain tx', async () => {
             const payload = utils.defaultAbiCoder.encode(
                 ['string', 'address', 'uint256', 'address', 'string'],
-                [polygon.name, deployedNftAvalanche.address, tokenId, avalancheUserWallet.address, tokenURI],
+                [polygon.name, deployedNftPolygon.address, tokenId, avalancheUserWallet.address, tokenURI],
             );
 
             const hashedPayload = utils.keccak256(payload);
@@ -123,12 +115,12 @@ describe('NFT Linker', async () => {
                 }),
             )
                 .to.emit(polygon.gateway, 'ContractCall')
-                .withArgs(nftLinkerPolygon.address, avalanche.name, nftLinkerPolygon.address.toLowerCase(), hashedPayload, payload);
+                .withArgs(nftLinkerPolygon.address, avalanche.name, nftLinkerAvalanche.address.toLowerCase(), hashedPayload, payload);
         });
         it('should pay gas via axelar gas service', async () => {
             const payload = utils.defaultAbiCoder.encode(
                 ['string', 'address', 'uint256', 'address', 'string'],
-                [polygon.name, deployedNftAvalanche.address, tokenId, avalancheUserWallet.address, tokenURI],
+                [polygon.name, deployedNftPolygon.address, tokenId, avalancheUserWallet.address, tokenURI],
             );
             const hashedPayload = utils.keccak256(payload);
             await expect(
@@ -140,13 +132,14 @@ describe('NFT Linker', async () => {
                 .withArgs(
                     nftLinkerPolygon.address,
                     avalanche.name,
-                    nftLinkerPolygon.address.toLowerCase(),
+                    nftLinkerAvalanche.address.toLowerCase(),
                     hashedPayload,
                     (1e18).toString(),
                     polygonUserWallet.address,
                 );
         });
         it('should return nft to original sender', async () => {
+            console.log(tokenId, 'the token id ');
             const payload = utils.defaultAbiCoder.encode(
                 ['string', 'address', 'uint256', 'string'],
                 [polygon.name, deployedNftPolygon.address, tokenId, tokenURI],
@@ -174,43 +167,74 @@ describe('NFT Linker', async () => {
         });
     });
 
-    // describe('dest chain', async () => {
-    //     beforeEach(async () => {
-    //         nftLinkerPolygon = await deployUpgradable(
-    //             polygon.constAddressDeployer.address,
-    //             polygonUserWallet,
-    //             NftLinker,
-    //             NftLinkerProxy,
-    //             [polygon.gateway.address, polygon.gasService.address],
-    //             [],
-    //             utils.defaultAbiCoder.encode(['string'], [polygon.name]),
-    //             key,
-    //         );
+    describe('dest chain', async () => {
+        beforeEach(async () => {
+            tokenId += 1;
+            const hash = utils.keccak256(utils.toUtf8Bytes(tokenId.toString()));
 
-    //         nftLinkerAvalanche = await deployUpgradable(
-    //             avalanche.constAddressDeployer.address,
-    //             avalancheUserWallet,
-    //             NftLinker,
-    //             NftLinkerProxy,
-    //             [avalanche.gateway.address, avalanche.gasService.address],
-    //             [],
-    //             utils.defaultAbiCoder.encode(['string'], [avalanche.name]),
-    //             key,
-    //         );
+            nftLinkerPolygon = await deployUpgradable(
+                polygon.constAddressDeployer.address,
+                polygonUserWallet,
+                NftLinker,
+                NftLinkerProxy,
+                [polygon.gateway.address, polygon.gasService.address],
+                [],
+                utils.defaultAbiCoder.encode(['string'], [polygon.name]),
+                key,
+            );
 
-    //         await aUSDCPolygon.connect(polygonUserWallet).approve(deployedContractPolygon.address, (100e18).toString());
-    //     });
-    //     afterEach(async () => {
-    //         await relay();
-    //     });
-    //     it('should set correct gateway addresses and gas service addresses on dest chain', async () => {
-    //         expect(await nftLinkerAvalanche.gateway()).to.equal(avalanche.gateway.address);
-    //         expect(await nftLinkerAvalanche.gasService()).to.equal(avalanche.gasService.address);
-    //     });
+            tokenURI = `https://ipfs.io/ipfs/${hash}`;
 
-    //     it('should mint nft to new owner', async () => {});
-    //     it('should set tokenUri', async () => {});
-    //     it('should set new tokenId', async () => {});
-    //     it('should revert if source address is another nft linker', async () => {});
-    // });
+            await deployedNftPolygon.mintWithMetadata(tokenId, hash, tokenURI);
+            await deployedNftPolygon.approve(nftLinkerPolygon.address, tokenId);
+
+            nftLinkerAvalanche = await deployUpgradable(
+                avalanche.constAddressDeployer.address,
+                avalancheUserWallet,
+                NftLinker,
+                NftLinkerProxy,
+                [avalanche.gateway.address, avalanche.gasService.address],
+                [],
+                utils.defaultAbiCoder.encode(['string'], [avalanche.name]),
+                key,
+            );
+        });
+        afterEach(async () => {
+            key = new Date().getMilliseconds().toString();
+            await relay();
+        });
+        it('should set correct gateway addresses and gas service addresses on dest chain', async () => {
+            expect(await nftLinkerAvalanche.gateway()).to.equal(avalanche.gateway.address);
+            expect(await nftLinkerAvalanche.gasService()).to.equal(avalanche.gasService.address);
+        });
+
+        it('should mint nft to new owner', async () => {
+            const balanaceAvalancheBefore = await nftLinkerAvalanche.balanceOf(avalancheUserWallet.address);
+            await nftLinkerPolygon.sendNFT(deployedNftPolygon.address, tokenId, avalanche.name, avalancheUserWallet.address, {
+                value: (1e18).toString(),
+            });
+            await relay();
+            const balanaceAvalancheAfter = await nftLinkerAvalanche.balanceOf(avalancheUserWallet.address);
+            expect(balanaceAvalancheAfter).to.equal(parseInt(balanaceAvalancheBefore) + 1);
+        });
+        it('should set tokenUri', async () => {
+            const payload = utils.defaultAbiCoder.encode(
+                ['string', 'address', 'uint256', 'string'],
+                [polygon.name, deployedNftPolygon.address, tokenId, tokenURI],
+            );
+            const tokenIdAvalanche = utils.keccak256(payload);
+
+            await expect(nftLinkerAvalanche.tokenURI(tokenIdAvalanche)).to.be.reverted;
+
+            await nftLinkerPolygon.sendNFT(deployedNftPolygon.address, tokenId, avalanche.name, avalancheUserWallet.address, {
+                value: (1e18).toString(),
+            });
+
+            await relay();
+
+            const tokenUriAfter = await nftLinkerAvalanche.tokenURI(tokenIdAvalanche);
+
+            expect(tokenUriAfter).to.equal(tokenURI);
+        });
+    });
 });

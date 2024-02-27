@@ -48,13 +48,6 @@ describe('CallContractTest', async () => {
             expect(await deployedContractPolygon.gateway()).to.equal(polygon.gateway.address);
             expect(await deployedContractPolygon.gasService()).to.equal(polygon.gasService.address);
         });
-        /*
-        it('should fail if no gas sent', async () => {
-            await expect(
-                deployedContractPolygon.setRemoteValue('Avalanche', deployedContractAvalanche.address, 'Testing123'),
-            ).to.be.revertedWith('Gas payment is required');
-        });
-        */
         it('should successfully trigger interchain tx', async () => {
             const payload = utils.defaultAbiCoder.encode(['string'], ['Testing123']);
             const hashedPayload = utils.keccak256(payload);
