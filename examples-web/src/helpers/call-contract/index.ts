@@ -4,22 +4,20 @@ import {
   srcConnectedWallet,
   destConnectedWallet,
 } from "config/constants";
-import {
-  MessageSender__factory as MessageSenderFactory,
-  MessageReceiver__factory as MessageReceiverFactory,
-} from "types/factories/contracts/call-contract";
+import {CallContract__factory as CallContractFactory } from '../../../src/types/factories/contracts/call-contract'
 
-const sourceContract = MessageSenderFactory.connect(
+
+const sourceContract = CallContractFactory.connect(
   srcChain?.callContract,
   srcConnectedWallet,
 );
-const destContract = MessageReceiverFactory.connect(
+const destContract = CallContractFactory.connect(
   destChain.callContract,
   destConnectedWallet,
 );
 
 export async function sendMessageToAvalanche(message: string) {
-  const tx = await sourceContract.sendMessage(
+  const tx = await sourceContract.sendInterchainMessage(
     destChain.name,
     destChain.callContract,
     message,

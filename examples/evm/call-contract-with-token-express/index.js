@@ -5,15 +5,15 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 
-const DistributionExpressExecutable = rootRequire(
-    './artifacts/examples/evm/call-contract-with-token-express/DistributionExpressExecutable.sol/DistributionExpressExecutable.json',
+const CallContractWithTokenExpress = rootRequire(
+    './artifacts/examples/evm/call-contract-with-token-express/CallContractWithTokenExpress.sol/CallContractWithTokenExpress.json',
 );
 
 async function deploy(chain, wallet) {
     chain.wallet = wallet;
-    console.log(`Deploying DistributionExpressExecutable for ${chain.name}.`);
-    chain.contract = await deployContract(wallet, DistributionExpressExecutable, [chain.gateway, chain.gasService]);
-    console.log(`Deployed DistributionExpressExecutable for ${chain.name} at`, chain.contract.address);
+    console.log(`Deploying CallContractWithTokenExpress for ${chain.name}.`);
+    chain.contract = await deployContract(wallet, CallContractWithTokenExpress, [chain.gateway, chain.gasService]);
+    console.log(`Deployed CallContractWithTokenExpress for ${chain.name} at`, chain.contract.address);
 }
 
 const sourceChain = 'Polygon';
@@ -35,12 +35,12 @@ function overrideContract(env, source, destination, wallet) {
 
         source.contract = new Contract(
             whitelistedAddresses[source.name],
-            DistributionExpressExecutable.abi,
+            CallContractWithTokenExpress.abi,
             wallet.connect(source.provider),
         );
         destination.contract = new Contract(
             whitelistedAddresses[destination.name],
-            DistributionExpressExecutable.abi,
+            CallContractWithTokenExpress.abi,
             wallet.connect(source.provider),
         );
     }

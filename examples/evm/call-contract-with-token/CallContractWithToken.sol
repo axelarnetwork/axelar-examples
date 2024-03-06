@@ -2,18 +2,38 @@
 pragma solidity ^0.8.0;
 
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
-import { AxelarExpressExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/express/AxelarExpressExecutable.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 
-contract DistributionExpressExecutable is AxelarExpressExecutable {
+
+/**
+ * @title Call Contract With Token 
+ * @notice Send a token along with an Axelar GMP message between two blockchains
+ */
+contract CallContractWithToken is AxelarExecutable {
     IAxelarGasService public immutable gasService;
 
-    constructor(address gateway_, address gasReceiver_) AxelarExpressExecutable(gateway_) {
-        gasService = IAxelarGasService(gasReceiver_);
+    event Executed();
+
+    /**
+     * 
+     * @param _gateway address of axl gateway on deployed chain
+     * @param _gasReceiver address of axl gas service on deployed chain
+     */
+    constructor(address _gateway, address _gasReceiver) AxelarExecutable(_gateway) {
+        gasService = IAxelarGasService(_gasReceiver);
     }
 
+    /**
+     * @notice trigger interchain tx from src chain
+     * @dev destinationAddresses will be passed in as gmp message in this tx
+     * @param destinationChain name of the dest chain (ex. "Fantom")
+     * @param destinationAddress address on dest chain this tx is going to
+     * @param destinationAddresses recipient addresses receiving sent funds 
+     * @param symbol symbol of token being sent
+     * @param amount amount of tokens being sent
+     */
     function sendToMany(
         string memory destinationChain,
         string memory destinationAddress,
@@ -27,7 +47,7 @@ contract DistributionExpressExecutable is AxelarExpressExecutable {
         IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
         IERC20(tokenAddress).approve(address(gateway), amount);
         bytes memory payload = abi.encode(destinationAddresses);
-        gasService.payNativeGasForExpressCallWithToken{ value: msg.value }(
+        gasService.payNativeGasForContractCallWithToken{ value: msg.value }(
             address(this),
             destinationChain,
             destinationAddress,
@@ -39,6 +59,13 @@ contract DistributionExpressExecutable is AxelarExpressExecutable {
         gateway.callContractWithToken(destinationChain, destinationAddress, payload, symbol, amount);
     }
 
+    /**
+     * @notice logic to be executed on dest chain
+     * @dev this is triggered automatically by relayer
+     * @param payload encoded gmp message sent from src chain
+     * @param tokenSymbol symbol of token sent from src chain
+     * @param amount amount of tokens sent from src chain
+     */
     function _executeWithToken(
         string calldata,
         string calldata,
@@ -53,5 +80,7 @@ contract DistributionExpressExecutable is AxelarExpressExecutable {
         for (uint256 i = 0; i < recipients.length; i++) {
             IERC20(tokenAddress).transfer(recipients[i], sentAmount);
         }
+
+        emit Executed();
     }
 }

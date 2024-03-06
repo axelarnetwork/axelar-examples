@@ -9,7 +9,6 @@
         "test": "TEST=true mocha examples/tests",
         "test:cosmos": "TEST=true mocha examples/tests/cosmos.test.js",
         "test:evm": "TEST=true mocha examples/tests/evm.test.js",
-        "test:aptos": "TEST=true mocha examples/tests/aptos.test.js",
         "test:multiversx": "TEST=true mocha examples/tests/multiversx.test.js",
         "start": "node scripts/runStart",
         "deploy": "node scripts/runDeploy",
@@ -17,7 +16,6 @@
         "setup": "node scripts/runSetupEnv",
         "check-balance": "node scripts/runCheckBalance",
         "build": "rm -rf artifacts && npx hardhat clean && npx hardhat compile",
-        "build-aptos": "bash ./build-aptos.sh",
         "build-wasm": "bash ./build-wasm.sh",
         "build-multiversx": "bash ./build-multiversx.sh"
     },
@@ -26,7 +24,7 @@
     "dependencies": {
         "@axelar-network/axelar-chains-config": "^0.1.0",
         "@axelar-network/axelar-gmp-sdk-solidity": "5.6.2",
-        "@axelar-network/axelar-local-dev": "file://../axelar-local-dev-multiversx/packages/axelar-local-dev",
+        "@axelar-network/axelar-local-dev": "^2.2.0",
         "@axelar-network/axelar-local-dev-cosmos": "^2.2.0-alpha.28",
         "@axelar-network/axelarjs-sdk": "^0.12.8",
         "@axelar-network/interchain-token-service": "^1.0.0",
@@ -51,8 +49,7 @@
         "solidity-coverage": "^0.8.2"
     },
     "optionalDependencies": {
-        "@axelar-network/axelar-local-dev-aptos": "^2.1.1-alpha.4",
-        "@axelar-network/axelar-local-dev-multiversx": "file:../axelar-local-dev-multiversx/packages/axelar-local-dev-multiversx",
+        "@axelar-network/axelar-local-dev-multiversx": "^2.2.0",
         "@multiversx/sdk-core": "^12.18.0"
     }
 }

@@ -2,7 +2,7 @@ const fs = require('fs');
 const { ethers } = require('ethers');
 const { createAndExport, EvmRelayer, RelayerType } = require('@axelar-network/axelar-local-dev');
 const { AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
-const { enabledAptos, enabledCosmos, enabledMultiversx } = require('./config');
+const { enabledCosmos, enabledMultiversx } = require('./config');
 const { configPath } = require('../../config');
 const path = require('path');
 
@@ -18,15 +18,8 @@ const relayers = { evm: evmRelayer };
  */
 async function start(fundAddresses = [], chains = [], options = {}) {
     // For testing purpose
-    const { skipAptos, skipCosmos } = options;
+    const { skipCosmos } = options;
     const dropConnections = [];
-
-    if (!skipAptos && enabledAptos) {
-        const { AptosRelayer, createAptosNetwork } = require('@axelar-network/axelar-local-dev-aptos');
-        await initAptos(createAptosNetwork);
-        relayers.aptos = new AptosRelayer();
-        evmRelayer.setRelayer(RelayerType.Aptos, relayers.aptos);
-    }
 
     if (!skipCosmos && enabledCosmos) {
         const { startChains } = require('@axelar-network/axelar-local-dev-cosmos');
@@ -94,21 +87,6 @@ async function deployAndFundUsdc(chain, toFund) {
 
     for (const address of toFund) {
         await chain.giveToken(address, 'aUSDC', ethers.utils.parseEther('1'));
-    }
-}
-
-/**
- * Initialize aptos if it is running.
- * If aptos is not running, skip initialization and print a message.
- */
-async function initAptos(createAptosNetwork) {
-    try {
-        await createAptosNetwork({
-            nodeUrl: 'http://0.0.0.0:8080',
-            faucetUrl: 'http://0.0.0.0:8081'
-        });
-    } catch (e) {
-        console.log('Skip Aptos initialization, rerun this after starting an aptos node for proper support.');
     }
 }
 

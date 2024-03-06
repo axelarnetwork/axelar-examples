@@ -38,7 +38,7 @@ describe('Verify EVM Examples', function () {
             fs.unlinkSync(configPath.localEvmChains);
         }
 
-        await start([wallet.address], testChains, { relayInterval: 500, skipCosmos: true, skipAptos: true });
+        await start([wallet.address], testChains, { relayInterval: 500, skipCosmos: true });
     });
 
     afterEach(async () => {

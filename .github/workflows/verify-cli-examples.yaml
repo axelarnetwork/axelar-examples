@@ -29,7 +29,7 @@ jobs:
 
             - name: Override config/ci.json
               run: |
-                  echo '{"aptos": {"enabled": false},"cosmos": {"enabled": true},"multiversx": {"enabled": false}}' > config/ci.json
+                  echo '{"cosmos": {"enabled": true},"multiversx": {"enabled": false}}' > config/ci.json
 
             - name: Test
               run: |
@@ -62,57 +62,11 @@ jobs:
 
             - name: Override config/ci.json
               run: |
-                  echo '{"aptos": {"enabled": false},"cosmos": {"enabled": false},"multiversx": {"enabled": false}}' > config/ci.json
+                  echo '{"cosmos": {"enabled": false},"multiversx": {"enabled": false}}' > config/ci.json
 
             - name: Test
               run: |
-                  NODE_ENV=ci npm run test:evm
-
-    test-aptos-examples:
-        runs-on: ubuntu-22.04
-        name: 'Test Aptos Examples'
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Setup Node
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 18
-                  cache: 'npm'
-
-            - name: Prerequisites
-              run: |
-                  wget --no-check-certificate  https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.4/aptos-cli-1.0.4-Ubuntu-22.04-x86_64.zip
-                  unzip aptos-cli-1.0.4-Ubuntu-22.04-x86_64.zip
-                  chmod +x aptos
-                  cp aptos /usr/local/bin
-
-            - name: Install Dependencies
-              run: npm ci
-
-            - name: Create .env file
-              run: |
-                  # Dummy private key created for testing purpose only, it is not secret
-                  npm run setup
-
-            - name: Override config/ci.json
-              run: |
-                  echo '{"aptos": {"enabled": true},"cosmos": {"enabled": false},"multiversx": {"enabled": false}}' > config/ci.json
-
-            - name: Compile EVM Smart Contracts
-              run: |
-                  npm run build
-
-            - name: Compile Aptos Modules
-              run: |
-                  npm run build-aptos
-
-            - name: Test
-              run: |
-                  nohup sh -c "aptos node run-local-testnet --with-faucet" > nohup.out 2> nohup.err < /dev/null &
-                  sleep 30
-                  NODE_ENV=ci npm run test:aptos
+                NODE_ENV=ci npm run test:evm
 
     test-multiversx-examples:
       runs-on: ubuntu-22.04
@@ -135,20 +89,13 @@ jobs:
             node-version: 18
             cache: 'npm'
 
-        - uses: actions/setup-python@v5
-          with:
-            python-version: '3.9'
-            cache: 'pip'
         - name: Prerequisites
           run: |
-            pip3 install multiversx-sdk-cli==v9.3.0
-            mkdir -p /usr/local/multiversx-localnet && cd /usr/local/multiversx-localnet
+            pip3 install multiversx-sdk-cli==v9.3.1
             mxpy localnet setup
-            cd ~
-            cp -rf ./packages/axelar-local-dev-multiversx/external.toml /usr/local/multiversx-localnet/localnet/validator00/config
-            cp -rf ./packages/axelar-local-dev-multiversx/external.toml /usr/local/multiversx-localnet/localnet/validator01/config
-            cp -rf ./packages/axelar-local-dev-multiversx/external.toml /usr/local/multiversx-localnet/localnet/validator02/config
-            cd /usr/local/multiversx-localnet
+            cp -rf ./examples/multiversx/external.toml ./localnet/validator00/config
+            cp -rf ./examples/multiversx/external.toml ./localnet/validator01/config
+            cp -rf ./examples/multiversx/external.toml ./localnet/validator02/config
 
         - name: Install Dependencies
           run: npm ci
@@ -160,7 +107,7 @@ jobs:
 
         - name: Override config/ci.json
           run: |
-            echo '{"aptos": {"enabled": false},"cosmos": {"enabled": false},"multiversx": {"enabled": true}}' > config/ci.json
+            echo '{"cosmos": {"enabled": false},"multiversx": {"enabled": true}}' > config/ci.json
 
         - name: Compile EVM Smart Contracts
           run: |

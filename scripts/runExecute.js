@@ -2,7 +2,6 @@
 require('dotenv').config();
 const {
     executeEVMExample,
-    executeAptosExample,
     executeCosmosExample,
     checkEnv,
     getExamplePath,
@@ -36,9 +35,6 @@ if (exampleName.split('/')[0] === 'evm') {
     const chains = getEVMChains(env, selectedChains);
 
     executeEVMExample(env, chains, args, wallet, example);
-} else if (exampleName.split('/')[0] === 'aptos') {
-    const chains = getEVMChains(env);
-    executeAptosExample(chains, args, wallet, example);
 } else if (exampleName.split('/')[0] === 'cosmos') {
     const chains = getEVMChains(env);
     executeCosmosExample(env, chains, args, wallet, example);
