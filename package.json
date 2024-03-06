@@ -16,8 +16,7 @@
         "setup": "node scripts/runSetupEnv",
         "check-balance": "node scripts/runCheckBalance",
         "build": "rm -rf artifacts && npx hardhat clean && npx hardhat compile",
-        "build-wasm": "bash ./build-wasm.sh",
-        "build-multiversx": "bash ./build-multiversx.sh"
+        "build-wasm": "bash ./build-wasm.sh"
     },
     "author": "",
     "license": "ISC",
@@ -26,8 +25,10 @@
         "@axelar-network/axelar-gmp-sdk-solidity": "5.6.2",
         "@axelar-network/axelar-local-dev": "^2.2.0",
         "@axelar-network/axelar-local-dev-cosmos": "^2.2.0-alpha.28",
+        "@axelar-network/axelar-local-dev-multiversx": "^2.2.1",
         "@axelar-network/axelarjs-sdk": "^0.12.8",
         "@axelar-network/interchain-token-service": "^1.0.0",
+        "@multiversx/sdk-core": "^12.19.0",
         "@openzeppelin/contracts": "^4.5.0",
         "axios": "^0.27.2",
         "bech32": "^2.0.0",
@@ -35,7 +36,6 @@
         "config": "^3.3.9",
         "dotenv": "^16.0.2",
         "ethers": "^5.6.2",
-        "fs-extra": "^11.1.1",
         "uuid": "^8.3.2"
     },
     "devDependencies": {
@@ -47,9 +47,5 @@
         "prettier-plugin-solidity": "^1.0.0-beta.19",
         "solhint": "^3.3.7",
         "solidity-coverage": "^0.8.2"
-    },
-    "optionalDependencies": {
-        "@axelar-network/axelar-local-dev-multiversx": "^2.2.0",
-        "@multiversx/sdk-core": "^12.18.0"
     }
 }

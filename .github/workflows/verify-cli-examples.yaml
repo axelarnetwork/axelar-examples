@@ -66,7 +66,7 @@ jobs:
 
             - name: Test
               run: |
-                NODE_ENV=ci npm run test:evm
+                  NODE_ENV=ci npm run test:evm
 
     test-multiversx-examples:
       runs-on: ubuntu-22.04
@@ -76,7 +76,7 @@ jobs:
           image: "docker.elastic.co/elasticsearch/elasticsearch:8.12.0"
           env:
             discovery.type: single-node
-            xpack.security: "enabled=false"
+            xpack.security.enabled: false
           ports:
             - "9200:9200"
       steps:
@@ -116,5 +116,5 @@ jobs:
         - name: Test
           run: |
             mxpy localnet start &
-            sleep 30
+            sleep 120
             NODE_ENV=ci npm run test:multiversx
