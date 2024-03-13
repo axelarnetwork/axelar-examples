@@ -17,13 +17,14 @@ To deploy the contract, use the following command:
 npm run deploy evm/call-contract [local|testnet]
 ```
 
-The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command. 
+The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command.
 
-An example of its usage is demonstrated as follows: `npm run deploy evm/call-contract local` or `npm run deploy evm/call-contract testnet`. 
+An example of its usage is demonstrated as follows: `npm run deploy evm/call-contract local` or `npm run deploy evm/call-contract testnet`.
 
 ### Test
+
 `cd` into `evm` folder
-Run the command ` hh test call-contract/tests/call-contract.test.js`     
+Run the command ` npx hardhat test call-contract/tests/call-contract.test.js`
 
 ### Execution
 

@@ -139,7 +139,6 @@ describe('NFT Linker', async () => {
                 );
         });
         it('should return nft to original sender', async () => {
-            console.log(tokenId, 'the token id ');
             const payload = utils.defaultAbiCoder.encode(
                 ['string', 'address', 'uint256', 'string'],
                 [polygon.name, deployedNftPolygon.address, tokenId, tokenURI],

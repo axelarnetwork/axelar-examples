@@ -84,7 +84,7 @@ describe('Call Contract With Token', async () => {
             const totalSupplyAfter = await aUSDCPolygon.totalSupply();
 
             expect(myBalanceAfter).to.equal(myBalanceBefore - 6e6);
-            expect(totalSupplyAfter).to.equal(totalSupplyBefore - 6e6); //token was burnt on src
+            expect(totalSupplyAfter).to.equal(totalSupplyBefore - 6e6); //token was removed by the gateway on the src chain
         });
         it('should successfully trigger interchain tx', async () => {
             const payload = utils.defaultAbiCoder.encode(['address[]'], [[avalancheUserWallet.address, avalancheUserWalletTwo.address]]);
