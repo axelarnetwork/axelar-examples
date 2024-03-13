@@ -25,7 +25,7 @@
         "@axelar-network/axelar-gmp-sdk-solidity": "5.6.2",
         "@axelar-network/axelar-local-dev": "^2.2.0",
         "@axelar-network/axelar-local-dev-cosmos": "^2.2.0-alpha.28",
-        "@axelar-network/axelar-local-dev-multiversx": "^2.2.1",
+        "@axelar-network/axelar-local-dev-multiversx": "^2.2.2",
         "@axelar-network/axelarjs-sdk": "^0.12.8",
         "@axelar-network/interchain-token-service": "^1.0.0",
         "@multiversx/sdk-core": "^12.19.0",
