@@ -15,7 +15,7 @@ setLogger((...args) => {});
 
 console.log = () => {};
 
-const multiversxExamples = ['call-contract'];
+const multiversxExamples = ['call-contract', 'its-interchain-token'];
 
 describe('Verify Multiversx Examples', function () {
     // marked as slow if it takes longer than 15 seconds to run each test.
