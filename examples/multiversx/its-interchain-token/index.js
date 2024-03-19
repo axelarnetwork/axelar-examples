@@ -1,9 +1,7 @@
 const { IInterchainTokenService, IInterchainTokenFactory } = require('@axelar-network/axelar-local-dev/dist/contracts');
 const { Contract } = require('ethers');
-const { interchainTransfer } = require('../../../scripts/libs/its-utils');
 const { keccak256, defaultAbiCoder } = require('ethers/lib/utils');
 const { loadMultiversXNetwork } = require('@axelar-network/axelar-local-dev-multiversx');
-const { CHAINS } = require('@axelar-network/axelarjs-sdk');
 const IERC20 = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/interfaces/IERC20.sol/IERC20.json');
 
 async function execute(evmChain, wallet, options) {
@@ -73,7 +71,7 @@ async function execute(evmChain, wallet, options) {
     let tokenIdentifier;
     let retries = 0;
     while (!(tokenIdentifier = await client.its.getValidTokenIdentifier(tokenId))) {
-        if (retries >= 5) {
+        if (retries >= 10) {
             throw new Error('Could not deploy ESDT on MultiversX');
         }
 

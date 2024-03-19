@@ -19,7 +19,7 @@ npm run build-multiversx
 
 3. Run Elasticsearch
 
-`dcker-compose up -d` (in this folder)
+`docker-compose up -d` (in this folder)
 
 4. Create & run a MultiversX Localnet
 
@@ -35,11 +35,19 @@ You will now have `localnet` folder populate with the subfolders `validator00`, 
 Copy the [external.toml](external.toml) from this folder into all the validators `config` folder (eg full path: `.multiversx/localnet/validator00/config`)
 and overwrite the existing file.
 
+```bash
+cd ..
+cp external.toml .multiversx/localnet/validator00/config/
+cp external.toml .multiversx/localnet/validator01/config/
+cp external.toml .multiversx/localnet/validator02/config/
+```
+
 This will connect MultiversX nodes to Elasticsearch to index events used by the MultiversXRelayer.
 
 Then start the localnet: (wait a bit afterwards for everything to initialize)
 
 ```bash
+cd .multiversx
 mxpy localnet start
 ````
 
@@ -55,4 +63,8 @@ Wait for all the contracts to be successfully deployed.
 
 ## Basic
 
--   [call-contract](call-contract/)
+- [call-contract](call-contract/)
+
+## ITS
+
+- [its-interchain-token](its-interchain-token/)

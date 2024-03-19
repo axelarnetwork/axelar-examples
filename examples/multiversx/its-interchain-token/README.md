@@ -15,7 +15,7 @@ Make sure you've already followed the following steps:
 To execute the example, use the following command:
 
 ```bash
-npm run execute evm/its-interchain-token local ${srcChain} ${destChain} ${name} ${symbol} ${decimals} ${amount} ${salt}
+npm run execute multiversx/its-interchain-token local ${srcChain} ${destChain} ${name} ${symbol} ${decimals} ${amount} ${salt}
 ```
 
 ### Parameters
@@ -28,7 +28,7 @@ npm run execute evm/its-interchain-token local ${srcChain} ${destChain} ${name} 
 
 ## Example
 
-This example deploys the an Interchain Token ["My Token" "MT" 12] on a local network and sends 1234 of it from Avalanche to multiversx.
+This example deploys an Interchain Token ["My Token" "MT" 12] on a local network and sends 1234 of it from Avalanche to multiversx.
 
 ```bash
 npm run execute multiversx/its-interchain-token local "Avalanche" "multiversx" "My Token" "MT" 12 1234 0xa457d6C043b7288454773321a440BA8866D47f96D924D4C38a50b2b0698fae46
