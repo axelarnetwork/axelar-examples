@@ -27,7 +27,6 @@ contract CustomToken is InterchainTokenStandard, ERC20, Minter {
         decimals_ = decimalsValue;
         interchainTokenService_ = interchainTokenServiceAddress;
 
-        _addMinter(interchainTokenService_);
         _addMinter(msg.sender);
     }
 
@@ -73,6 +72,10 @@ contract CustomToken is InterchainTokenStandard, ERC20, Minter {
      */
     function burn(address account, uint256 amount) external onlyRole(uint8(Roles.MINTER)) {
         _burn(account, amount);
+    }
+
+    function addMinter(address minter) external {
+        _addMinter(minter);
     }
 
     /**
