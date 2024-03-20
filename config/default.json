@@ -3,6 +3,6 @@
         "enabled": false
     },
     "multiversx": {
-        "enabled": true
+        "enabled": false
     }
 }
