@@ -7,6 +7,7 @@ const {
     getExamplePath,
     getWallet,
     getEVMChains,
+    executeMultiversXExample
 } = require('./libs');
 
 const exampleName = process.argv[2];
@@ -37,4 +38,7 @@ if (exampleName.split('/')[0] === 'evm') {
 } else if (exampleName.split('/')[0] === 'cosmos') {
     const chains = getEVMChains(env);
     executeCosmosExample(env, chains, args, wallet, example);
+} else if (exampleName.split('/')[0] === 'multiversx') {
+    const chains = getEVMChains(env);
+    executeMultiversXExample(chains, args, wallet, example);
 }

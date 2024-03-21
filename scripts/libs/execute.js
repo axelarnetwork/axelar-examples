@@ -38,6 +38,28 @@ async function executeCosmosExample(_env, chains, args, wallet, example) {
     });
 }
 
+async function executeMultiversXExample(chains, args, wallet, example) {
+    const evmChain = getSourceChain(chains, args, example.sourceChain);
+
+    evmChain.provider = getDefaultProvider(evmChain.rpc);
+    const connectedWallet = wallet.connect(evmChain.provider);
+
+    // Initialize contracts to chain object.
+    deserializeContract(evmChain, connectedWallet);
+
+    // Recover axelar contracts to chain object.
+    evmChain.gateway = new Contract(evmChain.gateway, AxelarGatewayContract.abi, connectedWallet);
+    evmChain.gasService = new Contract(evmChain.gasService, AxelarGasServiceContract.abi, connectedWallet);
+
+    const tokenAddress = await evmChain.gateway.tokenAddresses('aUSDC');
+    evmChain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);
+
+    await example.execute(evmChain, wallet, {
+        calculateBridgeFee,
+        args,
+    });
+}
+
 /**
  * Execute an example script. The example script must have an `execute` function.
  * @param {*} env - The environment to execute on.
@@ -53,18 +75,18 @@ async function executeEVMExample(env, chains, args, wallet, example) {
 
         // Initialize contracts to chain object.
         deserializeContract(chain, connectedWallet);
-        
+
         // Recover axelar contracts to chain object.
         chain.gateway = new Contract(chain.gateway, AxelarGatewayContract.abi, connectedWallet);
         chain.gasService = new Contract(chain.gasService, AxelarGasServiceContract.abi, connectedWallet);
         const tokenAddress = await chain.gateway.tokenAddresses('aUSDC');
         chain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);
     }
-    
+
     // Get source and destination chains.
     const source = getSourceChain(chains, args, example.sourceChain);
     const destination = getDestChain(chains, args, example.destinationChain);
-    
+
     // Listen for GMP events on testnet for printing an Axelarscan link for tracking.
     const startBlockNumber = await source.provider.getBlockNumber();
     listenForGMPEvent(env, source, startBlockNumber);
@@ -159,6 +181,7 @@ function listenForGMPEvent(env, source, startBlockNumber) {
 }
 
 module.exports = {
+    executeMultiversXExample,
     executeEVMExample,
     executeCosmosExample,
 };

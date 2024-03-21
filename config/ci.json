@@ -1,5 +1,8 @@
 {
     "cosmos": {
         "enabled": false
+    },
+    "multiversx": {
+        "enabled": false
     }
 }

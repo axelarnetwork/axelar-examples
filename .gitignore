@@ -15,3 +15,5 @@ aptos-artifacts
 chain-config/*.json
 .aptos
 !./**/artifacts/send_receive.wasm
+
+.multiversx
