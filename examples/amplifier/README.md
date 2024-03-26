@@ -27,14 +27,14 @@ There are two endpoints that can be used for generic commands and events:
 To broadcast a command, use the following:
 
 ```bash
-node ./endpoints/broadcast.js \
+$ node amplifier broadcast \
 --address <cestination contract> \
 --payload <execute message>
 ```
 For example, call `distribute_rewards()` on the `Rewards` contract to distribute rewards:
 
 ```bash
-$ node ./endpoints/broadcast.js \
+$ node ampifier broadcast \
 --address axelar1wkwy0xh89ksdgj9hr347dyd2dw7zesmtrue6kfzyml4vdtz6e5ws2pvc5e \
 --payload '{"distribute_rewards":{"pool_id":{"chain_name":"fantom","contract":"axelar1ufs3tlq4umljk0qfe8k5ya0x6hpavn897u2cnf9k0en9jr7qarqqa9263g"},"epoch_count":1000}}'
 Broadcasting message:
@@ -48,13 +48,13 @@ Message sent for broadcast
 To get all wasm events emitted on the Axelar network, run:
 
 ```bash
-node ./endpoints/subscribe-to-wasm-events.js
+node amplifier subscribe-to-wasm-events
 ```
 
 You can optionally specify a `start-height` to catch events that were emitted at a previous time with the `--start-height` flag. It is set to `0` by default, which means that subscription starts from the current tip of the chain:
 
 ```
-$ node ./endpoints/subscribe-to-wasm-events.js --start-height 221645
+$ node amplifier subscribe-to-wasm-events --start-height 221645
 Subscribing to events starting from block: 221645
 Connecting to server at localhost:50051
 Event: {
@@ -89,7 +89,7 @@ The following endpoints are available to facilitate GMP calls:
 Given a transaction relayed on the source chain, the `verify` command is called as follows:
 
 ``` bash
-node ./endpoints/verify.js \
+node amplifier verify \
 --id 0x02293467b9d6e1ce51d8ac0fa24e9a30fb95b5e1e1e18c26c8fd737f904b564c:4 \
 --source-chain avalanche \
 --source-address 0x90AD61b0FaC683b23543Ed39B8E3Bd418D6CcBfe \
@@ -127,7 +127,7 @@ where
 After a few seconds, the `verify` command will exit displaying the `id`, and or an error if any:
 
 ```bash
-node ./endpoints/verify.js --id 0x02293467b9d6e1ce51d8ac0fa24e9a30fb95b5e1e1e18c26c8fd737f904b564c:4 --source-chain avalanche --source-address 0x90AD61b0FaC683b23543Ed39B8E3Bd418D6CcBfe --destination-chain fantom --destination-address 0x9B35d37a8ebCb1d744ADdEC47CA2a939e811B638 --payload 00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000f68656c6c6f206176616c616e63686500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000  
+node amplifier verify --id 0x02293467b9d6e1ce51d8ac0fa24e9a30fb95b5e1e1e18c26c8fd737f904b564c:4 --source-chain avalanche --source-address 0x90AD61b0FaC683b23543Ed39B8E3Bd418D6CcBfe --destination-chain fantom --destination-address 0x9B35d37a8ebCb1d744ADdEC47CA2a939e811B638 --payload 00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000f68656c6c6f206176616c616e63686500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000  
 Connecting to server at localhost:50051
 Verifying message: {
   message: {
@@ -147,7 +147,7 @@ Success verification for 0x02293467b9d6e1ce51d8ac0fa24e9a30fb95b5e1e1e18c26c8fd7
 After a verification is initiated and once all internal processes (verifying, routing messages to the destination gateway, and constructing proof) are done on the Axelar network, a `signing-completed` event is emitted which contains a `session-id`. This `session-id` can be used to query the proof from the Axelar chain and return the execute data that need to be relayed on the destination chain. Do this by running `subscribe-to-approvals`:
 
 ```bash
-node ./endpoints/subscribe-to-approvals.js \
+node amplifer subscribe-to-approvals \
 --chain fantom \
 --start-height <start-height> # optional
 ```
@@ -158,7 +158,7 @@ node ./endpoints/subscribe-to-approvals.js \
 For example:
 
 ```bash
-$ node ./endpoints/subscribe-to-approvals.js -c fantom -s 221645
+$ node amplifier subscribe-to-approvals -c fantom -s 221645
 Subscribing to approvals starting from block: 221645 on chain: fantom
 Connecting to server at localhost:50051
 chain: fantom
@@ -172,7 +172,7 @@ execute data: 09c5eabe0000000000000000000000000000000000000000000000000000000000
 To get the payload that was submitted by the transaction on the source chain, use `get-payload`:
 
 ```bash
-$ node ./endpoints/get-payload.js --hash 0xa9b070ad799e19f1166fdbf4524b684f8026df510fe6a7770f949ad54047098c
+$ node amplifier get-payload --hash 0xa9b070ad799e19f1166fdbf4524b684f8026df510fe6a7770f949ad54047098c
 Getting payload for payload hash a9b070ad799e19f1166fdbf4524b684f8026df510fe6a7770f949ad54047098c
 Connecting to server at localhost:50051
 Payload:
