@@ -6,7 +6,6 @@ import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contract
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 
-
 /**
  * @title CallContract
  * @notice Send a message from chain A to chain B and stores gmp message
@@ -20,14 +19,13 @@ contract CallContract is AxelarExecutable {
     event Executed(string _from, string _message);
 
     /**
-     * 
+     *
      * @param _gateway address of axl gateway on deployed chain
      * @param _gasReceiver address of axl gas service on deployed chain
      */
     constructor(address _gateway, address _gasReceiver) AxelarExecutable(_gateway) {
         gasService = IAxelarGasService(_gasReceiver);
     }
-
 
     /**
      * @notice Send message from chain A to chain B
@@ -57,15 +55,11 @@ contract CallContract is AxelarExecutable {
     /**
      * @notice logic to be executed on dest chain
      * @dev this is triggered automatically by relayer
-     * @param _sourceChain blockchain where tx is originating from 
+     * @param _sourceChain blockchain where tx is originating from
      * @param _sourceAddress address on src chain where tx is originating from
      * @param _payload encoded gmp message sent from src chain
      */
-    function _execute(
-        string calldata _sourceChain,
-        string calldata _sourceAddress,
-        bytes calldata _payload
-    ) internal override {
+    function _execute(string calldata _sourceChain, string calldata _sourceAddress, bytes calldata _payload) internal override {
         (message) = abi.decode(_payload, (string));
         sourceChain = _sourceChain;
         sourceAddress = _sourceAddress;

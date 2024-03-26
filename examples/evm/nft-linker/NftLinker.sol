@@ -105,6 +105,7 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
         //Pay for gas. We could also send the contract call here but then the _sourceAddress will be that of the gas receiver which is a problem later.
         gasService.payNativeGasForContractCall{ value: msg.value }(address(this), _destinationChain, stringAddress, payload, msg.sender);
         //Call remote contract.
+
         gateway.callContract(_destinationChain, stringAddress, payload);
     }
 
@@ -127,9 +128,9 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
         //If this is the original chain then we give the NFT locally.
         if (keccak256(bytes(originalChain)) == keccak256(bytes(chainName))) {
             IERC721(operator).transferFrom(address(this), destinationAddress, tokenId);
-            //Otherwise we need to mint a new one.
+            //Else we need to mint a new one.
         } else {
-            // //We need to save all the relevant information.
+            //We need to save all the relevant information.
             bytes memory originalData = abi.encode(originalChain, operator, tokenId, tokenURI);
             //Avoids _tokenId collisions.
             uint256 newTokenId = uint256(keccak256(originalData));

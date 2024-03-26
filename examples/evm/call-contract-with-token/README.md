@@ -21,6 +21,11 @@ The aforementioned command pertains to specifying the intended environment for a
 
 An example of its usage is demonstrated as follows: `npm run deploy evm/call-contract-with-token local` or `npm run deploy evm/call-contract-with-token testnet`.
 
+### Test
+
+`cd` into `evm` folder
+Run the command ` npx hardhat test call-contract-with-token/tests/call-contract-with-token.test.js`
+
 ### Execution
 
 To execute the example, use the following command:

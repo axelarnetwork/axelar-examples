@@ -23,6 +23,11 @@ An example of its usage is demonstrated as follows: `npm run deploy evm/nft-link
 
 A single NFT is minted to the deployer (`0xBa86A5719722B02a5D5e388999C25f3333c7A9fb`) on each chain.
 
+### Test
+
+`cd` into `evm` folder
+Run the command `npx hardhat test nft-linker/tests/NftLinker.test.js`
+
 ## Execution
 
 To execute the NFT Linker example, use the following command:

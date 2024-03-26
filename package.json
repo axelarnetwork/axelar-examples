@@ -39,6 +39,9 @@
         "uuid": "^8.3.2"
     },
     "devDependencies": {
+        "@nomicfoundation/hardhat-chai-matchers": "^1.0.0",
+        "@nomiclabs/hardhat-ethers": "^2.2.3",
+        "chai": "^4.4.1",
         "eslint-config-richardpringle": "^2.0.0",
         "hardhat": "^2.9.9",
         "hardhat-gas-reporter": "^1.0.8",
