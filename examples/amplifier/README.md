@@ -34,7 +34,7 @@ $ node amplifier broadcast \
 For example, call `distribute_rewards()` on the `Rewards` contract to distribute rewards:
 
 ```bash
-$ node ampifier broadcast \
+$ node amplifier broadcast \
 --address axelar1wkwy0xh89ksdgj9hr347dyd2dw7zesmtrue6kfzyml4vdtz6e5ws2pvc5e \
 --payload '{"distribute_rewards":{"pool_id":{"chain_name":"fantom","contract":"axelar1ufs3tlq4umljk0qfe8k5ya0x6hpavn897u2cnf9k0en9jr7qarqqa9263g"},"epoch_count":1000}}'
 Broadcasting message:
