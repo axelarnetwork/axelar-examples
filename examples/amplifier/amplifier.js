@@ -1,9 +1,9 @@
 const commander = require('commander');
 const { broadcast } = require('./endpoints/broadcast.js');
-const { getPayload } = require('./endpoints/get-payload');
-const { subscribe_to_approvals } = require('./endpoints/subscribe-to-approvals');
-const { subscribe_to_wasm_events } = require('./endpoints/subscribe-to-wasm-events');
-const { verify } = require('./endpoints/verify');
+const { getPayload } = require('./endpoints/get-payload.js');
+const { subscribe_to_approvals } = require('./endpoints/subscribe-to-approvals.js');
+const { subscribe_to_wasm_events } = require('./endpoints/subscribe-to-wasm-events.js');
+const { verify } = require('./endpoints/verify.js');
 
 const program = new commander.Command();
 
