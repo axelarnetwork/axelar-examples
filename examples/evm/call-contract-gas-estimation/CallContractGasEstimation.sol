@@ -15,6 +15,7 @@ contract CallContractGasEstimation is AxelarExecutable {
     string public sourceChain;
     string public sourceAddress;
     IAxelarGasService public immutable gasService;
+    uint256 public constant GAS_LIMIT = 200000;
 
     event Executed(string _from, string _message);
 
@@ -41,15 +42,13 @@ contract CallContractGasEstimation is AxelarExecutable {
     ) external payable {
         require(msg.value > 0, 'Gas payment is required');
 
-        uint256 gasLimit = 200000;
-
         bytes memory payload = abi.encode(_message);
         gasService.payGas{ value: msg.value }(
             address(this),
             destinationChain,
             destinationAddress,
             payload,
-            gasLimit,
+            GAS_LIMIT,
             true,
             msg.sender,
             new bytes(0)

@@ -1,5 +1,6 @@
 'use strict';
 
+const { toUtf8Bytes } = require('ethers/lib/utils');
 const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
@@ -27,10 +28,17 @@ async function execute(chains, wallet, options) {
     console.log('--- Initially ---');
     await logValue();
 
-    const fee = await calculateBridgeFee(source, destination);
+    const gasLimit = await source.contract.GAS_LIMIT();
+
+    let fee = await source.gasService.estimateGasFee(destination.name, destination.contract.address, toUtf8Bytes(message), gasLimit, '0x');
+
+    // TODO make sure gas info is set in the local-dev so on-chain gas estimation can work for the tests
+    if (fee.toNumber() === 0) {
+        fee = await calculateBridgeFee(source, destination);
+    }
 
     const tx = await source.contract.setRemoteValue(destination.name, destination.contract.address, message, {
-        value: Math.ceil(fee),
+        value: fee,
     });
     await tx.wait();
 
