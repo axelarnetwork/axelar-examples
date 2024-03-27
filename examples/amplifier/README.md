@@ -1,6 +1,9 @@
 ## Introduction
 
-This repo provides the code for interacting with the Amplifier Relayer API to relay transactions to the Axelar network and listen to Axelar events.
+This repo provides the code for interacting with the Amplifier Relayer API to relay transactions to the Axelar network and listen to Axelar events. 
+
+For a visual of the flow of an outgoing message see [outgoing msg](/images/Outgoing-Relayer.png)
+For a visual of the flow of an inbound message see [inbound msg](/images/Inbound-Relayer.png)
 
 ## Setup
 
@@ -28,7 +31,7 @@ To broadcast a command, use the following:
 
 ```bash
 $ node amplifier broadcast \
---address <cestination contract> \
+--address <destination contract> \
 --payload <execute message>
 ```
 For example, call `distribute_rewards()` on the `Rewards` contract to distribute rewards:
@@ -74,7 +77,7 @@ Event: {
 }
 ```
 
-Every event is includes a `type` field that specifies the type of the event, an `attributes` field with all relevant information, and a `height` event that specifies the height emitted.
+Every event includes a `type` field that specifies the type of the event, an `attributes` field with all relevant information, and a `height` event that specifies the height emitted.
 
 ## General Message Passing
 
