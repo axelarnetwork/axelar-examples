@@ -2,38 +2,37 @@
 pragma solidity 0.8.9;
 
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
-import { AxelarValuedExpressExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/express/AxelarValuedExpressExecutable.sol';
+import { AxelarExpressExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/express/AxelarExpressExecutable.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol';
 
-contract CallContractWithTokenExpress is AxelarValuedExpressExecutable {
+contract CallContractWithValuedExpress is AxelarExpressExecutable {
     IAxelarGasService public immutable gasService;
 
-    constructor(address gateway_, address gasReceiver_) AxelarValuedExpressExecutable(gateway_) {
+    constructor(address _gateway, address _gasReceiver) AxelarExpressExecutable(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
     }
 
     function sendToMany(
-        string memory destinationChain,
-        string memory destinationAddress,
-        address[] calldata destinationAddresses,
-        string memory symbol,
-        uint256 amount
+        string memory _destinationChain,
+        string memory _destinationAddress,
+        address[] calldata _destinationAddresses,
+        string memory _symbol,
+        uint256 _amount
     ) external payable {
-        address tokenAddress = gateway.tokenAddresses(symbol);
-        IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
-        IERC20(tokenAddress).approve(address(gateway), amount);
-        bytes memory payload = abi.encode(destinationAddresses);
+
+
+
+
+        bytes memory valuedMsg = _deriveMsgValueForNonGatewayTokenValueTransfer(symbol, amount)
         if (msg.value > 0) {
-            gasService.payNativeGasForContractCallWithToken{ value: msg.value }(
+            gasService.payNativeGasForContractCall{ value: msg.value }(
                 address(this),
                 destinationChain,
                 destinationAddress,
                 payload,
-                symbol,
-                amount,
                 msg.sender
             );
         }
@@ -43,9 +42,9 @@ contract CallContractWithTokenExpress is AxelarValuedExpressExecutable {
     function _executeWithToken(
         string calldata,
         string calldata,
-        bytes calldata payload,
-        string calldata tokenSymbol,
-        uint256 amount
+        bytes calldata _payload,
+        string calldata _tokenSymbol,
+        uint256 _amount
     ) internal override {
         address[] memory recipients = abi.decode(payload, (address[]));
         address tokenAddress = gateway.tokenAddresses(tokenSymbol);
@@ -56,7 +55,8 @@ contract CallContractWithTokenExpress is AxelarValuedExpressExecutable {
         }
     }
 
-    function contractId() external pure returns (bytes32) {
-        return keccak256('distribution-proxy');
+    function _deriveMsgValueForNonGatewayTokenValueTransfer(string memory _symbol, uint256 _amount) internal returns (bytes valueToBeTransferred){
+        address tokenAddress = gateway.tokenAddresses(_symbol);
+        valueToBeTransferred = abi.encode(tokenAddress, _amount);
     }
 }
