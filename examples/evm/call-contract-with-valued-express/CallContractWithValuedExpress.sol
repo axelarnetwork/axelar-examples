@@ -11,52 +11,46 @@ import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/up
 contract CallContractWithValuedExpress is AxelarExpressExecutable {
     IAxelarGasService public immutable gasService;
 
-    constructor(address _gateway, address _gasReceiver) AxelarExpressExecutable(gateway_) {
-        gasService = IAxelarGasService(gasReceiver_);
+    constructor(address _gateway, address _gasReceiver) AxelarExpressExecutable(_gateway) {
+        gasService = IAxelarGasService(_gasReceiver);
     }
 
-    function sendToMany(
+    function sendValuedMessage(
         string memory _destinationChain,
         string memory _destinationAddress,
-        address[] calldata _destinationAddresses,
         string memory _symbol,
-        uint256 _amount
+        uint256 _amount,
+        address _receiver
     ) external payable {
-
-
-
-
-        bytes memory valuedMsg = _deriveMsgValueForNonGatewayTokenValueTransfer(symbol, amount)
+        bytes memory valuedMsg = _deriveMsgValueForNonGatewayTokenValueTransfer(_symbol, _amount, _receiver);
         if (msg.value > 0) {
             gasService.payNativeGasForContractCall{ value: msg.value }(
                 address(this),
-                destinationChain,
-                destinationAddress,
-                payload,
+                _destinationChain,
+                _destinationAddress,
+                valuedMsg,
                 msg.sender
             );
         }
-        gateway.callContract(destinationChain, destinationAddress, payload);
+        gateway.callContract(_destinationChain, _destinationAddress, valuedMsg);
     }
 
-    function _executeWithToken(
-        string calldata,
-        string calldata,
-        bytes calldata _payload,
-        string calldata _tokenSymbol,
-        uint256 _amount
-    ) internal override {
-        address[] memory recipients = abi.decode(payload, (address[]));
-        address tokenAddress = gateway.tokenAddresses(tokenSymbol);
-
-        uint256 sentAmount = amount / recipients.length;
-        for (uint256 i = 0; i < recipients.length; i++) {
-            IERC20(tokenAddress).transfer(recipients[i], sentAmount);
-        }
+    function _execute(string calldata, string calldata, bytes calldata _payload) internal override {
+        // abi.decode()
     }
 
-    function _deriveMsgValueForNonGatewayTokenValueTransfer(string memory _symbol, uint256 _amount) internal returns (bytes valueToBeTransferred){
+    function contractCallValue(
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload
+    ) public view virtual returns (address tokenAddress, uint256 value) {}
+
+    function _deriveMsgValueForNonGatewayTokenValueTransfer(
+        string memory _symbol,
+        uint256 _amount,
+        address _receiver
+    ) internal returns (bytes memory valueToBeTransferred) {
         address tokenAddress = gateway.tokenAddresses(_symbol);
-        valueToBeTransferred = abi.encode(tokenAddress, _amount);
+        valueToBeTransferred = abi.encode(tokenAddress, _amount, _receiver);
     }
 }
