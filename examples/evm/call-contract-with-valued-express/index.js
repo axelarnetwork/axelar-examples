@@ -1,10 +1,6 @@
 const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
-const { IInterchainTokenService, IInterchainTokenFactory } = require('@axelar-network/axelar-local-dev/dist/contracts');
-const { Contract } = require('ethers');
-const { interchainTransfer } = require('../../../scripts/libs/its-utils');
-const { keccak256, defaultAbiCoder } = require('ethers/lib/utils');
 const CallContractWithValuedExpress = rootRequire(
     './artifacts/examples/evm/call-contract-with-valued-express/CallContractWithValuedExpress.sol/CallContractWithValuedExpress.json',
 );
@@ -15,54 +11,60 @@ async function deploy(chain, wallet) {
     console.log(`Deployed CallContractWithTokenExpress for ${chain.name} at ${chain.callContractWithValuedExpress.address}.`);
 }
 
-// async function execute(chains, wallet, options) {
-//     const args = options.args || [];
-//     const { source, destination, calculateBridgeFee } = options;
+async function execute(chains, wallet, options) {
+    const args = options.args || [];
+    const { source, destination, calculateBridgeExpressFee } = options;
 
-//     const name = args[2] || 'Interchain Token';
-//     const symbol = args[3] || 'IT';
-//     const decimals = args[4] || 18;
-//     const amount = args[5] || 1000;
-//     const salt = args[6] || keccak256(defaultAbiCoder.encode(['uint256', 'uint256'], [process.pid, process.ppid]));
+    // Get the accounts to send to.
+    const accounts = args.slice(3);
 
-//     const fee = await calculateBridgeFee(source, destination);
+    // Calculate the express fee for the bridge.
+    const expressFee = await calculateBridgeExpressFee(source, destination);
 
-//     const destinationIts = new Contract(destination.interchainTokenService, IInterchainTokenService.abi, wallet.connect(destination.provider));
-//     const sourceFactory = new Contract(source.interchainTokenFactory, IInterchainTokenFactory.abi, wallet.connect(source.provider));
+    // Get the balance of the first account.
+    const initialBalance = await destination.usdc.balanceOf(accounts[0]);
 
-//     const tokenId = await sourceFactory.interchainTokenId(wallet.address, salt);
+    // Get the amount to send.
+    const amount = Math.floor(parseFloat(args[2])) * 1e6 || 10e6;
 
-//     console.log(`Deploying interchain token [${name}, ${symbol}, ${decimals}] at ${source.name}`);
-//     await (await sourceFactory.deployInterchainToken(
-//         salt,
-//         name,
-//         symbol,
-//         decimals,
-//         amount,
-//         wallet.address,
-//     )).wait();
+    async function logAccountBalances() {
+        for (const account of accounts) {
+            console.log(`${account} has ${(await destination.usdc.balanceOf(account)) / 1e6} aUSDC on ${destination.name}`);
+        }
+    }
 
-//     console.log(`Deploying remote interchain token from ${source.name} to ${destination.name}`);
-//     await (await sourceFactory.deployRemoteInterchainToken(
-//         '',
-//         salt,
-//         wallet.address,
-//         destination.name,
-//         fee,
-//         {value: fee},
-//     )).wait();
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-//     const destinationTokenAddress = await destinationIts.interchainTokenAddress(tokenId);
+    console.log('--- Initially ---');
 
-//     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-//     while (await destination.provider.getCode(destinationTokenAddress) == '0x') {
-//         await sleep(1000);
-//     }
+    // Log the balances of the accounts.
+    await logAccountBalances();
 
-//     await interchainTransfer(source, destination, wallet, tokenId, amount, fee);
-// }
+    // Send tokens to the distribution contract.
+    const sendTx = await source.callContractWithValuedExpress.sendValuedMessage(
+        destination.name,
+        destination.callContractWithValuedExpress.address,
+        'aUSDC',
+        amount,
+        accounts[0],
+        {
+            value: expressFee,
+        },
+    );
+
+    console.log('Sent valued msg to destination contract:', sendTx.hash);
+
+    // Wait for the distribution to complete by checking the balance of the first account.
+    while ((await destination.usdc.balanceOf(accounts[0])).eq(initialBalance)) {
+        await sleep(1000);
+    }
+
+    console.log('--- After ---');
+    // Log the balances of the accounts.
+    await logAccountBalances();
+}
 
 module.exports = {
     deploy,
-    // execute,
+    execute,
 };

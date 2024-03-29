@@ -2,16 +2,16 @@
 pragma solidity 0.8.9;
 
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
-import { AxelarExpressExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/express/AxelarExpressExecutable.sol';
+import { AxelarValuedExpressExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/express/AxelarValuedExpressExecutable.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol';
 
-contract CallContractWithValuedExpress is AxelarExpressExecutable {
+contract CallContractWithValuedExpress is AxelarValuedExpressExecutable {
     IAxelarGasService public immutable gasService;
 
-    constructor(address _gateway, address _gasReceiver) AxelarExpressExecutable(_gateway) {
+    constructor(address _gateway, address _gasReceiver) AxelarValuedExpressExecutable(_gateway) {
         gasService = IAxelarGasService(_gasReceiver);
     }
 
@@ -36,20 +36,31 @@ contract CallContractWithValuedExpress is AxelarExpressExecutable {
     }
 
     function _execute(string calldata, string calldata, bytes calldata _payload) internal override {
-        // abi.decode()
+        (address tokenAddress, uint256 value, address reciever) = abi.decode(_payload, (address, uint256, address));
+        IERC20(tokenAddress).transfer(reciever, value);
     }
 
-    function contractCallValue(
+    function contractCallWithTokenValue(
         string calldata sourceChain,
         string calldata sourceAddress,
+        bytes calldata payload,
+        string calldata symbol,
+        uint256 amount
+    ) public view override returns (address tokenAddress, uint256 value) {}
+
+    function contractCallValue(
+        string calldata,
+        string calldata,
         bytes calldata payload
-    ) public view virtual returns (address tokenAddress, uint256 value) {}
+    ) public view virtual override returns (address tokenAddress, uint256 value) {
+        (tokenAddress, value) = abi.decode(payload, (address, uint256));
+    }
 
     function _deriveMsgValueForNonGatewayTokenValueTransfer(
         string memory _symbol,
         uint256 _amount,
         address _receiver
-    ) internal returns (bytes memory valueToBeTransferred) {
+    ) internal view returns (bytes memory valueToBeTransferred) {
         address tokenAddress = gateway.tokenAddresses(_symbol);
         valueToBeTransferred = abi.encode(tokenAddress, _amount, _receiver);
     }
