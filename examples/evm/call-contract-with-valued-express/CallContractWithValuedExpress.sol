@@ -26,11 +26,6 @@ contract CallContractWithValuedExpress is AxelarValuedExpressExecutable {
 
         bytes memory valuedMsg = _deriveMsgValueForNonGatewayTokenValueTransfer(_symbol, _amount, _receiver);
 
-        address tokenAddress = gateway.tokenAddresses(_symbol);
-
-        //burn token before minting on dest chain
-        IERC20(tokenAddress).transferFrom(msg.sender, address(0), _amount);
-
         gasService.payNativeGasForContractCall{ value: msg.value }(
             address(this),
             _destinationChain,
