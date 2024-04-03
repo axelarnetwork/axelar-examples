@@ -19,6 +19,7 @@ const examples = [
     'call-contract',
     'call-contract-with-token',
     'call-contract-with-token-express',
+    'call-contract-with-valued-express',
     'cross-chain-token',
     'deposit-address',
     'nonced-execution',
