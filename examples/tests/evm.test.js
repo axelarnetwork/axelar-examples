@@ -54,7 +54,7 @@ describe('Verify EVM Examples', function () {
             if (example.deploy) {
                 await deploy('local', chains, wallet, example);
             }
-
+       
             await executeEVMExample('local', chains, [], wallet, example);
         });
     }

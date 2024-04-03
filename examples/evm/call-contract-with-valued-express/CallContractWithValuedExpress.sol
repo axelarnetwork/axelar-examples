@@ -4,9 +4,9 @@ pragma solidity 0.8.9;
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import { AxelarValuedExpressExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/express/AxelarValuedExpressExecutable.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
-import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol';
+import { MockERC20 } from './mocks/MockERC20.sol';
 
 contract CallContractWithValuedExpress is AxelarValuedExpressExecutable {
     IAxelarGasService public immutable gasService;
@@ -18,13 +18,13 @@ contract CallContractWithValuedExpress is AxelarValuedExpressExecutable {
     function sendValuedMessage(
         string memory _destinationChain,
         string memory _destinationAddress,
-        string memory _symbol,
+        address _tokenAddr,
         uint256 _amount,
         address _receiver
     ) external payable {
         require(msg.value > 0, 'insufficient funds');
 
-        bytes memory valuedMsg = _deriveMsgValueForNonGatewayTokenValueTransfer(_symbol, _amount, _receiver);
+        bytes memory valuedMsg = _deriveMsgValueForNonGatewayTokenValueTransfer(_tokenAddr, _amount, _receiver);
 
         gasService.payNativeGasForContractCall{ value: msg.value }(
             address(this),
@@ -38,7 +38,7 @@ contract CallContractWithValuedExpress is AxelarValuedExpressExecutable {
 
     function _execute(string calldata, string calldata, bytes calldata _payload) internal override {
         (address tokenAddress, uint256 value, address reciever) = abi.decode(_payload, (address, uint256, address));
-        IERC20(tokenAddress).transfer(reciever, value);
+        MockERC20(tokenAddress).mint(reciever, value);
     }
 
     function contractCallWithTokenValue(
@@ -58,11 +58,10 @@ contract CallContractWithValuedExpress is AxelarValuedExpressExecutable {
     }
 
     function _deriveMsgValueForNonGatewayTokenValueTransfer(
-        string memory _symbol,
+        address _tokenAddr,
         uint256 _amount,
         address _receiver
-    ) internal view returns (bytes memory valueToBeTransferred) {
-        address tokenAddress = gateway.tokenAddresses(_symbol);
-        valueToBeTransferred = abi.encode(tokenAddress, _amount, _receiver);
+    ) internal pure returns (bytes memory valueToBeTransferred) {
+        valueToBeTransferred = abi.encode(_tokenAddr, _amount, _receiver);
     }
 }
