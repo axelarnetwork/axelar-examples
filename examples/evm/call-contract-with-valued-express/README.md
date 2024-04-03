@@ -1,5 +1,5 @@
 # Call Contract with Valued Express
-
+This is an example of sending an express transaction where the value is not a cross chain asset transfer using `callContractWithToken()`. Rather the value is in the `payload` of the transaction. Once the payload has been decoded and derived to a specific contract address that value can be transfered to the end receiver. 
 
 ### Deployment
 
@@ -25,7 +25,6 @@ npm run execute evm/call-contract-with-valued-express  [local|testnet] ${srcChai
 The GMP Express feature is already lived on our testnet. However, the following conditions need to be met:
 
 -   The contract address must be whitelisted by our executor service.
--   We only support `aUSDC` token and the amount must be less than 500 aUSDC.
 
 Currently, our whitelisted contract addresses for this example are:
 

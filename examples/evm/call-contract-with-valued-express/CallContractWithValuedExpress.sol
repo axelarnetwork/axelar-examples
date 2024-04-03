@@ -22,16 +22,22 @@ contract CallContractWithValuedExpress is AxelarValuedExpressExecutable {
         uint256 _amount,
         address _receiver
     ) external payable {
+        require(msg.value > 0, 'insufficient funds');
+
         bytes memory valuedMsg = _deriveMsgValueForNonGatewayTokenValueTransfer(_symbol, _amount, _receiver);
-        if (msg.value > 0) {
-            gasService.payNativeGasForContractCall{ value: msg.value }(
-                address(this),
-                _destinationChain,
-                _destinationAddress,
-                valuedMsg,
-                msg.sender
-            );
-        }
+
+        address tokenAddress = gateway.tokenAddresses(_symbol);
+
+        //burn token before minting on dest chain
+        IERC20(tokenAddress).transferFrom(msg.sender, address(0), _amount);
+
+        gasService.payNativeGasForContractCall{ value: msg.value }(
+            address(this),
+            _destinationChain,
+            _destinationAddress,
+            valuedMsg,
+            msg.sender
+        );
         gateway.callContract(_destinationChain, _destinationAddress, valuedMsg);
     }
 
