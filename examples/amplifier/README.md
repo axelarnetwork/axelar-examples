@@ -43,7 +43,51 @@ $ node amplifier broadcast \
 Broadcasting message:
 axelar1wkwy0xh89ksdgj9hr347dyd2dw7zesmtrue6kfzyml4vdtz6e5ws2pvc5e {"distribute_rewards":{"pool_id":{"chain_name":"fantom","contract":"axelar1ufs3tlq4umljk0qfe8k5ya0x6hpavn897u2cnf9k0en9jr7qarqqa9263g"},"epoch_count":1000}}
 Connecting to server at localhost:50051
-Message sent for broadcast
+Message sent for broadcast { published: true, receiptId: '862592eaadbcdb08ccd2edffd647153e' }
+```
+
+### `get-receipt`
+Each broadcast returns a `receiptId`. This id can be used to poll for the broadcast response. After a receipt id is returned, you can query the corresponding receipt for 24 hours.
+
+```bash
+node amplifier get-receipt --receipt-id <receipt id>
+```
+
+This is going to return either
+* the transaction hash, if the transaction is included in a block
+* a message indicating that the transaction has not been published yet (this usually takes up to 5-10 seconds)
+* an error indicating the transaction failed to publish, or execute
+
+For example:
+
+```bash
+# succesful broadcast
+$ node amplifier get-receipt -r 53992509aa3267cc7b2bb8a1bfb21d03
+Getting receipt with id: 53992509aa3267cc7b2bb8a1bfb21d03
+Connecting to server at localhost:50051
+Receipt:
+87AECB2151F80616DA2CD237E9EE38DC9558FFBBC93A51DF3B3BE8BB89F0A5EF
+```
+
+```bash
+# unknown receipt id
+Getting receipt with id: random-id
+Connecting to server at localhost:50051
+Error Error: ...
+  code: 2,
+  details: 'receipt id not found',
+}
+```
+
+```bash
+# transaction failed to execute
+$ node amplifier get-receipt -r 5b0726f7cc6504626023328f62a7454d
+Getting receipt with id: 5b0726f7cc6504626023328f62a7454d
+Connecting to server at localhost:50051
+Error Error: ...
+  code: 2,
+  details: "transaction failed: broadcast tx failed: rpc error: code = Unknown desc = rpc error: code = Unknown desc = failed to execute message; message index: 0: rewards pool balance insufficient: execute wasm contract failed [CosmWasm/wasmd@v0.33.0/x/wasm/keeper/keeper.go:371] With gas wanted: '0' and gas used: '1506569' : unknown request",
+}
 ```
 
 ### `subscribe-to-wasm-events`
