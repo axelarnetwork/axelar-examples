@@ -8,11 +8,11 @@ For a visual of the flow of an inbound message see [inbound msg](/images/Inbound
 ## Setup
 
 1. Clone this repo.
-1. Install dependencies:
+2. Install dependencies:
    ```bash
    npm install
    ```
-1. Copy `.env.example` into `.env` and set up the following environment variables:
+3. Copy `.env.example` into `.env` and set up the following environment variables:
    ```bash
    HOST=...
    PORT=...
@@ -23,7 +23,8 @@ For a visual of the flow of an inbound message see [inbound msg](/images/Inbound
 There are two endpoints that can be used for generic commands and events:
 
 1. `broadcast` -- Sends a command to get executed as a wasm message on the network
-1. `subscribe-to-wasm-events` -- Subscribes to all wasm events emitted on the network
+2. `get-receipt` -- Returns the receipt given a receipt-id for a sent message
+3. `subscribe-to-wasm-events` -- Subscribes to all wasm events emitted on the network
 
 ### `broadcast`
 
