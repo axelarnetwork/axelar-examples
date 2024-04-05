@@ -62,8 +62,7 @@ export async function sendTokenToDestChain(
     EvmChain.ETHEREUM,
     EvmChain.AVALANCHE,
     700000,
-
-    2
+    "auto"
   );
 
   // Send the token
