@@ -5,6 +5,7 @@ const CallContractWithValuedExpress = rootRequire(
     './artifacts/examples/evm/call-contract-with-valued-express/CallContractWithValuedExpress.sol/CallContractWithValuedExpress.json',
 );
 const MockERC20 = rootRequire('./artifacts/examples/evm/call-contract-with-valued-express/mocks/MockERC20.sol/MockERC20.json');
+
 async function deploy(chain, wallet) {
     console.log(`Deploying Call Contract Valued Express for ${chain.name}.`);
     chain.callContractWithValuedExpress = await deployContract(wallet, CallContractWithValuedExpress, [chain.gateway, chain.gasService]);
@@ -18,7 +19,7 @@ async function execute(chains, wallet, options) {
     const { source, destination, calculateBridgeExpressFee } = options;
 
     // Get the accounts to send to.
-    const accounts = args.slice(3);
+    const accounts = args.slice(3).length ? args.slice(3) : [wallet.address];
 
     // Calculate the express fee for the bridge.
     const expressFee = await calculateBridgeExpressFee(source, destination);
