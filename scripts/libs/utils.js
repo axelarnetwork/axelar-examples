@@ -137,9 +137,8 @@ function calculateBridgeFee(source, destination, options = {}) {
     return api.estimateGasFee(
         CHAINS.TESTNET[source.name.toUpperCase()],
         CHAINS.TESTNET[destination.name.toUpperCase()],
-        symbol || source.tokenSymbol,
-        gasLimit,
-        gasMultiplier,
+        gasLimit || 700000,
+        'auto',
     );
 }
 
@@ -157,10 +156,11 @@ async function calculateBridgeExpressFee(source, destination, options = {}) {
     const response = await api.estimateGasFee(
         CHAINS.TESTNET[source.name.toUpperCase()],
         CHAINS.TESTNET[destination.name.toUpperCase()],
+        gasLimit || 700000,
+        'auto',
         symbol || source.tokenSymbol,
-        gasLimit,
-        gasMultiplier,
-        '0',
+        undefined,
+        undefined,
         {
             showDetailedFees: true,
         },
