@@ -2,8 +2,8 @@
 
 This repo provides the code for interacting with the Amplifier Relayer API to relay transactions to the Axelar network and listen to Axelar events. 
 
-For a visual of the flow of an outgoing message see [outgoing msg](/images/Outgoing-Relayer.png)
-For a visual of the flow of an inbound message see [inbound msg](/images/Inbound-Relayer.png)
+For a visual of the flow of an outgoing message see [outgoing msg](images/Outgoing-Relayer.png)
+For a visual of the flow of an inbound message see [inbound msg](images/Inbound-Relayer.png)
 
 ## Setup
 
@@ -125,7 +125,7 @@ where
 - `destination-address` -- the address of the recipient
 - `payload` -- the transaction payload of `ContractCall` event, in bytes. The `0x` can be omitted:
 
-   ![Payload](/images/payload.png)
+   ![Payload](images/payload.png)
 
 After a few seconds, the `verify` command will exit displaying the `id`, and or an error if any:
 
@@ -184,4 +184,4 @@ Payload:
 
 - `hash` -- the payload hash
 
-![Payload hash](/images/payload-hash.png)
+![Payload hash](images/payload-hash.png)
