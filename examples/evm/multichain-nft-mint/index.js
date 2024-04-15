@@ -25,7 +25,7 @@ async function execute(chains, wallet, options) {
     const tokenId = args[3];
 
     async function logValue() {
-        console.log(`value at ${destination.name} is "${await destination.mockNFT.balanceOf(receivingAddr)}"`);
+        console.log(`balance of ${receivingAddr} at ${destination.name} is "${await destination.mockNFT.balanceOf(receivingAddr)}"`);
     }
 
     console.log('--- Initially ---');
