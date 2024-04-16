@@ -9,7 +9,7 @@ import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contr
 
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 
-contract InterchainDefi is AxelarExecutable {
+contract MultichainSwap is AxelarExecutable {
     address public wmatic; //Mumbai: 0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889
     address public weth; //Mumbai: 0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa
 

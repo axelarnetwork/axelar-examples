@@ -6,14 +6,18 @@ import { IERC20 } from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
+import '@openzeppelin/contracts/utils/Strings.sol';
 
 contract MultichainGameReceiver is AxelarExecutable {
     string[] public uniqueTokens;
 
     IAxelarGasService public immutable gasService;
 
-    constructor(address _gateway, address _gasService) AxelarExecutable(_gateway) {
+    address multichainGame;
+
+    constructor(address _gateway, address _gasService, address _game) AxelarExecutable(_gateway) {
         gasService = IAxelarGasService(_gasService);
+        multichainGame = _game;
     }
 
     function _executeWithToken(
@@ -34,14 +38,14 @@ contract MultichainGameReceiver is AxelarExecutable {
     ) internal {
         (address player, uint256 guess) = abi.decode(_payload, (address, uint256));
 
-        uint256 diceResult = (block.timestamp % 6) + 1;
-        // uint256 diceResult = 5; for testing
+        uint256 diceResult = 5; // for testing
+        // uint256 diceResult = (block.timestamp % 6) + 1;
 
         _addUniqueTokenSymbol(_tokenSymbol);
 
         bool won = guess == diceResult;
 
-        if (won) _payOutAllTokensToWinner(player, _sourceAddress, _sourceChain);
+        if (won) payOutAllTokensToWinner(player, _sourceAddress, _sourceChain);
     }
 
     function _addUniqueTokenSymbol(string memory _tokenSymbol) internal {
@@ -56,17 +60,19 @@ contract MultichainGameReceiver is AxelarExecutable {
         if (!found) uniqueTokens.push(_tokenSymbol);
     }
 
-    function _payOutAllTokensToWinner(address _player, string calldata _sourceAddress, string calldata _winnersChain) internal {
+    function payOutAllTokensToWinner(address _player, string calldata _sourceAddress, string calldata _winnersChain) public {
+        // TODO fix req statement
+        // require(msg.sender == address(this) || msg.sender == multichainGame, 'invalid sender');
         for (uint i = 0; i < uniqueTokens.length; i++) {
             string memory tokenSymbol = uniqueTokens[i];
-
             address tokenAddress = gateway.tokenAddresses(tokenSymbol);
-
             uint256 transferAmount = IERC20(tokenAddress).balanceOf(address(this));
-
-            IERC20(tokenAddress).approve(address(gateway), transferAmount);
-
-            gateway.callContractWithToken(_winnersChain, _sourceAddress, abi.encode(_player), tokenSymbol, transferAmount);
+            if (keccak256(abi.encode(_winnersChain)) == keccak256(abi.encode(Strings.toString(block.chainid)))) {
+                IERC20(tokenAddress).transfer(_player, transferAmount);
+            } else {
+                IERC20(tokenAddress).approve(address(gateway), transferAmount);
+                gateway.callContractWithToken(_winnersChain, _sourceAddress, abi.encode(_player), tokenSymbol, transferAmount);
+            }
         }
     }
 }
