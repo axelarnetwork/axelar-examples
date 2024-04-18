@@ -83,6 +83,6 @@ contract MultichainGame is AxelarExecutable {
     }
 
     function _payoutWinner(address _player, address _gameReceiver) internal {
-        MultichainGameReceiver(_gameReceiver).payOutAllTokensToWinner(_player, address(this).toString(), Strings.toString(block.chainid));
+        MultichainGameReceiver(_gameReceiver).payOutAllTokensToWinnerSameChain(_player, address(this).toString(), Strings.toString(block.chainid));
     }
 }
