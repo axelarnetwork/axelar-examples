@@ -20,6 +20,11 @@ contract MultichainGameReceiver is AxelarExecutable {
         multichainGame = _game;
     }
 
+    function payOutAllTokensToWinnerSameChain(address _player, string calldata _sourceAddress, string calldata _winnersChain) external {
+        require(msg.sender == multichainGame, 'invalid sender');
+        _payout(_player, _sourceAddress, _winnersChain);
+    }
+
     function _executeWithToken(
         string calldata _sourceChain,
         string calldata _sourceAddress,
@@ -45,7 +50,7 @@ contract MultichainGameReceiver is AxelarExecutable {
 
         bool won = guess == diceResult;
 
-        if (won) payOutAllTokensToWinner(player, _sourceAddress, _sourceChain);
+        if (won) _payOutAllTokensToWinnerInternal(player, _sourceAddress, _sourceChain);
     }
 
     function _addUniqueTokenSymbol(string memory _tokenSymbol) internal {
@@ -60,9 +65,11 @@ contract MultichainGameReceiver is AxelarExecutable {
         if (!found) uniqueTokens.push(_tokenSymbol);
     }
 
-    function payOutAllTokensToWinner(address _player, string calldata _sourceAddress, string calldata _winnersChain) public {
-        // TODO fix req statement
-        // require(msg.sender == address(this) || msg.sender == multichainGame, 'invalid sender');
+    function _payOutAllTokensToWinnerInternal(address _player, string calldata _sourceAddress, string calldata _winnersChain) internal {
+        _payout(_player, _sourceAddress, _winnersChain);
+    }
+
+    function _payout(address _player, string calldata _sourceAddress, string calldata _winnersChain) internal {
         for (uint i = 0; i < uniqueTokens.length; i++) {
             string memory tokenSymbol = uniqueTokens[i];
             address tokenAddress = gateway.tokenAddresses(tokenSymbol);
