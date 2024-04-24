@@ -12,7 +12,11 @@ For a visual of the flow of an inbound message see [inbound msg](images/Inbound-
    ```bash
    npm install
    ```
-3. Copy `.env.example` into `.env` and set up the following environment variables:
+3. Go to amplifier examples directory
+   ```
+   cd examples/amplifier
+   ```
+4. Copy `.env.example` into `.env` and set up the following environment variables:
    ```bash
    HOST=...
    PORT=...
@@ -20,7 +24,7 @@ For a visual of the flow of an inbound message see [inbound msg](images/Inbound-
 
 ## Generic endpoints
 
-There are two endpoints that can be used for generic commands and events:
+There are three endpoints that can be used for generic commands and events:
 
 1. `broadcast` -- Sends a command to get executed as a wasm message on the network
 2. `get-receipt` -- Returns the receipt given a receipt-id for a sent message
@@ -195,7 +199,7 @@ Success verification for 0x02293467b9d6e1ce51d8ac0fa24e9a30fb95b5e1e1e18c26c8fd7
 After a verification is initiated and once all internal processes (verifying, routing messages to the destination gateway, and constructing proof) are done on the Axelar network, a `signing-completed` event is emitted which contains a `session-id`. This `session-id` can be used to query the proof from the Axelar chain and return the execute data that need to be relayed on the destination chain. Do this by running `subscribe-to-approvals`:
 
 ```bash
-node amplifer subscribe-to-approvals \
+node amplifier subscribe-to-approvals \
 --chain fantom \
 --start-height <start-height> # optional
 ```
