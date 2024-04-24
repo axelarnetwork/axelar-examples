@@ -1,5 +1,6 @@
 const commander = require('commander');
 const { broadcast } = require('./endpoints/broadcast.js');
+const { getReceipt } = require('./endpoints/get-receipt.js');
 const { getPayload } = require('./endpoints/get-payload.js');
 const { subscribe_to_approvals } = require('./endpoints/subscribe-to-approvals.js');
 const { subscribe_to_wasm_events } = require('./endpoints/subscribe-to-wasm-events.js');
@@ -13,6 +14,13 @@ program
     .requiredOption("-p, --payload <payload>", "The payload of the wasm message")
     .action((options) => {
         broadcast(options.address, options.payload);
+    });
+
+program
+    .command('get-receipt')
+    .requiredOption("-r, --receipt-id <receipt id>", "The id of the receipt")
+    .action((options) => {
+        getReceipt(options.receiptId);
     });
 
 program
