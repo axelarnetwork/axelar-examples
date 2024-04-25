@@ -135,7 +135,7 @@ The following endpoints are available to facilitate GMP calls:
 1. `verify` -- triggers a verification on the source chain (routing is handled automatically)
 2. `subscribe-to-approvals` -- creates a channel to return all calls that are approved on the destination chain 
 3. `get-payload` -- queries the payload of the initial source-chain transaction by its hash
-3. `save-payload` -- stores a payload of the initial source-chain transaction and returns its hash
+4. `save-payload` -- stores a payload of the initial source-chain transaction and returns its hash
 
 ### `verify`
 
