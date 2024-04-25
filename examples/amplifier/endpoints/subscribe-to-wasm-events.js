@@ -4,7 +4,7 @@ function subscribe_to_wasm_events(startHeight) {
     console.log("Subscribing to events starting from block:", startHeight == 0 ? "latest" : startHeight);
 
     const client = newClient();
-    const call = client.SubscribeToWasmEvents({ startHeight: startHeight });
+    const call = client.SubscribeToWasmEvents(startHeight);
     call.on('data', (response) => {
         console.log("Event:", response);
     });
