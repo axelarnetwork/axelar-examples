@@ -33,7 +33,7 @@ async function execute(chains, wallet, options) {
     let fee = await source.gasService.estimateGasFee(destination.name, destination.contract.address, toUtf8Bytes(message), gasLimit, '0x');
 
     // TODO make sure gas info is set in the local-dev so on-chain gas estimation can work for the tests
-    if (fee.toNumber() === 0) {
+    if (fee.toString() === "0") {
         fee = await calculateBridgeFee(source, destination);
     }
 

@@ -21,7 +21,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@axelar-network/axelar-chains-config": "^0.1.0",
+        "@axelar-network/axelar-chains-config": "^1.2.0",
         "@axelar-network/axelar-gmp-sdk-solidity": "5.7.0",
         "@axelar-network/axelar-local-dev": "^2.3.2",
         "@axelar-network/axelar-local-dev-cosmos": "^2.3.0",
