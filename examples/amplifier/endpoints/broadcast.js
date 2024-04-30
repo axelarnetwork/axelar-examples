@@ -16,7 +16,7 @@ function broadcast(address, payload) {
         if (err) {
             console.error("Error", err);
         } else {
-            console.log("Message sent for broadcast");
+            console.log("Message sent for broadcast", response);
             process.exit(0);
         }
     });
