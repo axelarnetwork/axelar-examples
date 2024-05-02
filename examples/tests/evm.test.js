@@ -17,6 +17,7 @@ console.log = () => {};
 
 const examples = [
     'call-contract',
+    'call-contract-gas-estimation',
     'call-contract-with-token',
     'call-contract-with-token-express',
     'cross-chain-token',
