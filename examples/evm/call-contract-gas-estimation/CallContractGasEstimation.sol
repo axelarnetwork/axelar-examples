@@ -29,6 +29,29 @@ contract CallContractGasEstimation is AxelarExecutable {
     }
 
     /**
+     * @notice Estimate gas for a cross-chain contract call
+     * @param destinationChain name of the dest chain
+     * @param destinationAddress address on dest chain this tx is going to
+     * @param _message message to be sent
+     * @return gasEstimate The cross-chain gas estimate
+     */
+    function estimateGasFee(
+        string calldata destinationChain,
+        string calldata destinationAddress,
+        string calldata _message
+    ) external view returns (uint256) {
+        bytes memory payload = abi.encode(_message);
+
+        return gasService.estimateGasFee(
+            destinationChain,
+            destinationAddress,
+            payload,
+            GAS_LIMIT,
+            new bytes(0)
+        );
+    }
+
+    /**
      * @notice Send message from chain A to chain B
      * @dev message param is passed in as gmp message
      * @param destinationChain name of the dest chain (ex. "Fantom")
