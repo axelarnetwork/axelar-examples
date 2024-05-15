@@ -14,7 +14,7 @@ const env = process.argv[2] || 'testnet';
 checkEnv(env);
 
 // Get the chains for the environment.
-const allTestnetChains = Object.entries(testnetInfo).map((_, chain) => chain.name);
+const allTestnetChains = Object.entries(testnetInfo).map(([, chain]) => chain.name);
 const chains = getEVMChains(env, allTestnetChains);
 
 // Get the wallet.
@@ -28,7 +28,7 @@ async function print() {
     console.log('Native tokens:');
     await getBalances(chains, wallet.address).then((balances) => {
         for (let i = 0; i < chains.length; i++) {
-            console.log(`${chains[i].name}: ${ethers.utils.formatEther(balances[chains[i].name])} ${chains[i].tokenSymbol}`);
+            console.log(`${chains[i].name}: ${ethers.utils.formatEther(balances[chains[i].name])}`);
         }
     });
 
