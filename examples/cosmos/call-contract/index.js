@@ -78,7 +78,7 @@ async function execute(evmChain, wallet, options) {
 
     // 4. Execute "send_message_evm" message on Wasm contract
     await signingClient.execute(signingAddress, wasmContractAddress, payload, 'auto', undefined, wasmFee);
-    console.log(`\nSent message '${message}' from Wasm to ${evmChain.name}.`);
+    console.log(`\nSent message '${wasmMessage}' from Wasm to ${evmChain.name}.`);
 
     // 5. Waiting for the IBC relayer + EVM relayer to relay the message to the EVM chain
     await sleep(20);
