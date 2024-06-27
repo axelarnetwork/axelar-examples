@@ -132,15 +132,12 @@ function getDepositAddress(env, source, destination, destinationAddress, symbol)
  */
 function calculateBridgeFee(source, destination, options = {}) {
     const api = new AxelarQueryAPI({ environment: Environment.TESTNET });
-    const { gasLimit, gasMultiplier, symbol } = options;
+    const { gasLimit } = options;
 
-    return api.estimateGasFee(
-        CHAINS.TESTNET[source.name.toUpperCase()],
-        CHAINS.TESTNET[destination.name.toUpperCase()],
-        symbol || source.tokenSymbol,
-        gasLimit,
-        gasMultiplier,
-    );
+    const sourceChain = CHAINS.TESTNET[source.name.toUpperCase()] || CHAINS.TESTNET.AVALANCHE;
+    const destChain = CHAINS.TESTNET[destination.name.toUpperCase()] || CHAINS.TESTNET.FANTOM;
+
+    return api.estimateGasFee(sourceChain, destChain, gasLimit || 700000, 'auto');
 }
 
 /**
@@ -157,10 +154,11 @@ async function calculateBridgeExpressFee(source, destination, options = {}) {
     const response = await api.estimateGasFee(
         CHAINS.TESTNET[source.name.toUpperCase()],
         CHAINS.TESTNET[destination.name.toUpperCase()],
+        gasLimit || 700000,
+        'auto',
         symbol || source.tokenSymbol,
-        gasLimit,
-        gasMultiplier,
-        '0',
+        undefined,
+        undefined,
         {
             showDetailedFees: true,
         },

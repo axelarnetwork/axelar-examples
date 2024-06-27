@@ -129,7 +129,8 @@ export const ownerOf = async (chain = srcChain) => {
   for (const checkingChain of [srcChain, destChain]) {
     if (checkingChain === chain) continue;
 
-    const nftLinker = checkingChain.name === srcChain.name ? srcNftLinker : destNftLinker;
+    const nftLinker =
+      checkingChain.name === srcChain.name ? srcNftLinker : destNftLinker;
 
     try {
       const address = await nftLinker.ownerOf(newTokenId.toString());
@@ -139,9 +140,7 @@ export const ownerOf = async (chain = srcChain) => {
         tokenId: newTokenId.toString(),
         tokenURI: metadata,
       };
-    } catch (e) {
-
-    }
+    } catch (e) {}
   }
 
   return { chain: "" };
@@ -157,6 +156,8 @@ const getGasFee = async (
     ? await api.estimateGasFee(
         sourceChainName,
         destinationChainName,
+        700000,
+        "auto",
         sourceChainTokenSymbol
       )
     : 3e6;
@@ -165,8 +166,8 @@ const getGasFee = async (
 
 export function sleep(ms: number) {
   return new Promise((resolve) => {
-      setTimeout(() => {
-          resolve(null);
-      }, ms);
+    setTimeout(() => {
+      resolve(null);
+    }, ms);
   });
 }

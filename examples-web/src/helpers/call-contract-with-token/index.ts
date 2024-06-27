@@ -5,9 +5,7 @@ import {
   EvmChain,
   GasToken,
 } from "@axelar-network/axelarjs-sdk";
-import {
-  CallContractWithToken__factory as CallContractWithTokenFactory
-} from "types/factories/contracts/call-contract-with-token/contracts";
+import { CallContractWithToken__factory as CallContractWithTokenFactory } from "types/factories/contracts/call-contract-with-token/contracts";
 import {
   IAxelarGateway__factory as AxelarGatewayFactory,
   IERC20__factory as IERC20Factory,
@@ -63,9 +61,8 @@ export async function sendTokenToDestChain(
   const gasFee = await api.estimateGasFee(
     EvmChain.ETHEREUM,
     EvmChain.AVALANCHE,
-    GasToken.ETH,
     700000,
-    2
+    "auto"
   );
 
   // Send the token

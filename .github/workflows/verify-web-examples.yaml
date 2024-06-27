@@ -22,6 +22,9 @@ jobs:
               run: |
                   echo '{"cosmos": {"enabled": false}}' > config/ci.json
 
+            - name: Fix unsupported platform error for fsevents
+              run: sed -i 's/darwin/linux/g' package-lock.json
+
             - name: Install Dependencies for Cli Examples
               run: npm ci
 
