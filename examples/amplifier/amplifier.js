@@ -2,6 +2,7 @@ const commander = require('commander');
 const { broadcast } = require('./endpoints/broadcast.js');
 const { getReceipt } = require('./endpoints/get-receipt.js');
 const { getPayload } = require('./endpoints/get-payload.js');
+const { savePayload } = require('./endpoints/save-payload.js');
 const { subscribe_to_approvals } = require('./endpoints/subscribe-to-approvals.js');
 const { subscribe_to_wasm_events } = require('./endpoints/subscribe-to-wasm-events.js');
 const { verify } = require('./endpoints/verify.js');
@@ -31,6 +32,13 @@ program
     });
 
 program
+    .command('save-payload')
+    .requiredOption('--payload, <payload>', 'payload')
+    .action((options) => {
+        savePayload(options.payload);
+    });
+
+program
     .command('subscribe-to-approvals')
     .requiredOption("-c, --chain <chain>", "The chain to subscribe to")
     .option("-s, --start-height <start height>", "The block height to start from (0 = latest)", parseInt, 0)
@@ -47,7 +55,7 @@ program
 
 program
     .command('verify')
-    .requiredOption("-i, --id <transaction id>", "The id of the transaction (txHash:logIndex)")
+    .requiredOption("-i, --id <transaction id>", "The id of the transaction (txHash-logIndex)")
     .requiredOption("--source-chain <source chain>", "The source chain")
     .requiredOption("--source-address <source address>", "The source address")
     .requiredOption("--destination-chain <destination chain>", "The destination chain")

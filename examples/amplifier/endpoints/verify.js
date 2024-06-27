@@ -3,8 +3,8 @@ const newClient = require('../grpc/client');
 function verify(id, sourceChain, sourceAddress, destinationChain, destinationAddress, payload) {
     console.log("Verifying message with id, sourceChain, sourceAddress, destinationChain, destinationAddress, and payload:", id, sourceChain, sourceAddress, destinationChain, destinationAddress, payload);
 
-    if (id.split(':').length != 2) {
-        console.error("Invalid transaction id. Expected format: txHash:logIndex");
+    if (id.split('-').length != 2) {
+        console.error("Invalid transaction id. Expected format: txHash-logIndex");
         process.exit(1);
     }
     payload = payload.replace('0x', '');
