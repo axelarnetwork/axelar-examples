@@ -25,6 +25,12 @@ service Amplifier {
       get : "/v1beta1/receipt/{receipt_id}"
     };
   }
+  rpc SavePayload(SavePayloadRequest) returns (SavePayloadResponse) {
+    option (google.api.http) = {
+      post : "/v1beta1/payload"
+      body : "*"
+    };
+  }
 }
 
 message Message {
@@ -42,6 +48,10 @@ message Message {
 message GetPayloadRequest { bytes hash = 1; }
 
 message GetPayloadResponse { bytes payload = 1; }
+
+message SavePayloadRequest { bytes payload = 1; }
+
+message SavePayloadResponse { bytes hash = 1; }
 
 message SubscribeToApprovalsRequest {
   repeated string chains = 1;
