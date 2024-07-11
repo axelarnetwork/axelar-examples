@@ -23,7 +23,7 @@
     "dependencies": {
         "@axelar-network/axelar-chains-config": "^1.2.0",
         "@axelar-network/axelar-gmp-sdk-solidity": "^5.9.0",
-        "@axelar-network/axelar-local-dev": "2.3.2",
+        "@axelar-network/axelar-local-dev": "^2.3.3",
         "@axelar-network/axelar-local-dev-cosmos": "^2.3.0",
         "@axelar-network/axelar-local-dev-multiversx": "^2.3.0",
         "@axelar-network/axelarjs-sdk": "^0.15.0",
