@@ -4,12 +4,10 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 const { IInterchainTokenService } = require('@axelar-network/axelar-local-dev/dist/contracts');
-const ITokenManagerProxy = require('@axelar-network/interchain-token-service/artifacts/contracts/interfaces/ITokenManagerProxy.sol/ITokenManagerProxy.json');
 const { Contract } = require('ethers');
 const { keccak256, defaultAbiCoder } = require('ethers/lib/utils');
-const { interchainTransfer, transmitInterchainTransfer } = require('../../../scripts/libs/its-utils');
+const { interchainTransfer } = require('../../../scripts/libs/its-utils');
 
-// const BurnableToken = rootRequire('./artifacts/examples/evm/its-custom-token/CustomToken.sol/CustomToken.json');
 const BurnableToken = rootRequire('./artifacts/examples/evm/its-mint-burn-from/BurnableToken.sol/BurnableToken.json');
 
 const ITokenManager = rootRequire(
