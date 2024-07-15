@@ -34,7 +34,7 @@ async function execute(chains, wallet, options) {
     const fee = await calculateBridgeFee(source, destination);
     let its;
     async function deployTokenManager(chain, salt) {
-        console.log(`Registering custom burnable token at for ${chain.name}`);
+        console.log(`Registering custom burnable token for ${chain.name}`);
         const params = defaultAbiCoder.encode(['bytes', 'address'], [wallet.address, chain.burnableToken.address]);
         its = new Contract(chain.interchainTokenService, IInterchainTokenService.abi, wallet.connect(chain.provider));
         await (await its.deployTokenManager(salt, '', MINT_BURN_FROM, params, 0)).wait();
@@ -51,9 +51,9 @@ async function execute(chains, wallet, options) {
     await (await source.burnableToken.mint(wallet.address, amount)).wait();
     await (await source.burnableToken.approve(its.address, amount)).wait();
 
-    console.log('approved');
+    console.log('Approved token for `transferFrom()`');
 
-    console.log('deploying new manager on dest');
+    console.log('Deploying new manager on dest');
     await deployTokenManager(destination, salt);
 
     await interchainTransfer(source, destination, wallet, tokenId, amount, fee);

@@ -16,7 +16,7 @@ Make sure you've already followed the following steps:
 To deploy the custom token, use the following command:
 
 ```bash
-npm run deploy evm/its-custom-token [local|testnet]
+npm run deploy evm/its-mint-burn-from [local|testnet]
 ```
 
 The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command. 
@@ -40,7 +40,7 @@ npm run execute evm/its-mint-burn-from [local|testnet] ${srcChain} ${destChain} 
 
 ## Example
 
-This example deploys the custom token on a local network, registers it with the Interchain Token Service and sends 1234 of said token from Fantom to Avalanche.
+This example deploys the custom token  on a local network, registers it with the Interchain Token Service using a `MINT_BURN_FROM` token manager type and sends 1234 of said token from Fantom to Avalanche.
 
 ```bash
 npm run deploy evm/its-mint-burn-from local
@@ -50,12 +50,13 @@ npm run execute evm/its-mint-burn-from local "Fantom" "Avalanche" 1234 0xa457d6C
 The output will be:
 
 ```
-Registering custom token at for Fantom
-Registering custom token at for Avalanche
-Minting 1234 of custom tokens to 0xBa86A5719722B02a5D5e388999C25f3333c7A9fb
+Registering custom burnable token for Fantom
+Approved token for `transferFrom()`
+Deploying new manager on dest
+Registering custom burnable token for Avalanche
 --- Initially ---
 Balance at Avalanche is 0
-Sending 1234 of token 0x8EF758F0D49c53827b47962fA30BDA7e198a4D14 to Avalanche
+Sending 1234 of token 0x0EBA33C49c72d2907aFFcacFaC0725409E8b3bc1 to Avalanche
 --- After ---
 Balance at Avalanche is 1234
 ```
