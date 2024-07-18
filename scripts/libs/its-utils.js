@@ -3,7 +3,7 @@ const IERC20 = require('@axelar-network/axelar-gmp-sdk-solidity/artifacts/contra
 const { IInterchainTokenService } = require('@axelar-network/axelar-local-dev/dist/contracts');
 const { Contract } = require('ethers');
 
-async function interchainTransfer(source, destination, wallet, tokenId, amount, lockFee, fee) {
+async function interchainTransfer(source, destination, wallet, tokenId, amount, fee) {
     const sourceIts = new Contract(source.interchainTokenService, IInterchainTokenService.abi, wallet.connect(source.provider));
     const destinationIts = new Contract(
         destination.interchainTokenService,
@@ -20,10 +20,8 @@ async function interchainTransfer(source, destination, wallet, tokenId, amount, 
 
     console.log('--- Initially ---');
     await logValue();
-    const feeNumber = Number(lockFee);
-    const percentage = (feeNumber / 1e18) * 100;
-
-    console.log(`Sending ${amount} of token ${tokenAddress} to ${destination.name}, with ${percentage}% deducted for the fee`);
+ 
+    console.log(`Sending ${amount} of token ${tokenAddress} to ${destination.name}`);
 
     const tx = await sourceIts.interchainTransfer(tokenId, destination.name, wallet.address, amount, '0x', fee, {
         value: fee,

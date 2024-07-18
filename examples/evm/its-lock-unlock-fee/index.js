@@ -19,7 +19,7 @@ const MINT_BURN = 4;
 const lockFee = (5e16).toString();
 async function deploy(chain, wallet) {
     console.log(`Deploying Custom Fee Token for ${chain.name}.`);
-    chain.feeToken = await deployContract(wallet, FeeToken, ['Custom Fee Token', 'CFT', 18, fee, chain.interchainTokenService]);
+    chain.feeToken = await deployContract(wallet, FeeToken, ['Custom Fee Token', 'CFT', 18, lockFee, chain.interchainTokenService]);
     chain.wallet = wallet;
     console.log(`Deployed Custom Fee Token for ${chain.name} at ${chain.feeToken.address}.`);
 }
@@ -54,7 +54,10 @@ async function execute(chains, wallet, options) {
     console.log('Approved token for `transferFrom()`');
     console.log('Deploying new manager on dest');
     await deployTokenManager(destination, MINT_BURN, salt);
-    await interchainTransfer(source, destination, wallet, tokenId, amount, lockFee, fee);
+    const feeNumber = Number(lockFee);
+    const percentage = (feeNumber / 1e18) * 100;
+    console.log(`Deducting ${percentage}% of the tokens sent for the fee`);
+    await interchainTransfer(source, destination, wallet, tokenId, amount, fee);
 }
 
 module.exports = {
