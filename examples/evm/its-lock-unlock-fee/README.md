@@ -1,6 +1,6 @@
-# ITS Mint/Burn_From 
+# ITS Lock/Unlock_Fee
 
-This example demonstrates how to use the ITS with a custom token implementation with the `MINT_BURN_FROM` token manager type.
+This example demonstrates how to use the ITS with a custom token implementation with the `LOCK_UNLOCK_FEE` token manager type.
 
 The token will be minted/burned on transfers. The token needs to give mint permission to the token manager, but burning happens via an approval.
 
@@ -16,19 +16,19 @@ Make sure you've already followed the following steps:
 To deploy the custom token, use the following command:
 
 ```bash
-npm run deploy evm/its-mint-burn-from [local|testnet]
+npm run deploy evm/its-mint-lock-unlock-fee [local|testnet]
 ```
 
-The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command. 
+The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command.
 
-An example of its usage is demonstrated as follows: `npm run deploy evm/its-mint-burn-from local` or `npm run deploy evm/its-mint-burn-from testnet`. 
+An example of its usage is demonstrated as follows: `npm run deploy evm/its-mint-lock-unlock-fee local` or `npm run deploy evm/its-mint-lock-unlock-fee testnet`.
 
 ### Execution
 
 To execute the example, use the following command:
 
 ```bash
-npm run execute evm/its-mint-burn-from [local|testnet] ${srcChain} ${destChain} ${amount} ${salt}
+npm run execute evm/its-mint-lock-unlock-fee [local|testnet] ${srcChain} ${destChain} ${amount} ${salt}
 ```
 
 ### Parameters
@@ -40,11 +40,11 @@ npm run execute evm/its-mint-burn-from [local|testnet] ${srcChain} ${destChain} 
 
 ## Example
 
-This example deploys the custom token  on a local network, registers it with the Interchain Token Service using a `MINT_BURN_FROM` token manager type and sends 1234 of said token from Fantom to Avalanche.
+This example deploys the custom token on a local network, registers it with the Interchain Token Service using a `LOCK_UNLOCK_FEE` token manager type and sends 1234 of said token from Fantom to Avalanche but only receives the amount after fee set in the token itself.
 
 ```bash
-npm run deploy evm/its-mint-burn-from local
-npm run execute evm/its-mint-burn-from local "Fantom" "Avalanche" 1234 0xa457d6C043b7288454773321a440BA8866D47f96D924D4C38a50b2b0698fae46
+npm run deploy evm/its-mint-lock-unlock-feem local
+npm run execute evm/its-mint-lock-unlock-fee "Fantom" "Avalanche" 1000000000000000000 0xa457d6C043b7288454773321a440BA8866D47f96D924D4C38a50b2b0698fae46
 ```
 
 The output will be:
@@ -58,5 +58,5 @@ Registering custom burnable token for Avalanche
 Balance at Avalanche is 0
 Sending 1234 of token 0x0EBA33C49c72d2907aFFcacFaC0725409E8b3bc1 to Avalanche
 --- After ---
-Balance at Avalanche is 1234
+Balance at Avalanche is 1173
 ```
