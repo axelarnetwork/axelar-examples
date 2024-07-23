@@ -15,10 +15,11 @@ import { Minter } from '@axelar-network/interchain-token-service/contracts/utils
  * @dev This contract also inherits Minter and Implementation logic.
  */
 contract BurnableToken is InterchainTokenStandard, ERC20Burnable, Minter {
-    uint8 internal immutable decimals_;
-    bytes32 internal itsSalt;
-    address internal immutable interchainTokenService_;
     address public deployer;
+    bytes32 internal _itsSalt;
+    uint8 internal immutable _decimals;
+    // bytes32 internal _tokenId;
+    address internal immutable _interchainTokenService;
 
     uint256 internal constant UINT256_MAX = 2 ** 256 - 1;
 
@@ -27,20 +28,20 @@ contract BurnableToken is InterchainTokenStandard, ERC20Burnable, Minter {
      * @dev Makes the implementation act as if it has been setup already to disallow calls to init() (even though that would not achieve anything really).
      */
     constructor(
-        string memory name_,
-        string memory symbol_,
+        string memory _name,
+        string memory _symbol,
         uint8 decimalsValue,
         address interchainTokenServiceAddress
-    ) ERC20(name_, symbol_) {
-        decimals_ = decimalsValue;
-        interchainTokenService_ = interchainTokenServiceAddress;
+    ) ERC20(_name, _symbol) {
+        _decimals = decimalsValue;
+        _interchainTokenService = interchainTokenServiceAddress;
 
         _addMinter(msg.sender);
         deployer = msg.sender;
     }
 
     function decimals() public view override returns (uint8) {
-        return decimals_;
+        return _decimals;
     }
 
     /**
@@ -48,15 +49,15 @@ contract BurnableToken is InterchainTokenStandard, ERC20Burnable, Minter {
      * @return address The interchain token service contract
      */
     function interchainTokenService() public view override returns (address) {
-        return interchainTokenService_;
+        return _interchainTokenService;
     }
 
     /**
      * @notice set ITS salt needed to calculate interchainTokenId
-     * @param salt_ the salt being sent
+     * @param _salt the salt being sent
      */
-    function setItsSalt(bytes32 salt_) external onlyRole(uint8(Roles.MINTER)) {
-        itsSalt = salt_;
+    function setItsSalt(bytes32 _salt) external onlyRole(uint8(Roles.MINTER)) {
+        _itsSalt = _salt;
     }
 
     /**
@@ -64,7 +65,7 @@ contract BurnableToken is InterchainTokenStandard, ERC20Burnable, Minter {
      * @return tokenId the token id.
      */
     function interchainTokenId() public view override returns (bytes32 tokenId) {
-        tokenId = IInterchainTokenService(interchainTokenService_).interchainTokenId(deployer, itsSalt);
+        tokenId = IInterchainTokenService(_interchainTokenService).interchainTokenId(deployer, _itsSalt);
     }
 
     /**

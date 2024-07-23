@@ -13,9 +13,9 @@ import { Minter } from '@axelar-network/interchain-token-service/contracts/utils
  * @dev This contract also inherits Minter and Implementation logic.
  */
 contract FeeToken is InterchainTokenStandard, ERC20, Minter {
-    uint8 internal immutable decimals_;
+    uint8 internal immutable _decimals;
     bytes32 internal tokenId;
-    address internal immutable interchainTokenService_;
+    address internal immutable _interchainTokenService;
 
     uint256 internal constant UINT256_MAX = 2 ** 256 - 1;
 
@@ -32,8 +32,8 @@ contract FeeToken is InterchainTokenStandard, ERC20, Minter {
         uint256 _feePercent,
         address _interchainTokenServiceAddress
     ) ERC20(_name, _symbol) {
-        decimals_ = _decimalsValue;
-        interchainTokenService_ = _interchainTokenServiceAddress;
+        _decimals = _decimalsValue;
+        _interchainTokenService = _interchainTokenServiceAddress;
 
         feePercent = _feePercent;
 
@@ -41,7 +41,7 @@ contract FeeToken is InterchainTokenStandard, ERC20, Minter {
     }
 
     function decimals() public view override returns (uint8) {
-        return decimals_;
+        return _decimals;
     }
 
     /**
@@ -58,7 +58,7 @@ contract FeeToken is InterchainTokenStandard, ERC20, Minter {
      * @return address The interchain token service contract
      */
     function interchainTokenService() public view override returns (address) {
-        return interchainTokenService_;
+        return _interchainTokenService;
     }
 
     /**

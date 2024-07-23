@@ -41,7 +41,7 @@ This example deploys the token on Fantom and Avalanche, it registers the token a
 
 ```bash
 npm run deploy evm/its-canonical-token local
-npm run execute evm/its-canonical-token local "Fantom" "Avalanche"```
+npm run execute evm/its-canonical-token local "Fantom" "Avalanche"
 
 The output will be:
 

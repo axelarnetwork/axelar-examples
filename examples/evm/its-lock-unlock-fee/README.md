@@ -16,19 +16,19 @@ Make sure you've already followed the following steps:
 To deploy the custom token, use the following command:
 
 ```bash
-npm run deploy evm/its-mint-lock-unlock-fee [local|testnet]
+npm run deploy evm/its-lock-unlock-fee [local|testnet]
 ```
 
 The aforementioned command pertains to specifying the intended environment for a project to execute on. It provides the option to choose between local and testnet environments by appending either `local` or `testnet` after the command.
 
-An example of its usage is demonstrated as follows: `npm run deploy evm/its-mint-lock-unlock-fee local` or `npm run deploy evm/its-mint-lock-unlock-fee testnet`.
+An example of its usage is demonstrated as follows: `npm run deploy evm/its-lock-unlock-fee local` or `npm run deploy evm/its-lock-unlock-fee testnet`.
 
 ### Execution
 
 To execute the example, use the following command:
 
 ```bash
-npm run execute evm/its-mint-lock-unlock-fee [local|testnet] ${srcChain} ${destChain} ${amount} ${salt}
+npm run execute evm/its-lock-unlock-fee [local|testnet] ${srcChain} ${destChain} ${amount} ${salt}
 ```
 
 ### Parameters
@@ -43,8 +43,8 @@ npm run execute evm/its-mint-lock-unlock-fee [local|testnet] ${srcChain} ${destC
 This example deploys the custom token on a local network, registers it with the Interchain Token Service using a `LOCK_UNLOCK_FEE` token manager type and sends 1234 of said token from Fantom to Avalanche but only receives the amount after fee set in the token itself.
 
 ```bash
-npm run deploy evm/its-mint-lock-unlock-feem local
-npm run execute evm/its-mint-lock-unlock-fee "Fantom" "Avalanche" 1000000000000000000 0xa457d6C043b7288454773321a440BA8866D47f96D924D4C38a50b2b0698fae46
+npm run deploy evm/its-lock-unlock-fee local
+npm run execute evm/its-lock-unlock-fee local "Fantom" "Avalanche" 1234 "0xa457d6C043b7288454773321a440BA8866D47f96D924D4C38a50b2b0698fae46"
 ```
 
 The output will be:
@@ -53,7 +53,8 @@ The output will be:
 Registering custom burnable token for Fantom
 Approved token for `transferFrom()`
 Deploying new manager on dest
-Registering custom burnable token for Avalanche
+Registering custom fee token for Avalanche
+Deducting 5% of the tokens sent for the fee
 --- Initially ---
 Balance at Avalanche is 0
 Sending 1234 of token 0x0EBA33C49c72d2907aFFcacFaC0725409E8b3bc1 to Avalanche
