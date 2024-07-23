@@ -111,7 +111,7 @@ contract FeeToken is InterchainTokenStandard, ERC20, Minter {
          * burnt, but you can instead for example:
          * 1. Send to reward pool
          * 2. Send to treasury
-         * 3. Sent to liquidity pool
+         * 3. Send to liquidity pool
          */
         _burn(from, fee);
 
