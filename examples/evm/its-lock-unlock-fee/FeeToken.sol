@@ -105,6 +105,14 @@ contract FeeToken is InterchainTokenStandard, ERC20, Minter {
 
         super.transferFrom(from, to, amountAfterFee);
 
+        /**
+         * NOTE: Burning of the fee is just one of 
+         * many options here. For simplicity the fee is getting 
+         * burnt, but you can instead for example:
+         * 1. Send to reward pool
+         * 2. Send to treasury
+         * 3. Sent to liquidity pool
+         */
         _burn(from, fee);
 
         return true;
