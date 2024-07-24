@@ -36,6 +36,7 @@ async function execute(chains, wallet, options) {
         const params = defaultAbiCoder.encode(['bytes', 'address'], [wallet.address, chain.burnableToken.address]);
         its = new Contract(chain.interchainTokenService, IInterchainTokenService.abi, wallet.connect(chain.provider));
         await (await its.deployTokenManager(salt, '', MINT_BURN_FROM, params, 0)).wait();
+        await chain.burnableToken.setItsSalt(salt);
         const tokenId = await its.interchainTokenId(wallet.address, salt);
         const tokenManagerAddress = await its.tokenManagerAddress(tokenId);
         const tokenManager = new Contract(tokenManagerAddress, ITokenManager.abi, wallet.connect(chain.provider));
