@@ -64,7 +64,6 @@ contract BurnableToken is InterchainTokenStandard, ERC20Burnable, Minter {
      * @return tokenId the token id.
      */
     function interchainTokenId() public view override returns (bytes32 tokenId) {
-        // return tokenId;
         tokenId = IInterchainTokenService(interchainTokenService_).interchainTokenId(deployer, itsSalt);
     }
 
