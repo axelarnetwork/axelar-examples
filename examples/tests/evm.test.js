@@ -20,6 +20,7 @@ const examples = [
     'call-contract-gas-estimation',
     'call-contract-with-token',
     'call-contract-with-token-express',
+    'call-contract-with-valued-express',
     'cross-chain-token',
     'deposit-address',
     // 'multichain-nft-mint',
@@ -55,7 +56,7 @@ describe('Verify EVM Examples', function () {
             if (example.deploy) {
                 await deploy('local', chains, wallet, example);
             }
-
+       
             await executeEVMExample('local', chains, [], wallet, example);
         });
     }
