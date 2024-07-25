@@ -5,13 +5,14 @@ pragma solidity ^0.8.0;
 import { ERC20 } from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 
 import { Minter } from '@axelar-network/interchain-token-service/contracts/utils/Minter.sol';
+
 /**
  * @title InterchainToken
  * @notice This contract implements an interchain token which extends InterchainToken functionality.
  * @dev This contract also inherits Minter and Implementation logic.
  */
 contract CanonicalToken is ERC20, Minter {
-    uint8 internal immutable decimals_;
+    uint8 internal immutable _decimals;
 
     uint256 internal constant UINT256_MAX = 2 ** 256 - 1;
 
@@ -19,13 +20,13 @@ contract CanonicalToken is ERC20, Minter {
      * @notice Constructs the InterchainToken contract.
      * @dev Makes the implementation act as if it has been setup already to disallow calls to init() (even though that would not achieve anything really).
      */
-    constructor(string memory name_, string memory symbol_, uint8 decimalsValue) ERC20(name_, symbol_) {
-        decimals_ = decimalsValue;
+    constructor(string memory _name, string memory _symbol, uint8 _decimalsValue) ERC20(_name, _symbol) {
+        _decimals = _decimalsValue;
         _addMinter(msg.sender);
     }
 
     function decimals() public view override returns (uint8) {
-        return decimals_;
+        return _decimals;
     }
 
     /**
