@@ -36,7 +36,7 @@ async function execute(chains, wallet, options) {
     await (await sourceFactory.registerCanonicalInterchainToken(source.canonicalToken.address)).wait();
 
     console.log(`Deploy remote canonical token from ${source.name} to ${destination.name}`);
-    console.log(destination.name, 'the destination');
+
     await (
         await sourceFactory.deployRemoteCanonicalInterchainToken(source.name, source.canonicalToken.address, destination.name, fee, {
             value: fee,
