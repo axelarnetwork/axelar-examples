@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 
 import { InterchainTokenStandard } from '@axelar-network/interchain-token-service/contracts/interchain-token/InterchainTokenStandard.sol';
+import { IInterchainTokenService } from '@axelar-network/interchain-token-service/contracts/interfaces/IInterchainTokenService.sol';
 import { ERC20Burnable } from '@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol';
 import { ERC20 } from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 
@@ -15,8 +16,9 @@ import { Minter } from '@axelar-network/interchain-token-service/contracts/utils
  */
 contract BurnableToken is InterchainTokenStandard, ERC20Burnable, Minter {
     uint8 internal immutable decimals_;
-    bytes32 internal tokenId;
+    bytes32 internal itsSalt;
     address internal immutable interchainTokenService_;
+    address public deployer;
 
     uint256 internal constant UINT256_MAX = 2 ** 256 - 1;
 
@@ -34,14 +36,11 @@ contract BurnableToken is InterchainTokenStandard, ERC20Burnable, Minter {
         interchainTokenService_ = interchainTokenServiceAddress;
 
         _addMinter(msg.sender);
+        deployer = msg.sender;
     }
 
     function decimals() public view override returns (uint8) {
         return decimals_;
-    }
-
-    function setTokenId(bytes32 tokenId_) public {
-        tokenId = tokenId_;
     }
 
     /**
@@ -53,11 +52,19 @@ contract BurnableToken is InterchainTokenStandard, ERC20Burnable, Minter {
     }
 
     /**
-     * @notice Returns the tokenId for this token.
-     * @return bytes32 The token manager contract.
+     * @notice set ITS salt needed to calculate interchainTokenId
+     * @param salt_ the salt being sent
      */
-    function interchainTokenId() public view override returns (bytes32) {
-        return tokenId;
+    function setItsSalt(bytes32 salt_) external onlyRole(uint8(Roles.MINTER)) {
+        itsSalt = salt_;
+    }
+
+    /**
+     * @notice Returns the tokenId for this token.
+     * @return tokenId the token id.
+     */
+    function interchainTokenId() public view override returns (bytes32 tokenId) {
+        tokenId = IInterchainTokenService(interchainTokenService_).interchainTokenId(deployer, itsSalt);
     }
 
     /**
