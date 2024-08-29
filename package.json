@@ -22,7 +22,7 @@
     "license": "ISC",
     "dependencies": {
         "@axelar-network/axelar-chains-config": "^1.2.0",
-        "@axelar-network/axelar-gmp-sdk-solidity": "^5.9.0",
+        "@axelar-network/axelar-gmp-sdk-solidity": "file:../axelar-gmp-sdk-solidity",
         "@axelar-network/axelar-local-dev": "^2.3.3",
         "@axelar-network/axelar-local-dev-cosmos": "^2.3.0",
         "@axelar-network/axelar-local-dev-multiversx": "^2.3.0",
@@ -36,10 +36,13 @@
         "axios": "^0.27.2",
         "bech32": "^2.0.0",
         "bip39": "^3.0.4",
+        "build": "^0.1.4",
         "commander": "^12.0.0",
         "config": "^3.3.9",
         "dotenv": "^16.0.2",
         "ethers": "^5.6.2",
+        "npm": "^10.8.3",
+        "run": "^1.5.0",
         "uuid": "^8.3.2"
     },
     "devDependencies": {
