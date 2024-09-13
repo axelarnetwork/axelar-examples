@@ -6,6 +6,9 @@ const { savePayload } = require('./endpoints/save-payload.js');
 const { subscribe_to_approvals } = require('./endpoints/subscribe-to-approvals.js');
 const { subscribe_to_wasm_events } = require('./endpoints/subscribe-to-wasm-events.js');
 const { verify } = require('./endpoints/verify.js');
+const { processContractCallEvent } = require('./gmp-api/contract-call-event.js');
+const { processMessageApprovedEvent } = require('./gmp-api/approve-event.js');
+const { processMessageExecutedEvent } = require('./gmp-api/execute-event.js');
 
 const program = new commander.Command();
 
@@ -63,6 +66,43 @@ program
     .requiredOption("--payload <payload>", "The GMP payload in hex")
     .action((options) => {
         verify(options.id, options.sourceChain, options.sourceAddress, options.destinationChain, options.destinationAddress, options.payload);
+    });
+
+program
+    .command('process-contract-call-event')
+    .requiredOption("--source-chain <source chain>", "The source chain")
+    .requiredOption("--tx-hash <transaction hash>", "The transaction hash")
+    .option("--dry-run", "Dry run the process")
+    .action((options) => {
+        processContractCallEvent(options.sourceChain, options.txHash, options.dryRun)
+            .then(() => console.log('Process completed successfully'))
+            .catch(error => console.error('Process failed:', error));
+    });
+
+program
+    .command('process-approve-event')
+    .requiredOption("--destination-chain <destination chain>", "The destination chain")
+    .requiredOption("--tx-hash <transaction hash>", "The transaction hash")
+    .option("--amount <amount>", "Remaining gas amount")
+    .option("--dry-run", "Dry run the process")
+    .action((options) => {
+        processMessageApprovedEvent(options.destinationChain, options.txHash, options.amount, options.dryRun)
+            .then(() => console.log('Process completed successfully'))
+            .catch(error => console.error('Process failed:', error));
+    });
+
+program
+    .command('process-execute-event')
+    .requiredOption("--destination-chain <destination chain>", "The destination chain")
+    .requiredOption("--tx-hash <transaction hash>", "The transaction hash")
+    .requiredOption("--source-chain <source chain>", "The source chain")
+    .requiredOption("--message-id <message id>", "The message id")
+    .option("--amount <amount>", "Remaining gas amount")
+    .option("--dry-run", "Dry run the process")
+    .action((options) => {
+        processMessageExecutedEvent(options.destinationChain, options.txHash, options.sourceChain, options.messageId, options.amount, options.dryRun)
+            .then(() => console.log('Process completed successfully'))
+            .catch(error => console.error('Process failed:', error));
     });
 
 program.parse();

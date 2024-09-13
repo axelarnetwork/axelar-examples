@@ -1,0 +1,10 @@
+[
+	{
+		"name": "test-ethereum",
+		"rpc": "https://ethereum-sepolia.rpc.subquery.network/public"
+	},
+	{
+		"name": "test-avalanche",
+		"rpc": "https://ava-testnet.public.blastapi.io/ext/bc/C/rpc"
+	}
+]
