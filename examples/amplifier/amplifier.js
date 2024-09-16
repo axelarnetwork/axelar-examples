@@ -9,6 +9,7 @@ const { verify } = require('./endpoints/verify.js');
 const { processContractCallEvent } = require('./gmp-api/contract-call-event.js');
 const { processMessageApprovedEvent } = require('./gmp-api/approve-event.js');
 const { processMessageExecutedEvent } = require('./gmp-api/execute-event.js');
+const { pollTasks } = require('./gmp-api/tasks.js');
 
 const program = new commander.Command();
 
@@ -103,6 +104,15 @@ program
         processMessageExecutedEvent(options.destinationChain, options.txHash, options.sourceChain, options.messageId, options.amount, options.dryRun)
             .then(() => console.log('Process completed successfully'))
             .catch(error => console.error('Process failed:', error));
+    });
+
+program
+    .command("poll-tasks")
+    .requiredOption("--chain <chain>", "The chain to poll task for")
+    .option("--poll-interval <interval>", "The interval to poll for new tasks", parseInt, 5000)
+    .option("--dry-run", "Dry run the process")
+    .action((options) => {
+        pollTasks(options.chain, options.pollInterval, options.dryRun);
     });
 
 program.parse();

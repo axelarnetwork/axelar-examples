@@ -1,10 +1,12 @@
 [
 	{
 		"name": "test-ethereum",
-		"rpc": "https://ethereum-sepolia.rpc.subquery.network/public"
+		"rpc": "https://ethereum-sepolia.rpc.subquery.network/public",
+		"gateway": "0x"
 	},
 	{
 		"name": "test-avalanche",
-		"rpc": "https://ava-testnet.public.blastapi.io/ext/bc/C/rpc"
+		"rpc": "https://ava-testnet.public.blastapi.io/ext/bc/C/rpc",
+		"gateway": "0x"
 	}
 ]

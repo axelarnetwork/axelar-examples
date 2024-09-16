@@ -28,7 +28,7 @@ function getConfig() {
     };
 }
 
-const chainsConfigFile = './chains.json';
+const chainsConfigFile = './examples/amplifier/chains.json';
 
 function getChainConfig(chainName) {
     const chainsConfig = JSON.parse(fs.readFileSync(chainsConfigFile, 'utf8'));
