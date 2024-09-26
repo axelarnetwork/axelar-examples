@@ -1,8 +1,9 @@
-//SPDX-License-Identifier: MIT
+// //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import { AxelarExpressExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/express/AxelarExpressExecutable.sol';
+
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
@@ -11,8 +12,8 @@ import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/up
 contract CallContractWithTokenExpress is AxelarExpressExecutable {
     IAxelarGasService public immutable gasService;
 
-    constructor(address gateway_, address gasReceiver_) AxelarExpressExecutable(gateway_) {
-        gasService = IAxelarGasService(gasReceiver_);
+    constructor(address _gateway, address _gasReceiver) AxelarExpressExecutable(_gateway) {
+        gasService = IAxelarGasService(_gasReceiver);
     }
 
     function sendToMany(
@@ -36,8 +37,8 @@ contract CallContractWithTokenExpress is AxelarExpressExecutable {
                 amount,
                 msg.sender
             );
+            gateway.callContractWithToken(destinationChain, destinationAddress, payload, symbol, amount);
         }
-        gateway.callContractWithToken(destinationChain, destinationAddress, payload, symbol, amount);
     }
 
     function _executeWithToken(
