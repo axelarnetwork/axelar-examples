@@ -1,12 +1,17 @@
 [
-	{
-		"name": "test-ethereum",
-		"rpc": "https://ethereum-sepolia.rpc.subquery.network/public",
-		"gateway": "0x"
-	},
-	{
-		"name": "test-avalanche",
-		"rpc": "https://ava-testnet.public.blastapi.io/ext/bc/C/rpc",
-		"gateway": "0x"
-	}
+    {
+        "name": "test-ethereum",
+        "rpc": "https://ethereum-sepolia.rpc.subquery.network/public",
+        "gateway": "0x"
+    },
+    {
+        "name": "test-avalanche",
+        "rpc": "https://ava-testnet.public.blastapi.io/ext/bc/C/rpc",
+        "gateway": "0x"
+    },
+    {
+        "name": "avalanche-fuji",
+        "rpc": "https://rpc.ankr.com/avalanche_fuji",
+        "gateway": "0xF128c84c3326727c3e155168daAa4C0156B87AD1"
+    }
 ]

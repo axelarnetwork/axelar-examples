@@ -6,7 +6,7 @@ const { GMP_API_URL } = getConfig();
 
 // ABI for the ContractCall event
 const eventABI = [
-    "event ContractCall(address indexed sender, string destinationChain, string destinationContractAddress, bytes32 indexed payloadHash, bytes payload)",
+    'event ContractCall(address indexed sender, string destinationChain, string destinationContractAddress, bytes32 indexed payloadHash, bytes payload)',
 ];
 
 const iface = new ethers.utils.Interface(eventABI);
@@ -38,7 +38,7 @@ async function constructAPIEvent(sourceChain, txHash) {
 
         // Find the relevant log
         const TOPIC = iface.getEventTopic('ContractCall');
-        const relevantLog = receipt.logs.find(log => log.topics[0] === TOPIC);
+        const relevantLog = receipt.logs.find((log) => log.topics[0] === TOPIC);
 
         if (!relevantLog) {
             throw new Error('Relevant log not found');
@@ -46,6 +46,8 @@ async function constructAPIEvent(sourceChain, txHash) {
 
         // Decode the event data
         const decodedLog = iface.parseLog(relevantLog);
+
+        console.log({ decodedLog });
 
         // Extract data from the decoded log
         const eventIndex = receipt.logs.indexOf(relevantLog);

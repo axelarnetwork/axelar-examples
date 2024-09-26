@@ -8,11 +8,19 @@ dotenv.config();
 // Default configuration values
 const defaults = {
     // gRPC
-    HOST: "localhost",
-    PORT: "50051",
+    HOST: 'localhost',
+    PORT: '50051',
 
     // GMP API
-    GMP_API_URL: "http://localhost:8080",
+    GMP_API_URL: 'http://localhost:8080',
+};
+
+const chains = {
+    'avalanche-fuji': {
+        rpcUrl: 'https://rpc.ankr.com/avalanche_fuji',
+        externalGateway: '0xF128c84c3326727c3e155168daAa4C0156B87AD1',
+        id: 'avalanche-fuji',
+    },
 };
 
 function getConfig() {
@@ -25,6 +33,7 @@ function getConfig() {
         serverHOST,
         serverPort,
         gmpAPIURL,
+        chains,
     };
 }
 
@@ -33,7 +42,7 @@ const chainsConfigFile = './examples/amplifier/chains.json';
 function getChainConfig(chainName) {
     const chainsConfig = JSON.parse(fs.readFileSync(chainsConfigFile, 'utf8'));
 
-    const chainConfig = chainsConfig.find(c => c.name === chainName);
+    const chainConfig = chainsConfig.find((c) => c.name === chainName);
 
     if (!chainConfig) {
         throw new Error(`RPC URL not found for chain: ${chainName}`);
