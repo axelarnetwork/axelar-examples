@@ -47,8 +47,6 @@ async function constructAPIEvent(sourceChain, txHash) {
         // Decode the event data
         const decodedLog = iface.parseLog(relevantLog);
 
-        console.log({ decodedLog });
-
         // Extract data from the decoded log
         const eventIndex = receipt.logs.indexOf(relevantLog);
         const eventID = `${txHash}-${eventIndex}`;

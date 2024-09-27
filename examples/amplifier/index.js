@@ -10,7 +10,7 @@ const config = getConfig().chains;
 const params = {
     srcGatewayAddress: config['avalanche-fuji'].externalGateway,
     srcChain: config['avalanche-fuji'].id,
-    destinationChain: 'ethereum-sepolia',
+    destinationChain: 'xrpl-evm-sidechain',
     message: 'hi',
     destinationContractAddress: null,
 };
@@ -24,4 +24,4 @@ const main = async () => {
 };
 
 pollTasks({ chainName: 'xrpl-evm-sidechain', pollInterval: 10000, dryRunOpt: true });
-// main(null);
+main(null);
