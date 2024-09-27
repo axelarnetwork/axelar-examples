@@ -13,5 +13,10 @@
         "name": "avalanche-fuji",
         "rpc": "https://rpc.ankr.com/avalanche_fuji",
         "gateway": "0xF128c84c3326727c3e155168daAa4C0156B87AD1"
+    },
+    {
+        "name": "xrpl-evm-sidechain",
+        "rpc": "",
+        "gateway": ""
     }
 ]

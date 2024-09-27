@@ -5,6 +5,10 @@ const dotenv = require('dotenv');
 // Load environment variables from .env file
 dotenv.config();
 
+// Load the certificate and key
+const cert = fs.readFileSync(process.env.CRT_PATH);
+const key = fs.readFileSync(process.env.KEY_PATH);
+
 // Default configuration values
 const defaults = {
     // gRPC
@@ -21,6 +25,11 @@ const chains = {
         externalGateway: '0xF128c84c3326727c3e155168daAa4C0156B87AD1',
         id: 'avalanche-fuji',
     },
+    'xrpl-evm-sidechain': {
+        rpcUrl: '',
+        externalGateway: '',
+        id: 'xrpl-evm-sidechain',
+    },
 };
 
 function getConfig() {
@@ -34,6 +43,8 @@ function getConfig() {
         serverPort,
         gmpAPIURL,
         chains,
+        cert,
+        key,
     };
 }
 

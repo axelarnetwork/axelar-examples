@@ -23,5 +23,5 @@ const main = async () => {
     processContractCallEvent(params.srcChain, transactionReceipt.transactionHash, true);
 };
 
-pollTasks(params.srcChain);
+pollTasks({ chainName: 'xrpl-evm-sidechain', pollInterval: 10000, dryRunOpt: true });
 // main(null);
