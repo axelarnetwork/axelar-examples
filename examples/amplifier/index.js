@@ -2,6 +2,7 @@ const { sleep } = require('./utils/sleep');
 const { getConfig } = require('./config');
 const { gmp } = require('./utils/gmp');
 const { processContractCallEvent } = require('./gmp-api/contract-call-event');
+const { pollTasks } = require('./gmp-api/tasks');
 require('dotenv').config();
 
 const config = getConfig().chains;
@@ -22,4 +23,5 @@ const main = async () => {
     processContractCallEvent(params.srcChain, transactionReceipt.transactionHash, true);
 };
 
-main(null);
+pollTasks(params.srcChain);
+// main(null);
