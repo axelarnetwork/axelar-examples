@@ -147,3 +147,8 @@ The script above is an end-to-end example of invoking a GMP call on the `devnet-
             console.log('Polling interval cleared after EXECUTE task completed');
         }
         ```
+
+## Considerations
+
+-   This example is for illustrative purposes only to demonstrate the functionality to interact with the GMP. It is not a complete example for a Relayer that is expected to have robust `Sentinel` and `Includer` components, both of which are high throughput listeners/broadcasters that interact with the GMP API.
+-   This indicative example only works if a single relayer is operating the intended `Includer` comoponent (i.e. the polling that listens to `tasks` that are emitted from the `/tasks` endpoint for `GATEWAY_TX` and `EXECUTE` events). If there are multiple relayers running simultaneously, it is possible that another relayer picks up the tasks to broadcast events to a chain, and by the time this relayer attempts to do the same, the transaction will result in a no-op and the accompanying data capture (i.e. `recordMessageApprovedEvent` and `recordMessageExecutedEvent`) will fail.
