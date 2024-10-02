@@ -1,27 +1,39 @@
-const { sleep } = require('./utils/sleep');
-const { getConfig } = require('./config');
-const { gmp } = require('./utils/gmp');
-const { processContractCallEvent } = require('./gmp-api/contract-call-event');
+const { program } = require('commander');
+const { sleep, gmp, deploy } = require('./utils');
+
+const { getConfig } = require('./config/config.js');
 const { pollTasks } = require('./gmp-api/tasks');
 require('dotenv').config();
 
 const config = getConfig().chains;
 
-const params = {
-    srcGatewayAddress: config['avalanche-fuji'].externalGateway,
-    srcChain: config['avalanche-fuji'].id,
-    destinationChain: 'xrpl-evm-sidechain',
-    message: 'hi',
-    destinationContractAddress: null,
-};
+program.option('-s, --sourceChain <sourceChain>', 'source chain', 'avalanche-fuji');
+program.option('-d, --destinationChain <destinationChain>', 'destination chain', 'xrpl-evm-sidechain');
+program.option('-m, --message <message>', 'message string to send', 'hello');
+
+program.parse();
+
+const options = program.opts();
 
 const main = async () => {
-    const { transactionReceipt } = await gmp(params, config);
+    const { sourceChain, destinationChain, message } = options;
 
-    await sleep(2000);
+    const srcContractDeployment = await deploy(sourceChain);
+    const destContract = await deploy(destinationChain);
 
-    processContractCallEvent(params.srcChain, transactionReceipt.transactionHash, true);
+    await sleep(10000); // wait for contracts above to deploy
+
+    gmp(
+        {
+            destinationChain,
+            sourceChain,
+            message,
+            destinationContractAddress: destContract.address,
+            srcContractAddress: srcContractDeployment.address,
+        },
+        config,
+    );
 };
 
-pollTasks({ chainName: 'xrpl-evm-sidechain', pollInterval: 10000, dryRunOpt: true });
+pollTasks({ chainName: options.destinationChain, pollInterval: 10000, dryRunOpt: false });
 main(null);

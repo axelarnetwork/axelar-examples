@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { ethers } = require('ethers');
-const { getConfig, getChainConfig } = require('../config.js');
+const { getConfig, getChainConfig } = require('../config/config.js');
 
 const { GMP_API_URL } = getConfig();
 
@@ -13,14 +13,12 @@ const iface = new ethers.utils.Interface(eventABI);
 
 async function processContractCallEvent(sourceChain, txHash, dryRun = false) {
     apiEvent = await constructAPIEvent(sourceChain, txHash);
-    console.log(apiEvent);
 
     if (dryRun === true) {
         return;
     }
 
     response = submitContractCallEvent(apiEvent);
-    console.log(response);
 }
 
 async function constructAPIEvent(sourceChain, txHash) {

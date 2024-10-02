@@ -16,7 +16,7 @@
     },
     {
         "name": "xrpl-evm-sidechain",
-        "rpc": "",
-        "gateway": ""
+        "rpc": "https://rpc-evm-sidechain.xrpl.org",
+        "gateway": "0x48CF6E93C4C1b014F719Db2aeF049AA86A255fE2"
     }
 ]

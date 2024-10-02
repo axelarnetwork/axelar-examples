@@ -1,14 +1,18 @@
 const fs = require('fs');
 const axios = require('axios');
-const https = require('https');
 const ethers = require('ethers');
-const { getConfig, getChainConfig } = require('../config.js');
+const { getConfig, getChainConfig } = require('../config/config.js');
+const { processMessageApprovedEvent } = require('./approve-event.js');
+const { processMessageExecutedEvent } = require('./execute-event.js');
+const AmplifierGMPTest = require('../../../artifacts/examples/amplifier/contracts/AmplifierGMPTest.sol/AmplifierGMPTest.json');
 require('dotenv').config();
 
-const { gmpAPIURL, cert, key } = getConfig();
-var dryRun = true;
+const { gmpAPIURL, httpsAgent } = getConfig();
+var dryRun = false;
 
-async function pollTasks({ chainName, pollInterval, dryRunOpt, approveCb, executeCb }) {
+const messageIdToCommandId = {};
+
+async function pollTasks({ chainName, pollInterval, dryRunOpt }) {
     if (dryRunOpt) {
         console.log('Dry run enabled');
         dryRun = true;
@@ -16,12 +20,12 @@ async function pollTasks({ chainName, pollInterval, dryRunOpt, approveCb, execut
 
     const chainConfig = getChainConfig(chainName);
 
-    setInterval(() => {
-        getNewTasks(chainConfig, approveCb, executeCb);
+    const intervalId = setInterval(async () => {
+        await getNewTasks(chainConfig, intervalId); // Pass the interval ID to the function
     }, pollInterval);
 }
 
-async function getNewTasks(chainConfig, approveCb, executeCb) {
+async function getNewTasks(chainConfig, intervalId) {
     latestTask = loadLatestTask(chainConfig.name);
 
     var urlSuffix = '';
@@ -32,17 +36,13 @@ async function getNewTasks(chainConfig, approveCb, executeCb) {
 
     const url = `${gmpAPIURL}/chains/${chainConfig.name}/tasks${urlSuffix}`;
 
-    console.log('Polling tasks:', url);
+    console.log('Polling tasks on:', url);
 
     try {
         const response = await axios({
             method: 'get',
             url,
-            httpsAgent: new https.Agent({
-                cert,
-                key,
-                rejectUnauthorized: false,
-            }),
+            httpsAgent,
         });
 
         const tasks = response.data.tasks;
@@ -52,31 +52,37 @@ async function getNewTasks(chainConfig, approveCb, executeCb) {
             return;
         }
 
-        console.log('Tasks:', tasks);
-
         for (const task of tasks) {
-            console.log('Processing task:', task.id);
-
             var payload;
             var destinationAddress;
-            var cb;
 
             if (task.type === 'GATEWAY_TX') {
-                console.log('found approve task');
+                console.log('Processing approve task', task.id);
                 payload = decodePayload(task.task.executeData);
                 destinationAddress = chainConfig.gateway;
-                cb = approveCb;
+                const destTxRecept = await relayApproval(chainConfig.rpc, payload, destinationAddress);
+                const { apiEvent } = await processMessageApprovedEvent(chainConfig.name, destTxRecept.transactionHash, '0');
+                messageIdToCommandId[apiEvent.message.messageID] = apiEvent.meta.commandID;
             } else if (task.type === 'EXECUTE') {
-                console.log('found execute task');
+                console.log('Processing execute task', task.id);
                 payload = decodePayload(task.task.payload);
+
                 destinationAddress = task.task.message.destinationAddress;
-                cb = executeCb;
+                const { messageID, sourceAddress, sourceChain } = task.task.message;
+
+                const destTxRecept = await relayExecution(chainConfig.rpc, payload, destinationAddress, {
+                    messageID,
+                    sourceAddress,
+                    sourceChain,
+                });
+                await processMessageExecutedEvent(chainConfig.name, destTxRecept.transactionHash, sourceChain, messageID, '0');
+
+                clearInterval(intervalId);
+                console.log('Polling interval cleared after EXECUTE task completed');
             } else {
                 console.warn('Unknown task type:', task.type);
                 continue;
             }
-
-            await relayToChain(chainConfig.rpc, payload, destinationAddress, cb);
 
             console.log('Task processed:', task.id);
             saveLatestTask(chainConfig.name, task.id);
@@ -98,26 +104,48 @@ function loadLatestTask(chainName) {
     }
 }
 
-async function relayToChain(rpc, payload, destinationAddress, cb) {
+async function relayApproval(rpc, payload, destinationAddress) {
     if (dryRun) {
-        console.log('Destination:', destinationAddress, 'Payload:', payload);
+        console.log('dryrun mode');
         return;
     }
 
     const provider = new ethers.providers.JsonRpcProvider(rpc);
     const wallet = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
 
-    console.log('Relaying payload:', payload);
+    console.log('Relaying approval tx to chain:', { rpc, payload, destinationAddress });
     const tx = await wallet.sendTransaction({
         to: destinationAddress,
         data: payload,
+        gasLimit: ethers.utils.hexlify(500000),
     });
 
-    console.log(`Transaction sent: ${tx.hash}`);
-    await tx.wait();
+    const destTxRecept = await tx.wait();
 
-    console.log('Transaction confirmed');
-    cb();
+    console.log('Transaction confirmed', { txHash: destTxRecept.transactionHash });
+    return destTxRecept;
+}
+
+async function relayExecution(rpc, payload, destinationAddress, { messageID, sourceAddress, sourceChain }) {
+    if (dryRun) {
+        console.log('dryrun mode');
+        return;
+    }
+
+    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    const wallet = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
+    const commandID = messageIdToCommandId[messageID];
+
+    console.log('Relaying execution tx to chain:', { rpc, payload, destinationAddress });
+
+    const executable = new ethers.Contract(destinationAddress, AmplifierGMPTest.abi, wallet);
+
+    const tx = await executable.execute(commandID, sourceChain, sourceAddress, payload);
+
+    const destTxRecept = await tx.wait();
+
+    console.log('Transaction confirmed', { txHash: destTxRecept.transactionHash });
+    return destTxRecept;
 }
 
 function decodePayload(executeData) {

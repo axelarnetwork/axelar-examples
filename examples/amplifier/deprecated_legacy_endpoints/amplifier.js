@@ -2,10 +2,10 @@ const commander = require('commander');
 const { getReceipt } = require('./endpoints/get-receipt.js');
 const { getPayload } = require('./endpoints/get-payload.js');
 const { savePayload } = require('./endpoints/save-payload.js');
-const { processContractCallEvent } = require('./gmp-api/contract-call-event.js');
-const { processMessageApprovedEvent } = require('./gmp-api/approve-event.js');
-const { processMessageExecutedEvent } = require('./gmp-api/execute-event.js');
-const { pollTasks } = require('./gmp-api/tasks.js');
+const { processContractCallEvent } = require('../gmp-api/contract-call-event.js');
+const { processMessageApprovedEvent } = require('../gmp-api/approve-event.js');
+const { processMessageExecutedEvent } = require('../gmp-api/execute-event.js');
+const { pollTasks } = require('../gmp-api/tasks.js');
 
 const program = new commander.Command();
 

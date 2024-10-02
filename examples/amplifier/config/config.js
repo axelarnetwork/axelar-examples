@@ -1,5 +1,5 @@
 const fs = require('fs');
-
+const https = require('https');
 const dotenv = require('dotenv');
 
 // Load environment variables from .env file
@@ -19,18 +19,8 @@ const defaults = {
     GMP_API_URL: 'http://localhost:8080',
 };
 
-const chains = {
-    'avalanche-fuji': {
-        rpcUrl: 'https://rpc.ankr.com/avalanche_fuji',
-        externalGateway: '0xF128c84c3326727c3e155168daAa4C0156B87AD1',
-        id: 'avalanche-fuji',
-    },
-    'xrpl-evm-sidechain': {
-        rpcUrl: '',
-        externalGateway: '',
-        id: 'xrpl-evm-sidechain',
-    },
-};
+const chainsConfigFile = './examples/amplifier/config/chains.json';
+const chainsConfig = JSON.parse(fs.readFileSync(chainsConfigFile, 'utf8'));
 
 function getConfig() {
     const serverHOST = process.env.HOST || defaults.HOST;
@@ -42,17 +32,18 @@ function getConfig() {
         serverHOST,
         serverPort,
         gmpAPIURL,
-        chains,
+        chains: chainsConfig,
+        httpsAgent: new https.Agent({
+            cert,
+            key,
+            rejectUnauthorized: false,
+        }),
         cert,
         key,
     };
 }
 
-const chainsConfigFile = './examples/amplifier/chains.json';
-
 function getChainConfig(chainName) {
-    const chainsConfig = JSON.parse(fs.readFileSync(chainsConfigFile, 'utf8'));
-
     const chainConfig = chainsConfig.find((c) => c.name === chainName);
 
     if (!chainConfig) {

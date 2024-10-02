@@ -1,28 +1,22 @@
 const axios = require('axios');
 const { ethers } = require('ethers');
-const { getConfig, getChainConfig } = require('../config.js');
+const { getConfig, getChainConfig } = require('../config/config.js');
 
-const { GMP_API_URL } = getConfig();
+const { gmpAPIURL, httpsAgent } = getConfig();
 
 // ABI for the ContractCall and MessageExecuted events
-const eventABI = [
-    "event MessageExecuted(bytes32 indexed commandId)",
-];
+const eventABI = ['event MessageExecuted(bytes32 indexed commandId)'];
 
 const iface = new ethers.utils.Interface(eventABI);
 
-async function processMessageExecutedEvent(destinationChain, txHash, sourceChain, messageID, costAmount = "0", dryRun = false) {
-    console.log('message id', messageID);
-
+async function processMessageExecutedEvent(destinationChain, txHash, sourceChain, messageID, costAmount = '0', dryRun = false) {
     apiEvent = await constructMessageExecutedAPIEvent(destinationChain, txHash, sourceChain, messageID, costAmount);
-    console.log(apiEvent);
 
     if (dryRun === true) {
         return;
     }
 
-    response = submitMessageExecutedEvent(apiEvent);
-    console.log(response);
+    return submitMessageExecutedEvent(apiEvent);
 }
 
 async function constructMessageExecutedAPIEvent(destinationChain, txHash, sourceChain, messageID, costAmount) {
@@ -34,15 +28,17 @@ async function constructMessageExecutedAPIEvent(destinationChain, txHash, source
         const receipt = await provider.getTransactionReceipt(txHash);
 
         if (!receipt) {
-            throw new Error('Transaction receipt not found');
+            console.error('Transaction receipt not found');
+            return;
         }
 
         // Find the relevant log
         const TOPIC = iface.getEventTopic('MessageExecuted');
-        const relevantLog = receipt.logs.find(log => log.topics[0] === TOPIC);
+        const relevantLog = receipt.logs.find((log) => log.topics[0] === TOPIC);
 
         if (!relevantLog) {
-            throw new Error('Relevant log not found');
+            console.error('Relevant log not found');
+            return;
         }
 
         // Decode the event data
@@ -62,6 +58,7 @@ async function constructMessageExecutedAPIEvent(destinationChain, txHash, source
             cost: {
                 amount: costAmount,
             },
+            destinationChain,
             eventID,
             messageID,
             meta: {
@@ -82,13 +79,22 @@ async function constructMessageExecutedAPIEvent(destinationChain, txHash, source
 }
 
 async function submitMessageExecutedEvent(apiEvent) {
-    sourceChain = apiEvent.sourceChain;
-    const response = await axios.post(`${GMP_API_URL}/chains/${sourceChain}/events`, {
-        events: [apiEvent],
-    });
+    try {
+        const response = await axios.post(
+            `${gmpAPIURL}/chains/${apiEvent.destinationChain}/events`,
+            {
+                events: [apiEvent],
+            },
+            {
+                httpsAgent,
+            },
+        );
 
-    console.log('API Response:', response.data);
-    return response.data;
+        return response.data;
+    } catch (e) {
+        console.log('something went wrong', e);
+        return [];
+    }
 }
 
 module.exports = {
