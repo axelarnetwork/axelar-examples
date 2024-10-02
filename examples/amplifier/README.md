@@ -2,14 +2,29 @@
 
 This repo provides a code example for interacting with the Amplifier GMP API to relay transactions to the Axelar network and listen to Axelar events.
 
-Please see the accompanying docs here: https://bright-ambert-2bd.notion.site/Amplifier-GMP-API-EXTERNAL-911e740b570b4017826c854338b906c8
+Please see the accompanying docs here:
 
-## Setup
+### Relayer architecture overview
+
+https://docs.axelar.dev/dev/amplifier/chain-integration/relay-messages/automatic/
+
+### GMP API endpoint and schema definitions
+
+https://bright-ambert-2bd.notion.site/Amplifier-GMP-API-EXTERNAL-911e740b570b4017826c854338b906c8
+
+## Onboarding
+
+1. In order to onboard your relayer to be able to leverage the GMP API, please follow these initial steps
+    - https://www.notion.so/bright-ambert-2bd/Amplifier-GMP-API-Authentication-EXTERNAL-113c53fccb77807caeeff9882b883a4c?pvs=4
+    - Please reach out to the Interop Labs team for access
+
+## Repository Setup
 
 1. Clone this repo.
-2. Install dependencies:
+2. Install dependencies and build contracts:
     ```bash
     npm install
+    npm run build
     ```
 3. Go to amplifier examples directory
     ```
@@ -17,194 +32,118 @@ Please see the accompanying docs here: https://bright-ambert-2bd.notion.site/Amp
     ```
 4. Copy `.env.example` into `.env` and set up the following environment variables:
     ```bash
-    GMP_API_URL=...
+    GMP_API_URL=
+    ENVIRONMENT= # e.g. devnet-amplifier, testnet, or mainnet
+    CRT_PATH= # e.g. './client.crt'
+    KEY_PATH= # e.g. './client.key'
     ```
 
-## GMP example
-
-### Make a Contract Call to the source chain
-
-```typescript
-import { providers, Wallet, ethers } from 'ethers';
-import { config } from './config';
-require('dotenv').config();
-
-const gmpCall = async ({ srcGatewayAddress, destinationChain, message, destinationContractAddress }) => {
-    const wallet = new Wallet(process.env.PRIVATE_KEY as string, new providers.JsonRpcProvider(config.avalanche.rpcUrl));
-    const contractABI = ['function callContract(string destinationChain, string destinationContractAddress, bytes payload)'];
-    const contract = new ethers.Contract(srcGatewayAddress, contractABI, wallet);
-    // const destinationChain = "ethereum-sepolia";
-    const payload = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('hi'));
-    const payloadHash = ethers.utils.keccak256(payload);
-
-    try {
-        const tx = await contract.callContract(destinationChain, destinationContractAddress || (await wallet.getAddress()), payload);
-        console.log('Transaction hash:', tx.hash);
-
-        const transactionReceipt = await tx.wait();
-
-        return {
-            transactionReceipt,
-            payloadHash: payloadHash.slice(2),
-            payload,
-        };
-    } catch (error) {
-        console.error('Error calling contract:', error);
-    }
-};
-
-// parameters below use `avalanche` from `devnet-amplifier`
-gmpCall(`0xF128c84c3326727c3e155168daAa4C0156B87AD1`);
-```
-
-Here’s how a Contract Call looks on Ethereum Sepolia ([0x9b447614be654eeea0c5de0319b3f2c243ab45bebd914a1f7319f4bb599d8968](https://sepolia.etherscan.io/tx/0x9b447614be654eeea0c5de0319b3f2c243ab45bebd914a1f7319f4bb599d8968)). Notice that in the logs there’s a `ContractCall` event emitted.
-
-<aside>
-💡
-
-if the Gateway contract is not verified for your chain, or you wish to retrieve the event programmatically, look for the following topic:
-
-`0x30ae6cc78c27e651745bf2ad08a11de83910ac1e347a52f7ac898c0fbef94dae`
-
-</aside>
-
-### Make an Event API Call
-
-Now, we are going to use the content of the Contract Call transaction, and make a `Call Event` request to the GMP API (see how Call Event is structured [here](https://www.notion.so/Amplifier-GMP-API-EXTERNAL-911e740b570b4017826c854338b906c8?pvs=21)).
-
-```json
-{
-    "events": [
-        {
-            "destinationChain": "test-avalanche",
-            "eventID": "0x9b447614be654eeea0c5de0319b3f2c243ab45bebd914a1f7319f4bb599d8968-1",
-            "message": {
-                "destinationAddress": "0xE8E348fA7b311d6E308b1A162C3ec0172B37D1C1",
-                "messageID": "0x9b447614be654eeea0c5de0319b3f2c243ab45bebd914a1f7319f4bb599d8968-1",
-                "payloadHash": "Y2YO3UuCRRackxbPYX9dWmNTYcnAMOommp9g4ydb3i4=",
-                "sourceAddress": "0x9e3e785dD9EA3826C9cBaFb1114868bc0e79539a",
-                "sourceChain": "test-sepolia"
-            },
-            "meta": {
-                "finalized": true,
-                "fromAddress": "0xba76c6980428A0b10CFC5d8ccb61949677A61233",
-                "timestamp": "2024-09-11T13:32:48Z",
-                "txID": "0x9b447614be654eeea0c5de0319b3f2c243ab45bebd914a1f7319f4bb599d8968"
-            },
-            "payload": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASaGVsbG8gdGVzdC1zZXBvbGlhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-            "type": "CALL"
-        }
-    ]
-}
-```
-
-Here’s how to retrieve these values from given the Contract Call transaction on the source chain:
-
--   `destinationChain`: the destination chain you used to make the contract call
--   `eventID`: the transaction hash of the submitted contract call + the index of the event in the transaction events (in the example above, the index is 1)
-
-    ```bash
-    TOPIC="0x30ae6cc78c27e651745bf2ad08a11de83910ac1e347a52f7ac898c0fbef94dae"
-    TX_ID="0x9b447614be654eeea0c5de0319b3f2c243ab45bebd914a1f7319f4bb599d8968"
-
-    receipt=$(curl -s $RPC -X POST -H "Content-Type: application/json" \
-      --data '{"method":"eth_getTransactionReceipt","params":["0x9b447614be654eeea0c5de0319b3f2c243ab45bebd914a1f7319f4bb599d8968"],"id":1,"jsonrpc":"2.0"}')
-
-    EVENT_INDEX=$(cat receipt | jq --arg TOPIC "$TOPIC" '.result.logs | map(.topics[0] == $TOPIC) | index(true)')
-
-    echo "eventID: $TX_ID-$EVENT_INDEX"
-    ```
-
--   `destinationAddress`: the destination address you used to make the contract call
--   `messageID`: in one-way Contract Calls, the message identifier is equivalent to the `eventID`. In two-way calls, the `messageID` is the `eventID` of the initial Contract Call at the first segment of the multi-hop chain.
--   `payloadHash`: This is available as the third topic of the event with the specific topic ID. You can extract it and encode it in base64:
-
-    ```bash
-    TOPIC="0x30ae6cc78c27e651745bf2ad08a11de83910ac1e347a52f7ac898c0fbef94dae"
-
-    # get 3rd argument of topic, and stript starting "0x"
-    payloadHashHex=$(echo $receipt | jq -r ".result.logs[] | select(.topics[0] == \"$TOPIC\") | .topics[2]" | cut -c 3-)
-
-    # encode to base64
-    payloadHash=$(echo -n "$payloadHashHex" | xxd -r -p | base64)
-
-    echo "payloadHash: $payloadHash"
-    ```
-
--   `sourceAddress`: This is the address that initiated the contract call. It can be extracted from the second topic of the event:
-
-    ```bash
-    TOPIC="0x30ae6cc78c27e651745bf2ad08a11de83910ac1e347a52f7ac898c0fbef94dae"
-
-    # get the 2nd argument of the topic and keep the address (0x | 24 zeros | address )
-    sourceAddress=$(cat receipt | jq -r --arg TOPIC "$TOPIC" '.result.logs[] | select(.topics[0] == $TOPIC) | .topics[1]' | cut -c 27-)
-
-    echo "sourceAddress: 0x$sourceAddress"
-    ```
-
--   `sourceChain`: This is the alias of the source chain as registered in amplifier.
--   `finalized`: Whether or not the transaction is finalized on the source chain. It’s not going to be processes until it’s flagged with `finalized: true` by the caller.
--   `fromAddress`(optional): This is the address that signed the transaction. It can be extracted directly from the receipt:
-
-    ```bash
-    fromAddress=$(echo $receipt | jq -r '.result.from')
-
-    echo "fromAddress: $fromAddress"
-    ```
-
--   `timestamp`(optional): This is not directly available in the receipt. It typically comes from the block timestamp. You'd need to fetch the block details to get this:
-
-    ```bash
-    # Extract block number (in hex)
-    blockNumber=$(echo $receipt | jq -r '.result.blockNumber')
-
-    # Fetch block data
-    blockData=$(curl -s $RPC -X POST -H "Content-Type: application/json" \
-      --data "{\"method\":\"eth_getBlockByNumber\",\"params\":[\"$blockNumber\", false],\"id\":1,\"jsonrpc\":\"2.0\"}")
-
-    # Extract timestamp (in hex) and convert to decimal
-    timestamp=$(echo $blockData | jq -r '.result.timestamp')
-    timestampDec=$((16#${timestamp:2}))  # Remove '0x' prefix and convert hex to decimal
-
-    formattedTimestamp=$(date -r $timestampDec -u +'%Y-%m-%dT%H:%M:%SZ')
-
-    echo "timestamp: $formattedTimestamp"
-    ```
-
--   `txID`(optional): This is the transaction hash
--   `payload`: This is the “payload” field of the contract call, encoded in base64. To extract it, you need to decode the data field of the topic.
--   `type`: This must be `CALL` for contract calls.
-
-After the event payload is constructed, submit it to the API as such:
+## Run the example
 
 ```bash
-curl -X POST $GMP_API_URL/test-avalanche/events \
-     -H "Content-Type: application/json" \
-     -d '{
-  "events": [
-    {
-      "destinationChain": "test-avalanche",
-      "eventID": "0x9b447614be654eeea0c5de0319b3f2c243ab45bebd914a1f7319f4bb599d8968-1",
-      "message": {
-        "destinationAddress": "0xE8E348fA7b311d6E308b1A162C3ec0172B37D1C1",
-        "messageID": "0x9b447614be654eeea0c5de0319b3f2c243ab45bebd914a1f7319f4bb599d8968-1",
-        "payloadHash": "Y2YO3UuCRRackxbPYX9dWmNTYcnAMOommp9g4ydb3i4=",
-        "sourceAddress": "0x9e3e785dD9EA3826C9cBaFb1114868bc0e79539a",
-        "sourceChain": "test-sepolia"
-      },
-      "meta": {
-        "finalized": true,
-        "fromAddress": "0xba76c6980428A0b10CFC5d8ccb61949677A61233",
-        "timestamp": "2024-09-11T13:32:48Z",
-        "txID": "0x9b447614be654eeea0c5de0319b3f2c243ab45bebd914a1f7319f4bb599d8968"
-      },
-      "payload": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASaGVsbG8gdGVzdC1zZXBvbGlhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-      "type": "CALL"
-    }
-  ]
-}'
+    node examples/amplifier/index.js -s avalanche-fuji -d xrpl-evm-sidechain -m 'hi there'
 ```
 
-### Wait for the task to get published
+The script above is an end-to-end example of invoking a GMP call on the `devnet-amplifier` environment. It:
 
-Once the event is submitted an processed, a new `GATEWAY_TX` task will be published.
+1. deploys an example executable contract on the specified source (`avalanche-fuji`) and destination (`xrpl-evm-sidechain`) chains
+    ```javascript
+    // examples/amplifier/index.js
+    const srcContractDeployment = await deploy(sourceChain);
+    const destContract = await deploy(destinationChain);
+    ```
+2. invokes a GMP call on `avalanche-fuji` and invokes `processContractCallEvent` to index the event. The `processContractCallEvent` generates an `CallEvent` (please see [GMP API endpoint and schema definitions](README.md#gmp-api-endpoint-and-schema-definitions)) and sends to to the `/events` endpoint.
+
+    ```javascript
+    // examples/amplifier/utils/gmp.js
+    const gmp = async ({ sourceChain, destinationChain, message, destinationContractAddress, srcContractAddress }) => {
+        const provider = new providers.JsonRpcProvider(getChainConfig(sourceChain).rpc);
+        const wallet = new Wallet(process.env.EVM_PRIVATE_KEY, provider);
+        const srcContract = new ethers.Contract(srcContractAddress, AmplifierGMPTest.abi, wallet);
+
+        try {
+            const tx = await srcContract.setRemoteValue(destinationChain, destinationContractAddress, message);
+            const transactionReceipt = await tx.wait();
+            console.log(`Initiated GMP event on ${sourceChain}, tx hash: ${transactionReceipt.transactionHash}`);
+
+            await sleep(10000); // allow for gmp event to propagate before triggering indexing
+
+            processContractCallEvent(sourceChain, transactionReceipt.transactionHash, true);
+        } catch (error) {
+            throw new Error(`Error calling contract: ${error}`);
+        }
+    };
+    ```
+
+3. initiates a poll on the `/tasks` endpoint to listen for messages that are processed and ready to be relayed to your destination chain.
+
+    ```javascript
+    // examples/amplifier/index.js
+
+    main(null).then(() => pollTasks({ chainName: options.destinationChain, pollInterval: 10000, dryRunOpt: false }));
+    ```
+
+    ```javascript
+    // examples/amplifier/gmp-api/tasks.js
+
+    async function pollTasks({ chainName, pollInterval, dryRunOpt }) {
+        if (dryRunOpt) {
+            console.log('Dry run enabled');
+            dryRun = true;
+        }
+
+        const chainConfig = getChainConfig(chainName);
+
+        const intervalId = setInterval(async () => {
+            await getNewTasks(chainConfig, intervalId);
+        }, pollInterval);
+    }
+    ```
+
+    - In this particular example, there are two events we expect to arise from the `/tasks` endpoint:
+
+        - `GATEWAY_TX` for approved messages on the Amplifier network ready to be relayed to the destination chain gateway, and they are processed in the following snippet by relaying the transaction to the destination chain and recording the event on the GMP API.
+
+        The `recordMessageApprovedEvent` function generates an `MessageApprovedEvent` (please see [GMP API endpoint and schema definitions](README.md#gmp-api-endpoint-and-schema-definitions)) extracted from the destination chain tx receipt and sends to to the `/events` endpoint.
+
+        ```javascript
+        // examples/amplifier/gmp-api/tasks.js
+
+        // Note: The `messageIdToCommandID` mapping is only relevant for EVM relaying. For EVM chains, commandID is still required in the 'execute' function on the destination chain
+        // Because the unifying identifier between APPROVE and EXECUTE events is the messageID, this mapping helps to record the relation between those events for a single GMP tx
+        const messageIdToCommandId = {};
+
+        async function processApproval(task, chainConfig) {
+            console.log('Processing approve task', task.id);
+            const payload = decodePayload(task.task.executeData);
+            const destinationAddress = chainConfig.gateway;
+
+            const destTxRecept = await relayApproval(chainConfig.rpc, payload, destinationAddress);
+            const { apiEvent } = await recordMessageApprovedEvent(chainConfig.name, destTxRecept.transactionHash, '0');
+            messageIdToCommandId[apiEvent.message.messageID] = apiEvent.meta.commandID;
+        }
+        ```
+
+        - `EXECUTE` for the payload of the GMP message to be executed on the executable on the destination chain.
+
+        The `recordMessageExecutedEvent` function generates an `MessageExecutedEvent` (please see [GMP API endpoint and schema definitions](README.md#gmp-api-endpoint-and-schema-definitions)) extracted from the destination chain tx receipt and sends to to the `/events` endpoint.
+
+        ```javascript
+        // examples/amplifier/gmp-api/tasks.js
+
+        async function processExecute(task, chainConfig, intervalId) {
+            console.log('Processing execute task', task.id);
+            const payload = decodePayload(task.task.payload);
+            const destinationAddress = task.task.message.destinationAddress;
+            const { messageID, sourceAddress, sourceChain } = task.task.message;
+
+            const destTxRecept = await relayExecution(chainConfig.rpc, payload, destinationAddress, {
+                messageID,
+                sourceAddress,
+                sourceChain,
+            });
+            await recordMessageExecutedEvent(chainConfig.name, destTxRecept.transactionHash, sourceChain, messageID, '0');
+            clearInterval(intervalId);
+            console.log('Polling interval cleared after EXECUTE task completed');
+        }
+        ```
