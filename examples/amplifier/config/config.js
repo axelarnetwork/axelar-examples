@@ -19,8 +19,9 @@ const defaults = {
     GMP_API_URL: 'http://localhost:8080',
 };
 
-const chainsConfigFile = './examples/amplifier/config/chains.json';
-const chainsConfig = JSON.parse(fs.readFileSync(chainsConfigFile, 'utf8'));
+const chainsConfigFile = JSON.parse(fs.readFileSync('./examples/amplifier/config/chains.json', 'utf8'));
+const environment = process.env.ENVIRONMENT;
+const chainsConfig = chainsConfigFile[environment];
 
 function getConfig() {
     const serverHOST = process.env.HOST || defaults.HOST;
@@ -38,8 +39,6 @@ function getConfig() {
             key,
             rejectUnauthorized: false,
         }),
-        cert,
-        key,
     };
 }
 

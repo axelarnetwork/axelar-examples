@@ -12,6 +12,7 @@ const gmp = async ({ sourceChain, destinationChain, message, destinationContract
     try {
         const tx = await srcContract.setRemoteValue(destinationChain, destinationContractAddress, message);
         const transactionReceipt = await tx.wait();
+        console.log(`Initiated GMP event on ${sourceChain}, tx hash: ${transactionReceipt.transactionHash}`);
 
         await sleep(10000); // allow for gmp event to propagate before triggering indexing
 

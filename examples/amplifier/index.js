@@ -21,9 +21,10 @@ const main = async () => {
     const srcContractDeployment = await deploy(sourceChain);
     const destContract = await deploy(destinationChain);
 
-    await sleep(10000); // wait for contracts above to deploy
+    console.log('Contracts deployed, waiting 10 seconds for txs to propagate');
+    await sleep(10000);
 
-    gmp(
+    await gmp(
         {
             destinationChain,
             sourceChain,
@@ -35,5 +36,4 @@ const main = async () => {
     );
 };
 
-pollTasks({ chainName: options.destinationChain, pollInterval: 10000, dryRunOpt: false });
-main(null);
+main(null).then(() => pollTasks({ chainName: options.destinationChain, pollInterval: 10000, dryRunOpt: false }));
