@@ -17,3 +17,6 @@ chain-config/*.json
 !./**/artifacts/send_receive.wasm
 
 .multiversx
+
+*.crt
+*.key

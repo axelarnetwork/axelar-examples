@@ -1,0 +1,14 @@
+{
+    "devnet-amplifier": [
+        {
+            "name": "avalanche-fuji",
+            "rpc": "https://rpc.ankr.com/avalanche_fuji",
+            "gateway": "0xF128c84c3326727c3e155168daAa4C0156B87AD1"
+        },
+        {
+            "name": "xrpl-evm-sidechain",
+            "rpc": "https://rpc-evm-sidechain.xrpl.org",
+            "gateway": "0x48CF6E93C4C1b014F719Db2aeF049AA86A255fE2"
+        }
+    ]
+}

@@ -1,19 +1,27 @@
 const fs = require('fs');
-
+const https = require('https');
 const dotenv = require('dotenv');
 
 // Load environment variables from .env file
 dotenv.config();
 
+// Load the certificate and key
+const cert = fs.readFileSync(process.env.CRT_PATH);
+const key = fs.readFileSync(process.env.KEY_PATH);
+
 // Default configuration values
 const defaults = {
     // gRPC
-    HOST: "localhost",
-    PORT: "50051",
+    HOST: 'localhost',
+    PORT: '50051',
 
     // GMP API
-    GMP_API_URL: "http://localhost:8080",
+    GMP_API_URL: 'http://localhost:8080',
 };
+
+const chainsConfigFile = JSON.parse(fs.readFileSync('./examples/amplifier/config/chains.json', 'utf8'));
+const environment = process.env.ENVIRONMENT;
+const chainsConfig = chainsConfigFile[environment];
 
 function getConfig() {
     const serverHOST = process.env.HOST || defaults.HOST;
@@ -25,15 +33,17 @@ function getConfig() {
         serverHOST,
         serverPort,
         gmpAPIURL,
+        chains: chainsConfig,
+        httpsAgent: new https.Agent({
+            cert,
+            key,
+            rejectUnauthorized: false,
+        }),
     };
 }
 
-const chainsConfigFile = './examples/amplifier/chains.json';
-
 function getChainConfig(chainName) {
-    const chainsConfig = JSON.parse(fs.readFileSync(chainsConfigFile, 'utf8'));
-
-    const chainConfig = chainsConfig.find(c => c.name === chainName);
+    const chainConfig = chainsConfig.find((c) => c.name === chainName);
 
     if (!chainConfig) {
         throw new Error(`RPC URL not found for chain: ${chainName}`);
