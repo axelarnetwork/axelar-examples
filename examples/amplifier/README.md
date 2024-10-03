@@ -41,6 +41,8 @@ https://bright-ambert-2bd.notion.site/Amplifier-GMP-API-EXTERNAL-911e740b570b401
 
 ## Run the example
 
+The following example is a simple GMP call from `avalanche-fuji` to `xrpl-evm-sidchain` on the `devnet-amplifier`. To add your own chain to this example (assuming it is already live on the network), simply add your chain config to the `chains.json` file in `examples > amplifier > config > chains.json`
+
 ```bash
     node examples/amplifier/index.js -s avalanche-fuji -d xrpl-evm-sidechain -m 'hi there'
 ```
