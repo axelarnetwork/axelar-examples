@@ -16,7 +16,8 @@ https://bright-ambert-2bd.notion.site/Amplifier-GMP-API-EXTERNAL-911e740b570b401
 
 1. In order to onboard your relayer to be able to leverage the GMP API, please follow these initial steps
     - https://www.notion.so/bright-ambert-2bd/Amplifier-GMP-API-Authentication-EXTERNAL-113c53fccb77807caeeff9882b883a4c?pvs=4
-    - Please reach out to the Interop Labs team for access
+    - Please reach out to the Interop Labs team for access to the docs instructions.
+    - Once you receive the credentials, you can include them in the root directory of this repository (which will be gitignored) and add their filepath to the `.env` file (as outlined in step 4 below)
 
 ## Repository Setup
 
