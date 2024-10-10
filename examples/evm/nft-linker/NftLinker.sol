@@ -85,7 +85,7 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
         //Pay for gas. We could also send the contract call here but then the _sourceAddress will be that of the gas receiver which is a problem later.
         gasService.payNativeGasForContractCall{ value: msg.value }(address(this), _destinationChain, stringAddress, payload, msg.sender);
         //Call the remote contract.
-        gateway.callContract(_destinationChain, stringAddress, payload);
+        gateway().callContract(_destinationChain, stringAddress, payload);
     }
 
     /**
@@ -106,7 +106,7 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
         gasService.payNativeGasForContractCall{ value: msg.value }(address(this), _destinationChain, stringAddress, payload, msg.sender);
         //Call remote contract.
 
-        gateway.callContract(_destinationChain, stringAddress, payload);
+        gateway().callContract(_destinationChain, stringAddress, payload);
     }
 
     /**
@@ -116,7 +116,12 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
      * @param _sourceAddress address on src chain where tx is originating from
      * @param _payload encoded gmp message sent from src chain
      */
-    function _execute(string calldata /*sourceChain*/, string calldata _sourceAddress, bytes calldata _payload) internal override {
+    function _execute(
+        bytes32 /*commandId*/,
+        string calldata /*sourceChain*/,
+        string calldata _sourceAddress,
+        bytes calldata _payload
+    ) internal override {
         //Check that the sender is another token linker.
 
         require(_sourceAddress.toAddress() == address(this), 'NOT_A_LINKER');

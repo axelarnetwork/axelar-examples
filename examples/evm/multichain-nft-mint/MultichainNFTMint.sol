@@ -35,10 +35,10 @@ contract MultichainNFTMint is AxelarExecutable {
             msg.sender
         );
 
-        gateway.callContract(_destChain, _destContractAddr, mintNftPayload);
+        gateway().callContract(_destChain, _destContractAddr, mintNftPayload);
     }
 
-    function _execute(string calldata, string calldata, bytes calldata _payload) internal override {
+    function _execute(bytes32 /*commandId*/, string calldata, string calldata, bytes calldata _payload) internal override {
         (bool success, ) = address(nft).call(_payload);
         require(success, 'safeMint() call failed');
     }

@@ -1,8 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import { AxelarGMPExecutableWithToken } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarGMPExecutableWithToken.sol';
-import { IAxelarGMPGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGMPGateway.sol';
+import { AxelarExecutableWithToken } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutableWithToken.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 
@@ -10,7 +9,7 @@ import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contr
  * @title Call Contract With Token
  * @notice Send a token along with an Axelar GMP message between two blockchains
  */
-contract CallContractWithToken is AxelarGMPExecutableWithToken {
+contract CallContractWithToken is AxelarExecutableWithToken {
     IAxelarGasService public immutable gasService;
 
     event Executed(bytes32 commandId, string sourceChain, string sourceAddress, bytes payload);
@@ -21,7 +20,7 @@ contract CallContractWithToken is AxelarGMPExecutableWithToken {
      * @param _gateway address of axl gateway on deployed chain
      * @param _gasReceiver address of axl gas service on deployed chain
      */
-    constructor(address _gateway, address _gasReceiver) AxelarGMPExecutableWithToken(_gateway) {
+    constructor(address _gateway, address _gasReceiver) AxelarExecutableWithToken(_gateway) {
         gasService = IAxelarGasService(_gasReceiver);
     }
 
@@ -59,8 +58,13 @@ contract CallContractWithToken is AxelarGMPExecutableWithToken {
         gatewayWithToken().callContractWithToken(destinationChain, destinationAddress, payload, symbol, amount);
     }
 
-    function _execute(bytes32 commandId,string calldata sourceChain, string calldata sourceAddress, bytes calldata payload) internal override {
-        emit Executed(commandId,sourceChain, sourceAddress, payload);
+    function _execute(
+        bytes32 commandId,
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload
+    ) internal override {
+        emit Executed(commandId, sourceChain, sourceAddress, payload);
     }
 
     /**
@@ -88,5 +92,4 @@ contract CallContractWithToken is AxelarGMPExecutableWithToken {
 
         emit ExecutedWithToken(commandId, sourceChain, sourceAddress, payload, tokenSymbol, amount);
     }
-
 }
