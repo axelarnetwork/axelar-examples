@@ -1,6 +1,6 @@
 require('hardhat-gas-reporter');
 require('solidity-coverage');
-require("@nomicfoundation/hardhat-chai-matchers")
+require('@nomicfoundation/hardhat-chai-matchers');
 
 /**
  * @type import('hardhat/config').HardhatUserConfig

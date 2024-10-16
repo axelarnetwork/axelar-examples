@@ -2,7 +2,7 @@
 
 This example demonstrates how to use the ITS with a custom token implementation with the `LOCK_UNLOCK_FEE` token manager type.
 
-The token will be minted/burned on transfers. The token needs to give mint permission to the token manager, but burning happens via an approval.
+The token will be locked/unlocked on transfers in/out of the token's home chain. The token needs to give mint permission to the token manager to call the `safeTransferFrom()` function on the token.
 
 ### Prerequisite
 
