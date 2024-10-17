@@ -23,7 +23,7 @@ async function interchainTransfer(source, destination, wallet, tokenId, amount, 
  
     console.log(`Sending ${amount} of token ${tokenAddress} to ${destination.name}`);
 
-    const tx = await sourceIts.interchainTransfer(tokenId, destination.name, wallet.address, amount - 1, '0x', fee, {
+    const tx = await sourceIts.interchainTransfer(tokenId, destination.name, wallet.address, amount, '0x', fee, {
         value: fee,
     });
     await tx.wait();
