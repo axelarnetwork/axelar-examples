@@ -1,19 +1,15 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
+import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutableWithToken.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 
-contract LendingSatellite is AxelarExecutable {
+contract LendingSatellite is AxelarExecutableWithToken {
     string public baseChain;
     string public baseContract;
 
-    constructor(
-        address gateway_,
-        string memory baseChain_,
-        string memory baseContract_
-    ) AxelarExecutable(gateway_) {
+    constructor(address gateway_, string memory baseChain_, string memory baseContract_) AxelarExecutableWithToken(gateway_) {
         baseChain = baseChain_;
         baseContract = baseContract_;
     }
@@ -24,14 +20,14 @@ contract LendingSatellite is AxelarExecutable {
         string calldata borrowTokenSymbol,
         uint256 borrowAmount
     ) external {
-        address supplyTokenAddress = gateway.tokenAddresses(supplyTokenSymbol);
+        address supplyTokenAddress = gatewayWithToken().tokenAddresses(supplyTokenSymbol);
         IERC20(supplyTokenAddress).transferFrom(msg.sender, address(this), supplyAmount);
-        IERC20(supplyTokenAddress).approve(address(gateway), supplyAmount);
+        IERC20(supplyTokenAddress).approve(address(gatewayWithToken()), supplyAmount);
 
         bytes memory params = abi.encode(borrowTokenSymbol, borrowAmount, Strings.toHexString(uint256(uint160(msg.sender)), 20));
         bytes memory payload = abi.encode('supplyAndBorrow', params);
 
-        gateway.callContractWithToken(baseChain, baseContract, payload, supplyTokenSymbol, supplyAmount);
+        gatewayWithToken().callContractWithToken(baseChain, baseContract, payload, supplyTokenSymbol, supplyAmount);
     }
 
     function repayAndRedeem(
@@ -40,13 +36,29 @@ contract LendingSatellite is AxelarExecutable {
         string calldata redeemTokenSymbol,
         uint256 redeemAmount
     ) external {
-        address repayTokenAddress = gateway.tokenAddresses(repayTokenSymbol);
+        address repayTokenAddress = gatewayWithToken().tokenAddresses(repayTokenSymbol);
         IERC20(repayTokenAddress).transferFrom(msg.sender, address(this), repayAmount);
-        IERC20(repayTokenAddress).approve(address(gateway), repayAmount);
+        IERC20(repayTokenAddress).approve(address(gatewayWithToken()), repayAmount);
 
         bytes memory params = abi.encode(redeemTokenSymbol, redeemAmount, Strings.toHexString(uint256(uint160(msg.sender)), 20));
         bytes memory payload = abi.encode('repayAndRedeem', params);
 
-        gateway.callContractWithToken(baseChain, baseContract, payload, repayTokenSymbol, repayAmount);
+        gatewayWithToken().callContractWithToken(baseChain, baseContract, payload, repayTokenSymbol, repayAmount);
     }
+
+    function _execute(
+        bytes32 commandId,
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload
+    ) internal virtual override {}
+
+    function _executeWithToken(
+        bytes32 commandId,
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload,
+        string calldata tokenSymbol,
+        uint256 amount
+    ) internal virtual override {}
 }

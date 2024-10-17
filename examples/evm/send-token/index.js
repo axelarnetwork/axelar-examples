@@ -1,8 +1,8 @@
 'use strict';
 
 const { getDefaultProvider, Contract } = require('ethers');
-const Gateway = rootRequire(
-    './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
+const GatewayWithToken = rootRequire(
+    './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGatewayWithToken.sol/IAxelarGatewayWithToken.json',
 );
 const IERC20 = rootRequire('./artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
@@ -17,7 +17,7 @@ async function execute(chains, wallet, options = {}) {
     for (const chain of [source, destination]) {
         const provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(provider);
-        chain.contract = new Contract(chain.gateway.address, Gateway.abi, chain.wallet);
+        chain.contract = new Contract(chain.gateway.address, GatewayWithToken.abi, chain.wallet);
         const tokenAddress = await chain.contract.tokenAddresses(symbol);
         chain.token = new Contract(tokenAddress, IERC20.abi, chain.wallet);
     }

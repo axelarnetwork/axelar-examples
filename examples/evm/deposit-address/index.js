@@ -2,8 +2,8 @@
 
 const { getDefaultProvider, Contract, utils } = require('ethers');
 
-const Gateway = rootRequire(
-    './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
+const GatewayWithToken = rootRequire(
+    './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGatewayWithToken.sol/IAxelarGatewayWithToken.json',
 );
 const IERC20 = rootRequire('./artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
@@ -17,16 +17,16 @@ async function execute(chains, wallet, options = {}) {
     for (const chain of [source, destination]) {
         const provider = getDefaultProvider(chain.rpc);
         chain.wallet = wallet.connect(provider);
-        chain.contract = new Contract(chain.gateway.address, Gateway.abi, chain.wallet);
+        chain.contract = new Contract(chain.gateway.address, GatewayWithToken.abi, chain.wallet);
         const tokenAddress = await chain.contract.tokenAddresses(symbol);
         chain.token = new Contract(tokenAddress, IERC20.abi, chain.wallet);
     }
 
     async function print() {
-        const sourceBalance = utils.formatEther(await source.token.balanceOf(wallet.address))
-        const destBalance = utils.formatEther(await destination.token.balanceOf(destinationAddress))
+        const sourceBalance = utils.formatEther(await source.token.balanceOf(wallet.address));
+        const destBalance = utils.formatEther(await destination.token.balanceOf(destinationAddress));
 
-        console.log(`Balance at ${source.name} is ${Number(sourceBalance).toFixed(3)}`);        
+        console.log(`Balance at ${source.name} is ${Number(sourceBalance).toFixed(3)}`);
         console.log(`Balance at ${destination.name} is ${Number(destBalance).toFixed(3)}`);
     }
 

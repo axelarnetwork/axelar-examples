@@ -16,8 +16,8 @@ const bidRemote = require('./bidRemote');
 const auction = require('./auction');
 const resolveAuction = require('./resolveAuction');
 
-const Gateway = rootRequire(
-    './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
+const GatewayWithToken = rootRequire(
+    './artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGatewayWithToken.sol/IAxelarGatewayWithToken.json',
 );
 const ERC721 = rootRequire('./artifacts/examples/evm/nft-auctionhouse/ERC721Demo.sol/ERC721Demo.json');
 const NftAuctionHouse = rootRequire('./artifacts/examples/evm/nft-auctionhouse/NftAuctionhouseRemote.sol/NftAuctionhouseRemote.json');
@@ -31,7 +31,7 @@ async function deploy(chain, wallet) {
     chain.erc721 = erc721.address;
     console.log(`Deployed ERC721Demo for ${chain.name} at ${chain.erc721}.`);
     console.log(`Deploying NftAuctionhouse for ${chain.name}.`);
-    const gateway = new Contract(chain.gateway, Gateway.abi, wallet);
+    const gateway = new Contract(chain.gateway, GatewayWithToken.abi, wallet);
     const tokenAddress = await gateway.tokenAddresses('aUSDC');
     console.log(tokenAddress);
     chain.contract = await deployContract(wallet, NftAuctionHouse, [chain.gateway, chain.gasService, tokenAddress]);

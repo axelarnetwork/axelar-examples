@@ -1,12 +1,12 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
+import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutableWithToken.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import './interfaces/CErc20Interface.sol';
 import './interfaces/Comptroller.sol';
 
-contract CompoundInterface is AxelarExecutable {
+contract CompoundInterface is AxelarExecutableWithToken {
     bytes32 internal constant SELECTOR_SUPPLY_AND_BORROW = keccak256('supplyAndBorrow');
     bytes32 internal constant SELECTOR_REPAY_AND_REDEEM = keccak256('repayAndRedeem');
 
@@ -26,7 +26,7 @@ contract CompoundInterface is AxelarExecutable {
         Comptroller comptroller_,
         string[] memory supportedTokens,
         address[] memory cTokens
-    ) AxelarExecutable(gateway_) {
+    ) AxelarExecutableWithToken(gateway_) {
         require(supportedTokens.length == cTokens.length, 'Lengths missmatch');
 
         comptroller = comptroller_;
@@ -66,7 +66,7 @@ contract CompoundInterface is AxelarExecutable {
 
     function _mint(string calldata tokenSymbol, uint256 amount, string memory userAddress) internal {
         CErc20Interface cToken = _cTokens[tokenSymbol];
-        IERC20 tokenAddress = IERC20(gateway.tokenAddresses(tokenSymbol));
+        IERC20 tokenAddress = IERC20(gatewayWithToken().tokenAddresses(tokenSymbol));
 
         tokenAddress.approve(address(cToken), amount);
         uint256 balanceBefore = cToken.balanceOf(address(this));
@@ -79,18 +79,18 @@ contract CompoundInterface is AxelarExecutable {
 
     function _borrow(string calldata sourceChain, string memory userAddress, string memory tokenSymbol, uint256 amount) internal {
         CErc20Interface cToken = _cTokens[tokenSymbol];
-        IERC20 tokenAddress = IERC20(gateway.tokenAddresses(tokenSymbol));
+        IERC20 tokenAddress = IERC20(gatewayWithToken().tokenAddresses(tokenSymbol));
 
         // in production must limit borrow amount corresponding to the proportion this user supplied as collateral
         cToken.borrow(amount);
 
-        tokenAddress.approve(address(gateway), amount);
-        gateway.sendToken(sourceChain, userAddress, tokenSymbol, amount);
+        tokenAddress.approve(address(gatewayWithToken()), amount);
+        gatewayWithToken().sendToken(sourceChain, userAddress, tokenSymbol, amount);
     }
 
     function _repayBorrow(string calldata tokenSymbol, uint256 amount) internal {
         CErc20Interface cToken = _cTokens[tokenSymbol];
-        IERC20 tokenAddress = IERC20(gateway.tokenAddresses(tokenSymbol));
+        IERC20 tokenAddress = IERC20(gatewayWithToken().tokenAddresses(tokenSymbol));
 
         tokenAddress.approve(address(cToken), amount);
         cToken.repayBorrow(amount);
@@ -98,7 +98,7 @@ contract CompoundInterface is AxelarExecutable {
 
     function _redeem(string calldata sourceChain, string memory userAddress, string memory tokenSymbol, uint256 amount) internal {
         CErc20Interface cToken = _cTokens[tokenSymbol];
-        IERC20 tokenAddress = IERC20(gateway.tokenAddresses(tokenSymbol));
+        IERC20 tokenAddress = IERC20(gatewayWithToken().tokenAddresses(tokenSymbol));
 
         require(cBalances[userAddress][tokenSymbol] >= amount, 'Not enough balance');
         cBalances[userAddress][tokenSymbol] -= amount;
@@ -108,11 +108,12 @@ contract CompoundInterface is AxelarExecutable {
         require(result == 0, 'Error redeeming for underlying');
         uint256 redeemedAmount = tokenAddress.balanceOf(address(this)) - balanceBefore;
 
-        tokenAddress.approve(address(gateway), redeemedAmount);
-        gateway.sendToken(sourceChain, userAddress, tokenSymbol, redeemedAmount);
+        tokenAddress.approve(address(gatewayWithToken()), redeemedAmount);
+        gatewayWithToken().sendToken(sourceChain, userAddress, tokenSymbol, redeemedAmount);
     }
 
     function _executeWithToken(
+        bytes32 /*commandId*/,
         string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload,
@@ -150,4 +151,11 @@ contract CompoundInterface is AxelarExecutable {
             }
         }
     }
+
+    function _execute(
+        bytes32 commandId,
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload
+    ) internal override {}
 }

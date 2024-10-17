@@ -21,11 +21,7 @@ contract SendAckSender is AxelarExecutable {
     IAxelarGasService public immutable gasService;
     string public thisChain;
 
-    constructor(
-        address gateway_,
-        address gasReceiver_,
-        string memory thisChain_
-    ) AxelarExecutable(gateway_) {
+    constructor(address gateway_, address gasReceiver_, string memory thisChain_) AxelarExecutable(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
         thisChain = thisChain_;
     }
@@ -34,15 +30,11 @@ contract SendAckSender is AxelarExecutable {
         return keccak256(abi.encode(destinationChain, contractAddress));
     }
 
-    function sendContractCall(
-        string calldata destinationChain,
-        string calldata contractAddress,
-        bytes calldata payload
-    ) external payable {
+    function sendContractCall(string calldata destinationChain, string calldata contractAddress, bytes calldata payload) external payable {
         uint256 nonce_ = nonce;
         bytes memory modifiedPayload = abi.encode(nonce_, payload);
 
-        if (msg.value == 0)  revert NotEnoughValueForGas();
+        if (msg.value == 0) revert NotEnoughValueForGas();
 
         gasService.payNativeGasForContractCall{ value: msg.value }(
             address(this),
@@ -52,14 +44,14 @@ contract SendAckSender is AxelarExecutable {
             msg.sender
         );
 
-
-        gateway.callContract(destinationChain, contractAddress, modifiedPayload);
+        gateway().callContract(destinationChain, contractAddress, modifiedPayload);
         emit ContractCallSent(destinationChain, contractAddress, payload, nonce_);
         destination[nonce_] = _getDestinationHash(destinationChain, contractAddress);
         nonce = nonce_ + 1;
     }
 
     function _execute(
+        bytes32 /*commandId*/,
         string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload

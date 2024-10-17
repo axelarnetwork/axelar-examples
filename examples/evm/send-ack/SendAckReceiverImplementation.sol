@@ -15,11 +15,7 @@ contract SendAckReceiverImplementation is SendAckReceiver {
     }
 
     // override this to do stuff
-    function _executePostAck(
-        string memory, /*sourceChain*/
-        string memory, /*sourceAddress*/
-        bytes memory payload
-    ) internal override {
+    function _executePostAck(string memory /*sourceChain*/, string memory /*sourceAddress*/, bytes memory payload) internal override {
         string memory message = abi.decode(payload, (string));
         messages.push(message);
     }

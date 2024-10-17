@@ -4,8 +4,8 @@ const { Contract, getDefaultProvider } = require('ethers');
 const { CosmosClient } = require('@axelar-network/axelar-local-dev-cosmos');
 const { calculateBridgeFee, getDepositAddress, calculateBridgeExpressFee, readChainConfig } = require('./utils.js');
 const { configPath } = require('../../config/index.js');
-const AxelarGatewayContract = rootRequire(
-    'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol/IAxelarGateway.json',
+const AxelarGatewayWithTokenContract = rootRequire(
+    'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGatewayWithToken.sol/IAxelarGatewayWithToken.json',
 );
 const AxelarGasServiceContract = rootRequire(
     'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol/IAxelarGasService.json',
@@ -22,7 +22,7 @@ async function executeCosmosExample(_env, chains, args, wallet, example) {
     deserializeContract(evmChain, connectedWallet);
 
     // Recover axelar contracts to chain object.
-    evmChain.gateway = new Contract(evmChain.gateway, AxelarGatewayContract.abi, connectedWallet);
+    evmChain.gateway = new Contract(evmChain.gateway, AxelarGatewayWithTokenContract.abi, connectedWallet);
     evmChain.gasService = new Contract(evmChain.gasService, AxelarGasServiceContract.abi, connectedWallet);
 
     const config = readChainConfig(configPath.localCosmosChains);
@@ -48,7 +48,7 @@ async function executeMultiversXExample(chains, args, wallet, example) {
     deserializeContract(evmChain, connectedWallet);
 
     // Recover axelar contracts to chain object.
-    evmChain.gateway = new Contract(evmChain.gateway, AxelarGatewayContract.abi, connectedWallet);
+    evmChain.gateway = new Contract(evmChain.gateway, AxelarGatewayWithTokenContract.abi, connectedWallet);
     evmChain.gasService = new Contract(evmChain.gasService, AxelarGasServiceContract.abi, connectedWallet);
 
     const tokenAddress = await evmChain.gateway.tokenAddresses('aUSDC');
@@ -77,7 +77,7 @@ async function executeEVMExample(env, chains, args, wallet, example) {
         deserializeContract(chain, connectedWallet);
 
         // Recover axelar contracts to chain object.
-        chain.gateway = new Contract(chain.gateway, AxelarGatewayContract.abi, connectedWallet);
+        chain.gateway = new Contract(chain.gateway, AxelarGatewayWithTokenContract.abi, connectedWallet);
         chain.gasService = new Contract(chain.gasService, AxelarGasServiceContract.abi, connectedWallet);
         const tokenAddress = await chain.gateway.tokenAddresses('aUSDC');
         chain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);

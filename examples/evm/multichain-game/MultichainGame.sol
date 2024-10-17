@@ -3,21 +3,20 @@ pragma solidity ^0.8.0;
 
 import { IERC20 } from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
-import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { AxelarExecutableWithToken } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutableWithToken.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 import { AddressToString, StringToAddress } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/AddressString.sol';
 
 import { MultichainGameReceiver } from './MultichainGameReceiver.sol';
 
-contract MultichainGame is AxelarExecutable {
+contract MultichainGame is AxelarExecutableWithToken {
     using AddressToString for address;
     using StringToAddress for string;
 
     IAxelarGasService public immutable gasService;
 
-    constructor(address _gateway, address _gasService) AxelarExecutable(_gateway) {
+    constructor(address _gateway, address _gasService) AxelarExecutableWithToken(_gateway) {
         gasService = IAxelarGasService(_gasService);
     }
 
@@ -30,7 +29,7 @@ contract MultichainGame is AxelarExecutable {
     ) external payable {
         require(_guess >= 1 && _guess <= 6, 'Invalid guess');
 
-        address tokenAddress = gateway.tokenAddresses(_symbol);
+        address tokenAddress = gatewayWithToken().tokenAddresses(_symbol);
 
         require(tokenAddress != address(0), 'Invalid token');
 
@@ -45,7 +44,7 @@ contract MultichainGame is AxelarExecutable {
             bytes memory encodedGuess = abi.encode(msg.sender, _guess);
 
             IERC20(tokenAddress).transferFrom(msg.sender, address(this), _amount);
-            IERC20(tokenAddress).approve(address(gateway), _amount);
+            IERC20(tokenAddress).approve(address(gatewayWithToken()), _amount);
 
             gasService.payNativeGasForContractCallWithToken{ value: msg.value }(
                 address(this),
@@ -57,19 +56,20 @@ contract MultichainGame is AxelarExecutable {
                 msg.sender
             );
 
-            gateway.callContractWithToken(_destChain, _gameReceiver, encodedGuess, _symbol, _amount);
+            gatewayWithToken().callContractWithToken(_destChain, _gameReceiver, encodedGuess, _symbol, _amount);
         }
     }
 
     function _executeWithToken(
-        string calldata,
-        string calldata,
+        bytes32 /*commandId*/,
+        string calldata /*sourceChain*/,
+        string calldata /*sourceAddress*/,
         bytes calldata _payload,
         string calldata _symbol,
         uint256 _amount
     ) internal override {
         address player = abi.decode(_payload, (address));
-        address tokenAddress = gateway.tokenAddresses(_symbol);
+        address tokenAddress = gatewayWithToken().tokenAddresses(_symbol);
         IERC20(tokenAddress).transfer(player, _amount);
     }
 
@@ -83,6 +83,17 @@ contract MultichainGame is AxelarExecutable {
     }
 
     function _payoutWinner(address _player, address _gameReceiver) internal {
-        MultichainGameReceiver(_gameReceiver).payOutAllTokensToWinnerSameChain(_player, address(this).toString(), Strings.toString(block.chainid));
+        MultichainGameReceiver(_gameReceiver).payOutAllTokensToWinnerSameChain(
+            _player,
+            address(this).toString(),
+            Strings.toString(block.chainid)
+        );
     }
+
+    function _execute(
+        bytes32 commandId,
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload
+    ) internal virtual override {}
 }

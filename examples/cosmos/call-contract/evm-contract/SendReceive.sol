@@ -42,7 +42,7 @@ contract SendReceive is AxelarExecutable {
         );
 
         // 3. Make GMP call
-        gateway.callContract(destinationChain, destinationAddress, payload);
+        gateway().callContract(destinationChain, destinationAddress, payload);
     }
 
     function _encodePayloadToCosmWasm(bytes memory executeMsgPayload) internal view returns (bytes memory) {
@@ -73,7 +73,12 @@ contract SendReceive is AxelarExecutable {
         return abi.encodePacked(bytes4(0x00000001), gmpPayload);
     }
 
-    function _execute(string calldata /*sourceChain*/, string calldata /*sourceAddress*/, bytes calldata payload) internal override {
+    function _execute(
+        bytes32 /*commandId*/,
+        string calldata /*sourceChain*/,
+        string calldata /*sourceAddress*/,
+        bytes calldata payload
+    ) internal override {
         (string memory sender, string memory message) = abi.decode(payload, (string, string));
         storedMessage = Message(sender, message);
     }

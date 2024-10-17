@@ -17,7 +17,7 @@ contract CallContractGasEstimation is AxelarExecutable {
     IAxelarGasService public immutable gasService;
     uint256 public constant GAS_LIMIT = 200000;
 
-    event Executed(string _from, string _message);
+    event Executed(bytes32 commandId, string _from, string _message);
 
     /**
      *
@@ -42,13 +42,7 @@ contract CallContractGasEstimation is AxelarExecutable {
     ) external view returns (uint256) {
         bytes memory payload = abi.encode(_message);
 
-        return gasService.estimateGasFee(
-            destinationChain,
-            destinationAddress,
-            payload,
-            GAS_LIMIT,
-            new bytes(0)
-        );
+        return gasService.estimateGasFee(destinationChain, destinationAddress, payload, GAS_LIMIT, new bytes(0));
     }
 
     /**
@@ -76,7 +70,7 @@ contract CallContractGasEstimation is AxelarExecutable {
             msg.sender,
             new bytes(0)
         );
-        gateway.callContract(destinationChain, destinationAddress, payload);
+        gateway().callContract(destinationChain, destinationAddress, payload);
     }
 
     /**
@@ -86,11 +80,16 @@ contract CallContractGasEstimation is AxelarExecutable {
      * @param _sourceAddress address on src chain where tx is originating from
      * @param _payload encoded gmp message sent from src chain
      */
-    function _execute(string calldata _sourceChain, string calldata _sourceAddress, bytes calldata _payload) internal override {
+    function _execute(
+        bytes32 commandId,
+        string calldata _sourceChain,
+        string calldata _sourceAddress,
+        bytes calldata _payload
+    ) internal override {
         (message) = abi.decode(_payload, (string));
         sourceChain = _sourceChain;
         sourceAddress = _sourceAddress;
 
-        emit Executed(sourceAddress, message);
+        emit Executed(commandId, sourceAddress, message);
     }
 }

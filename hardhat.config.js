@@ -7,7 +7,7 @@ require('@nomicfoundation/hardhat-chai-matchers');
  */
 module.exports = {
     solidity: {
-        version: '0.8.9',
+        version: '0.8.19',
         settings: {
             evmVersion: process.env.EVM_VERSION || 'london',
             optimizer: {

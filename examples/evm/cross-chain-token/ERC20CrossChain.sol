@@ -42,10 +42,15 @@ contract ERC20CrossChain is AxelarExecutable, ERC20, Upgradable, IERC20CrossChai
         bytes memory payload = abi.encode(destinationAddress, amount);
         string memory stringAddress = address(this).toString();
         gasService.payNativeGasForContractCall{ value: msg.value }(address(this), destinationChain, stringAddress, payload, msg.sender);
-        gateway.callContract(destinationChain, stringAddress, payload);
+        gateway().callContract(destinationChain, stringAddress, payload);
     }
 
-    function _execute(string calldata /*sourceChain*/, string calldata sourceAddress, bytes calldata payload) internal override {
+    function _execute(
+        bytes32 /*commandId*/,
+        string calldata /*sourceChain*/,
+        string calldata sourceAddress,
+        bytes calldata payload
+    ) internal override {
         if (sourceAddress.toAddress() != address(this)) {
             emit FalseSender(sourceAddress, sourceAddress);
             return;
