@@ -161,6 +161,7 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
      * @param payload encoded gmp message sent from src chain
      */
     function _execute(
+        bytes32 /*commandId*/,
         string calldata /*sourceChain*/,
         string calldata sourceAddress,
         bytes calldata payload

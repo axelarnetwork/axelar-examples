@@ -76,8 +76,9 @@ contract CallContractWithToken is AxelarExecutableWithToken {
      * @param amount amount of tokens sent from src chain
      */
     function _executeWithToken(
-        string calldata,
-        string calldata,
+        bytes32 /*commandId*/,
+        string calldata /*sourceChain*/,
+        string calldata /*sourceAddress*/,
         bytes calldata payload,
         string calldata tokenSymbol,
         uint256 amount
@@ -91,4 +92,11 @@ contract CallContractWithToken is AxelarExecutableWithToken {
         }
         emit Executed();
     }
+
+    function _execute(
+        bytes32 commandId,
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload
+    ) internal virtual override {}
 }
