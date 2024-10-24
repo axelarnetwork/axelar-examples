@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 
 /**
  * @title AmplifierGMPTest
@@ -24,17 +23,23 @@ contract AmplifierGMPTest is AxelarExecutable {
      */
     function setRemoteValue(string calldata destinationChain, string calldata destinationAddress, string calldata _message) external {
         bytes memory payload = abi.encode(_message);
-        gateway.callContract(destinationChain, destinationAddress, payload);
+        gateway().callContract(destinationChain, destinationAddress, payload);
     }
 
     /**
      * @notice logic to be executed on dest chain
      * @dev this is triggered automatically by relayer
+     * @param
      * @param _sourceChain blockchain where tx is originating from
      * @param _sourceAddress address on src chain where tx is originating from
      * @param _payload encoded gmp message sent from src chain
      */
-    function _execute(string calldata _sourceChain, string calldata _sourceAddress, bytes calldata _payload) internal override {
+    function _execute(
+        bytes32 /*commandId*/,
+        string calldata _sourceChain,
+        string calldata _sourceAddress,
+        bytes calldata _payload
+    ) internal virtual override {
         (message) = abi.decode(_payload, (string));
         sourceChain = _sourceChain;
         sourceAddress = _sourceAddress;

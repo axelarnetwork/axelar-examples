@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 
@@ -16,7 +15,7 @@ contract CallContract is AxelarExecutable {
     string public sourceAddress;
     IAxelarGasService public immutable gasService;
 
-    event Executed(string _from, string _message);
+    event Executed(bytes32 commandId, string _from, string _message);
 
     /**
      *
@@ -49,7 +48,7 @@ contract CallContract is AxelarExecutable {
             payload,
             msg.sender
         );
-        gateway.callContract(destinationChain, destinationAddress, payload);
+        gateway().callContract(destinationChain, destinationAddress, payload);
     }
 
     /**
@@ -59,11 +58,16 @@ contract CallContract is AxelarExecutable {
      * @param _sourceAddress address on src chain where tx is originating from
      * @param _payload encoded gmp message sent from src chain
      */
-    function _execute(string calldata _sourceChain, string calldata _sourceAddress, bytes calldata _payload) internal override {
+    function _execute(
+        bytes32 commandId,
+        string calldata _sourceChain,
+        string calldata _sourceAddress,
+        bytes calldata _payload
+    ) internal override {
         (message) = abi.decode(_payload, (string));
         sourceChain = _sourceChain;
         sourceAddress = _sourceAddress;
 
-        emit Executed(sourceAddress, message);
+        emit Executed(commandId, sourceAddress, message);
     }
 }

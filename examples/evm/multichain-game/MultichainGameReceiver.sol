@@ -3,19 +3,18 @@ pragma solidity ^0.8.0;
 
 import { IERC20 } from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
-import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
-import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { AxelarExecutableWithToken } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutableWithToken.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 
-contract MultichainGameReceiver is AxelarExecutable {
+contract MultichainGameReceiver is AxelarExecutableWithToken {
     string[] public uniqueTokens;
 
     IAxelarGasService public immutable gasService;
 
     address multichainGame;
 
-    constructor(address _gateway, address _gasService, address _game) AxelarExecutable(_gateway) {
+    constructor(address _gateway, address _gasService, address _game) AxelarExecutableWithToken(_gateway) {
         gasService = IAxelarGasService(_gasService);
         multichainGame = _game;
     }
@@ -26,6 +25,7 @@ contract MultichainGameReceiver is AxelarExecutable {
     }
 
     function _executeWithToken(
+        bytes32 /*commandId*/,
         string calldata _sourceChain,
         string calldata _sourceAddress,
         bytes calldata _payload,
@@ -72,14 +72,21 @@ contract MultichainGameReceiver is AxelarExecutable {
     function _payout(address _player, string calldata _sourceAddress, string calldata _winnersChain) internal {
         for (uint i = 0; i < uniqueTokens.length; i++) {
             string memory tokenSymbol = uniqueTokens[i];
-            address tokenAddress = gateway.tokenAddresses(tokenSymbol);
+            address tokenAddress = gatewayWithToken().tokenAddresses(tokenSymbol);
             uint256 transferAmount = IERC20(tokenAddress).balanceOf(address(this));
             if (keccak256(abi.encode(_winnersChain)) == keccak256(abi.encode(Strings.toString(block.chainid)))) {
                 IERC20(tokenAddress).transfer(_player, transferAmount);
             } else {
-                IERC20(tokenAddress).approve(address(gateway), transferAmount);
-                gateway.callContractWithToken(_winnersChain, _sourceAddress, abi.encode(_player), tokenSymbol, transferAmount);
+                IERC20(tokenAddress).approve(address(gatewayWithToken()), transferAmount);
+                gatewayWithToken().callContractWithToken(_winnersChain, _sourceAddress, abi.encode(_player), tokenSymbol, transferAmount);
             }
         }
     }
+
+    function _execute(
+        bytes32 commandId,
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload
+    ) internal virtual override {}
 }

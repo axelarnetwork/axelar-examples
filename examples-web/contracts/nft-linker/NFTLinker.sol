@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import {IERC20} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol";
 import {IAxelarGasService} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
-import {IAxelarGateway} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import {AxelarExecutable} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
 import {Upgradable} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol";
 import {StringToAddress, AddressToString} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/AddressString.sol";
@@ -24,7 +23,7 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
     error AlreadyInitialized();
 
     /**
-     * 
+     *
      * @param _gateway address of axl gateway on deployed chain
      * @param _gasReceiver address of axl gas service on deployed chain
      */
@@ -49,7 +48,7 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
      * @notice send nft from src chain to dest chain
      * @param operator contract handling the nft briding
      * @param tokenId id of the token being sent
-     * @param destinationChain name of the dest chain 
+     * @param destinationChain name of the dest chain
      * @param destinationAddress address on dest chain tx is going to
      */
     function sendNFT(
@@ -81,7 +80,7 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
      * @notice Burns and sends interchain nft tx
      * @dev Used when sending nft back to origin chain
      * @param tokenId id of nft to be bridged
-     * @param destinationChain name of the dest chain 
+     * @param destinationChain name of the dest chain
      * @param destinationAddress address on dest chain tx is going to
      */
     function _sendMintedToken(
@@ -115,16 +114,15 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
             msg.sender
         );
         //Call the remote contract.
-        gateway.callContract(destinationChain, stringAddress, payload);
+        gateway().callContract(destinationChain, stringAddress, payload);
     }
 
-    
     /**
      * @notice Locks and sends a token from src to dest chain.
      * @dev Used when sending from original chain to dest
      * @param operator contract handling the nft briding
      * @param tokenId id of nft to be bridged
-     * @param destinationChain name of the dest chain 
+     * @param destinationChain name of the dest chain
      * @param destinationAddress address on dest chain tx is going to
      */
     function _sendNativeToken(
@@ -152,10 +150,10 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
             msg.sender
         );
         //Call remote contract.
-        gateway.callContract(destinationChain, stringAddress, payload);
+        gateway().callContract(destinationChain, stringAddress, payload);
     }
 
-     /**
+    /**
      * @notice logic to be executed on dest chain
      * @dev this is triggered automatically by relayer since gas was paid for
      * @param
@@ -163,6 +161,7 @@ contract NftLinker is ERC721URIStorage, AxelarExecutable, Upgradable {
      * @param payload encoded gmp message sent from src chain
      */
     function _execute(
+        bytes32 /*commandId*/,
         string calldata /*sourceChain*/,
         string calldata sourceAddress,
         bytes calldata payload

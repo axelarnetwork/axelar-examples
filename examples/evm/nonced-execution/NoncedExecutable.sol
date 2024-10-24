@@ -28,14 +28,17 @@ abstract contract NoncedExecutable is AxelarExecutable {
     }
 
     /**
-    * @dev Send a contract call to a contract on another chain.
-    * @param destinationChain The chain to send the contract call to.
-    * @param destinationContract The address of the contract to call.
-    * @param payload The payload to send to the contract.
+     * @dev Send a contract call to a contract on another chain.
+     * @param destinationChain The chain to send the contract call to.
+     * @param destinationContract The address of the contract to call.
+     * @param payload The payload to send to the contract.
      */
-    function sendContractCall(string calldata destinationChain, string calldata destinationContract, bytes calldata payload) external payable {
+    function sendContractCall(
+        string calldata destinationChain,
+        string calldata destinationContract,
+        bytes calldata payload
+    ) external payable {
         require(msg.value > 0, 'Gas payment is required');
-
 
         // Build the payload. The first 32 bytes are the nonce, the next 32 bytes are the address of the sender, and the rest is the payload passed by the caller.
         bytes memory newPayload = abi.encode(outgoingNonces[destinationChain][address(this)], address(this), payload);
@@ -53,14 +56,10 @@ abstract contract NoncedExecutable is AxelarExecutable {
         );
 
         // Send the call to AxelarGateway.
-        gateway.callContract(destinationChain, destinationContract, newPayload);
+        gateway().callContract(destinationChain, destinationContract, newPayload);
     }
 
-    function _execute(
-        string calldata sourceChain,
-        string calldata,
-        bytes calldata payload
-    ) internal override {
+    function _execute(bytes32 /*commandId*/, string calldata sourceChain, string calldata, bytes calldata payload) internal override {
         // Decode the payload. The first 32 bytes are the nonce, the next 32 bytes are the address of the sender, and the rest is the payload passed by the sender.
         (uint256 nonce, address sender, bytes memory newPayload) = abi.decode(payload, (uint256, address, bytes));
 
@@ -75,10 +74,5 @@ abstract contract NoncedExecutable is AxelarExecutable {
     }
 
     // Override these.
-    function _executeNonced(
-        string calldata sourceChain,
-        address sourceAddress,
-        uint256 nonce,
-        bytes memory payload
-    ) internal virtual {}
+    function _executeNonced(string calldata sourceChain, address sourceAddress, uint256 nonce, bytes memory payload) internal virtual {}
 }
