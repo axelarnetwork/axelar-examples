@@ -8,7 +8,7 @@ jobs:
         name: 'Test Cosmos Examples'
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
 
             - name: Setup Node
               uses: actions/setup-node@v4
@@ -43,7 +43,7 @@ jobs:
         name: 'Test EVM Examples'
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
 
             - name: Setup Node
               uses: actions/setup-node@v4
@@ -87,7 +87,7 @@ jobs:
                     - '9200:9200'
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
 
             - name: Setup Node
               uses: actions/setup-node@v4
