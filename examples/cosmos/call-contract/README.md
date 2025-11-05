@@ -8,7 +8,7 @@ This example demonstrates how to deploy a smart contract and facilitate communic
 
 ## Build a Contract (Optional)
 
-1. A precompiled version of the contract is available [here](../cosmos/call-contract/wasm-contract/artifacts/send_receive.wasm). If you wish to modify the contract, follow these steps to recompile it:
+1. A precompiled version of the contract is available [here](./wasm-contract/artifacts/send_receive.wasm). If you wish to modify the contract, follow these steps to recompile it:
 
 ```
 npm run build-wasm
