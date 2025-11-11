@@ -38,12 +38,12 @@ function getEVMChains(env, chains = []) {
         return fs.readJsonSync(configPath.localEvmChains).filter((chain) => selectedChains.includes(chain.name));
     }
 
-    const testnet = getTestnetChains(selectedChains);
+    const configs = env === 'mainnet' ? getMainnetChains(selectedChains) : getTestnetChains(selectedChains);
 
-    return testnet.map((chain) => ({
-        ...chain,
-        gateway: chain.contracts.AxelarGateway.address,
-        gasService: chain.contracts.AxelarGasService.address,
+    return configs.map((config) => ({
+        ...config,
+        gateway: config.contracts.AxelarGateway.address,
+        gasService: config.contracts.AxelarGasService.address,
     }));
 }
 
@@ -57,7 +57,7 @@ function getTestnetChains(chains = []) {
     let testnet = [];
     if (fs.existsSync(_path)) {
         testnet = fs
-            .readJsonSync(path.join(__dirname, '../../chain-config/testnet-evm.json'))
+            .readJsonSync(_path)
             .filter((chain) => chains.includes(chain.name));
     }
 
@@ -77,6 +77,33 @@ function getTestnetChains(chains = []) {
             address: '0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6',
         },
     }));
+}
+
+/**
+ * Get chains config for testnet.
+ * @param {*} chains - The list of chains to get the chain objects for. If this is empty, the default chains will be used.
+ * @returns {Chain[]} - The chain objects.
+ */
+function getMainnetChains(chains = []) {
+    const _path = path.join(__dirname, '../../chain-config/mainnet-evm.json');
+    let mainnet = [];
+    if (fs.existsSync(_path)) {
+        mainnet = fs
+            .readJsonSync(_path)
+            .filter((chain) => chains.includes(chain.name));
+    }
+
+    if (mainnet.length < chains.length) {
+        const { mainnetInfo } = require('@axelar-network/axelar-local-dev');
+        mainnet = [];
+        for (const chain of chains) {
+            mainnet.push(mainnetInfo[chain.toLowerCase()]);
+        }
+    }
+
+    // temporary fix for gas service contract address
+
+    return mainnet;
 }
 
 /**
@@ -187,7 +214,7 @@ function checkWallet() {
  * @param {*} env - The environment to check. Available options are 'local' and 'testnet'.
  */
 function checkEnv(env) {
-    if (env == null || (env !== 'testnet' && env !== 'local')) {
+    if (env == null || (env !== 'mainnet' && env !== 'testnet' && env !== 'local')) {
         throw new Error('Need to specify testnet or local as an argument to this script.');
     }
 }
