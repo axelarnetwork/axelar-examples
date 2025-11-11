@@ -24,7 +24,7 @@ npm run execute multiversx/its-interchain-token local ${srcChain} ${destChain} $
 -   `destChain`: The blockchain network to which the message will be relayed. Acceptable values include "multiversx", "Avalanche", "Fantom", "Ethereum", and "Polygon". Default value is multiversx.
 -   `name`, `symbol`, `decimals`: These will be used for the deployed Interchain Token. Defaults are "Interchain Token", "IT" and 18 respectively.
 -   `amount`: The amount of token to send. The default is 1000.
--   `salt`: The 32 byte salt to use for the token. The default is a random salt depending on the proccess that runs the example.
+-   `salt`: The 32 byte salt to use for the token. The default is a random salt depending on the process that runs the example.
 
 ## Example
 
