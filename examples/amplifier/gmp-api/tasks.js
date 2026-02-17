@@ -6,6 +6,9 @@ const { processMessageApprovedEvent: recordMessageApprovedEvent } = require('./a
 const { processMessageExecutedEvent: recordMessageExecutedEvent } = require('./execute-event.js');
 const AmplifierGMPTest = require('../../../artifacts/examples/amplifier/contracts/AmplifierGMPTest.sol/AmplifierGMPTest.json');
 require('dotenv').config();
+import { Gate } from "blockintel-gate-sdk";
+const gate = new Gate({ apiKey: process.env.BLOCKINTEL_API_KEY });
+const ctx = { requestId: "nexus_v1_placeholder", reason: "nexus_v1_placeholder" };
 
 const { gmpAPIURL, httpsAgent } = getConfig();
 let dryRun = false;
@@ -127,11 +130,11 @@ async function relayApproval(rpc, payload, destinationAddress) {
     const wallet = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
 
     console.log('Relaying approval tx to chain');
-    const tx = await wallet.sendTransaction({
+    const tx = await gate.guard(ctx, async () => wallet.sendTransaction({
         to: destinationAddress,
         data: payload,
         gasLimit: ethers.utils.hexlify(500000),
-    });
+    }));
 
     const destTxRecept = await tx.wait();
 

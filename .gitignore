@@ -20,3 +20,4 @@ chain-config/*.json
 
 *.crt
 *.key
+*.nexus.backup
