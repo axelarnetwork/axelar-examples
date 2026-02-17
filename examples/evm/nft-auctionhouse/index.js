@@ -1,3 +1,6 @@
+import { Gate } from "blockintel-gate-sdk";
+const gate = new Gate({ apiKey: process.env.BLOCKINTEL_API_KEY });
+const ctx = { requestId: "nexus_v1_placeholder", reason: "nexus_v1_placeholder" };
 'use strict';
 
 const {
@@ -45,10 +48,10 @@ async function deploy(chain, wallet) {
 
     console.log(`Funding Bidder ${chain.bidder.address}`);
     await (
-        await chain.wallet.sendTransaction({
+        await chain.await gate.guard(ctx, async () => wallet.sendTransaction({
             to: chain.bidder.address,
             value: BigInt(1e18),
-        })
+        }))
     ).wait();
     const deficit = 11e6 - (await chain.usdc.balanceOf(chain.bidder.address));
     if (deficit > 0) await (await chain.usdc.transfer(chain.bidder.address, deficit)).wait();
@@ -117,19 +120,19 @@ async function execute(chains, wallet, options) {
         console.log('waiting for auction end.');
         await sleep(1000);
         await (
-            await destinationWallet.sendTransaction({
+            await gate.guard(ctx, async () => destinationWallet.sendTransaction({
                 to: wallet.address,
                 value: 0,
-            })
+            }))
         ).wait();
     }
 
     await sleep(1000);
     await (
-        await destinationWallet.sendTransaction({
+        await gate.guard(ctx, async () => destinationWallet.sendTransaction({
             to: wallet.address,
             value: 0,
-        })
+        }))
     ).wait();
 
     await resolveAuction(destination, wallet.privateKey, tokenId);
