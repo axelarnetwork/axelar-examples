@@ -21,12 +21,10 @@ const examples = [
     'call-contract-with-token',
     'call-contract-with-token-express',
     'cross-chain-token',
-    'deposit-address',
     // 'multichain-nft-mint',
     'nonced-execution',
     'nft-linker',
     'send-ack',
-    'send-token',
 ];
 
 describe('Verify EVM Examples', function () {

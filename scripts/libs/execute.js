@@ -2,7 +2,7 @@
 
 const { Contract, getDefaultProvider } = require('ethers');
 const { CosmosClient } = require('@axelar-network/axelar-local-dev-cosmos');
-const { calculateBridgeFee, getDepositAddress, calculateBridgeExpressFee, readChainConfig } = require('./utils.js');
+const { calculateBridgeFee, calculateBridgeExpressFee, readChainConfig } = require('./utils.js');
 const { configPath } = require('../../config/index.js');
 const AxelarGatewayWithTokenContract = rootRequire(
     'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGatewayWithToken.sol/IAxelarGatewayWithToken.json',
@@ -95,8 +95,6 @@ async function executeEVMExample(env, chains, args, wallet, example) {
     await example.execute(chains, wallet, {
         calculateBridgeFee,
         calculateBridgeExpressFee,
-        getDepositAddress: (source, destination, destinationAddress, symbol) =>
-            getDepositAddress(env, source, destination, destinationAddress, symbol),
         source,
         destination,
         args,

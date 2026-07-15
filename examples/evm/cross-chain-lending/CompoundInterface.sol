@@ -40,7 +40,7 @@ contract CompoundInterface is AxelarExecutableWithToken {
 
     function supplyAndBorrow(
         string calldata sourceChain,
-        string calldata,
+        string calldata sourceAddress,
         string calldata supplyTokenSymbol,
         uint256 supplyAmount,
         bytes memory params
@@ -48,12 +48,12 @@ contract CompoundInterface is AxelarExecutableWithToken {
         (string memory borrowTokenSymbol, uint256 borrowAmount, string memory userAddress) = abi.decode(params, (string, uint256, string));
 
         _mint(supplyTokenSymbol, supplyAmount, userAddress);
-        _borrow(sourceChain, userAddress, borrowTokenSymbol, borrowAmount);
+        _borrow(sourceChain, sourceAddress, userAddress, borrowTokenSymbol, borrowAmount);
     }
 
     function repayAndRedeem(
         string calldata sourceChain,
-        string calldata,
+        string calldata sourceAddress,
         string calldata repayTokenSymbol,
         uint256 repayAmount,
         bytes memory params
@@ -61,7 +61,7 @@ contract CompoundInterface is AxelarExecutableWithToken {
         (string memory redeemTokenSymbol, uint256 redeemAmount, string memory userAddress) = abi.decode(params, (string, uint256, string));
 
         _repayBorrow(repayTokenSymbol, repayAmount);
-        _redeem(sourceChain, userAddress, redeemTokenSymbol, redeemAmount);
+        _redeem(sourceChain, sourceAddress, userAddress, redeemTokenSymbol, redeemAmount);
     }
 
     function _mint(string calldata tokenSymbol, uint256 amount, string memory userAddress) internal {
@@ -77,15 +77,23 @@ contract CompoundInterface is AxelarExecutableWithToken {
         cBalances[userAddress][tokenSymbol] += mintedTokens;
     }
 
-    function _borrow(string calldata sourceChain, string memory userAddress, string memory tokenSymbol, uint256 amount) internal {
+    function _borrow(
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        string memory userAddress,
+        string memory tokenSymbol,
+        uint256 amount
+    ) internal {
         CErc20Interface cToken = _cTokens[tokenSymbol];
         IERC20 tokenAddress = IERC20(gatewayWithToken().tokenAddresses(tokenSymbol));
 
         // in production must limit borrow amount corresponding to the proportion this user supplied as collateral
         cToken.borrow(amount);
 
+        // Return the borrowed tokens to the satellite contract on the source chain, which forwards
+        // them to the user. sendToken has been removed from all environments and using it would burn funds.
         tokenAddress.approve(address(gatewayWithToken()), amount);
-        gatewayWithToken().sendToken(sourceChain, userAddress, tokenSymbol, amount);
+        gatewayWithToken().callContractWithToken(sourceChain, sourceAddress, abi.encode(userAddress), tokenSymbol, amount);
     }
 
     function _repayBorrow(string calldata tokenSymbol, uint256 amount) internal {
@@ -96,7 +104,13 @@ contract CompoundInterface is AxelarExecutableWithToken {
         cToken.repayBorrow(amount);
     }
 
-    function _redeem(string calldata sourceChain, string memory userAddress, string memory tokenSymbol, uint256 amount) internal {
+    function _redeem(
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        string memory userAddress,
+        string memory tokenSymbol,
+        uint256 amount
+    ) internal {
         CErc20Interface cToken = _cTokens[tokenSymbol];
         IERC20 tokenAddress = IERC20(gatewayWithToken().tokenAddresses(tokenSymbol));
 
@@ -108,8 +122,10 @@ contract CompoundInterface is AxelarExecutableWithToken {
         require(result == 0, 'Error redeeming for underlying');
         uint256 redeemedAmount = tokenAddress.balanceOf(address(this)) - balanceBefore;
 
+        // Return the redeemed tokens to the satellite contract on the source chain, which forwards
+        // them to the user. sendToken has been removed from all environments and using it would burn funds.
         tokenAddress.approve(address(gatewayWithToken()), redeemedAmount);
-        gatewayWithToken().sendToken(sourceChain, userAddress, tokenSymbol, redeemedAmount);
+        gatewayWithToken().callContractWithToken(sourceChain, sourceAddress, abi.encode(userAddress), tokenSymbol, redeemedAmount);
     }
 
     function _executeWithToken(
