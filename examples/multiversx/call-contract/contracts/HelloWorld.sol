@@ -39,6 +39,9 @@ contract HelloWorld is AxelarExecutable {
         string calldata sourceAddress_,
         bytes calldata payload_
     ) internal override {
+        // Demo only — this shouldn't be used as-is in production: AxelarExecutable proves Axelar
+        // delivered the message but not who sent it. Validate sourceChain/sourceAddress against a
+        // trusted sender before acting on the message.
         (value) = abi.decode(payload_, (string));
         sourceChain = sourceChain_;
         sourceAddress = sourceAddress_;

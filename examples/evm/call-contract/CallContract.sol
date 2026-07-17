@@ -64,6 +64,8 @@ contract CallContract is AxelarExecutable {
         string calldata _sourceAddress,
         bytes calldata _payload
     ) internal override {
+        // Demo only — this shouldn't be used as-is in production: it does not authenticate the
+        // message source. Add sourceChain/sourceAddress validation before acting on the message.
         (message) = abi.decode(_payload, (string));
         sourceChain = _sourceChain;
         sourceAddress = _sourceAddress;

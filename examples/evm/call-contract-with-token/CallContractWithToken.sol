@@ -82,7 +82,10 @@ contract CallContractWithToken is AxelarExecutableWithToken {
         string calldata tokenSymbol,
         uint256 amount
     ) internal override {
+        // Demo only — does not authenticate the message source. In production, validate
+        // sourceChain/sourceAddress against a trusted sender before acting on the message.
         address[] memory recipients = abi.decode(payload, (address[]));
+        require(recipients.length > 0, 'No recipients');
         address tokenAddress = gatewayWithToken().tokenAddresses(tokenSymbol);
 
         uint256 sentAmount = amount / recipients.length;

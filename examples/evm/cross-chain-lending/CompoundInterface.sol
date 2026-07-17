@@ -6,6 +6,9 @@ import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol'
 import './interfaces/CErc20Interface.sol';
 import './interfaces/Comptroller.sol';
 
+// Demo only — this shouldn't be used as-is in production: the _executeWithToken handler does not
+// authenticate the message source and takes the acting user from the payload, so anyone can drive
+// supply/borrow/redeem against another user's collateral. (This example is also deprecated.)
 contract CompoundInterface is AxelarExecutableWithToken {
     bytes32 internal constant SELECTOR_SUPPLY_AND_BORROW = keccak256('supplyAndBorrow');
     bytes32 internal constant SELECTOR_REPAY_AND_REDEEM = keccak256('repayAndRedeem');

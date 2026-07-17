@@ -58,9 +58,7 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutableWithToken {
         string calldata tokenSymbol,
         uint256 amount
     ) internal override {
-        uint8 action = abi.decode(payload, (uint8));
-
-        if (action == ACTION_REFUND) {
+        if (abi.decode(payload, (uint8)) == ACTION_REFUND) {
             // A remote bid we placed was outbid or rejected; hand the returned tokens to the bidder.
             (, address recipient) = abi.decode(payload, (uint8, address));
             usdc.transfer(recipient, amount);
@@ -71,28 +69,40 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutableWithToken {
             payload,
             (uint8, address, address, address, uint256)
         );
-        (bool success, ) = address(this).call(abi.encodeWithSelector(this._bid.selector, address(this), operator, tokenId, amount));
-        if (!success) {
-            usdc.approve(address(gatewayWithToken()), amount);
-            gatewayWithToken().callContractWithToken(sourceChain, sourceAddress, abi.encode(ACTION_REFUND, refundAddress), tokenSymbol, amount);
-        } else {
+
+        // The bid attempt and the refund call are factored into helpers to keep the number of
+        // simultaneously-live locals in this function below the EVM stack limit ("stack too deep").
+        if (_tryBid(operator, tokenId, amount)) {
             biddersRemote[operator][tokenId] = bidder;
             sourceChains[operator][tokenId] = sourceChain;
             sourceAuctionhouses[operator][tokenId] = sourceAddress;
             refundAddresses[operator][tokenId] = refundAddress;
+        } else {
+            _sendRefund(sourceChain, sourceAddress, refundAddress, tokenSymbol, amount);
         }
+    }
+
+    function _tryBid(address operator, uint256 tokenId, uint256 amount) private returns (bool success) {
+        (success, ) = address(this).call(abi.encodeWithSelector(this._bid.selector, address(this), operator, tokenId, amount));
+    }
+
+    // Route a refund back to the auction house on the recipient's source chain (tagged ACTION_REFUND),
+    // which forwards it to the recipient. `string memory` params so both callers work: calldata from
+    // _executeWithToken and storage strings from _refundPrevBidder.
+    function _sendRefund(
+        string memory destinationChain,
+        string memory destinationAuctionhouse,
+        address recipient,
+        string memory tokenSymbol,
+        uint256 amount
+    ) private {
+        usdc.approve(address(gatewayWithToken()), amount);
+        gatewayWithToken().callContractWithToken(destinationChain, destinationAuctionhouse, abi.encode(ACTION_REFUND, recipient), tokenSymbol, amount);
     }
 
     function _refundPrevBidder(address bidder, uint256 amount, address operator, uint256 tokenId) internal override {
         if (bidder == address(this)) {
-            usdc.approve(address(gatewayWithToken()), amount);
-            gatewayWithToken().callContractWithToken(
-                sourceChains[operator][tokenId],
-                sourceAuctionhouses[operator][tokenId],
-                abi.encode(ACTION_REFUND, refundAddresses[operator][tokenId]),
-                'aUSDC',
-                amount
-            );
+            _sendRefund(sourceChains[operator][tokenId], sourceAuctionhouses[operator][tokenId], refundAddresses[operator][tokenId], 'aUSDC', amount);
         } else {
             usdc.transfer(bidder, amount);
         }
@@ -106,6 +116,10 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutableWithToken {
 
         bidders[operator][tokenId] = address(0);
         bids[operator][tokenId] = 0;
+        delete biddersRemote[operator][tokenId];
+        delete sourceChains[operator][tokenId];
+        delete sourceAuctionhouses[operator][tokenId];
+        delete refundAddresses[operator][tokenId];
     }
 
     function _execute(

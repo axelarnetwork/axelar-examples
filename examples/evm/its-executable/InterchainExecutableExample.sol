@@ -58,6 +58,9 @@ contract InterchainExecutableExample is InterchainTokenExecutable {
         address token,
         uint256 amount
     ) internal override {
+        // Demo only — this shouldn't be used as-is in production: the ITS `onlyService` guard proves
+        // Axelar delivered the message but not who sent it. Validate sourceChain/sourceAddress against
+        // a trusted sender before acting if you extend this beyond forwarding the just-received tokens.
         (address receiver, string memory message) = abi.decode(data, (address, string));
         lastMessage = message;
         emit MessageReceived(commandId, sourceChain, sourceAddress, receiver, message, tokenId, amount);
