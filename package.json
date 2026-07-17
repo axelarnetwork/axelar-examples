@@ -2,9 +2,7 @@
     "name": "axelar-examples",
     "version": "1.0.0",
     "description": "",
-    "engines": {
-        "node": "^16.0.0 || ^18.0.0"
-    },
+    "packageManager": "pnpm@11.5.2+sha512.71c631e382066efc25625d5cf029075de07b61b37f6e27350fbd84b1bda5864c8c1967adc280776b45c30a715c0359a3be08fef42d5bb09e2b99029979692916",
     "scripts": {
         "test": "TEST=true mocha examples/tests",
         "test:cosmos": "TEST=true mocha examples/tests/cosmos.test.js",
@@ -15,15 +13,16 @@
         "execute": "node scripts/runExecute",
         "setup": "node scripts/runSetupEnv",
         "check-balance": "node scripts/runCheckBalance",
-        "build": "rm -rf artifacts && npx hardhat clean && npx hardhat compile",
+        "build": "rm -rf artifacts && hardhat clean && hardhat compile",
         "build-wasm": "bash ./build-wasm.sh"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@axelar-network/axelar-cgp-solidity": "^6.2.1",
         "@axelar-network/axelar-chains-config": "^1.2.0",
-        "@axelar-network/axelar-gmp-sdk-solidity": "^6.0.0",
-        "@axelar-network/axelar-local-dev": "^2.3.3",
+        "@axelar-network/axelar-gmp-sdk-solidity": "^6.2.0",
+        "@axelar-network/axelar-local-dev": "^3.0.0",
         "@axelar-network/axelar-local-dev-cosmos": "^2.3.0",
         "@axelar-network/axelar-local-dev-multiversx": "^2.3.0",
         "@axelar-network/axelarjs-sdk": "^0.15.0",
@@ -47,7 +46,7 @@
         "@nomiclabs/hardhat-ethers": "^2.2.3",
         "chai": "^4.4.1",
         "eslint-config-richardpringle": "^2.0.0",
-        "hardhat": "^2.9.9",
+        "hardhat": "^2.22.0",
         "hardhat-gas-reporter": "^1.0.8",
         "mocha": "^10.0.0",
         "prettier": "^2.6.2",

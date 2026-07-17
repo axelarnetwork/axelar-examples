@@ -1,7 +1,6 @@
 const fs = require('fs');
 const { ethers } = require('ethers');
 const { createAndExport, EvmRelayer, RelayerType, networks } = require('@axelar-network/axelar-local-dev');
-const { AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
 const { enabledCosmos, enabledMultiversx } = require('./config');
 const { configPath } = require('../../config');
 const path = require('path');
@@ -22,7 +21,7 @@ async function start(fundAddresses = [], chains = [], options = {}) {
     const dropConnections = [];
 
     if (!skipCosmos && enabledCosmos) {
-        const { startChains } = require('@axelar-network/axelar-local-dev-cosmos');
+        const { startChains, AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
 
         // Spin up cosmos chains in docker containers
         await startChains().catch((e) => {

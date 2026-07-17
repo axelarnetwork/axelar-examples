@@ -57,9 +57,9 @@ contract LendingSatellite is AxelarExecutableWithToken {
     ) internal virtual override {}
 
     function _executeWithToken(
-        bytes32 commandId,
-        string calldata sourceChain,
-        string calldata sourceAddress,
+        bytes32 /*commandId*/,
+        string calldata /*sourceChain*/,
+        string calldata /*sourceAddress*/,
         bytes calldata payload,
         string calldata tokenSymbol,
         uint256 amount

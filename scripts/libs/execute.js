@@ -1,7 +1,6 @@
 'use strict';
 
-const { Contract, getDefaultProvider } = require('ethers');
-const { CosmosClient } = require('@axelar-network/axelar-local-dev-cosmos');
+const { Contract, getDefaultProvider, utils } = require('ethers');
 const { calculateBridgeFee, calculateBridgeExpressFee, readChainConfig } = require('./utils.js');
 const { configPath } = require('../../config/index.js');
 const AxelarGatewayWithTokenContract = rootRequire(
@@ -13,6 +12,7 @@ const AxelarGasServiceContract = rootRequire(
 const IERC20 = rootRequire('artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 async function executeCosmosExample(_env, chains, args, wallet, example) {
+    const { CosmosClient } = require('@axelar-network/axelar-local-dev-cosmos');
     const evmChain = chains.find((chain) => chain.name === example.sourceChain);
 
     evmChain.provider = getDefaultProvider(evmChain.rpc);
@@ -91,10 +91,16 @@ async function executeEVMExample(env, chains, args, wallet, example) {
     const startBlockNumber = await source.provider.getBlockNumber();
     listenForGMPEvent(env, source, startBlockNumber);
 
+    // In the local environment there is no Axelar network to query gas fees from,
+    // so use a fixed fee instead of the (testnet) gas-estimation API, which would
+    // otherwise make a live network call to Axelar testnet infrastructure.
+    const localFee = async () => utils.parseEther('1');
+    const isLocal = env === 'local';
+
     // Execute the example script.
     await example.execute(chains, wallet, {
-        calculateBridgeFee,
-        calculateBridgeExpressFee,
+        calculateBridgeFee: isLocal ? localFee : calculateBridgeFee,
+        calculateBridgeExpressFee: isLocal ? localFee : calculateBridgeExpressFee,
         source,
         destination,
         args,
