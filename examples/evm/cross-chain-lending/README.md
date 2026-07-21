@@ -3,7 +3,7 @@
 > Note: This example uses forecallable which is deprecated.
 > Todo: Migrate to GMP Express.
 
-> Note: Borrowed and redeemed tokens are returned to the satellite chain with `callContractWithToken` (the removed `sendToken` would burn funds).
+> Note: Borrowed and redeemed tokens are returned to the satellite chain with `callContractWithToken` (the disabled `sendToken` might cause loss of funds).
 > This return leg does not pay for destination gas, so it is only relayed automatically in the local environment.
 > On testnet the return call additionally needs a `IAxelarGasService` gas payment for the satellite contract to be executed.
 

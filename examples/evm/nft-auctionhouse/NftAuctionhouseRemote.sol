@@ -12,7 +12,7 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutableWithToken {
     using SafeTokenTransfer for IERC20;
     using SafeTokenTransferFrom for IERC20;
 
-    // sendToken has been removed from all environments and using it would burn funds, so every
+    // sendToken has been disabled in all environments and might cause loss of funds if used, so every
     // cross-chain token movement here goes through callContractWithToken. Refunds are routed back
     // to the auction house on the source chain, which forwards them to the recipient. The leading
     // action tag lets the receiving auction house tell an incoming bid apart from an incoming refund.

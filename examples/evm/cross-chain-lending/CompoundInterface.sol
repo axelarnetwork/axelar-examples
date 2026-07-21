@@ -94,7 +94,7 @@ contract CompoundInterface is AxelarExecutableWithToken {
         cToken.borrow(amount);
 
         // Return the borrowed tokens to the satellite contract on the source chain, which forwards
-        // them to the user. sendToken has been removed from all environments and using it would burn funds.
+        // them to the user. sendToken has been disabled in all environments and might cause loss of funds if used.
         tokenAddress.approve(address(gatewayWithToken()), amount);
         gatewayWithToken().callContractWithToken(sourceChain, sourceAddress, abi.encode(userAddress), tokenSymbol, amount);
     }
@@ -126,7 +126,7 @@ contract CompoundInterface is AxelarExecutableWithToken {
         uint256 redeemedAmount = tokenAddress.balanceOf(address(this)) - balanceBefore;
 
         // Return the redeemed tokens to the satellite contract on the source chain, which forwards
-        // them to the user. sendToken has been removed from all environments and using it would burn funds.
+        // them to the user. sendToken has been disabled in all environments and might cause loss of funds if used.
         tokenAddress.approve(address(gatewayWithToken()), redeemedAmount);
         gatewayWithToken().callContractWithToken(sourceChain, sourceAddress, abi.encode(userAddress), tokenSymbol, redeemedAmount);
     }
