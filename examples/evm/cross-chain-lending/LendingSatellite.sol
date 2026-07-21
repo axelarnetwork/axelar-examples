@@ -3,9 +3,12 @@ pragma solidity ^0.8.0;
 
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutableWithToken.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
+import { StringToAddress } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/AddressString.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 
 contract LendingSatellite is AxelarExecutableWithToken {
+    using StringToAddress for string;
+
     string public baseChain;
     string public baseContract;
 
@@ -54,11 +57,17 @@ contract LendingSatellite is AxelarExecutableWithToken {
     ) internal virtual override {}
 
     function _executeWithToken(
-        bytes32 commandId,
-        string calldata sourceChain,
-        string calldata sourceAddress,
+        bytes32 /*commandId*/,
+        string calldata /*sourceChain*/,
+        string calldata /*sourceAddress*/,
         bytes calldata payload,
         string calldata tokenSymbol,
         uint256 amount
-    ) internal virtual override {}
+    ) internal virtual override {
+        // The base chain returns borrowed/redeemed tokens here via callContractWithToken; forward
+        // them to the user encoded in the payload.
+        string memory userAddress = abi.decode(payload, (string));
+        address tokenAddress = gatewayWithToken().tokenAddresses(tokenSymbol);
+        IERC20(tokenAddress).transfer(userAddress.toAddress(), amount);
+    }
 }

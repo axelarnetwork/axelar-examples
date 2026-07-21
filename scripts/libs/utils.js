@@ -2,8 +2,7 @@ const { Wallet, ethers } = require('ethers');
 const path = require('path');
 const fs = require('fs-extra');
 const { configPath } = require('../../config');
-const axelarLocal = require('@axelar-network/axelar-local-dev');
-const { AxelarAssetTransfer, AxelarQueryAPI, CHAINS, Environment } = require('@axelar-network/axelarjs-sdk');
+const { AxelarQueryAPI, CHAINS, Environment } = require('@axelar-network/axelarjs-sdk');
 
 /**
  * Get the wallet from the environment variables. If the EVM_PRIVATE_KEY environment variable is set, use that. Otherwise, use the EVM_MNEMONIC environment variable.
@@ -97,30 +96,6 @@ async function getBalances(chains, address) {
         acc[chains[i].name] = balance;
         return acc;
     }, {});
-}
-
-/**
- * Get the deposit address for a token on a chain.
- * @param {*} env - The environment to get the deposit address for. Available options are 'local' and 'testnet'.
- * @param {*} source - The source chain object.
- * @param {*} destination - The destination chain object.
- * @param {*} destinationAddress - The destination address.
- * @param {*} symbol - The symbol of the token to get the deposit address for.
- * @returns {string} - The deposit address.
- */
-function getDepositAddress(env, source, destination, destinationAddress, symbol) {
-    if (env === 'testnet') {
-        const listing = {
-            aUSDC: env === 'local' ? 'uusdc' : 'uausdc',
-        };
-        const sdk = new AxelarAssetTransfer({
-            environment: 'testnet',
-            auth: 'local',
-        });
-        return sdk.getDepositAddress(source, destination, destinationAddress, listing[symbol]);
-    }
-
-    return axelarLocal.getDepositAddress(source, destination, destinationAddress, symbol, 8500);
 }
 
 /**
@@ -228,7 +203,6 @@ function sanitizeEventArgs(event) {
 
 module.exports = {
     getWallet,
-    getDepositAddress,
     getBalances,
     getEVMChains,
     checkEnv,
