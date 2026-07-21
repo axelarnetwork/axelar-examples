@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import { AxelarExpressExecutableWithToken } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/express/AxelarExpressExecutableWithToken.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
+import { SafeTokenTransfer, SafeTokenTransferFrom } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/SafeTransfer.sol';
 
 // ============================================================================================
 // RED FLAG — DEMO ONLY. DO NOT USE THIS PATTERN AS-IS IN PRODUCTION.
@@ -27,6 +28,9 @@ import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contr
 // that can still trigger the handler with forged source data.
 // ============================================================================================
 contract CallContractWithTokenExpress is AxelarExpressExecutableWithToken {
+    using SafeTokenTransfer for IERC20;
+    using SafeTokenTransferFrom for IERC20;
+
     IAxelarGasService public immutable gasService;
 
     event Executed(bytes32 commandId, string sourceChain, string sourceAddress, bytes payload);
@@ -44,7 +48,7 @@ contract CallContractWithTokenExpress is AxelarExpressExecutableWithToken {
         uint256 amount
     ) external payable {
         address tokenAddress = gatewayWithToken().tokenAddresses(symbol);
-        IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
+        IERC20(tokenAddress).safeTransferFrom(msg.sender, address(this), amount);
         IERC20(tokenAddress).approve(address(gatewayWithToken()), amount);
         bytes memory payload = abi.encode(destinationAddresses);
         if (msg.value > 0) {
@@ -87,7 +91,7 @@ contract CallContractWithTokenExpress is AxelarExpressExecutableWithToken {
 
         uint256 sentAmount = amount / recipients.length;
         for (uint256 i = 0; i < recipients.length; i++) {
-            IERC20(tokenAddress).transfer(recipients[i], sentAmount);
+            IERC20(tokenAddress).safeTransfer(recipients[i], sentAmount);
         }
 
         emit ExecutedWithToken(commandId, sourceChain, sourceAddress, payload, tokenSymbol, amount);
