@@ -2,12 +2,16 @@
 pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
+import { SafeTokenTransfer, SafeTokenTransferFrom } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/SafeTransfer.sol';
 import { AxelarExecutableWithToken } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutableWithToken.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import './NftAuctionhouse.sol';
 
 contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutableWithToken {
+    using SafeTokenTransfer for IERC20;
+    using SafeTokenTransferFrom for IERC20;
+
     // sendToken has been removed from all environments and using it would burn funds, so every
     // cross-chain token movement here goes through callContractWithToken. Refunds are routed back
     // to the auction house on the source chain, which forwards them to the recipient. The leading
@@ -35,7 +39,7 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutableWithToken {
     ) external payable {
         require(msg.value > 0, 'Gas payment is required');
 
-        usdc.transferFrom(msg.sender, address(this), amount);
+        usdc.safeTransferFrom(msg.sender, address(this), amount);
         usdc.approve(address(gatewayWithToken()), amount);
         bytes memory payload = abi.encode(ACTION_BID, msg.sender, bidder, operator, tokenId);
         gasService.payNativeGasForContractCallWithToken{ value: msg.value }(
@@ -58,10 +62,17 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutableWithToken {
         string calldata tokenSymbol,
         uint256 amount
     ) internal override {
+        // Demo only — this shouldn't be used as-is in production: _executeWithToken does NOT
+        // authenticate the message source, yet (unlike a pure token forwarder) it drives shared
+        // auction state and escrowed funds — recording the bidder and refund routing, and placing
+        // bids that refund the previous bidder from the contract's escrow. A forged or unauthenticated
+        // message can therefore corrupt the auction (spoof bids, redirect refund routing), not merely
+        // move its own tokens. In production, validate sourceChain/sourceAddress against the trusted
+        // remote auction house before acting.
         if (abi.decode(payload, (uint8)) == ACTION_REFUND) {
             // A remote bid we placed was outbid or rejected; hand the returned tokens to the bidder.
             (, address recipient) = abi.decode(payload, (uint8, address));
-            usdc.transfer(recipient, amount);
+            usdc.safeTransfer(recipient, amount);
             return;
         }
 
@@ -104,12 +115,12 @@ contract NftAuctionhouseRemote is NftAuctionhouse, AxelarExecutableWithToken {
         if (bidder == address(this)) {
             _sendRefund(sourceChains[operator][tokenId], sourceAuctionhouses[operator][tokenId], refundAddresses[operator][tokenId], 'aUSDC', amount);
         } else {
-            usdc.transfer(bidder, amount);
+            usdc.safeTransfer(bidder, amount);
         }
     }
 
     function _giveNft(address auctioneer, address lastBidder, address operator, uint256 tokenId, uint256 lastBid) internal override {
-        usdc.transfer(auctioneer, lastBid);
+        usdc.safeTransfer(auctioneer, lastBid);
         address actualBidder = lastBidder == address(this) ? biddersRemote[operator][tokenId] : lastBidder;
 
         IERC721(operator).transferFrom(address(this), actualBidder, tokenId);

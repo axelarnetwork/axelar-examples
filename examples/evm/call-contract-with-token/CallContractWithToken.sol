@@ -86,8 +86,12 @@ contract CallContractWithToken is AxelarExecutableWithToken {
         string calldata tokenSymbol,
         uint256 amount
     ) internal override {
-        // Demo only — does not authenticate the message source. In production, validate
-        // sourceChain/sourceAddress against a trusted sender before acting on the message.
+        // This handler is intentionally permissionless, and that is safe here: it only distributes
+        // the tokens delivered with THIS message (`amount`) among the payload-supplied recipients and
+        // holds no funds or privileged state, so a forged call can only move the caller's own
+        // delivered tokens (sentAmount * len <= amount). Authenticating the source would buy nothing.
+        // Add source authentication when a forged message could command value or state it is not
+        // entitled to — see cross-chain-lending in this repo, which must verify the sender.
         address[] memory recipients = abi.decode(payload, (address[]));
         require(recipients.length > 0, 'No recipients');
         address tokenAddress = gatewayWithToken().tokenAddresses(tokenSymbol);
