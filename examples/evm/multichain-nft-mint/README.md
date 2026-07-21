@@ -1,6 +1,8 @@
 # Multichain NFT Mint
 
-This example demonstrates how to mint an NFT on a destination chain via a message triggered from your source chain. It encodes a function signature of the `safeMint()` function and `calls` the function signature on the destination chain.
+This example demonstrates how to mint an NFT on a destination chain via a message triggered from your source chain.
+The source chain encodes the recipient address and token id into the payload.
+The destination contract decodes them and mints the NFT with a typed `safeMint(address, uint256)` call (rather than executing arbitrary calldata from the message).
 
 ### Deployment
 

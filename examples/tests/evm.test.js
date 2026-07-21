@@ -17,7 +17,11 @@ console.log = () => {};
 
 const examples = [
     'call-contract',
-    'call-contract-gas-estimation',
+    // Excluded on local: demonstrates the on-chain gas service estimateGasFee()/payGas()
+    // API, which mainnet's gas service (cgp ~6.4.0) has but local-dev's (cgp 6.2.1, pinned
+    // for ITS 1.2.4) does not. Re-enable with the cgp-6.4 / gmp-sdk-6 / ITS-2.1.1 stack bump.
+    // See axelar-local-dev docs/its-mainnet-parity.md.
+    // 'call-contract-gas-estimation',
     'call-contract-with-token',
     'call-contract-with-token-express',
     'cross-chain-token',
