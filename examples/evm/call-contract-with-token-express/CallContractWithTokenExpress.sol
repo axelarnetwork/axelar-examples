@@ -1,18 +1,32 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import { AxelarExpressExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/express/AxelarExpressExecutable.sol';
+import { AxelarExpressExecutableWithToken } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/express/AxelarExpressExecutableWithToken.sol';
 import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
-import { Upgradable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol';
 
-contract CallContractWithTokenExpress is AxelarExpressExecutable {
+/**
+ * Important
+ *
+ * `expressExecute` / `expressExecuteWithToken` can be called by anyone willing to pay for the
+ * transfer upfront, so the `commandId`, `sourceChain`, `sourceAddress` and `payload` reaching
+ * `_execute` / `_executeWithToken` are NOT validated by the Axelar gateway on that path.
+ *
+ * Only the token transfer itself should be treated as having value. Do not authorize anything on
+ * `sourceChain` / `sourceAddress` here, and do not spend funds the call did not bring in. Both
+ * handlers below hold to that: `_executeWithToken` distributes exactly the `amount` the express
+ * executor transferred, and `_execute` only emits.
+ *
+ * To opt out of express entirely, override `expressExecute` / `expressExecuteWithToken` to revert,
+ * or inherit `AxelarExecutableWithToken` instead.
+ */
+contract CallContractWithTokenExpress is AxelarExpressExecutableWithToken {
     IAxelarGasService public immutable gasService;
 
     event Executed(bytes32 commandId, string sourceChain, string sourceAddress, bytes payload);
     event ExecutedWithToken(bytes32 commandId, string sourceChain, string sourceAddress, bytes payload, string tokenSymbol, uint256 amount);
 
-    constructor(address gateway_, address gasReceiver_) AxelarExpressExecutable(gateway_) {
+    constructor(address gateway_, address gasReceiver_) AxelarExpressExecutableWithToken(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
     }
 
@@ -61,6 +75,7 @@ contract CallContractWithTokenExpress is AxelarExpressExecutable {
         address[] memory recipients = abi.decode(payload, (address[]));
         address tokenAddress = gatewayWithToken().tokenAddresses(tokenSymbol);
 
+        // Only the amount should be treated as having value
         uint256 sentAmount = amount / recipients.length;
         for (uint256 i = 0; i < recipients.length; i++) {
             IERC20(tokenAddress).transfer(recipients[i], sentAmount);
