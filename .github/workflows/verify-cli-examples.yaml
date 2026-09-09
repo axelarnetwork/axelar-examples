@@ -10,6 +10,11 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
+            - name: Install Foundry
+              uses: foundry-rs/foundry-toolchain@v1
+              with:
+                  version: stable
+
             - name: Enable Corepack
               run: corepack enable
 
@@ -44,6 +49,11 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+
+            - name: Install Foundry
+              uses: foundry-rs/foundry-toolchain@v1
+              with:
+                  version: stable
 
             - name: Enable Corepack
               run: corepack enable
@@ -88,6 +98,11 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+
+            - name: Install Foundry
+              uses: foundry-rs/foundry-toolchain@v1
+              with:
+                  version: stable
 
             - name: Enable Corepack
               run: corepack enable
