@@ -55,7 +55,9 @@ overrides:
   # @axelar-network/axelar-local-dev-sui@3.0.0 is published to npm.
   # Also a tarball, for the reason above: as a link: target it resolved
   # axelar-local-dev out of the sibling workspace instead of through this
-  # override. The cost is that a sibling change needs `pnpm pack` there and
-  # `pnpm update <name>` here - a plain `pnpm install` reports "already up to
-  # date" and keeps serving the previously extracted tarball.
+  # override. The cost is that picking up a sibling change takes three steps:
+  # `pnpm run build && pnpm pack` there, then delete node_modules/<name> and
+  # `pnpm install` here. pnpm updates the lockfile hash on its own but will not
+  # re-extract over an existing directory, so skipping the delete silently
+  # leaves the old build in place.
   "@axelar-network/axelar-local-dev-sui": "file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz"

@@ -265,7 +265,7 @@ packages:
     resolution: {integrity: sha512-YxAxqgSlcMJltC7Ds1QnWnyQQEIbXnK3ONrQFwGRHKywPU5s8UaNGggfAZ/mV2ijcMcjZJ2qaFDxsC7KfyYrrQ==}
 
   '@axelar-network/axelar-local-dev-sui@file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz':
-    resolution: {integrity: sha512-WQi2NkQSyQkw8zqmpEA34ta/JQ/Vn9m5ya1lzS8EZxQRszMbEheGfwPvglSJQcKWpQxLOKk1A2RjNFedaiBkEQ==, tarball: file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz}
+    resolution: {integrity: sha512-ddl33fxozY9dnqNRGh3yFzhta0yeNKnS3P+iFjmKa2MKjmSG9YP3GKOMZpk4/tvyMtgezv26e5vGCXuGrRqZ/w==, tarball: file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz}
     version: 3.0.0
 
   '@axelar-network/axelar-local-dev@file:../axelar-local-dev/packages/axelar-local-dev/axelar-network-axelar-local-dev-3.0.0.tgz':
