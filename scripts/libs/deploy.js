@@ -41,20 +41,22 @@ async function deployOnAltChain(example) {
 
     const payload = await example.deployOnAltChain();
 
-    // update the chain config file
+    // update the chain config file the example nominated. Reading a fixed path here
+    // would drop the deployment data of every alt chain but that one, and skipping the
+    // write when the file does not exist yet would drop the first deploy of a fresh
+    // checkout.
     if (payload) {
-        const { data, path } = payload;
+        const { data, path: chainConfigPath } = payload;
 
-        const config = readChainConfig(configPath.localCosmosChains);
-        if (config) {
-            setJSON(
-                {
-                    ...config,
-                    ...data,
-                },
-                path,
-            );
-        }
+        const config = readChainConfig(chainConfigPath) || {};
+
+        setJSON(
+            {
+                ...config,
+                ...data,
+            },
+            chainConfigPath,
+        );
     }
 
     return payload;

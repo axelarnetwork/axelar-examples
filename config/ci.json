@@ -4,5 +4,8 @@
     },
     "multiversx": {
         "enabled": false
+    },
+    "sui": {
+        "enabled": false
     }
 }
