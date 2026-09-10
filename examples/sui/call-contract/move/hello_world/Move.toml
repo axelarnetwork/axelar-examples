@@ -1,0 +1,16 @@
+[package]
+name = "HelloWorld"
+version = "0.1.0"
+edition = "2024"
+
+# Resolved inside the harness's staging directory, where axelar-local-dev-sui
+# has already published these and rewritten their addresses.
+[dependencies]
+AxelarGateway = { local = "../axelar_gateway" }
+GasService = { local = "../gas_service" }
+RelayerDiscovery = { local = "../relayer_discovery" }
+Utils = { local = "../utils" }
+VersionControl = { local = "../version_control" }
+
+[addresses]
+hello_world = "0x0"

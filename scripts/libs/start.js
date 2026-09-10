@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { ethers } = require('ethers');
 const { createAndExport, EvmRelayer, RelayerType, networks } = require('@axelar-network/axelar-local-dev');
-const { enabledCosmos, enabledMultiversx } = require('./config');
+const { enabledCosmos, enabledMultiversx, enabledSui } = require('./config');
 const { configPath } = require('../../config');
 const path = require('path');
 
@@ -51,6 +51,29 @@ async function start(fundAddresses = [], chains = [], options = {}) {
 
         dropConnections.push(() => ibcRelayer.stopInterval());
         dropConnections.push(() => relayers.wasm.stopListening());
+    }
+
+    if (enabledSui) {
+        const { initSui, stopSui } = require('@axelar-network/axelar-local-dev-sui');
+
+        // Publishes the Axelar framework and a sample app to an already-running
+        // local Sui network. Start one with `sui start --with-faucet
+        // --force-regenesis`; the harness deliberately does not start it, the
+        // same way it expects anvil to be running for the EVM side.
+        const { suiNetwork, suiRelayer } = await initSui({
+            nodeUrl: process.env.SUI_URL,
+            faucetUrl: process.env.SUI_FAUCET_URL,
+        });
+
+        relayers.sui = suiRelayer;
+        evmRelayer.setRelayer(RelayerType.Sui, suiRelayer);
+
+        // `deploy` and `execute` run as separate processes and reconnect from
+        // this file rather than republishing.
+        fs.mkdirSync(path.dirname(configPath.localSuiChains), { recursive: true });
+        fs.writeFileSync(configPath.localSuiChains, JSON.stringify(suiNetwork.getDeployment(), null, 2));
+
+        dropConnections.push(() => stopSui());
     }
 
     let multiversxNetwork;

@@ -7,7 +7,8 @@ const {
     getExamplePath,
     getWallet,
     getEVMChains,
-    executeMultiversXExample
+    executeMultiversXExample,
+    executeSuiExample,
 } = require('./libs');
 
 const exampleName = process.argv[2];
@@ -41,4 +42,7 @@ if (exampleName.split('/')[0] === 'evm') {
 } else if (exampleName.split('/')[0] === 'multiversx') {
     const chains = getEVMChains(env);
     executeMultiversXExample(chains, args, wallet, example);
+} else if (exampleName.split('/')[0] === 'sui') {
+    const chains = getEVMChains(env);
+    executeSuiExample(chains, args, wallet, example);
 }

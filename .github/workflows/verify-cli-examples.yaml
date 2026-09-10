@@ -142,3 +142,85 @@ jobs:
                   mxpy localnet start &
                   sleep 120
                   NODE_ENV=ci pnpm run test:multiversx
+
+    test-sui-examples:
+        runs-on: ubuntu-22.04
+        name: 'Test Sui Examples'
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install Foundry
+              uses: foundry-rs/foundry-toolchain@v1
+              with:
+                  version: stable
+
+            - name: Enable Corepack
+              run: corepack enable
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: pnpm
+
+            - name: Install Dependencies
+              run: pnpm install --frozen-lockfile
+
+            # Read the pin from cgp-sui rather than duplicating it. Any other
+            # CLI version fails during Move dependency resolution with an error
+            # that names an unrelated object id.
+            - name: Resolve the pinned Sui version
+              id: sui
+              run: echo "version=$(jq -r .SUI_VERSION node_modules/@axelar-network/axelar-cgp-sui/version.json)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache the Sui CLI
+              id: cache-sui
+              uses: actions/cache@v4
+              with:
+                  path: sui-binaries/
+                  key: sui-${{ steps.sui.outputs.version }}
+
+            - name: Install the Sui CLI
+              if: steps.cache-sui.outputs.cache-hit != 'true'
+              run: |
+                  sudo apt-get update && sudo apt-get install -y libpq-dev
+                  VERSION=${{ steps.sui.outputs.version }}
+                  curl -L -o sui.tgz "https://github.com/MystenLabs/sui/releases/download/$VERSION/sui-$VERSION-ubuntu-x86_64.tgz"
+                  mkdir -p sui-binaries && tar -xf sui.tgz -C sui-binaries && rm sui.tgz
+
+            - name: Add Sui to PATH
+              run: sudo cp ./sui-binaries/sui /usr/local/bin/sui && sui --version
+
+            # The first Move build clones the Sui framework here, which is slow
+            # and large enough to dominate a cold run.
+            - name: Cache Move dependencies
+              uses: actions/cache@v4
+              with:
+                  path: ~/.move
+                  key: move-${{ steps.sui.outputs.version }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+            - name: Create .env file
+              run: |
+                  # Dummy private key created for testing purpose only, it is not secret
+                  pnpm run setup
+
+            - name: Override config/ci.json
+              run: |
+                  echo '{"cosmos": {"enabled": false},"multiversx": {"enabled": false},"sui": {"enabled": true}}' > config/ci.json
+
+            - name: Compile EVM Smart Contracts
+              run: pnpm run build
+
+            - name: Test
+              run: |
+                  echo -e "y\n\n1" | sui client envs
+                  nohup sh -c 'RUST_LOG="off,sui_node=info" sui start --with-faucet --force-regenesis' > sui.log 2>&1 < /dev/null &
+                  sleep 30
+                  sui client new-env --alias localnet --rpc http://127.0.0.1:9000 || true
+                  sui client switch --env localnet || true
+                  NODE_ENV=ci pnpm run test:sui
+
+            - name: Dump the localnet log on failure
+              if: failure()
+              run: tail -n 200 sui.log

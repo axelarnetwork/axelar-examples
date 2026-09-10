@@ -38,6 +38,32 @@ async function executeCosmosExample(_env, chains, args, wallet, example) {
     });
 }
 
+async function executeSuiExample(chains, args, wallet, example) {
+    // Required lazily so `pnpm run execute evm/...` still works without the
+    // Sui package installed, matching how start.js guards it.
+    const { loadSuiNetwork } = require('@axelar-network/axelar-local-dev-sui');
+
+    const evmChain = getSourceChain(chains, args, example.sourceChain);
+
+    evmChain.provider = getDefaultProvider(evmChain.rpc);
+    const connectedWallet = wallet.connect(evmChain.provider);
+
+    deserializeContract(evmChain, connectedWallet);
+
+    evmChain.gateway = new Contract(evmChain.gateway, AxelarGatewayWithTokenContract.abi, connectedWallet);
+    evmChain.gasService = new Contract(evmChain.gasService, AxelarGasServiceContract.abi, connectedWallet);
+
+    const suiConfig = readChainConfig(configPath.localSuiChains);
+
+    if (!suiConfig || !suiConfig.channelAddress) {
+        throw new Error('Deploy the Sui package first: pnpm run deploy sui/call-contract local');
+    }
+
+    const sui = await loadSuiNetwork(suiConfig);
+
+    await example.execute(evmChain, wallet, { args, sui, suiConfig });
+}
+
 async function executeMultiversXExample(chains, args, wallet, example) {
     const evmChain = getSourceChain(chains, args, example.sourceChain);
 
@@ -186,6 +212,7 @@ function listenForGMPEvent(env, source, startBlockNumber) {
 
 module.exports = {
     executeMultiversXExample,
+    executeSuiExample,
     executeEVMExample,
     executeCosmosExample,
 };
