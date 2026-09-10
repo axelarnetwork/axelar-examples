@@ -49,3 +49,6 @@ The Sui gateway routes an approved message to a Channel, and the relayer then as
 `deployOnAltChain` records the channel address in `chain-config/local-sui.json`.
 
 The destination chain name must be lowercase `sui`: the relayer matches on that literal.
+
+The other direction is the mirror image and less forgiving. `set_remote_value` takes the EVM network's name in its exact case, `Avalanche` rather than `avalanche`.
+A lowercase name still gets approved on the EVM gateway, because the relayer matches the command bucket case-insensitively, but the final lookup that calls your contract is case-sensitive - so the message is approved and never executed, and nothing reports it.

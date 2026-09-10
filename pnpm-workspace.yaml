@@ -44,14 +44,18 @@ overrides:
   # built in the sibling repo so `pnpm install` works locally. This path
   # will NOT resolve in CI or on other machines; the committed dependency
   # range (^3.0.0) is the real target.
-  # Must resolve to the SAME path the linked Sui package below resolves it to.
-  # `networks` is module-level state in this package: two copies means
-  # SuiRelayer iterates an empty network list and Sui->EVM silently does
-  # nothing - no error, no delivery.
-  "@axelar-network/axelar-local-dev": "link:../axelar-local-dev/packages/axelar-local-dev"
+  # Tarballs, not link:. An override only reaches packages pnpm actually
+  # manages, so a link: target resolves its own dependencies out of the sibling
+  # repo and ends up on a second copy of this package. `networks` is
+  # module-level state here, so a second copy means that relayer iterates an
+  # empty network list and its chain silently relays nothing - no error, no
+  # delivery. Every importer must land on one copy.
+  "@axelar-network/axelar-local-dev": "file:../axelar-local-dev/packages/axelar-local-dev/axelar-network-axelar-local-dev-3.0.0.tgz"
   # TEMPORARY — same deal for the rewritten Sui harness. Remove once
   # @axelar-network/axelar-local-dev-sui@3.0.0 is published to npm.
-  # link: rather than a tarball so local rebuilds of the sibling are picked up
-  # without reinstalling. Swap to the published version alongside the override
-  # above when it lands on npm.
-  "@axelar-network/axelar-local-dev-sui": "link:../axelar-local-dev/packages/axelar-local-dev-sui"
+  # Also a tarball, for the reason above: as a link: target it resolved
+  # axelar-local-dev out of the sibling workspace instead of through this
+  # override. The cost is that a sibling change needs `pnpm pack` there and
+  # `pnpm update <name>` here - a plain `pnpm install` reports "already up to
+  # date" and keeps serving the previously extracted tarball.
+  "@axelar-network/axelar-local-dev-sui": "file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz"

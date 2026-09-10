@@ -6,7 +6,7 @@ const {
     utils: { deployContract },
 } = require('@axelar-network/axelar-local-dev');
 const { TxBuilder } = require('@axelar-network/axelar-cgp-sui');
-const { loadSuiNetwork } = require('@axelar-network/axelar-local-dev-sui');
+const { loadSuiNetwork, requireObjectId } = require('@axelar-network/axelar-local-dev-sui');
 const fs = require('fs');
 const { configPath } = require('../../../config');
 
@@ -23,10 +23,16 @@ async function deployOnAltChain() {
 
     // The harness calls this with no arguments, and `deploy` is a different
     // process from `start`, so reconnect from the side-file that start wrote.
+    if (!fs.existsSync(configPath.localSuiChains)) {
+        throw new Error('Start the local chains first: `pnpm run start` (with sui.enabled true and a Sui network running).');
+    }
+
     const sui = await loadSuiNetwork(JSON.parse(fs.readFileSync(configPath.localSuiChains, 'utf8')));
 
     const { packageId, publishTxn } = await sui.publishPackage(MOVE_PACKAGE, MOVE_DIR);
-    const singletonId = publishTxn.objectChanges.find((change) => change.objectType === `${packageId}::hello_world::Singleton`).objectId;
+    // requireObjectId names what it looked for and lists what was created,
+    // rather than failing with "cannot read properties of undefined".
+    const singletonId = requireObjectId(publishTxn, `${packageId}::hello_world::Singleton`);
 
     // Without this the relayer cannot work out how to deliver to us, and
     // inbound messages are silently never executed.
@@ -98,25 +104,66 @@ async function execute(evmChain, wallet, options) {
     });
     await builder.signAndExecute(sui.deployer, {});
 
-    await sleep(15000);
+    // Poll rather than sleep a fixed interval: a sleep that is too short
+    // prints two empty values and reports nothing wrong, which is the least
+    // useful way for a cross-chain example to fail.
+    await waitForDelivery(
+        () => evmChain.contract.value().then((value) => value === messageToEvm),
+        `Sui -> ${evmChain.name} was not delivered`,
+    );
+    await waitForDelivery(
+        () => readSuiValue(sui, suiConfig.singletonId).then((value) => value === messageToSui),
+        'EVM -> Sui was not delivered',
+    );
 
     console.log('--- After ---');
     await logValues();
 }
 
+async function waitForDelivery(delivered, message, timeout = 120000, interval = 1000) {
+    const deadline = Date.now() + timeout;
+
+    while (Date.now() < deadline) {
+        if (await delivered()) return;
+
+        await sleep(interval);
+    }
+
+    throw new Error(`${message} within ${timeout / 1000}s. The relayer is started by \`pnpm run start\`; check it is still running.`);
+}
+
 async function readChannelAddress(sui, singletonId) {
+    const content = await readSingleton(sui, singletonId);
+
+    return content.fields.channel.fields.id.id;
+}
+
+async function readSingleton(sui, singletonId) {
     const object = await sui.client.getObject({ id: singletonId, options: { showContent: true } });
 
-    return object.data.content.fields.channel.fields.id.id;
+    if (!object.data) {
+        throw new Error(
+            `Sui object ${singletonId} does not exist. chain-config/local-sui.json is probably stale - ` +
+                'it survives `sui start --force-regenesis`, which discards every published object. Delete it and re-run start and deploy.',
+        );
+    }
+
+    return object.data.content;
 }
 
 async function readSuiValue(sui, singletonId) {
-    const object = await sui.client.getObject({ id: singletonId, options: { showContent: true } });
-    const raw = object.data.content.fields.value;
+    const content = await readSingleton(sui, singletonId);
+    const raw = content.fields.value;
 
     if (!raw || raw.length === 0) return '';
 
-    return ethers.utils.defaultAbiCoder.decode(['string'], new Uint8Array(raw))[0];
+    try {
+        return ethers.utils.defaultAbiCoder.decode(['string'], new Uint8Array(raw))[0];
+    } catch (error) {
+        // execute() accepts any approved message addressed to this Channel, so
+        // the stored bytes are not guaranteed to be an abi-encoded string.
+        return `<${raw.length} undecodable bytes>`;
+    }
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

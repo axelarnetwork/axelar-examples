@@ -75,6 +75,12 @@ module hello_world::hello_world {
     }
 
     /// Sui -> EVM.
+    ///
+    /// `destination_chain` must be the EVM network's name in its exact case,
+    /// e.g. "Avalanche". The relayer finds the destination network with a
+    /// case-sensitive lookup when it executes the message, so a lowercase name
+    /// is approved on the EVM gateway and then never delivered to the
+    /// contract - a half-delivery with nothing reported.
     public fun set_remote_value(
         singleton: &Singleton,
         gateway: &Gateway,

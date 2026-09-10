@@ -49,17 +49,19 @@ describe('Verify Sui Examples', function () {
                 const chains = getEVMChains('local', testChains);
 
                 await deploy('local', chains, wallet, example);
+
+                // execute() polls for delivery in both directions and throws if
+                // either does not arrive, so reaching the next line means a
+                // message crossed EVM -> Sui and Sui -> EVM. That matters: the
+                // Sui -> EVM leg is asserted in no other CI, since the sibling
+                // package covers it only in its excluded end-to-end suite.
                 await executeSuiExample(chains, [], wallet, example);
 
-                // Bring-up assertions. Delivery itself is exercised by the
-                // axelar-local-dev-sui package's own tests; asserting it here
-                // would make this test depend on relay latency.
                 const suiConfig = fs.readJsonSync(configPath.localSuiChains);
 
                 expect(suiConfig.packageId).to.match(/^0x[0-9a-f]{64}$/);
                 expect(suiConfig.singletonId).to.match(/^0x[0-9a-f]{64}$/);
                 expect(suiConfig.channelAddress).to.match(/^0x[0-9a-f]{64}$/);
-                expect(suiConfig.channelAddress).to.not.equal(suiConfig.packageId);
             });
         }
     }

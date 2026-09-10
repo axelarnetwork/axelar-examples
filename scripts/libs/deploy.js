@@ -41,10 +41,10 @@ async function deployOnAltChain(example) {
 
     const payload = await example.deployOnAltChain();
 
-    // update the chain config file the example nominated. Reading a fixed path here
-    // would drop the deployment data of every alt chain but that one, and skipping the
-    // write when the file does not exist yet would drop the first deploy of a fresh
-    // checkout.
+    // Write to the chain config the example nominated. Reading a fixed path here
+    // wrote one chain's config into another chain's file; the unconditional write is
+    // defensive, since every example currently reads its own file first and would
+    // have thrown before reaching this.
     if (payload) {
         const { data, path: chainConfigPath } = payload;
 

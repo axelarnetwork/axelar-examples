@@ -5,8 +5,8 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@axelar-network/axelar-local-dev': link:../axelar-local-dev/packages/axelar-local-dev
-  '@axelar-network/axelar-local-dev-sui': link:../axelar-local-dev/packages/axelar-local-dev-sui
+  '@axelar-network/axelar-local-dev': file:../axelar-local-dev/packages/axelar-local-dev/axelar-network-axelar-local-dev-3.0.0.tgz
+  '@axelar-network/axelar-local-dev-sui': file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz
 
 importers:
 
@@ -25,8 +25,8 @@ importers:
         specifier: ^6.2.0
         version: 6.2.0
       '@axelar-network/axelar-local-dev':
-        specifier: link:../axelar-local-dev/packages/axelar-local-dev
-        version: link:../axelar-local-dev/packages/axelar-local-dev
+        specifier: file:../axelar-local-dev/packages/axelar-local-dev/axelar-network-axelar-local-dev-3.0.0.tgz
+        version: file:../axelar-local-dev/packages/axelar-local-dev/axelar-network-axelar-local-dev-3.0.0.tgz(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@axelar-network/axelar-local-dev-cosmos':
         specifier: ^2.3.0
         version: 2.3.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
@@ -34,8 +34,8 @@ importers:
         specifier: ^2.3.0
         version: 2.3.2(axios@0.27.2)(bignumber.js@9.3.1)(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@5.0.10)
       '@axelar-network/axelar-local-dev-sui':
-        specifier: link:../axelar-local-dev/packages/axelar-local-dev-sui
-        version: link:../axelar-local-dev/packages/axelar-local-dev-sui
+        specifier: file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz
+        version: file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@axelar-network/axelarjs-sdk':
         specifier: ^0.15.0
         version: 0.15.0(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@5.0.10)
@@ -125,8 +125,8 @@ importers:
         specifier: ^6.2.0
         version: 6.2.0
       '@axelar-network/axelar-local-dev':
-        specifier: link:../../axelar-local-dev/packages/axelar-local-dev
-        version: link:../../axelar-local-dev/packages/axelar-local-dev
+        specifier: file:../../axelar-local-dev/packages/axelar-local-dev/axelar-network-axelar-local-dev-3.0.0.tgz
+        version: file:../axelar-local-dev/packages/axelar-local-dev/axelar-network-axelar-local-dev-3.0.0.tgz(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@axelar-network/axelarjs-sdk':
         specifier: ^0.15.0
         version: 0.15.0(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@5.0.10)
@@ -263,6 +263,10 @@ packages:
 
   '@axelar-network/axelar-local-dev-multiversx@2.3.2':
     resolution: {integrity: sha512-YxAxqgSlcMJltC7Ds1QnWnyQQEIbXnK3ONrQFwGRHKywPU5s8UaNGggfAZ/mV2ijcMcjZJ2qaFDxsC7KfyYrrQ==}
+
+  '@axelar-network/axelar-local-dev-sui@file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz':
+    resolution: {integrity: sha512-WQi2NkQSyQkw8zqmpEA34ta/JQ/Vn9m5ya1lzS8EZxQRszMbEheGfwPvglSJQcKWpQxLOKk1A2RjNFedaiBkEQ==, tarball: file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz}
+    version: 3.0.0
 
   '@axelar-network/axelar-local-dev@file:../axelar-local-dev/packages/axelar-local-dev/axelar-network-axelar-local-dev-3.0.0.tgz':
     resolution: {integrity: sha512-ej0lZ33FnRjNYn/47AeojJ9PujW/4LsH5CKtNHoRLbTyufr7S/Ud+j1maNoKTtAvzT2I9o1asTws+pnMqD2y5g==, tarball: file:../axelar-local-dev/packages/axelar-local-dev/axelar-network-axelar-local-dev-3.0.0.tgz}
@@ -5393,6 +5397,21 @@ snapshots:
       - bignumber.js
       - bufferutil
       - supports-color
+      - utf-8-validate
+
+  '@axelar-network/axelar-local-dev-sui@file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@axelar-network/axelar-cgp-sui': 1.2.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      '@axelar-network/axelar-local-dev': file:../axelar-local-dev/packages/axelar-local-dev/axelar-network-axelar-local-dev-3.0.0.tgz(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      '@mysten/sui': 1.45.2(typescript@5.9.3)
+      ethers: 5.8.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+    transitivePeerDependencies:
+      - '@gql.tada/svelte-support'
+      - '@gql.tada/vue-support'
+      - bufferutil
+      - debug
+      - supports-color
+      - typescript
       - utf-8-validate
 
   '@axelar-network/axelar-local-dev@file:../axelar-local-dev/packages/axelar-local-dev/axelar-network-axelar-local-dev-3.0.0.tgz(bufferutil@4.1.0)(utf-8-validate@5.0.10)':

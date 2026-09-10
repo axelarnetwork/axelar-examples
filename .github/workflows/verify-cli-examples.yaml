@@ -181,10 +181,13 @@ jobs:
                   path: sui-binaries/
                   key: sui-${{ steps.sui.outputs.version }}
 
+            # Needed to run the binary, so outside the cache-miss branch below.
+            - name: Install Sui runtime dependencies
+              run: sudo apt-get update && sudo apt-get install -y libpq-dev
+
             - name: Install the Sui CLI
               if: steps.cache-sui.outputs.cache-hit != 'true'
               run: |
-                  sudo apt-get update && sudo apt-get install -y libpq-dev
                   VERSION=${{ steps.sui.outputs.version }}
                   curl -L -o sui.tgz "https://github.com/MystenLabs/sui/releases/download/$VERSION/sui-$VERSION-ubuntu-x86_64.tgz"
                   mkdir -p sui-binaries && tar -xf sui.tgz -C sui-binaries && rm sui.tgz
@@ -199,6 +202,8 @@ jobs:
               with:
                   path: ~/.move
                   key: move-${{ steps.sui.outputs.version }}-${{ hashFiles('pnpm-lock.yaml') }}
+                  restore-keys: |
+                      move-${{ steps.sui.outputs.version }}-
 
             - name: Create .env file
               run: |
@@ -212,13 +217,13 @@ jobs:
             - name: Compile EVM Smart Contracts
               run: pnpm run build
 
+            # No sleep and no `sui client` setup: nothing in the stack shells out
+            # to `sui client` (only `sui --version` and `sui move build`), and
+            # SuiNetwork.init already retries until the node answers.
             - name: Test
+              timeout-minutes: 20
               run: |
-                  echo -e "y\n\n1" | sui client envs
                   nohup sh -c 'RUST_LOG="off,sui_node=info" sui start --with-faucet --force-regenesis' > sui.log 2>&1 < /dev/null &
-                  sleep 30
-                  sui client new-env --alias localnet --rpc http://127.0.0.1:9000 || true
-                  sui client switch --env localnet || true
                   NODE_ENV=ci pnpm run test:sui
 
             - name: Dump the localnet log on failure
