@@ -27,7 +27,7 @@
         "@axelar-network/axelar-local-dev": "^3.0.0",
         "@axelar-network/axelar-local-dev-cosmos": "^2.3.0",
         "@axelar-network/axelar-local-dev-multiversx": "^2.3.0",
-        "@axelar-network/axelar-local-dev-sui": "file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz",
+        "@axelar-network/axelar-local-dev-sui": "^3.0.0",
         "@axelar-network/axelarjs-sdk": "^0.15.0",
         "@axelar-network/interchain-token-service": "1.2.4",
         "@grpc/grpc-js": "^1.10.3",
