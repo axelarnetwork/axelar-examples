@@ -19,8 +19,6 @@ allowBuilds:
   utf-8-validate: true
   protobufjs: true
   classic-level: true
-  near-sandbox: true
-  near-workspaces: true
   # Native addon has a buffer-overflow CVE (GHSA-3gc7-fjrx-p6mg); the
   # pure-JS fallback is unaffected. Matches the axelar-app decision.
   bigint-buffer: false

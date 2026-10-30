@@ -37,7 +37,7 @@ jobs:
 
             - name: Override config/ci.json
               run: |
-                  echo '{"cosmos": {"enabled": true},"multiversx": {"enabled": false},"sui": {"enabled": false}}' > config/ci.json
+                  echo '{"cosmos": {"enabled": true},"sui": {"enabled": false}}' > config/ci.json
 
             - name: Test
               run: |
@@ -78,70 +78,11 @@ jobs:
 
             - name: Override config/ci.json
               run: |
-                  echo '{"cosmos": {"enabled": false},"multiversx": {"enabled": false},"sui": {"enabled": false}}' > config/ci.json
+                  echo '{"cosmos": {"enabled": false},"sui": {"enabled": false}}' > config/ci.json
 
             - name: Test
               run: |
                   NODE_ENV=ci pnpm run test:evm
-
-    test-multiversx-examples:
-        runs-on: ubuntu-22.04
-        name: 'Test Multiversx Examples'
-        services:
-            elasticsearch:
-                image: 'docker.elastic.co/elasticsearch/elasticsearch:8.12.0'
-                env:
-                    discovery.type: single-node
-                    xpack.security.enabled: false
-                ports:
-                    - '9200:9200'
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Install Foundry
-              uses: foundry-rs/foundry-toolchain@v1
-              with:
-                  version: stable
-
-            - name: Enable Corepack
-              run: corepack enable
-
-            - name: Setup Node
-              uses: actions/setup-node@v4
-              with:
-                  node-version-file: .nvmrc
-                  cache: pnpm
-
-            - name: Prerequisites
-              run: |
-                  pip3 install multiversx-sdk-cli==v9.3.1
-                  mxpy localnet setup
-                  cp -rf ./examples/multiversx/external.toml ./localnet/validator00/config
-                  cp -rf ./examples/multiversx/external.toml ./localnet/validator01/config
-                  cp -rf ./examples/multiversx/external.toml ./localnet/validator02/config
-
-            - name: Install Dependencies
-              run: pnpm install --frozen-lockfile
-
-            - name: Create .env file
-              run: |
-                  # Dummy private key created for testing purpose only, it is not secret
-                  pnpm run setup
-
-            - name: Override config/ci.json
-              run: |
-                  echo '{"cosmos": {"enabled": false},"multiversx": {"enabled": true},"sui": {"enabled": false}}' > config/ci.json
-
-            - name: Compile EVM Smart Contracts
-              run: |
-                  pnpm run build
-
-            - name: Test
-              run: |
-                  mxpy localnet start &
-                  sleep 120
-                  NODE_ENV=ci pnpm run test:multiversx
 
     test-sui-examples:
         runs-on: ubuntu-22.04
@@ -212,7 +153,7 @@ jobs:
 
             - name: Override config/ci.json
               run: |
-                  echo '{"cosmos": {"enabled": false},"multiversx": {"enabled": false},"sui": {"enabled": true}}' > config/ci.json
+                  echo '{"cosmos": {"enabled": false},"sui": {"enabled": true}}' > config/ci.json
 
             - name: Compile EVM Smart Contracts
               run: pnpm run build

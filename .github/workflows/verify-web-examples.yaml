@@ -29,7 +29,7 @@ jobs:
 
             - name: Override config/ci.json
               run: |
-                  echo '{"cosmos": {"enabled": false},"multiversx": {"enabled": false},"sui": {"enabled": false}}' > config/ci.json
+                  echo '{"cosmos": {"enabled": false},"sui": {"enabled": false}}' > config/ci.json
 
             - name: Install Dependencies
               run: pnpm install --frozen-lockfile

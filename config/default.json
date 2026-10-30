@@ -2,9 +2,6 @@
     "cosmos": {
         "enabled": false
     },
-    "multiversx": {
-        "enabled": false
-    },
     "sui": {
         "enabled": false
     }

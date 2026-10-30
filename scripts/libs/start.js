@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { ethers } = require('ethers');
-const { createAndExport, EvmRelayer, RelayerType, networks } = require('@axelar-network/axelar-local-dev');
-const { enabledCosmos, enabledMultiversx, enabledSui } = require('./config');
+const { createAndExport, EvmRelayer, RelayerType } = require('@axelar-network/axelar-local-dev');
+const { enabledCosmos, enabledSui } = require('./config');
 const { configPath } = require('../../config');
 const path = require('path');
 
@@ -76,14 +76,6 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         dropConnections.push(() => stopSui());
     }
 
-    let multiversxNetwork;
-    if (enabledMultiversx) {
-        const { MultiversXRelayer, createMultiversXNetwork } = require('@axelar-network/axelar-local-dev-multiversx');
-        multiversxNetwork = await initMultiversX(createMultiversXNetwork);
-        relayers.multiversx = new MultiversXRelayer();
-        evmRelayer.setRelayer(RelayerType.MultiversX, relayers.multiversx);
-    }
-
     await createAndExport({
         chainOutputPath: configPath.localEvmChains,
         accountsToFund: fundAddresses,
@@ -92,12 +84,6 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         relayers,
         relayInterval: options.relayInterval
     });
-
-    // Need to register ITS for MultiversX after ITS for EVM was initialized
-    if (enabledMultiversx && multiversxNetwork) {
-        const { registerMultiversXRemoteITS } = require('@axelar-network/axelar-local-dev-multiversx');
-        await registerMultiversXRemoteITS(multiversxNetwork, networks);
-    }
 
     return async () => {
         for (const dropConnection of dropConnections) {
@@ -117,18 +103,6 @@ async function deployAndFundUsdc(chain, toFund) {
     for (const address of toFund) {
         await chain.giveToken(address, 'aUSDC', ethers.utils.parseEther('1'));
     }
-}
-
-async function initMultiversX(createMultiversXNetwork) {
-    try {
-        return await createMultiversXNetwork({
-            gatewayUrl: 'http://0.0.0.0:7950'
-        });
-    } catch (e) {
-        console.log('Skip MultiversX initialization, rerun this after starting a MultiversX localnet for proper support.');
-    }
-
-    return null;
 }
 
 module.exports = {

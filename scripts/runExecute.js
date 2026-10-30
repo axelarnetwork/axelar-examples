@@ -1,15 +1,6 @@
 'use strict';
 require('dotenv').config();
-const {
-    executeEVMExample,
-    executeCosmosExample,
-    checkEnv,
-    getExamplePath,
-    getWallet,
-    getEVMChains,
-    executeMultiversXExample,
-    executeSuiExample,
-} = require('./libs');
+const { executeEVMExample, executeCosmosExample, checkEnv, getExamplePath, getWallet, getEVMChains, executeSuiExample } = require('./libs');
 
 const exampleName = process.argv[2];
 const env = process.argv[3];
@@ -39,9 +30,6 @@ if (exampleName.split('/')[0] === 'evm') {
 } else if (exampleName.split('/')[0] === 'cosmos') {
     const chains = getEVMChains(env);
     executeCosmosExample(env, chains, args, wallet, example);
-} else if (exampleName.split('/')[0] === 'multiversx') {
-    const chains = getEVMChains(env);
-    executeMultiversXExample(chains, args, wallet, example);
 } else if (exampleName.split('/')[0] === 'sui') {
     const chains = getEVMChains(env);
     executeSuiExample(chains, args, wallet, example);

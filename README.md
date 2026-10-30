@@ -89,6 +89,5 @@ If not specified, this will print balances of the wallet for testnet.
 
 -   [Evm Examples](/examples/evm/)
 -   [Cosmos Examples](/examples/cosmos/)
--   [MultiversX Examples](/examples/multiversx/)
 -   [Sui Examples](/examples/sui/)
 -   [Web Examples](/examples-web/)
