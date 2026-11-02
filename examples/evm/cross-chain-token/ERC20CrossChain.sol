@@ -30,7 +30,8 @@ contract ERC20CrossChain is AxelarExecutable, ERC20, Upgradable, IERC20CrossChai
         symbol = symbol_;
     }
 
-    // This is for testing.
+    // Demo only — this shouldn't be used as-is in production: an unrestricted public mint faucet.
+    // Remove it (or gate it) before deploying.
     function giveMe(uint256 amount) external {
         _mint(msg.sender, amount);
     }

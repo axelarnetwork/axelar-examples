@@ -40,8 +40,8 @@ abstract contract NoncedExecutable is AxelarExecutable {
     ) external payable {
         require(msg.value > 0, 'Gas payment is required');
 
-        // Build the payload. The first 32 bytes are the nonce, the next 32 bytes are the address of the sender, and the rest is the payload passed by the caller.
-        bytes memory newPayload = abi.encode(outgoingNonces[destinationChain][address(this)], address(this), payload);
+        // Build the payload. The first 32 bytes are the nonce, the rest is the payload passed by the caller.
+        bytes memory newPayload = abi.encode(outgoingNonces[destinationChain][address(this)], payload);
 
         // Increment the nonce.
         outgoingNonces[destinationChain][address(this)]++;
@@ -59,9 +59,13 @@ abstract contract NoncedExecutable is AxelarExecutable {
         gateway().callContract(destinationChain, destinationContract, newPayload);
     }
 
-    function _execute(bytes32 /*commandId*/, string calldata sourceChain, string calldata, bytes calldata payload) internal override {
-        // Decode the payload. The first 32 bytes are the nonce, the next 32 bytes are the address of the sender, and the rest is the payload passed by the sender.
-        (uint256 nonce, address sender, bytes memory newPayload) = abi.decode(payload, (uint256, address, bytes));
+    function _execute(bytes32 /*commandId*/, string calldata sourceChain, string calldata sourceAddress, bytes calldata payload) internal override {
+        // The sender is the gateway-authenticated source contract address, NOT a value taken from the
+        // payload (which the caller could forge to impersonate another sender and desync their nonce).
+        address sender = sourceAddress.toAddress();
+
+        // Decode the payload. The first 32 bytes are the nonce, the rest is the payload passed by the sender.
+        (uint256 nonce, bytes memory newPayload) = abi.decode(payload, (uint256, bytes));
 
         // Check the nonce. If it's not the expected one, revert.
         if (nonce != incomingNonces[sourceChain][sender]) revert IncorrectNonce();

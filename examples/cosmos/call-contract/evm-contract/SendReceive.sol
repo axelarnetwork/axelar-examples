@@ -79,6 +79,9 @@ contract SendReceive is AxelarExecutable {
         string calldata /*sourceAddress*/,
         bytes calldata payload
     ) internal override {
+        // Demo only — this shouldn't be used as-is in production: it does not authenticate the
+        // cross-chain message source. Validate sourceChain/sourceAddress against a trusted sender
+        // before acting on the message.
         (string memory sender, string memory message) = abi.decode(payload, (string, string));
         storedMessage = Message(sender, message);
     }

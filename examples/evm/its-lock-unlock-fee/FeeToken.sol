@@ -49,7 +49,7 @@ contract FeeToken is InterchainTokenStandard, ERC20, Minter {
      * @param _feePercent new fee percent
      */
     function setFeePercent(uint256 _feePercent) external onlyRole(uint8(Roles.MINTER)) {
-        require(_feePercent <= 100, 'Fee percent too high');
+        require(_feePercent <= 1e18, 'Fee percent too high');
         feePercent = _feePercent;
     }
 
@@ -89,7 +89,7 @@ contract FeeToken is InterchainTokenStandard, ERC20, Minter {
         _burn(account, amount);
     }
 
-    function addMinter(address minter) external {
+    function addMinter(address minter) external onlyRole(uint8(Roles.MINTER)) {
         _addMinter(minter);
     }
 

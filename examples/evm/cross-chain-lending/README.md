@@ -3,6 +3,10 @@
 > Note: This example uses forecallable which is deprecated.
 > Todo: Migrate to GMP Express.
 
+> Note: Borrowed and redeemed tokens are returned to the satellite chain with `callContractWithToken` (the disabled `sendToken` might cause loss of funds).
+> This return leg does not pay for destination gas, so it is only relayed automatically in the local environment.
+> On testnet the return call additionally needs a `IAxelarGasService` gas payment for the satellite contract to be executed.
+
 This example demonstrates how to use the existing Compound Protocol to supply collateral and borrow tokens from a satellite chain to a fork of Ethereum's mainnet. Unlike the other examples in this repository, executing this one doesn't require the execution of the script scripts/start or scripts/deploy in order to run this test, the needed mainnet fork and the satellite chain are set up while running the test script itself.
 
 ### Prerequisite

@@ -92,7 +92,7 @@ contract BurnableToken is InterchainTokenStandard, ERC20Burnable, Minter {
         super.burnFrom(account, amount);
     }
 
-    function addMinter(address minter) external {
+    function addMinter(address minter) external onlyRole(uint8(Roles.MINTER)) {
         _addMinter(minter);
     }
 

@@ -8,6 +8,9 @@ import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contr
 
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 
+// Demo only — this shouldn't be used as-is in production: it does not authenticate the
+// cross-chain message source and swaps with amountOutMinimum = 0 (no slippage protection,
+// i.e. sandwich/MEV exposure). Router/token addresses are hardcoded for one testnet.
 contract MultichainSwap is AxelarExecutableWithToken {
     address public wmatic; //Mumbai: 0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889
     address public weth; //Mumbai: 0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa

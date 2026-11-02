@@ -4,7 +4,7 @@ const {
     forkNetwork,
     createNetwork,
     mainnetInfo,
-    utils: { defaultAccounts, deployContract },
+    utils: { deployContract },
     relay,
 } = require('@axelar-network/axelar-local-dev');
 
@@ -46,11 +46,10 @@ async function deployTokens(chain, axlWrapped) {
 
 async function setupBaseChain() {
     const networkOptions = {
-        ganacheOptions: {
-            wallet: {
-                accounts: defaultAccounts(20, ''),
-                unlockedAccounts: OLD_ADMIN_ADDRESSES.concat([ADDRESS_COMPOUND_ADMIN, ADDRESS_SUSHI_MINTER, ADDRESS_WBTC_MINTER]),
-            },
+        // anvil replaces ganache: impersonated admins are passed as unlockedAccounts
+        // (anvil is spawned with --auto-impersonate).
+        anvilOptions: {
+            unlockedAccounts: OLD_ADMIN_ADDRESSES.concat([ADDRESS_COMPOUND_ADMIN, ADDRESS_SUSHI_MINTER, ADDRESS_WBTC_MINTER]),
         },
     };
 
@@ -62,9 +61,11 @@ async function setupBaseChain() {
 
     await deployTokens(baseChain, false);
 
-    await baseChain.provider.send('evm_setAccountBalance', [ADDRESS_COMPOUND_ADMIN, FUNDING_AMOUNT]);
-    await baseChain.provider.send('evm_setAccountBalance', [ADDRESS_WBTC_MINTER, FUNDING_AMOUNT]);
-    await baseChain.provider.send('evm_setAccountBalance', [ADDRESS_SUSHI_MINTER, FUNDING_AMOUNT]);
+    // anvil_setBalance expects a hex-quantity value (ganache's evm_setAccountBalance is gone).
+    const fundingHex = '0x' + FUNDING_AMOUNT.toString(16);
+    await baseChain.provider.send('anvil_setBalance', [ADDRESS_COMPOUND_ADMIN, fundingHex]);
+    await baseChain.provider.send('anvil_setBalance', [ADDRESS_WBTC_MINTER, fundingHex]);
+    await baseChain.provider.send('anvil_setBalance', [ADDRESS_SUSHI_MINTER, fundingHex]);
 
     const wbtcMinter = baseChain.provider.getSigner(ADDRESS_WBTC_MINTER);
     const sushiMinter = baseChain.provider.getSigner(ADDRESS_SUSHI_MINTER);
@@ -81,7 +82,6 @@ async function setupSatelliteChain() {
     const satelliteChain = await createNetwork({
         name: 'Avalanche',
         seed: '',
-        ganacheOptions: {},
     });
 
     satelliteChain.wallet = satelliteChain.userWallets[0];

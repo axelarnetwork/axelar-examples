@@ -1,0 +1,61 @@
+# Hardhat's Solidity resolver reads packages from a flat top-level node_modules
+# and does not follow pnpm's default isolated/symlinked layout, so transitive
+# Solidity deps (e.g. @uniswap/v3-core via @uniswap/v3-periphery) fail to
+# resolve. A hoisted layout gives hardhat the flat node_modules it expects.
+# (pnpm 11 reads this from pnpm-workspace.yaml, not .npmrc.)
+nodeLinker: hoisted
+
+packages:
+  - "examples-web"
+
+# pnpm (v10+) blocks dependency build scripts unless allow-listed here.
+# Seeded with this repo's known native modules; after the first
+# `pnpm install`, pnpm prints any still-ignored build scripts — run
+# `pnpm approve-builds` and add them below.
+allowBuilds:
+  keccak: true
+  secp256k1: true
+  bufferutil: true
+  utf-8-validate: true
+  protobufjs: true
+  classic-level: true
+  # Native addon has a buffer-overflow CVE (GHSA-3gc7-fjrx-p6mg); the
+  # pure-JS fallback is unaffected. Matches the axelar-app decision.
+  bigint-buffer: false
+  # All denied: none are needed to build/run the examples.
+  # axelarjs-sdk's postinstall only prints an "update available" banner (and
+  # makes an install-time network call to npm); es5-ext's is a cosmetic
+  # donation notice; web3/web3-bzz/web3-shh's are just echo warnings.
+  '@axelar-network/axelarjs-sdk': false
+  es5-ext: false
+  web3: false
+  web3-bzz: false
+  web3-shh: false
+
+auditConfig:
+  ignoreGhsas:
+    - GHSA-3gc7-fjrx-p6mg
+
+overrides:
+  # TEMPORARY — remove once @axelar-network/axelar-local-dev@3.0.0 is
+  # published to npm. Until then, resolve it from the anvil-based tarball
+  # built in the sibling repo so `pnpm install` works locally. This path
+  # will NOT resolve in CI or on other machines; the committed dependency
+  # range (^3.0.0) is the real target.
+  # Tarballs, not link:. An override only reaches packages pnpm actually
+  # manages, so a link: target resolves its own dependencies out of the sibling
+  # repo and ends up on a second copy of this package. `networks` is
+  # module-level state here, so a second copy means that relayer iterates an
+  # empty network list and its chain silently relays nothing - no error, no
+  # delivery. Every importer must land on one copy.
+  "@axelar-network/axelar-local-dev": "file:../axelar-local-dev/packages/axelar-local-dev/axelar-network-axelar-local-dev-3.0.0.tgz"
+  # TEMPORARY — same deal for the rewritten Sui harness. Remove once
+  # @axelar-network/axelar-local-dev-sui@3.0.0 is published to npm.
+  # Also a tarball, for the reason above: as a link: target it resolved
+  # axelar-local-dev out of the sibling workspace instead of through this
+  # override. The cost is that picking up a sibling change takes three steps:
+  # `pnpm run build && pnpm pack` there, then delete node_modules/<name> and
+  # `pnpm install` here. pnpm updates the lockfile hash on its own but will not
+  # re-extract over an existing directory, so skipping the delete silently
+  # leaves the old build in place.
+  "@axelar-network/axelar-local-dev-sui": "file:../axelar-local-dev/packages/axelar-local-dev-sui/axelar-network-axelar-local-dev-sui-3.0.0.tgz"

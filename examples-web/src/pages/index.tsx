@@ -15,12 +15,6 @@ const Home: NextPage = () => {
           />
           <Card
             classname="mx-2 my-2"
-            title="Send token to another chain"
-            description="Simply sending a token from source chain to the destination chain"
-            url="/examples/send-tokens"
-          />
-          <Card
-            classname="mx-2 my-2"
             title="Send token with custom logic to another chain"
             description="Transfer tokens and execute custom logic to the destination chain using the callContractWithToken function of the Axelar Gateway contract."
             url="/examples/call-contract-with-token"

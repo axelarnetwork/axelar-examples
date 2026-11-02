@@ -1,8 +1,7 @@
 'use strict';
 
-const { Contract, getDefaultProvider } = require('ethers');
-const { CosmosClient } = require('@axelar-network/axelar-local-dev-cosmos');
-const { calculateBridgeFee, getDepositAddress, calculateBridgeExpressFee, readChainConfig } = require('./utils.js');
+const { Contract, getDefaultProvider, utils } = require('ethers');
+const { calculateBridgeFee, calculateBridgeExpressFee, readChainConfig } = require('./utils.js');
 const { configPath } = require('../../config/index.js');
 const AxelarGatewayWithTokenContract = rootRequire(
     'artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGatewayWithToken.sol/IAxelarGatewayWithToken.json',
@@ -13,6 +12,7 @@ const AxelarGasServiceContract = rootRequire(
 const IERC20 = rootRequire('artifacts/@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol/IERC20.json');
 
 async function executeCosmosExample(_env, chains, args, wallet, example) {
+    const { CosmosClient } = require('@axelar-network/axelar-local-dev-cosmos');
     const evmChain = chains.find((chain) => chain.name === example.sourceChain);
 
     evmChain.provider = getDefaultProvider(evmChain.rpc);
@@ -38,26 +38,30 @@ async function executeCosmosExample(_env, chains, args, wallet, example) {
     });
 }
 
-async function executeMultiversXExample(chains, args, wallet, example) {
+async function executeSuiExample(chains, args, wallet, example) {
+    // Required lazily so `pnpm run execute evm/...` still works without the
+    // Sui package installed, matching how start.js guards it.
+    const { loadSuiNetwork } = require('@axelar-network/axelar-local-dev-sui');
+
     const evmChain = getSourceChain(chains, args, example.sourceChain);
 
     evmChain.provider = getDefaultProvider(evmChain.rpc);
     const connectedWallet = wallet.connect(evmChain.provider);
 
-    // Initialize contracts to chain object.
     deserializeContract(evmChain, connectedWallet);
 
-    // Recover axelar contracts to chain object.
     evmChain.gateway = new Contract(evmChain.gateway, AxelarGatewayWithTokenContract.abi, connectedWallet);
     evmChain.gasService = new Contract(evmChain.gasService, AxelarGasServiceContract.abi, connectedWallet);
 
-    const tokenAddress = await evmChain.gateway.tokenAddresses('aUSDC');
-    evmChain.usdc = new Contract(tokenAddress, IERC20.abi, connectedWallet);
+    const suiConfig = readChainConfig(configPath.localSuiChains);
 
-    await example.execute(evmChain, wallet, {
-        calculateBridgeFee,
-        args,
-    });
+    if (!suiConfig || !suiConfig.channelAddress) {
+        throw new Error('Deploy the Sui package first: pnpm run deploy sui/call-contract local');
+    }
+
+    const sui = await loadSuiNetwork(suiConfig);
+
+    await example.execute(evmChain, wallet, { args, sui, suiConfig });
 }
 
 /**
@@ -91,12 +95,16 @@ async function executeEVMExample(env, chains, args, wallet, example) {
     const startBlockNumber = await source.provider.getBlockNumber();
     listenForGMPEvent(env, source, startBlockNumber);
 
+    // In the local environment there is no Axelar network to query gas fees from,
+    // so use a fixed fee instead of the (testnet) gas-estimation API, which would
+    // otherwise make a live network call to Axelar testnet infrastructure.
+    const localFee = async () => utils.parseEther('1');
+    const isLocal = env === 'local';
+
     // Execute the example script.
     await example.execute(chains, wallet, {
-        calculateBridgeFee,
-        calculateBridgeExpressFee,
-        getDepositAddress: (source, destination, destinationAddress, symbol) =>
-            getDepositAddress(env, source, destination, destinationAddress, symbol),
+        calculateBridgeFee: isLocal ? localFee : calculateBridgeFee,
+        calculateBridgeExpressFee: isLocal ? localFee : calculateBridgeExpressFee,
         source,
         destination,
         args,
@@ -181,7 +189,7 @@ function listenForGMPEvent(env, source, startBlockNumber) {
 }
 
 module.exports = {
-    executeMultiversXExample,
+    executeSuiExample,
     executeEVMExample,
     executeCosmosExample,
 };

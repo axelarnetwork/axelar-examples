@@ -7,6 +7,9 @@ import { AxelarExecutableWithToken } from '@axelar-network/axelar-gmp-sdk-solidi
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 
+// Demo only — this shouldn't be used as-is in production: it uses deterministic on-chain
+// "randomness", does not authenticate the cross-chain message source, and pays out the full
+// contract balance to a payload-supplied address.
 contract MultichainGameReceiver is AxelarExecutableWithToken {
     string[] public uniqueTokens;
 

@@ -2,9 +2,13 @@
 pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import { IERC20 } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IERC20.sol';
+import { SafeTokenTransfer, SafeTokenTransferFrom } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/SafeTransfer.sol';
 
 contract NftAuctionhouse {
+    using SafeTokenTransfer for IERC20;
+    using SafeTokenTransferFrom for IERC20;
+
     IERC20 public immutable usdc;
     mapping(address => mapping(uint256 => uint256)) public bids;
     mapping(address => mapping(uint256 => uint256)) public deadlines;
@@ -46,7 +50,7 @@ contract NftAuctionhouse {
         uint256 tokenId,
         uint256 amount
     ) external {
-        usdc.transferFrom(msg.sender, address(this), amount);
+        usdc.safeTransferFrom(msg.sender, address(this), amount);
         this._bid(msg.sender, operator, tokenId, amount);
     }
 
@@ -75,7 +79,7 @@ contract NftAuctionhouse {
         address, /*operator*/
         uint256 /*tokenId*/
     ) internal virtual {
-        usdc.transfer(bidder, amount);
+        usdc.safeTransfer(bidder, amount);
     }
 
     function resolveAuction(address operator, uint256 tokenId) external {
@@ -102,7 +106,7 @@ contract NftAuctionhouse {
         uint256 tokenId,
         uint256 lastBid
     ) internal virtual {
-        usdc.transfer(auctioneer, lastBid);
+        usdc.safeTransfer(auctioneer, lastBid);
         IERC721(operator).transferFrom(address(this), lastBidder, tokenId);
         bidders[operator][tokenId] = address(0);
         bids[operator][tokenId] = 0;

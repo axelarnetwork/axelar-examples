@@ -1,8 +1,7 @@
 const fs = require('fs');
 const { ethers } = require('ethers');
-const { createAndExport, EvmRelayer, RelayerType, networks } = require('@axelar-network/axelar-local-dev');
-const { AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
-const { enabledCosmos, enabledMultiversx } = require('./config');
+const { createAndExport, EvmRelayer, RelayerType } = require('@axelar-network/axelar-local-dev');
+const { enabledCosmos, enabledSui } = require('./config');
 const { configPath } = require('../../config');
 const path = require('path');
 
@@ -22,7 +21,7 @@ async function start(fundAddresses = [], chains = [], options = {}) {
     const dropConnections = [];
 
     if (!skipCosmos && enabledCosmos) {
-        const { startChains } = require('@axelar-network/axelar-local-dev-cosmos');
+        const { startChains, AxelarRelayerService, defaultAxelarChainInfo } = require('@axelar-network/axelar-local-dev-cosmos');
 
         // Spin up cosmos chains in docker containers
         await startChains().catch((e) => {
@@ -54,12 +53,27 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         dropConnections.push(() => relayers.wasm.stopListening());
     }
 
-    let multiversxNetwork;
-    if (enabledMultiversx) {
-        const { MultiversXRelayer, createMultiversXNetwork } = require('@axelar-network/axelar-local-dev-multiversx');
-        multiversxNetwork = await initMultiversX(createMultiversXNetwork);
-        relayers.multiversx = new MultiversXRelayer();
-        evmRelayer.setRelayer(RelayerType.MultiversX, relayers.multiversx);
+    if (enabledSui) {
+        const { initSui, stopSui } = require('@axelar-network/axelar-local-dev-sui');
+
+        // Publishes the Axelar framework and a sample app to an already-running
+        // local Sui network. Start one with `sui start --with-faucet
+        // --force-regenesis`; the harness deliberately does not start it, the
+        // same way it expects anvil to be running for the EVM side.
+        const { suiNetwork, suiRelayer } = await initSui({
+            nodeUrl: process.env.SUI_URL,
+            faucetUrl: process.env.SUI_FAUCET_URL,
+        });
+
+        relayers.sui = suiRelayer;
+        evmRelayer.setRelayer(RelayerType.Sui, suiRelayer);
+
+        // `deploy` and `execute` run as separate processes and reconnect from
+        // this file rather than republishing.
+        fs.mkdirSync(path.dirname(configPath.localSuiChains), { recursive: true });
+        fs.writeFileSync(configPath.localSuiChains, JSON.stringify(suiNetwork.getDeployment(), null, 2));
+
+        dropConnections.push(() => stopSui());
     }
 
     await createAndExport({
@@ -70,12 +84,6 @@ async function start(fundAddresses = [], chains = [], options = {}) {
         relayers,
         relayInterval: options.relayInterval
     });
-
-    // Need to register ITS for MultiversX after ITS for EVM was initialized
-    if (enabledMultiversx && multiversxNetwork) {
-        const { registerMultiversXRemoteITS } = require('@axelar-network/axelar-local-dev-multiversx');
-        await registerMultiversXRemoteITS(multiversxNetwork, networks);
-    }
 
     return async () => {
         for (const dropConnection of dropConnections) {
@@ -95,18 +103,6 @@ async function deployAndFundUsdc(chain, toFund) {
     for (const address of toFund) {
         await chain.giveToken(address, 'aUSDC', ethers.utils.parseEther('1'));
     }
-}
-
-async function initMultiversX(createMultiversXNetwork) {
-    try {
-        return await createMultiversXNetwork({
-            gatewayUrl: 'http://0.0.0.0:7950'
-        });
-    } catch (e) {
-        console.log('Skip MultiversX initialization, rerun this after starting a MultiversX localnet for proper support.');
-    }
-
-    return null;
 }
 
 module.exports = {

@@ -13,8 +13,6 @@ npm run build
 
 -   [call-contract](call-contract)
 -   [call-contract-with-token](call-contract-with-token)
--   [send-token](send-token)
--   [deposit-address](deposit-address)
 
 ## Advanced
 

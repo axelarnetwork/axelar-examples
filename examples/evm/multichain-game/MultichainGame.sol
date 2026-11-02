@@ -10,6 +10,8 @@ import { AddressToString, StringToAddress } from '@axelar-network/axelar-gmp-sdk
 
 import { MultichainGameReceiver } from './MultichainGameReceiver.sol';
 
+// Demo only — this shouldn't be used as-is in production: deterministic on-chain "randomness"
+// and cross-chain handlers that don't authenticate the message source.
 contract MultichainGame is AxelarExecutableWithToken {
     using AddressToString for address;
     using StringToAddress for string;

@@ -1,8 +1,1 @@
-{
-    "cosmos": {
-        "enabled": false
-    },
-    "multiversx": {
-        "enabled": false
-    }
-}
+{"cosmos": {"enabled": true},"sui": {"enabled": false}}

@@ -87,7 +87,7 @@ contract CustomToken is InterchainTokenStandard, ERC20, Minter {
         _burn(account, amount);
     }
 
-    function addMinter(address minter) external {
+    function addMinter(address minter) external onlyRole(uint8(Roles.MINTER)) {
         _addMinter(minter);
     }
 

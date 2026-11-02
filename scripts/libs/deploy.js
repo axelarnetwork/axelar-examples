@@ -41,20 +41,22 @@ async function deployOnAltChain(example) {
 
     const payload = await example.deployOnAltChain();
 
-    // update the chain config file
+    // Write to the chain config the example nominated. Reading a fixed path here
+    // wrote one chain's config into another chain's file; the unconditional write is
+    // defensive, since every example currently reads its own file first and would
+    // have thrown before reaching this.
     if (payload) {
-        const { data, path } = payload;
+        const { data, path: chainConfigPath } = payload;
 
-        const config = readChainConfig(configPath.localCosmosChains);
-        if (config) {
-            setJSON(
-                {
-                    ...config,
-                    ...data,
-                },
-                path,
-            );
-        }
+        const config = readChainConfig(chainConfigPath) || {};
+
+        setJSON(
+            {
+                ...config,
+                ...data,
+            },
+            chainConfigPath,
+        );
     }
 
     return payload;
